@@ -2611,3 +2611,97 @@ mod login_reset_tests;
 #[cfg(test)]
 #[path = "diagnostic_identity_tests.rs"]
 pub(crate) mod diagnostic_identity_tests;
+
+#[cfg(test)]
+mod native_bridge_fixture_tests {
+    use super::*;
+    use std::io::Write;
+
+    const FIXTURE_NOW: i64 = 1_792_702_800;
+    const FIXTURE_INSTANCE: &str = "0123456789abcdef0123456789abcdef";
+    const FIXTURE_RELEASE: &str = "native-bridge-synthetic";
+    const FIXTURE_COMPAT: &str = "native-bridge-compat";
+
+    fn config(key_byte: u8) -> AuthTokenConfig {
+        AuthTokenConfig {
+            release: ReleaseIdentity::new(1, FIXTURE_RELEASE, FIXTURE_COMPAT, &"a".repeat(64)).unwrap(),
+            // Explicitly synthetic fixture epochs; production still generates a fresh key.
+            key: hmacsha256::Key([key_byte; 32]),
+            ttl_seconds: DEFAULT_AUTH_TOKEN_TTL_SECONDS,
+        }
+    }
+
+    fn claims() -> AuthTokenClaims {
+        let role = Some(users::ReleaseComponent {
+            release_id: FIXTURE_RELEASE.into(), compat_id: FIXTURE_COMPAT.into(),
+        });
+        let package = users::PackageIdentity {
+            schema: 1, release_id: FIXTURE_RELEASE.into(), compat_id: FIXTURE_COMPAT.into(),
+            manifest_sha256: "a".repeat(64), launcher: role.clone(), main_dll: role.clone(),
+            gameplay_dll: role.clone(), server: role,
+        };
+        let release = release_for_login(&config(0x71).release, Some(&package)).unwrap();
+        AuthTokenClaims {
+            release: Some(release), user_id: 1000, username: "native-bridge-fixture".into(),
+            source_ip: "10.66.0.10".into(), issued_at: FIXTURE_NOW,
+            expires_at: FIXTURE_NOW + DEFAULT_AUTH_TOKEN_TTL_SECONDS, auth_version: 3,
+            game_run: Some(GameRunClaim {
+                product: server_api::gameplay_contract::GameplayMode::Mod.product().into(),
+                instance: FIXTURE_INSTANCE.into(),
+            }),
+        }
+    }
+
+    fn fixture_document() -> serde_json::Value {
+        let claims = claims();
+        // Call the real current producer: no duplicate fixture signing implementation.
+        let token = issue_auth_token(&config(0x71), &claims).unwrap();
+        let rotated_token = issue_auth_token(&config(0x72), &claims).unwrap();
+        let role = serde_json::json!({"release_id": FIXTURE_RELEASE, "compat_id": FIXTURE_COMPAT});
+        serde_json::json!({
+            "schema": 1,
+            "purpose": "Synthetic native producer / Python bridge fixture; never deploy these keys or identities",
+            "producer": "src/native/server/dedicated-server/src/api.rs::issue_auth_token after release_for_login",
+            "now": FIXTURE_NOW,
+            "key_hex": "71".repeat(32), "rotated_key_hex": "72".repeat(32),
+            "claims": claims,
+            "package": {
+                "schema": 1, "release_id": FIXTURE_RELEASE, "compat_id": FIXTURE_COMPAT,
+                "manifest_sha256": "a".repeat(64),
+                "launcher": role, "main_dll": role, "gameplay_dll": role, "server": role,
+            },
+            "token": token, "rotated_token": rotated_token,
+        })
+    }
+
+    #[test]
+    fn current_native_producer_matches_public_bridge_fixture_bytes() {
+        sodiumoxide::init().unwrap();
+        let rendered = format!("{}\n", serde_json::to_string_pretty(&fixture_document()).unwrap());
+        // Opt-in receipt generation only creates a new path, never overwrites a
+        // tracked or historical fixture. Review and copy the receipt separately.
+        if let Some(path) = std::env::var_os("SCBL_SYNTHETIC_BRIDGE_FIXTURE_OUT") {
+            std::fs::OpenOptions::new().write(true).create_new(true).open(path).unwrap()
+                .write_all(rendered.as_bytes()).unwrap();
+        }
+        let expected = include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"),
+            "/../../../../tests/server/fixtures/native_game_token_v1.json"));
+        assert!(rendered.as_bytes() == expected,
+            "native bridge fixture mismatch; regenerate a new synthetic receipt and review the change");
+    }
+
+    #[test]
+    fn rotated_issuer_key_rejects_previous_epoch_token() {
+        sodiumoxide::init().unwrap();
+        let claims = claims();
+        let previous = config(0x71);
+        let current = config(0x72);
+        let previous_token = issue_auth_token(&previous, &claims).unwrap();
+        let current_token = issue_auth_token(&current, &claims).unwrap();
+        let source = "10.66.0.10".parse().unwrap();
+        assert_eq!(verify_auth_token(&previous, &previous_token, source, FIXTURE_NOW), Ok(claims.clone()));
+        assert_eq!(verify_auth_token(&current, &current_token, source, FIXTURE_NOW), Ok(claims));
+        assert_eq!(verify_auth_token(&current, &previous_token, source, FIXTURE_NOW), Err(AuthTokenError::Invalid));
+        assert_eq!(verify_auth_token(&previous, &current_token, source, FIXTURE_NOW), Err(AuthTokenError::Invalid));
+    }
+}

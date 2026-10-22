@@ -1,4 +1,5 @@
 """Exercise the production public read adapter with synthetic migrated SQLite."""
+from contextlib import closing
 from dataclasses import replace
 from datetime import datetime, timezone
 import hashlib
@@ -39,7 +40,7 @@ class PublicSessionReaderTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory(prefix="ff-public-reader-")
         self.addCleanup(temporary.cleanup)
         self.path = Path(temporary.name) / "synthetic.sqlite"
-        with sqlite3.connect(self.path) as connection:
+        with closing(sqlite3.connect(self.path)) as connection, connection:
             for migration in sorted(MIGRATIONS.glob("*.sql")):
                 connection.executescript(migration.read_text(encoding="utf-8"))
         self.policy = ServerPolicy(RELEASE, NETWORK)
@@ -51,7 +52,7 @@ class PublicSessionReaderTests(unittest.TestCase):
         self.add_room(10, [1000, 1001])
 
     def add_room(self, room, users, mode=2, release=RELEASE):
-        with sqlite3.connect(self.path) as connection:
+        with closing(sqlite3.connect(self.path)) as connection, connection:
             for user in users:
                 connection.execute("INSERT INTO users(id,username,auth_version) VALUES(?,?,1)", (user, f"fixture-{user}"))
                 connection.execute(
@@ -67,7 +68,7 @@ class PublicSessionReaderTests(unittest.TestCase):
             connection.execute("UPDATE game_runs SET seen_at=?", (STAMP,))
 
     def mutate(self, sql, parameters=()):
-        with sqlite3.connect(self.path) as connection:
+        with closing(sqlite3.connect(self.path)) as connection, connection:
             connection.execute(sql, parameters)
 
     def read(self, identity=None, package=None, reader=None, **options):
@@ -171,7 +172,7 @@ class PublicSessionReaderTests(unittest.TestCase):
             with self.subTest(known_run=known_run):
                 path = self.path.with_name(f"legacy-{known_run}.sqlite")
                 split = 3 if known_run else 2
-                with sqlite3.connect(path) as connection:
+                with closing(sqlite3.connect(path)) as connection, connection:
                     for migration in migrations[:split]:
                         connection.executescript(migration.read_text())
                     for user in (1000, 1001):
@@ -214,7 +215,7 @@ class PublicSessionReaderTests(unittest.TestCase):
         with self.assertRaisesRegex(AdmissionError, "PACKAGE_IDENTITY_REQUIRED"):
             SessionReader(missing, self.policy).read(self.identity, None, protocol_version=1, now=NOW)
         incomplete = self.path.with_name("incomplete.sqlite")
-        with sqlite3.connect(incomplete) as connection:
+        with closing(sqlite3.connect(incomplete)) as connection, connection:
             connection.execute("CREATE TABLE users(id INTEGER)")
         with self.assertRaisesRegex(AdmissionError, "PUBLIC_SCHEMA_UNAVAILABLE"):
             self.read(reader=SessionReader(incomplete, self.policy))
