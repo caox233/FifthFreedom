@@ -9,7 +9,13 @@ relicense third-party binaries, media or SDK headers.
 `scripts/local-assets.json` pins the existing build inputs. Reviewed non-save
 resources are retained in this migration. Do not replace a pinned input merely to
 make a missing-file check pass. Add matching upstream notices and source references
-when available; FusionFix's archive currently lacks its upstream license notice.
+when available. The frozen FusionFix archive still lacks an internal upstream
+license notice. A separately verified upstream source/license reference and
+byte-level release comparison are now recorded in
+[`dependency-closure.md`](dependency-closure.md). Eleven data/configuration files
+match the compared official distribution, but the ASI, main INI and loader differ;
+the exact frozen-binary version and additional notices remain unresolved. The
+upstream license copy does not relicense every bundled archive member.
 
 `docs/ASSET-PUBLICATION.json` lists default SAV/META inputs held locally pending
 privacy verification. No actual secret was identified, but opaque SAV buffer I/O
@@ -22,8 +28,13 @@ fake an asset, weaken package checks, or call this gate a successful build.
 
 The pinned capture helper binary is preserved, but its build project has not yet
 been migrated. Record this source-rebuild gap instead of calling every binary
-independently reproducible. Local migration builds used the retained inputs and
-are distinct from a clean public checkout build.
+independently reproducible. The cloud independently verified the retained binary
+SHA256 `d34d192bb97a379c4b063c24f7cea6789005b9e5a5584404b701dfd4e7533a11`.
+The local handoff reports C++ source SHA256
+`bed779d4302b68e4397a8e3fe9afddfa886c9b96c8667a4a9279def85e11a43b`,
+but that source has not arrived and its digest has not been independently checked
+in the cloud. Local migration builds used the retained inputs and are distinct
+from a clean public checkout build.
 
 Legacy live deployment host defaults in the SCBL3 donor are replaced by inert
 `.invalid` examples. Explicit deployment configuration belongs to cloud
