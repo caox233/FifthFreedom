@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "components": {
+    "launcher": {
+      "fileName": "SCBL.exe",
+      "section": "components",
+      "updateMode": "updater-restart"
+    },
+    "hooks": {
+      "fileName": "uplay_r1_loader.dll",
+      "section": "components",
+      "updateMode": "before-game-start"
+    },
+    "route-guard": {
+      "fileName": "route-guard.zip",
+      "section": "components",
+      "updateMode": "next-launch"
+    },
+    "easytier": {
+      "fileName": "easytier-windows-x86_64.zip",
+      "section": "components",
+      "updateMode": "next-launch"
+    },
+    "updater": {
+      "fileName": "SCBL.Updater.exe",
+      "section": "components",
+      "updateMode": "next-launch"
+    },
+    "client-files": {
+      "fileName": "client-files.zip",
+      "section": "files",
+      "updateMode": "immediate"
+    }
+  }
+}

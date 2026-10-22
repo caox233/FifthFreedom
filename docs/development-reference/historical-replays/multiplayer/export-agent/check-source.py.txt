@@ -1,0 +1,27 @@
+from pathlib import Path
+import argparse,json,hashlib,subprocess,shutil,os,sys
+A=Path(__file__).resolve().parent
+ap=argparse.ArgumentParser();ap.add_argument('--source',required=True);ap.add_argument('--out',required=True);args=ap.parse_args()
+S=Path(args.source).resolve();O=Path(args.out).resolve();O.mkdir(parents=True,exist_ok=False);C=O/'source';events=[]
+env=os.environ.copy();env.update(DOTNET_CLI_TELEMETRY_OPTOUT='1',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1')
+for p in (S/'src/launcher').rglob('*'):
+ if not p.is_file() or any(x in ('obj','bin') for x in p.relative_to(S/'src/launcher').parts):continue
+ d=C/p.relative_to(S);d.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,d)
+for name in ('Directory.Build.targets','release-identity.json'):shutil.copyfile(S/name,C/name)
+(O/'empty-nuget').mkdir();(O/'harness').mkdir()
+shutil.copyfile(A/'candidate/tests/CrashDiagnostics/DiagnosticByteDumpRegression.cs',O/'harness/DiagnosticByteDumpRegression.cs')
+(O/'harness/Program.cs').write_text('try { DiagnosticByteDumpRegression.Run(args[0]); return 0; } catch (Exception e) { Console.WriteLine("REGRESSION_FAILURE " + e.GetType().Name + ": " + e.Message); return 101; }','utf-8')
+(O/'harness/Check.csproj').write_text('''<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0-windows</TargetFramework><UseWPF>true</UseWPF><PlatformTarget>x86</PlatformTarget><RuntimeIdentifier>win-x86</RuntimeIdentifier><SelfContained>false</SelfContained><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup><ItemGroup><Reference Include="SCBL.LAN"><HintPath>$(LauncherBuild)/SCBL.LAN.dll</HintPath></Reference></ItemGroup></Project>''','utf-8')
+def run(label,cmd):
+ p=subprocess.run(cmd,capture_output=True,env=env,creationflags=0x08000000,timeout=150)
+ row=dict(label=label,command=list(map(str,cmd)),exit=p.returncode,stdout=p.stdout.decode('utf-8',errors='replace'),stderr=p.stderr.decode('utf-8',errors='replace'))
+ events.append(row);(O/'COMMANDS.json').write_text(json.dumps(events,indent=2,ensure_ascii=False),'utf-8');(O/(label+'.stdout.txt')).write_bytes(p.stdout);(O/(label+'.stderr.txt')).write_bytes(p.stderr)
+ print(label,'exit',p.returncode);print(row['stdout']);print(row['stderr']);return p.returncode
+D=r'<LOCAL_PATH_01>'
+r=run('build-launcher',[D,'build',str(C/'src/launcher/src/SplinterCellCNLauncher.csproj'),'-c','Release','-p:RestoreSources='+str(O/'empty-nuget'),'-p:NuGetAudit=false','-p:PublishSingleFile=false','-p:SelfContained=false','-o',str(O/'launcher-build'),'--nologo'])
+if r:sys.exit(r)
+r=run('build-check',[D,'build',str(O/'harness/Check.csproj'),'-c','Release','-p:RestoreSources='+str(O/'empty-nuget'),'-p:NuGetAudit=false','-p:LauncherBuild='+str(O/'launcher-build'),'-o',str(O/'check-build'),'--nologo'])
+if r:sys.exit(r)
+for p in (O/'launcher-build').iterdir():
+ if p.suffix in ('.dll','.pdb'):shutil.copyfile(p,O/'check-build'/p.name)
+r=run('check',[r'<LOCAL_PATH_02>',str(O/'check-build/Check.dll'),str(O/'fixtures')]);print('VERDICT',r);sys.exit(r)

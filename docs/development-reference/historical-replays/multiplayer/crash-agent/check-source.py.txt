@@ -1,0 +1,42 @@
+"""Real source-bound native fault observer and typed export contracts; never starts the game.
+The C# harness substitutes only the plain source-metadata holder, not parser logic.
+Native source is copied verbatim into an isolated fixture and its actual VEH is exercised.
+"""
+from pathlib import Path
+import argparse,subprocess,json,hashlib,os,sys,datetime
+P=Path(__file__).resolve().parent
+ap=argparse.ArgumentParser();ap.add_argument('--source',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args()
+S=a.source.resolve();O=a.out.resolve();O.mkdir(parents=True,exist_ok=False)
+rels={'native':'src/native/client/hooks/src/exception_record.rs','export':'src/launcher/src/Services/NativeExceptionExport.cs'}
+paths={k:S/v for k,v in rels.items()};pins={rels[k]:hashlib.sha256(p.read_bytes()).hexdigest() for k,p in paths.items()}
+commands=[]
+def run(label,cmd,env=None,timeout=90):
+ r=subprocess.run(cmd,capture_output=True,text=True,env=env,timeout=timeout,creationflags=0x08000000)
+ stdout=O/(label+'.stdout.txt');stderr=O/(label+'.stderr.txt');stdout.write_text(r.stdout,'utf8');stderr.write_text(r.stderr,'utf8')
+ commands.append({'label':label,'command':cmd,'exit':r.returncode,'stdout':str(stdout),'stderr':str(stderr),'literal_stdout':r.stdout,'literal_stderr':r.stderr})
+ print(label,'exit='+str(r.returncode),flush=True);return r
+native=O/'native';native.mkdir();fixture=native/'fixture.rs';fixture.write_bytes(paths['native'].read_bytes()+b'\n'+(P/'contract_tests.rs').read_bytes());exe=native/'fixture.exe'
+rust=r'<LOCAL_PATH_01>'
+vs=r'<LOCAL_PATH_02>'
+bat=native/'build.cmd';bat.write_text(fr'''@echo off
+call "{vs}" -arch=x86 -host_arch=x64 >nul
+"{rust}" --edition 2021 --target i686-pc-windows-msvc --test "{fixture}" -L native="<LOCAL_PATH_03>" -L native="<LOCAL_PATH_04>" -o "{exe}"
+''','utf8')
+b=run('native-build',['cmd.exe','/d','/c',str(bat)])
+if b.returncode==0:
+ env=os.environ.copy();env['SCBL_FAULT_FIXTURE_OUT']=str(native/'observations');run('native-check',[str(exe),'--test-threads=1','--nocapture'],env,30)
+export=O/'export';export.mkdir();test=P/'candidate/NativeExceptionContextRegression.cs'
+(export/'Export.csproj').write_text(f'''<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems><NuGetAudit>false</NuGetAudit><NoWarn>CS9113</NoWarn></PropertyGroup><ItemGroup><Compile Include="{paths['export']}"/><Compile Include="{test}"/><Compile Include="Program.cs"/></ItemGroup></Project>''','utf8')
+(export/'Program.cs').write_text('''try {NativeExceptionContextRegression.Run("isolated");} catch(Exception error) {Console.Error.WriteLine(error.GetType().Name+": "+error.Message);Environment.ExitCode=1;}
+namespace SplinterCellCNLauncher.Services {
+public sealed class DiagnosticBundleService {}
+internal sealed class DiagnosticExportSource(string id,string path,string? entry,string kind,string retention) {
+public string Path {get;}=path;public int InvalidValues;public int UnknownFields;
+}}
+''','utf8')
+dotnet=r'<LOCAL_PATH_05>';empty=O/'empty-feed';empty.mkdir()
+r=run('export-restore',[dotnet,'restore',str(export/'Export.csproj'),'--source',str(empty),'--ignore-failed-sources'])
+if r.returncode==0:run('export-check',[dotnet,'run','--project',str(export/'Export.csproj'),'--no-restore'])
+unchanged=all(hashlib.sha256(p.read_bytes()).hexdigest()==pins[rels[k]] for k,p in paths.items())
+result={'source':str(S),'source_pins':pins,'source_unchanged':unchanged,'native_harness_sha256':hashlib.sha256((P/'contract_tests.rs').read_bytes()).hexdigest(),'export_harness_sha256':hashlib.sha256(test.read_bytes()).hexdigest(),'commands':commands,'exit':0 if unchanged and len(commands)==4 and all(x['exit']==0 for x in commands) else 1,'scope':'diagnostic evidence improvement only, not the actual game crash root-cause fix'}
+(O/'RESULT.json').write_text(json.dumps(result,indent=2),'utf8');print(json.dumps({k:result[k] for k in ('source','source_unchanged','exit','scope')}));sys.exit(result['exit'])

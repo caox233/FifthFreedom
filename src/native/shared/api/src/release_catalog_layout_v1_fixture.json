@@ -1,0 +1,15 @@
+{
+  "producer": "scripts/package_catalog.py:build_release_catalog",
+  "producer_source_sha256": "069e6bb2693af29ca79d9a1864505f4f5d94858f856b13cc4243ca1ba3ac8e7c",
+  "producer_scope": "Actual producer invoked against synthetic role files; exact output bytes retained. No game or package assembly.",
+  "release_id": "scbl-lan-layout-v1-fixture",
+  "compat_id": "scbl-lan-v1",
+  "files": {
+    "FifthFreedom.exe": "MZ fixture SCBL_RELEASE_V1|launcher|scbl-lan-layout-v1-fixture|scbl-lan-v1|END_SCBl artifact",
+    "runtime/uplay_r1_loader.dll": "MZ fixture SCBL_RELEASE_V1|main|scbl-lan-layout-v1-fixture|scbl-lan-v1|END_SCBl artifact",
+    "runtime/scbl_gameplay.dll": "MZ fixture SCBL_RELEASE_V1|gameplay|scbl-lan-layout-v1-fixture|scbl-lan-v1|END_SCBl artifact",
+    "runtime/FifthFreedom.Server.exe": "MZ fixture SCBL_RELEASE_V1|server|scbl-lan-layout-v1-fixture|scbl-lan-v1|END_SCBl artifact"
+  },
+  "catalog": "{\n  \"compat_id\": \"scbl-lan-v1\",\n  \"components\": [\n    {\n      \"bytes\": 92,\n      \"compat_id\": \"scbl-lan-v1\",\n      \"path\": \"FifthFreedom.exe\",\n      \"release_id\": \"scbl-lan-layout-v1-fixture\",\n      \"role\": \"launcher\",\n      \"sha256\": \"48156a64853f4dd5c94d97d0594015ccdb8ab99507394e741e4e0a0ff4243fe3\"\n    },\n    {\n      \"bytes\": 88,\n      \"compat_id\": \"scbl-lan-v1\",\n      \"path\": \"runtime/uplay_r1_loader.dll\",\n      \"release_id\": \"scbl-lan-layout-v1-fixture\",\n      \"role\": \"main\",\n      \"sha256\": \"65cceba71b2c9bd9f7cd6f28feeba64f471fc9d6a276c9dd22b255f74536b063\"\n    },\n    {\n      \"bytes\": 92,\n      \"compat_id\": \"scbl-lan-v1\",\n      \"path\": \"runtime/scbl_gameplay.dll\",\n      \"release_id\": \"scbl-lan-layout-v1-fixture\",\n      \"role\": \"gameplay\",\n      \"sha256\": \"81cd0d5c77db1125f97ed16507974d1a0a660d539de6c177d7861f81f905f369\"\n    },\n    {\n      \"bytes\": 90,\n      \"compat_id\": \"scbl-lan-v1\",\n      \"path\": \"runtime/FifthFreedom.Server.exe\",\n      \"release_id\": \"scbl-lan-layout-v1-fixture\",\n      \"role\": \"server\",\n      \"sha256\": \"561f4d4d8c353a08724c3e1ee07db09498c2f88b24d7b66cf9f030270a11fb00\"\n    }\n  ],\n  \"release_id\": \"scbl-lan-layout-v1-fixture\",\n  \"schema\": 1\n}\n",
+  "expected_storage_key": "1|scbl-lan-layout-v1-fixture|scbl-lan-v1|a499b368907b72f0841e4042bbee111d4035a77c035a8c3bb5b41d0beafc9ddc"
+}

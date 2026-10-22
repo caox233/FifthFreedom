@@ -1,0 +1,31 @@
+
+use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
+static READY: AtomicBool=AtomicBool::new(true);
+static PAWN:AtomicU32=AtomicU32::new(0);static INFO:AtomicU32=AtomicU32::new(0);
+static KIND:AtomicU32=AtomicU32::new(0);static CALLBACK:AtomicU32=AtomicU32::new(0);
+static RANGES:std::sync::Mutex<Vec<(usize,usize)>>=std::sync::Mutex::new(Vec::new());
+unsafe fn word(p:usize,o:usize)->Option<u32>{
+ if p==0x339e5a0&&o==0{return Some(INFO.load(Ordering::Relaxed));}
+ if p==PAWN.load(Ordering::Relaxed) as usize&&o==0{return Some(match KIND.load(Ordering::Relaxed){0=>0x02ad3234,1=>0x02ad2abc,_=>0});}
+ let ranges=RANGES.lock().ok()?;let a=p.checked_add(o)?;if ranges.iter().any(|&(l,n)|a>=l&&a+4<=l+n){Some((a as *const u32).read_unaligned())}else{None}
+}
+unsafe fn scis_name(n:u32)->bool{n==123}
+unsafe fn native_name_is(n:u32,_:&[u8])->bool{n==124}
+mod equipment_native {pub unsafe fn word(p:usize,o:usize)->Option<u32>{crate::word(p,o)}}
+mod mac11_catalog {pub unsafe fn scis_name(n:u32)->bool{n==123}pub unsafe fn vss_name(n:u32)->bool{n==124}}
+mod vss {pub const RETAIL_NAME:&[u8]=b"Sniper_VSS";}
+struct NativeTick; #[allow(non_upper_case_globals)] static UpdateScope:NativeTick=NativeTick;
+impl NativeTick{unsafe fn call(&self,p:usize,d:f32){let f:unsafe extern "thiscall" fn(usize,f32)=std::mem::transmute(CALLBACK.load(Ordering::Relaxed) as usize); f(p,d);}}
+#[path="SOURCE_ROOT/scis_presentation.rs"] mod scis_presentation;
+mod outer {pub mod hook {
+use crate::{READY,Ordering,word,UpdateScope};use crate::scis_presentation::local_weapon;
+#[path="SOURCE_ROOT/scis_scope_policy.rs"] mod policy;
+#[path="SOURCE_ROOT/vss_scope_policy.rs"] mod vss_scope_policy;
+UPDATE_SOURCE
+pub fn tick(p:usize,d:f32){update_scope(p,d)}
+}}
+#[no_mangle] pub unsafe extern "C" fn configure(p:u32,i:u32,pc:u32,w:u32,gun:u32,cb:u32,kind:u32){
+ PAWN.store(p,Ordering::Relaxed);INFO.store(i,Ordering::Relaxed);KIND.store(kind,Ordering::Relaxed);CALLBACK.store(cb,Ordering::Relaxed);
+ *RANGES.lock().unwrap()=vec![(p as usize,0x2000),(i as usize,0x400),(pc as usize,0x800),(w as usize,0x900),(gun as usize,0x800)];
+}
+#[no_mangle]pub extern "C" fn tick(p:usize,d:f32){outer::hook::tick(p,d);}

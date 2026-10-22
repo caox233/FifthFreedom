@@ -1,0 +1,191 @@
+#include <windows.h>
+#include <cstdio>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <fstream>
+#include <cstdlib>
+#include <map>
+#include <string>
+using U=unsigned;
+static unsigned char *image;
+static unsigned prefix_epilogue;
+__declspec(naked) static void prefix_return(){__asm{add esp, 0xc
+jmp dword ptr [prefix_epilogue]}}
+#define A(x) ((U)image+(x)-0x400000)
+#include "relocs.h"
+static bool requested=false,owned=true,visible=false;
+static U pawn[0x2000/4],core[0x2000/4],scope[0x800/4],weapon[0x800/4],controller[0x800/4],world[0x900/4],game[0x400/4],engine[4],evt[0x700/4],svt[0x200/4],wvt[0x200/4],pvt[0x700/4],camera[0x700/4];
+static int applied[2],placements;static float lastpos[3];static int lastrot[3];
+using Exit= float(__cdecl*)(U,U,float);static Exit policy_exit;
+using Defer= U(__cdecl*)(U,U,U,U,U,U,U);static Defer policy_defer;
+static std::string events;
+static int mutation=0;
+static float stale_alpha=0;
+static int camera_case=0;
+struct PoseSample {float p[3]; int r[3]; bool vis;};
+static U bits(float v){U u;memcpy(&u,&v,4);return u;}
+static PoseSample sample(){PoseSample s;memcpy(s.p,lastpos,12);memcpy(s.r,lastrot,12);s.vis=visible;return s;}
+static bool same_pose(const PoseSample&a,const PoseSample&b){for(int i=0;i<3;i++)if(bits(a.p[i])!=bits(b.p[i])||a.r[i]!=b.r[i])return false;return a.vis==b.vis;}
+
+static float &f(U*p,U o){return *(float*)((char*)p+o);}
+static void patch(U a,void*p){a=A(a);unsigned char b[5]={0xe9};*(U*)(b+1)=(U)p-a-5;memcpy((void*)a,b,5);}
+static void call_patch(U a,void*p){a=A(a);unsigned char b[5]={0xe8};*(U*)(b+1)=(U)p-a-5;memcpy((void*)a,b,5);}
+static LONG WINAPI fault(EXCEPTION_POINTERS*p){printf("FAULT code=%lx eip=%08lx addr=%08lx\n",p->ExceptionRecord->ExceptionCode,p->ContextRecord->Eip,(U)p->ExceptionRecord->ExceptionInformation[1]);fflush(stdout);ExitProcess(91);}
+__declspec(naked)static void cookie(){__asm{ret}}
+__declspec(naked)static void xcos(){__asm{fcos
+ret}}
+__declspec(naked)static void xsine(){__asm{fsin
+ret}}
+__declspec(naked)static void xatan(){__asm{fpatan
+ret}}
+__declspec(naked)static void xsqrt(){__asm{fsqrt
+ret}}
+static int __fastcall input(void*,void*){return requested;}
+static void* __fastcall gun(void*,void*){return weapon;}
+static unsigned char __fastcall supported(void*,void*,U){return 1;}
+static U __fastcall attachment(void*,void*,U){return 0x12345;}
+static void __fastcall bind_stub(void*,void*,U,U){}
+static void __fastcall vector(void*,void*,U*p){p[0]=p[1]=p[2]=0;}
+static U __cdecl viewport(U){return (U)controller;}
+static void __cdecl hidden(U a,U){if(a==(U)scope){visible=false;events+="H";}}
+static void __cdecl shown(U a,U){if(a==(U)scope){visible=true;events+="S";}}
+static void __fastcall no_op(void*,void*){}
+static void __fastcall hidden_flag(void*,void*,U v){visible=v==0;events+=visible?"V":"h";}
+static U __fastcall zero(void*,void*){return 0;}
+static U __fastcall identity(void*,void*){return 123;}
+static void __fastcall notify(void*,void*,U,U){}
+static void __fastcall sound(void*,void*,U,U,float,U,U,U){}
+static void __fastcall lag(void*,void*,U,float*p,int*r){for(int i=0;i<3;i++){p[i]=0;r[i]=0;}}
+static void* __cdecl getengine(){return engine;}
+static U __fastcall place(void*,void*,U actor,const float*p,const int*r,U){if(actor!=(U)scope)ExitProcess(81);memcpy(lastpos,p,12);memcpy(lastrot,r,12);memcpy((char*)scope+0x9c,p,12);memcpy((char*)scope+0xa8,r,12);++placements;events+="P";return 1;}
+static void __fastcall exit_call(U p,void*,U enabled){((void(__thiscall*)(void*,U))A(0xd2d430))((void*)p,enabled);f((U*)p,0x150c)=policy_exit(owned,enabled,f((U*)p,0x150c));}
+
+namespace Binding {
+using U=unsigned;
+#define W(p,o) (*(U*)((U)(p)+(o)))
+static void map(U p){if(!VirtualAlloc((void*)p,65536,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE)){printf("MAP_ERROR address=%08x error=%u\n",p,GetLastError());exit(70);}}
+static void jump(U a,void*p){a+=0x20000000;*(unsigned char*)a=0xe9;W(a,1)=(U)p-a-5;}
+#include "retail.h"
+static U *pawn=::pawn,*actor=::scope; static U node[256],mesh[64],stream[32],resource[128],props[64],upgrade[4],vt[128],nvt[8],users[8];
+static U checks,failures,updates;static std::vector<void*> queue;
+static void check(bool ok,const char*s){checks++;if(!ok){failures++;printf("FAIL %s\n",s);}}
+static U __fastcall controller(U,U){return W(pawn,0x358);}
+static U __fastcall camera(U,U){return 0;}
+static U __fastcall getprops(U,U){return(U)props;}
+static U __cdecl cast(U a){return a;}
+static U __cdecl zero(U){return 0;}
+static void __cdecl noop_c(U){}
+static void __cdecl noop_c2(U,U){}
+static void __fastcall noop(U,U){}
+static void __fastcall noop1(U,U,U){}
+static void __fastcall noop2(U,U,U,U){}
+static float __fastcall multiplier(U,U){return .25f;}
+static U __cdecl findnode(U n){return n;}
+static void __cdecl visibility(U,U f,U*p,U*v){check(f==0xa367b0,"visibility callback identity");((void(__cdecl*)(U,U))(f+0x20000000))(*p,*v);}
+static U __cdecl queue_owner(U,U,U){return 1;}
+static void* __fastcall allocate(U,U,U size){return calloc(1,size);}
+static void __cdecl submit(U,void*p){queue.push_back(p);}
+static void __fastcall refresh(U,U){updates++;}
+static void __fastcall unreachable(U,U){puts("UNEXPECTED_ALLOCATION");exit(72);}
+static void drain(){for(void*p:queue){check(W(p,8)==0xa6b880,"binding callback identity");((void(__cdecl*)(U,U,U,U))0x20a6b880)(W(p,12),W(p,16),W(p,20),W(p,24));free(p);}queue.clear();}
+static void apply(){((void(__thiscall*)(void*,U,U))0x20aa6120)(actor,(U)pawn,(U)upgrade);}
+static void reset(){
+ for(void*p:queue)free(p);queue.clear();
+ memset(actor,0,0x800);memset(node,0,sizeof node);memset(mesh,0,sizeof mesh);memset(stream,0,sizeof stream);memset(resource,0,sizeof resource);memset(props,0,sizeof props);memset(users,0,sizeof users);updates=0;
+ W(actor,0)=(U)vt;W(actor,0x30c)=(U)node;((unsigned char*)actor)[0x30]=8;
+ W(node,0)=(U)nvt;W(mesh,0x54)=(U)stream;W(props,0x5c)=(U)mesh;*(float*)((U)props+0x60)=.075f;
+ W(resource,0x14)=0x573dd314;W(resource,0x64)=6;W(resource,0x70)=(U)users;W(resource,0x78)=8;
+}
+static LONG CALLBACK fault(EXCEPTION_POINTERS*e){printf("FAULT code=%08x ip=%08x eax=%08x ecx=%08x edx=%08x ebp=%08x esp=%08x\n",e->ExceptionRecord->ExceptionCode,e->ContextRecord->Eip,e->ContextRecord->Eax,e->ContextRecord->Ecx,e->ContextRecord->Edx,e->ContextRecord->Ebp,e->ContextRecord->Esp);for(int i=0;i<10;i++)printf("fixture_stack%d=%08x\n",i,W(e->ContextRecord->Esp,i*4));fflush(stdout);ExitProcess(73);return 0;}
+
+static void init(){load(); unsigned char getter[]={0x8b,0x81,0x58,0x03,0x00,0x00,0x85,0xc0,0x74,0x09,0xf7,0x40,0x60,0x00,0x00,0x04,0x00,0x75,0x02,0x33,0xc0,0xc3};memcpy((void*)0x20c94fc0,getter,sizeof getter);
+ jump(0xe5c9a0,camera);jump(0xdc8680,getprops);jump(0x551830,cast);
+ jump(0x9db410,noop_c);jump(0xa760c0,noop_c);jump(0xa765d0,noop_c2);jump(0x566d40,noop2);jump(0x8ba480,noop1);jump(0xdc8670,multiplier);jump(0xd0e010,noop1);
+ jump(0x52ad50,findnode);jump(0x52c600,visibility);jump(0x551a70,zero);jump(0x5525b0,zero);
+ jump(0x161a120,queue_owner);jump(0x1619c10,allocate);jump(0x163a2e0,submit);
+ jump(0x665120,unreachable);jump(0x9c0820,noop);jump(0x9da130,noop1);jump(0x164feb0,noop1);jump(0xa69bf0,unreachable);
+ W(vt,0xf4)=(U)noop;W(vt,0x11c)=(U)noop1;W(nvt,4)=(U)refresh;
+
+}
+}
+
+static int binds=0;
+static void __fastcall bind_bridge(U a,U,U p,U u){
+ if(a!=(U)scope||p!=(U)pawn||u!=0x12345)ExitProcess(82);
+ ++binds; Binding::apply();
+}
+static void load(const char*path){
+ std::ifstream in(path,std::ios::binary);std::vector<char>b((std::istreambuf_iterator<char>(in)),{});if(b.empty())ExitProcess(70);
+ auto*d=(IMAGE_DOS_HEADER*)b.data();auto*n=(IMAGE_NT_HEADERS32*)(b.data()+d->e_lfanew);auto*s=IMAGE_FIRST_SECTION(n);
+ image=(unsigned char*)VirtualAlloc(nullptr,n->OptionalHeader.SizeOfImage,MEM_RESERVE|MEM_COMMIT,PAGE_EXECUTE_READWRITE);if(!image)ExitProcess(71);
+ memcpy(image,b.data(),n->OptionalHeader.SizeOfHeaders);for(U i=0;i<n->FileHeader.NumberOfSections;i++)if(s[i].SizeOfRawData)memcpy(image+s[i].VirtualAddress,b.data()+s[i].PointerToRawData,s[i].SizeOfRawData);
+ for(U at:relocations)*(U*)A(at)+=(U)image-0x400000;
+ auto dx=LoadLibraryW(L"<LOCAL_PATH_01>");if(!dx)ExitProcess(72);
+ *(void**)A(0x297390c)=(void*)GetProcAddress(dx,"D3DXQuaternionSlerp");*(void**)A(0x29738ec)=(void*)GetProcAddress(dx,"D3DXQuaternionMultiply");*(void**)A(0x29738fc)=(void*)GetProcAddress(dx,"D3DXQuaternionRotationYawPitchRoll");
+ *(void**)A(0x2973908)=(void*)GetProcAddress(dx,"D3DXQuaternionRotationMatrix");
+ for(int i=0;i<16384;i++)((float*)A(0x330c5bc))[i]=(float)sin(i*6.2831853071795864769/16384.);
+ float coords[12]={0,0,0,1,0,0,0,1,0,0,0,1};memcpy((void*)A(0x330c548),coords,48);
+ patch(0x24c8119,(void*)xcos);patch(0x24c245a,(void*)cookie);patch(0x24c8000,(void*)xsine);patch(0x24c7e7a,(void*)xatan);patch(0x24c2f50,(void*)xsqrt);
+ patch(0xd30800,(void*)input);patch(0xd34450,(void*)gun);patch(0xe08d80,(void*)supported);patch(0xdfd690,(void*)attachment);patch(0xaa6120,(void*)bind_bridge);
+ patch(0xd9fee0,(void*)vector);patch(0xd9fcf0,(void*)vector);patch(0xe93df0,(void*)viewport);patch(0xa2f930,(void*)hidden);patch(0xa2f970,(void*)shown);patch(0xd76020,(void*)no_op);
+ patch(0xe86e10,(void*)zero);patch(0xc94fc0,(void*)identity);patch(0xb07b90,(void*)notify);patch(0xb07a90,(void*)notify);patch(0xd2a410,(void*)lag);patch(0x532210,(void*)getengine);
+ 
+ // Full D60D40 placement is executed; engine callbacks remain controlled.
+}
+static void setup(){memset(pawn,0,sizeof pawn);memset(core,0,sizeof core);memset(scope,0,sizeof scope);memset(controller,0,sizeof controller);memset(world,0,sizeof world);memset(game,0,sizeof game);
+ pawn[0]=(U)pvt;pvt[0x5dc/4]=(U)sound;pawn[0x144/4]=(U)world;pawn[0x148/4]=(U)world;pawn[0x1508/4]=(U)scope;pawn[0x1410/4]=(U)weapon;pawn[0x938/4]=(U)controller;pawn[0x358/4]=(U)controller;controller[0x60/4]=0x40000;controller[0x354/4]=(U)camera;f(pawn,0x150c)=-1;
+ scope[0]=(U)svt;scope[0x148/4]=(U)world;svt[0x11c/4]=(U)hidden_flag;
+ world[0]=(U)wvt;world[0x6d0/4]=(U)game;wvt[0x88/4]=(U)place;game[0x37c/4]=6;
+ core[0x24/4]=(U)pawn;core[0x20/4]=(U)controller;core[0x1c/4]=(U)camera;core[0x2c/4]=(U)game;f(game,0x288)=1;
+ engine[0]=(U)evt;evt[0x128/4]=(U)zero;requested=false;visible=false;placements=applied[0]=applied[1]=0;events.clear();stale_alpha=0;
+ for(int i=0;i<3;i++){lastpos[i]=NAN;lastrot[i]=0;}
+ if(camera_case){f(core,0xe0)=127.5f;f(core,0xe4)=-88.f;f(core,0xe8)=56.f;
+   int rot[3]={camera_case==1?4096:15000,camera_case==1?8192:32760,camera_case==1?-512:1024};
+   memcpy((char*)core+0x6c,rot,12);memcpy((char*)core+0xbd8,rot,12);
+ }
+
+}
+static bool scoped(){return (pawn[0x948/4]&0x400000)!=0;}
+static void step(float dt,bool request){
+ events.clear();requested=request;f(core,0)=dt;bool old=scoped();float before=f(core,0x46c);
+ if(!policy_defer(owned,(U)pawn,pawn[0x358/4],pawn[0x938/4],pawn[0x948/4],controller[0x60/4],controller[0x354/4]))
+   ((void(__thiscall*)(void*,float))A(0xda6ef0))(pawn,dt);
+ if(old!=scoped())++applied[scoped()];
+ // Deliberate fixture-only corruptions for test sensitivity, never product fixes.
+ if(mutation==1&&!old&&scoped())f(core,0x46c)=stale_alpha;
+ if(mutation==2&&scoped())core[0xbd8/4]+=1024;
+ ((void(__thiscall*)(void*))A(0xd60d40))(core);
+ if(old&&!scoped())stale_alpha=before;
+}
+
+
+
+using Configure=void(__cdecl*)(U,U,U,U,U,U,U);using Tick=void(__cdecl*)(U,float);
+int main(int argc,char**argv){
+ setvbuf(stdout,nullptr,_IONBF,0);AddVectoredExceptionHandler(1,fault);if(argc!=3)return 2;
+ Binding::init();load(argv[1]);auto dll=LoadLibraryA(argv[2]);if(!dll)return 73;
+ auto configure=(Configure)GetProcAddress(dll,"configure");auto tick=(Tick)GetProcAddress(dll,"tick");if(!configure||!tick)return 74;
+ int checks=0,failures=0;
+ for(U kind:{0,1})for(int delay:{-1,0,1,2,3})for(int fps:{30,60,144}) {
+  setup();Binding::reset();binds=0;W(Binding::stream,0x34)=(U)Binding::resource;
+  pawn[0x4b8/4]=(U)weapon;pawn[0x374/4]=0xa0000;weapon[0x50/4]=(U)weapon;weapon[0x740/4]=kind==0?124:123;
+  controller[0]=(U)0x02ac53ec;controller[0x520/4]=(U)pawn;controller[0x144/4]=(U)world;
+  game[0x144/4]=(U)world;game[0x330/4]=0x10;
+  configure((U)pawn,(U)game,(U)controller,(U)world,(U)weapon,A(0xda6ef0),kind);
+  requested=true; if(delay==0)pawn[0x358/4]=0;if(delay==1)controller[0x60/4]=0;if(delay==2)controller[0x354/4]=0;if(delay==3){camera[0x60/4]=0x40000;pawn[0x358/4]=(U)camera;}
+  for(int i=0;i<fps*2;i++)tick((U)pawn,1.f/fps);Binding::drain();
+  bool waited=delay<0?scoped()&&binds==1:delay==1?scoped()&&binds==1:!scoped()&&binds==0;failures+=!waited;checks++;
+  pawn[0x358/4]=(U)controller;controller[0x60/4]=0x40000;controller[0x354/4]=(U)camera;
+  for(int i=0;i<fps*2;i++)tick((U)pawn,1.f/fps);Binding::drain();
+  bool complete=scoped()&&binds==1&&scope[0x1f4/4]!=(U)0&&W(Binding::node,0xf8)==(U)Binding::resource;
+  failures+=(delay==1?complete:!complete);checks++; // flag=0 is explicitly outside local-owner eligibility, unchanged control
+  printf("CASE weapon=%s fps=%d delay=%d waited=%d scoped=%d binder_calls=%d actor_mesh=%d node_bound=%d outside_local_owner=%d\n",kind==0?"VSS":"SCIS",fps,delay,waited,scoped(),binds,scope[0x1f4/4]!=0,W(Binding::node,0xf8)!=0,delay==1);
+  requested=false;pawn[0x358/4]=0;controller[0x354/4]=0;
+  for(int i=0;i<fps*2;i++)tick((U)pawn,1.f/fps);Binding::drain();
+  failures+=scoped();checks++;
+
+ }
+ printf("ENTRY_RESULT checks=%d failures=%d exact_source_wrapper=1 native_entry_and_binder=1 render_scheduler=fixture pixels=not_tested\n",checks,failures);
+ return failures?101:0;
+}

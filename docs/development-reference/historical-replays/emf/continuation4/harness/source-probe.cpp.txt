@@ -1,0 +1,61 @@
+#include <windows.h>
+#include <cstdio>
+#include <cstring>
+using U=unsigned;
+extern "C" U source_material(U,U,U,U,U,U,U,U,U,U);
+extern "C" U observer_fixture_is_clear();
+static unsigned char *draw_code,*selector_code,*material_code,*cleanup_code,*factory_code;
+static U cookie=0x12347890,bank[0x1000/4],bank_pointer=(U)bank,checks,failures,enabled,original_calls,cleanup_calls,admitted,samplers,setups,resets;
+static U owner_pawn,owner_gen=17,owner_world,owner_actor,owner_agen=19,info_ptr;
+static U fact_out[0x1b0/4],fake_cache[8],fact_added;
+static void ck(bool v,const char*s){++checks;if(!v){++failures;printf("FAIL %s\n",s);}}
+static void unexpected(){puts("UNEXPECTED_NATIVE_LEAF");ExitProcess(80);}
+static void __fastcall cookie_check(U){}
+static void rel(unsigned char*p,U o,void*t){*(U*)(p+o+1)=(U)t-(U)(p+o+5);}
+static unsigned char*code(const unsigned char*b,U n){auto p=(unsigned char*)VirtualAlloc(0,0x4000,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);if(!p)ExitProcess(81);memcpy(p,b,n);return p;}
+extern "C" U read_word(U p,U o,U*out){if(p==0x339e5a0&&o==0){*out=info_ptr;return 1;}if(p<0x10000||o>~p||p+o>~3u)return 0;SIZE_T read=0;return ReadProcessMemory(GetCurrentProcess(),(void*)(p+o),out,4,&read)&&read==4;}
+extern "C" U native_material(U root,U render,U object,U surface){++original_calls;return((U(__thiscall*)(void*,U,U,U))material_code)((void*)root,render,object,surface);}
+static U __fastcall material_hook(U root,U,U render,U object,U surface){return source_material(root,render,object,surface,owner_pawn,owner_gen,owner_world,owner_actor,owner_agen,enabled);}
+static void __fastcall cleanup_hook(U root,U,U render){++cleanup_calls;((void(__thiscall*)(void*,U))cleanup_code)((void*)root,render);}
+static void __cdecl sampler(U,U slot,U a,U b,U c,U d){++samplers;if((slot==5||slot==6)&&a==1&&b==1&&c==1){if(d==3)++setups;if(d==1)++resets;}else unexpected();}
+static void*__cdecl copy_bytes(void*d,const void*s,U n){return memcpy(d,s,n);}
+static U __fastcall lock_leaf(U p,U,U){return p;}
+static void __fastcall unlock_leaf(U,U){}
+static U __fastcall cache_leaf(U,U,U){return(U)fake_cache;}
+static U __fastcall cache_lookup(U,U,U){return 0;}
+static U __cdecl construct_leaf(){memset(fact_out,0,sizeof fact_out);fact_out[0]=0x02c085b8;return(U)fact_out;}
+static void __fastcall cache_insert(U,U,U p){fact_added=p;}
+static void*resolve(U a){switch(a){case 0x16e2a10:return(void*)material_hook;case 0x16e2000:return selector_code;case 0x16e2bd0:return(void*)cleanup_hook;case 0x24c245a:return(void*)cookie_check;case 0x24c24f0:return(void*)copy_bytes;case 0x1603df0:return(void*)sampler;case 0x1610690:return(void*)lock_leaf;case 0x16106b0:return(void*)unlock_leaf;case 0x160cdb0:return(void*)cache_leaf;case 0x160c050:return(void*)cache_lookup;case 0x160c3f0:return(void*)cache_insert;default:return(void*)unexpected;}}
+#include "full-code.h"
+struct Fixture{
+ U render[0x2400/4]={},view[0x400/4]={},pass[32]={},config[0x300/4]={},node[0x240/4]={},mesh[0x100/4]={},surface[0x1b0/4]={},impl[16]={},root[0x240/4]={},head[0x240/4]={},table[12]={},fallback[0x40/4]={},native_tex[16]={},backend[0x200/4]={},packet[16]={};
+ U info[0x340/4]={},world[8]={},pawn[0x1600/4]={},pc[0x600/4]={},inv[0x100/4]={},weapon[0x800/4]={},actor[0x400/4]={};
+ Fixture(){
+ render[0xc/4]=(U)backend;render[0x14/4]=(U)config;render[0x20d0/4]=(U)view;render[0x233c/4]=1;render[0x236c/4]=(U)pass;render[0x2378/4]=(U)fallback;view[0x340/4]=9;pass[0]=(U)root;pass[0x14/4]=(U)render;
+ root[0]=0x02c06404;root[0x160/4]=(U)head;root[0x188/4]=0x3f800000;head[0x18c/4]=0x09ff0000;for(U i=0;i<0x90/4;i++)head[0x190/4+i]=0x3e800000;fallback[0x30/4]=(U)native_tex;native_tex[0x14/4]=0x12345000;
+ node[0xf8/4]=(U)mesh;node[0x160/4]=(U)table;node[0x164/4]=6;node[0x210/4]=0xff000000;mesh[0x14/4]=0x573dd314;table[6]=(U)surface;
+ surface[0]=0x02c085b8;surface[0x14/4]=0x33d4c0ca;surface[0x2c/4]=(U)impl;impl[0]=0x02c08594;surface[0x3c/4]=0x007f0000;packet[0]=(U)node;packet[7]=(U)surface;packet[8]=(U)root;
+ info_ptr=(U)info;info[0x144/4]=(U)world;info[0x330/4]=0x10;owner_pawn=(U)pawn;owner_world=(U)world;owner_actor=(U)actor;
+ pawn[0]=0x02ad3234;pawn[0x20/4]=owner_gen;pawn[0x144/4]=(U)world;pawn[0x148/4]=(U)world;pawn[0x938/4]=(U)pc;pawn[0x948/4]=0x400000;pawn[0x1410/4]=(U)inv;pawn[0x4b8/4]=(U)weapon;pawn[0x1508/4]=(U)actor;
+ pc[0]=0x02ac53ec;pc[0x60/4]=0x40000;pc[0x520/4]=(U)pawn;pc[0x144/4]=(U)world;inv[0x50/4]=(U)weapon;weapon[0x740/4]=124;
+ actor[0]=0x02ab528c;actor[0x20/4]=owner_agen;actor[0x144/4]=(U)world;actor[0x30c/4]=(U)node;actor[0x1f4/4]=(U)mesh;
+ }
+ void run(const char*label,bool skip){original_calls=cleanup_calls=admitted=samplers=setups=resets=0;backend[0xb8/4]=0xabc;backend[0xbc/4]=0xdef;U before_backend[0x200/4];memcpy(before_backend,backend,sizeof backend);U before_bank[0x1000/4];memcpy(before_bank,bank,sizeof bank);U before_surface[0x1b0/4];memcpy(before_surface,surface,sizeof surface);
+ ((void(__stdcall*)(U,U))draw_code)((U)render,(U)packet);
+ ck(original_calls==(skip?0:1),"exact pre-call admission");ck(admitted==(skip?0:1),"single draw body admission");ck(cleanup_calls==(skip?0:1),"cleanup only after native setup");ck(setups==(skip?0:2)&&resets==(skip?0:2),"sampler5/6 setup reset pairing");ck(!memcmp(before_surface,surface,sizeof surface),"surface unchanged");
+ if(skip){ck(!memcmp(before_backend,backend,sizeof backend),"skip backend byte identical");ck(!memcmp(before_bank,bank,sizeof bank),"skip bank byte identical");ck(observer_fixture_is_clear()!=0,"skip clears stale material observer proof");}else{ck(backend[0xb8/4]==0&&backend[0xbc/4]==0,"native cleanup restores bound SRVs");}
+ printf("SEAM case=%s enabled=%u original=%u draw=%u cleanup=%u sampler_setup=%u reset=%u\n",label,enabled,original_calls,admitted,cleanup_calls,setups,resets);
+ }
+};
+int main(){setvbuf(stdout,0,_IONBF,0);draw_code=code(draw_bytes,sizeof draw_bytes);selector_code=code(selector_bytes,sizeof selector_bytes);material_code=code(material_bytes,sizeof material_bytes);cleanup_code=code(cleanup_bytes,sizeof cleanup_bytes);factory_code=code(factory_bytes,sizeof factory_bytes);patch_all();
+ U at=sizeof draw_bytes;unsigned char instrumentation[]={0xff,0x05,0,0,0,0,0x8b,0xf7,0xe9,0,0,0,0};memcpy(draw_code+at,instrumentation,sizeof instrumentation);*(U*)(draw_code+at+2)=(U)&admitted;rel(draw_code,at+8,draw_code+(0x16e5836-0x16e44d0));draw_code[0x6b]=0xe9;rel(draw_code,0x6b,draw_code+at);FlushInstructionCache(GetCurrentProcess(),0,0);
+ U factory[0x100/4]={},type[0x80/4]={},key[2]={0x33d4c0ca,0x11223344};type[0x20/4]=(U)construct_leaf;U result=((U(__thiscall*)(void*,U,U,U))factory_code)(factory,(U)key,(U)type,0x76540000);ck(result==(U)fact_out&&fact_added==result,"real native factory returns and inserts typed material");ck(fact_out[0x14/4]==key[0]&&fact_out[0x18/4]==key[1],"real native factory stores resource key at14 and string token at18");ck(fact_out[0x1c/4]==(U)type&&fact_out[0x20/4]==0x76540000,"real native factory stores class and owner");printf("FACTORY runtime_key=%08x props_vtable=%08x native_field_assignment=true construction_leaf=fixture\n",fact_out[0x14/4],fact_out[0]);
+ {Fixture f;enabled=1;f.run("source-owned-vss-emf-lens",true);f.surface[0]=0x02c08a14;f.surface[0x14/4]=0xd5facb6f;f.impl[0]=0x02c089f0;f.run("next-reticle-after-owned-glass",false);}
+ {Fixture f;enabled=0;f.run("feature-disabled-native-fallthrough",false);}
+ {Fixture f;enabled=2;f.run("actual-owned-wrapper-not-ready",false);}
+ {Fixture f;enabled=3;f.run("actual-owned-wrapper-no-lease",false);}
+ {Fixture f;enabled=4;f.run("actual-owned-wrapper-busy-lease-nonblocking",false);}
+ const char* names[]={"normal-view","thermal-view","other-stage","scis-mesh","lens03-key","opaque-alpha","foreign-impl","missing-membership","duplicate-membership","remote-controller","stale-pawn","stale-actor","wrong-possession","wrong-current-weapon","unscoped","non-vss-name"};
+ for(U k=0;k<16;++k){Fixture f;enabled=1;
+ switch(k){case 0:f.view[0x340/4]=0;break;case 1:f.view[0x340/4]=8;break;case 2:f.render[0x233c/4]=0;break;case 3:f.mesh[0x14/4]=0x9889ca31;break;case 4:f.surface[0x14/4]=0x5678;break;case 5:f.surface[0x16c/4]=0x6400;break;case 6:f.impl[0]=0x02c089f0;break;case 7:f.table[6]=0;break;case 8:f.table[4]=(U)f.surface;break;case 9:f.pc[0x60/4]=0;break;case 10:f.pawn[0x20/4]++;break;case 11:f.actor[0x20/4]++;break;case 12:f.pc[0x520/4]=0;break;case 13:f.inv[0x50/4]=0;break;case 14:f.pawn[0x948/4]=0;break;case 15:f.weapon[0x740/4]=123;break;}f.run(names[k],false);}
+ printf("NATIVE_GLASS_GATE checks=%u failures=%u actual_setup_cleanup=true draw_body=counter GPU=false native_name=fixture_124\n",checks,failures);return failures?3:0;}

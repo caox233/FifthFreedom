@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "delete": [
+    "SplinterCellCNLauncher.exe",
+    "tools/easytier-core.exe",
+    "tools/easytier-cli.exe",
+    "tools/Packet.dll",
+    "tools/wintun.dll",
+    "tools/scbl-process-router.exe",
+    "tools/uplay_r1_loader.dll",
+    "tools/uplay_r1_loader.dll.sha256",
+    "tools/WinDivert.dll",
+    "tools/WinDivert64.sys",
+    "tools/WinDivert64.payload.sys",
+    "tools/SCBL.Updater.exe",
+    "tools/SCBL.Updater.payload.exe",
+    "卸载启动器.bat",
+    "tools/SCBL-Uninstall-And-Delete.ps1"
+  ]
+}

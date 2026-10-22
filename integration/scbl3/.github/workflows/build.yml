@@ -1,0 +1,84 @@
+name: Online component build
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: Component to build
+        required: true
+        type: choice
+        options: [launcher, updater, hooks, dedicated, windows-server]
+      version:
+        description: Immutable candidate version
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  windows-component:
+    if: inputs.component == 'launcher' || inputs.component == 'updater' || inputs.component == 'hooks' || inputs.component == 'windows-server'
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2025-10-15
+          targets: i686-pc-windows-msvc
+      - uses: arduino/setup-protoc@v3
+      - name: Verify local-only Launcher payload is supplied
+        if: inputs.component == 'launcher'
+        shell: pwsh
+        run: |
+          $asset = 'client/ScblPublicLauncher/EmbeddedFiles/FusionFix.zip'
+          if (-not (Test-Path -LiteralPath $asset -PathType Leaf)) {
+            throw "Launcher build requires the audited FusionFix payload. Supply it through a protected build input after redistribution approval; it is intentionally absent from public Git."
+          }
+      - name: Build Launcher development candidate
+        if: inputs.component == 'launcher'
+        shell: pwsh
+        run: |
+          scripts\coordination\scbl-task.cmd build launcher --source-root . --output .work\launcher --receipt .work\launcher-receipt.json --version '${{ inputs.version }}'
+      - name: Build Updater development candidate
+        if: inputs.component == 'updater'
+        shell: pwsh
+        run: |
+          scripts\coordination\scbl-task.cmd build updater --source-root . --output .work\updater --receipt .work\updater-receipt.json --version '${{ inputs.version }}'
+      - name: Build Hooks development candidate
+        if: inputs.component == 'hooks'
+        shell: pwsh
+        run: scripts\build-rust-components.ps1 -Release -HooksOnly
+      - name: Build native Windows server installer
+        if: inputs.component == 'windows-server'
+        shell: pwsh
+        run: server\windows\build-windows-server.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scbl-${{ inputs.component }}-${{ inputs.version }}-development
+          path: |
+            .work/**
+            release-output/windows-server/**
+            target/i686-pc-windows-msvc/release/hooks.dll
+          if-no-files-found: error
+          retention-days: 7
+
+  dedicated:
+    if: inputs.component == 'dedicated'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2025-10-15
+      - uses: arduino/setup-protoc@v3
+      - run: cargo build --locked --release -p dedicated_server
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scbl-dedicated-${{ inputs.version }}-development
+          path: target/release/dedicated_server
+          if-no-files-found: error
+          retention-days: 7

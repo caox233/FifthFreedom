@@ -1,0 +1,42 @@
+{
+  "SnapshotDate": "2026-10-15",
+  "ModRuntimeSha256": "b5503cf5a0ba42ceb7a9d80d83c536c7f044071c53d537f934e2ac56921f40eb",
+  "Files": {
+    "Official/00000001.meta": {
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    "Official/00000001.sav": {
+      "bytes": 337743,
+      "sha256": "5bda2ee98904f2705621f40b5ebc5d480ef4fc59f8b4955fea38004ac8443d44"
+    },
+    "Official/00000002.meta": {
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    "Official/00000002.sav": {
+      "bytes": 337743,
+      "sha256": "5bda2ee98904f2705621f40b5ebc5d480ef4fc59f8b4955fea38004ac8443d44"
+    },
+    "MOD/00000001.meta": {
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    "MOD/00000001.sav": {
+      "bytes": 297865,
+      "sha256": "ee506410bc0046ac23a5e15624270810826ffca0e72b28f03961c0aa052f2cf8"
+    },
+    "MOD/00000002.meta": {
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    "MOD/00000002.sav": {
+      "bytes": 297865,
+      "sha256": "ee506410bc0046ac23a5e15624270810826ffca0e72b28f03961c0aa052f2cf8"
+    },
+    "MOD/00000001.scbl-loadouts": {
+      "bytes": 28706,
+      "sha256": "972e49fb68cfca8f5db4726ddcce0f53c95f681a5179bf142505d23a41f11487"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 2,
+  "clientVersion": "3.0.6",
+  "launcherVersion": "3.0.6",
+  "serverReleaseVersion": "3.0.16",
+  "serverComponents": {
+    "manager": "2.0.33",
+    "dedicated": "2.0.28",
+    "controlPlane": "2.0.93",
+    "updateServer": "2.0.91",
+    "assets": "2.0.90"
+  },
+  "routeGuardVersion": "2.0.5",
+  "hooksVersion": "2.0.148",
+  "easyTierVersion": "2.6.4",
+  "easyTierComponentVersion": "2.6.4",
+  "updaterVersion": "2.0.10",
+  "clientFilesVersion": "2.0.28",
+  "sharedApiVersion": "2.0.0",
+  "controlApiVersion": 1,
+  "dedicatedServer": {
+    "version": "2.0.28",
+    "repository": "caox233/SCBL",
+    "releaseTag": "scbl-public-stable-latest",
+    "branch": "main"
+  }
+}

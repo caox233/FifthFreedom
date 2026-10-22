@@ -1,0 +1,139 @@
+{
+  "schema": 1,
+  "scope": "historical authored source listings, not executable current tests",
+  "all_history_migrated": false,
+  "native_replay_inputs_complete": false,
+  "generated_game_bytes_included": false,
+  "files": [
+    {
+      "path": "multiplayer/vss-agent/chat/run.py.txt",
+      "bytes": 6088,
+      "sha256": "3e6752dd8425348aeb95be14e5482c1c22fbc27c1a665d720d5cd95e305aaa77",
+      "language": "py",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 4
+    },
+    {
+      "path": "multiplayer/vss-agent/chat/probe.cpp.txt",
+      "bytes": 15853,
+      "sha256": "3e15c81f5bc9cf4d798d28032709664956e59ca41acab514034c200f314e580a",
+      "language": "cpp",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 0
+    },
+    {
+      "path": "multiplayer/export-agent/check-source.py.txt",
+      "bytes": 3064,
+      "sha256": "62b74b49ff5d5f56c2a88b5f5c3880a790b4f36d07429986f7db60e5f3fda0fa",
+      "language": "py",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 2
+    },
+    {
+      "path": "multiplayer/export-agent/candidate/tests/CrashDiagnostics/DiagnosticByteDumpRegression.cs.txt",
+      "bytes": 4900,
+      "sha256": "70aebd468a721059d96576b70c4346c3fe5b830b7c9f3aa38f7097bff062b764",
+      "language": "cs",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 0
+    },
+    {
+      "path": "multiplayer/crash-agent/check-source.py.txt",
+      "bytes": 4150,
+      "sha256": "9f8341d79f31e36bc8f5710e823f8d64c0ee48ea2aa9966af0e057d4dbbf3a8d",
+      "language": "py",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 5
+    },
+    {
+      "path": "multiplayer/crash-agent/contract_tests.rs.txt",
+      "bytes": 4584,
+      "sha256": "a79e641ea13a6950af6feb84b573dc758354e981c728daf7cc8e30f1c60cc6c4",
+      "language": "rs",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 0
+    },
+    {
+      "path": "multiplayer/crash-agent/candidate/NativeExceptionContextRegression.cs.txt",
+      "bytes": 4856,
+      "sha256": "facdf0775a86695ccbca92da0e88f90d17a1e8855829660c550b4bba0857c0c7",
+      "language": "cs",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 0
+    },
+    {
+      "path": "entry/continuation1/entry-root/contract/check.py.txt",
+      "bytes": 3458,
+      "sha256": "214a62c623eb872830ec19cb60985a3228343da70796037b0d2f31c7ddd000af",
+      "language": "py",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 3
+    },
+    {
+      "path": "entry/continuation1/entry-root/contract/entry.cpp.txt",
+      "bytes": 13481,
+      "sha256": "e45dabbf4b4e811c75d27c70bf3ce4e5aaae88eafd1c891f014c321529dbbb5f",
+      "language": "cpp",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 1
+    },
+    {
+      "path": "entry/continuation1/entry-root/contract/fixture.template.rs.txt",
+      "bytes": 2181,
+      "sha256": "4d553cc0177c02a3c1be004486a07c1564e495e12b0cdf9c0c79d9f29ac06e99",
+      "language": "rs",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 0
+    },
+    {
+      "path": "emf/continuation4/check-source.py.txt",
+      "bytes": 12654,
+      "sha256": "f711809aea9844890840135c2054917ab9ed611cbc003118eaece6c6c1cd918c",
+      "language": "py",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 4
+    },
+    {
+      "path": "emf/continuation4/harness/source-probe.cpp.txt",
+      "bytes": 8646,
+      "sha256": "63e587f4e97b524a2afea5a04b8832f1d5e97790795ba09ba419cd795e236967",
+      "language": "cpp",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 0
+    },
+    {
+      "path": "emf/continuation4/harness/fixture-stubs.rs.txt",
+      "bytes": 2295,
+      "sha256": "022d29391ee092db14db3b2801eb3f91453b8844a8d11120dfafa67e2ab9c6b4",
+      "language": "rs",
+      "role": "historical-authored-source-listing",
+      "executable": false,
+      "contains_retail_machine_bytes": false,
+      "local_path_placeholders": 0
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+#[cfg(test)]
+mod fault_context_contract {
+    use super::*;
+    use std::sync::atomic::{AtomicU32,Ordering};
+    static RECOVERED:AtomicU32=AtomicU32::new(0);
+    // Test-process-only recovery: the production handler always returns SEARCH.
+    unsafe extern "system" fn recover(p:*mut Pointers)->i32 {
+        if p.is_null() || (*p).record.is_null() || (*p).context.is_null(){return 0;}
+        let r=&*(*p).record;let c=(*p).context as *mut u32;
+        if r.code==0xc0000005 && r.count>=2 && r.information[0]==8 && r.information[1]==1 && *c.add(46)==1 {
+            let sp=*c.add(49) as *const u32;
+            *c.add(46)=*sp;*c.add(49)=(*c.add(49)).wrapping_add(4);
+            RECOVERED.fetch_add(1,Ordering::SeqCst);return -1;
+        }
+        0
+    }
+    #[inline(never)] fn marker(){std::hint::black_box(123u32);}
+    fn record_line(path:&std::path::Path,sequence:u32)->String {
+        let text=std::fs::read_to_string(path).unwrap();
+        text.lines().find(|s|s.contains(&format!("\"Sequence\":{},",sequence))).unwrap().trim().to_owned()
+    }
+    unsafe fn synthetic(path:&std::path::Path,context:*mut c_void)->String {
+        let sequence=COUNT.load(Ordering::Acquire);
+        let mut r=Record{code:0xc0000005,flags:0,nested:std::ptr::null_mut(),address:1usize as _,count:2,information:[0;15]};r.information[0]=8;r.information[1]=1;
+        let mut p=Pointers{record:&mut r,context};assert_eq!(observe(&mut p),0);
+        record_line(path,sequence)
+    }
+    #[test]
+    fn fault_context_native_near_null_and_negative_controls(){unsafe {
+        let out=std::path::PathBuf::from(std::env::var_os("SCBL_FAULT_FIXTURE_OUT").expect("isolated output required"));std::fs::create_dir_all(&out).unwrap();
+        assert!(init(&out));let path=out.join(format!("exception-observations-{}.jsonl",GetCurrentProcessId()));
+        let h=AddVectoredExceptionHandler(0,recover);assert!(!h.is_null());
+        // Actual x86 CALL to a near-null execute target, not a forged stack trace.
+        let expected_return:u32;
+        std::arch::asm!("lea ecx, [2f]", "call eax", "2:",in("eax")1u32,lateout("ecx")expected_return,clobber_abi("C"));
+        assert_eq!(RECOVERED.load(Ordering::SeqCst),1);RemoveVectoredExceptionHandler(h);
+        let row=record_line(&path,0);
+        std::fs::write(out.join("real-near-null.json"),&row).unwrap();
+        let (t,s,r)=location(expected_return as usize as _);
+        let expected=format!("\"Source\":\"stack-top-candidate\",\"Location\":[{},{},{}]",t,s,r);
+        assert!(row.contains("\"FaultContext\":{\"Captured\":true"),"actual near-null fault is missing original context evidence");
+        assert!(row.contains(&expected),"actual CALL return slot was not retained as a code candidate");
+        assert!(row.contains("\"FramesKind\":\"observer-stack\""));
+        assert!(!row.contains("\"Esp\"")&&!row.contains("\"Ebp\"")&&!row.contains("\"Eip\"")&&!row.contains("\"Stack\""));
+        println!("REAL_NEAR_NULL: observer stack explicitly labelled; fault stack-top executable candidate captured; no raw registers or stack serialized");
+        for ptr in [std::ptr::null_mut(),1usize as *mut c_void] {
+            let row=synthetic(&path,ptr);assert!(row.contains("\"Captured\":false"));
+        }
+        let mut c=[0u32;51];
+        let row=synthetic(&path,c.as_mut_ptr() as _);assert!(row.contains("\"Captured\":false"));
+        c[0]=0x10001;c[46]=1;c[49]=1;c[45]=1;
+        let row=synthetic(&path,c.as_mut_ptr() as _);assert!(row.contains("\"ReturnCandidates\":[]"));
+        let mut stack=[0u32;8];c[49]=stack.as_mut_ptr() as u32;c[45]=0;stack[0]=1;
+        let row=synthetic(&path,c.as_mut_ptr() as _);assert!(row.contains("\"ReturnCandidates\":[]"));
+        // Data on the stack is not executable image code; do not export it.
+        stack[0]=stack.as_mut_ptr() as u32;
+        let row=synthetic(&path,c.as_mut_ptr() as _);assert!(row.contains("\"ReturnCandidates\":[]"));
+        c[45]=stack.as_mut_ptr() as u32;stack[0]=c[45];stack[1]=marker as *const () as u32;
+        let row=synthetic(&path,c.as_mut_ptr() as _);
+        assert_eq!(row.matches("frame-chain-candidate").count(),1,"cyclic EBP must stop after one candidate");
+        c[45]=stack.as_mut_ptr() as u32;c[49]=(stack.as_mut_ptr() as u32)+8;
+        let row=synthetic(&path,c.as_mut_ptr() as _);assert!(row.contains("\"ReturnCandidates\":[]"),"EBP below fault ESP must not be followed");
+        println!("NEGATIVE_CONTROLS: null/unreadable context, flags, invalid ESP/EBP, non-image values, cyclic/backward EBP rejected/bounded");
+        deinit();
+    }}
+}

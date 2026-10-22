@@ -1,0 +1,44 @@
+#![allow(dead_code, unused_variables, non_upper_case_globals)]
+use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
+use std::cell::Cell;
+extern "C" {
+ fn read_word(p:usize,o:usize,out:*mut u32)->u32;
+ fn native_material(root:usize,render:usize,node:usize,surface:usize)->usize;
+}
+fn word(p:usize,o:usize)->Option<u32>{let mut out=0;unsafe{(read_word(p,o,&mut out)!=0).then_some(out)}}
+fn raw(p:usize,o:usize)->u32{word(p,o).unwrap_or(0)}
+#[macro_export] macro_rules! info { ($($arg:tt)*) => {{}}; }
+mod tracing { pub(crate) use crate::info; }
+mod causal_probe {pub fn material_call(){}}
+mod vss_witness {pub fn material(_:usize,_:usize,_:usize,_:usize,_:usize){}}
+mod material_observer {
+ use super::*;
+ static VERIFIED:AtomicBool=AtomicBool::new(false);
+ pub fn enabled()->bool{true}
+ pub fn clear_verified(){VERIFIED.store(false,Ordering::Release);}
+ pub fn after_native(_:usize,_:usize,_:usize,_:usize,_:usize,_:usize){}
+ pub fn take_verified()->bool{VERIFIED.swap(false,Ordering::AcqRel)}
+ pub fn set_fixture(){VERIFIED.store(true,Ordering::Release);}
+ pub fn peek()->bool{VERIFIED.load(Ordering::Acquire)}
+}
+mod final_ps_probe {pub fn material_verified(_:bool){}}
+struct Original;
+impl Original {
+ unsafe fn call(&self,root:usize,render:usize,node:usize,surface:usize)->usize{
+  unsafe{native_material(root,render,node,surface)}
+ }
+}
+struct OriginalSlot;
+impl OriginalSlot {fn get(&self)->Option<&'static Original>{Some(&Original)}}
+static Material:OriginalSlot=OriginalSlot;
+#[derive(Clone,Copy,Default)] struct BrightnessScope {mode:u32,root:usize,render:usize,pass:usize}
+thread_local!{static BRIGHTNESS_SCOPE:Cell<BrightnessScope>=Cell::new(BrightnessScope::default());}
+static BRIGHTNESS_READY:AtomicBool=AtomicBool::new(false);
+static MERC_FLOOR_READY:AtomicBool=AtomicBool::new(false);
+static MERC_FLOOR_LOGS:AtomicU32=AtomicU32::new(0);
+static BRIGHTNESS_LOGS:[AtomicU32;16]=[const {AtomicU32::new(0)};16];
+fn native_comparison()->bool{false}
+fn apply_merc_floor(_:BrightnessScope,_:usize,_:usize,_:usize,_:usize,_:usize)->Option<([f32;3],[f32;3])>{None}
+fn apply_brightness(_:BrightnessScope,_:usize,_:usize,_:usize,_:usize,_:usize)->Option<([f32;3],[f32;3])>{None}
+fn take_brightness_log(_: &AtomicU32)->bool{false}
+fn brightness_log_bucket(_:u32,_:u32)->Option<usize>{None}

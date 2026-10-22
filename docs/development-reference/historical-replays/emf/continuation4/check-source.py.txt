@@ -1,0 +1,211 @@
+"""Read-only source-bound x86 native material admission regression.
+
+Same input for baseline/candidate/rollback. A source missing the new hook or
+policy still compiles; the actual supplied material function then admits the
+bad lens, native harness returns 3, this transaction interface returns 101.
+Only --out is written. Never starts, opens, or samples a game process.
+"""
+from pathlib import Path
+import argparse, hashlib, importlib.util, json, re, shutil, subprocess, sys
+
+sys.dont_write_bytecode = True
+HERE = Path(__file__).resolve().parent
+HARNESS = HERE / 'harness'
+RETAIL = Path(r"<LOCAL_PATH_01>")
+RETAIL_SHA = 'c6b9f330fac1412f19f32a6fd86edb4c66291a6902611e9433b9b0ea659eb4bc'
+RUST = Path(r'<LOCAL_PATH_02>')
+CL = Path(r'<LOCAL_PATH_03>')
+
+def digest(path):
+    h = hashlib.sha256()
+    with path.open('rb') as f:
+        for b in iter(lambda:f.read(1024*1024), b''): h.update(b)
+    return h.hexdigest()
+
+def write(path, value):
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False)+'\n', encoding='utf-8')
+
+def pins(source):
+    return {str(p.relative_to(source)).replace('\\','/'):digest(p)
+            for p in sorted(source.rglob('*')) if p.is_file()}
+
+def extract(text, pattern, optional=False):
+    """Extract an entire Rust item, skipping comments/quoted format strings.
+    No function body rewrite or call-order synthesis is performed.
+    """
+    match = re.search(pattern, text, re.M)
+    if not match:
+        if optional: return None
+        raise ValueError('missing required source item: '+pattern)
+    start=match.start(); opening=text.find('{', match.end())
+    if opening < 0: raise ValueError('no item body: '+pattern)
+    i=opening; depth=0; quote=False; block=0; line=False
+    while i<len(text):
+        ch=text[i]; pair=text[i:i+2]
+        if line:
+            if ch=='\n': line=False
+        elif block:
+            if pair=='/*': block+=1; i+=1
+            elif pair=='*/': block-=1; i+=1
+        elif quote:
+            if ch=='\\': i+=1
+            elif ch=='"': quote=False
+        elif pair=='//': line=True; i+=1
+        elif pair=='/*': block=1; i+=1
+        elif ch=='"': quote=True
+        elif ch=='{': depth+=1
+        elif ch=='}':
+            depth-=1
+            if depth==0: return text[start:i+1]
+        i+=1
+    raise ValueError('unterminated source item: '+pattern)
+
+def fn(text, name, optional=False):
+    return extract(text, r'^(?:pub(?:\([^\n]*?\))?\s+)?(?:unsafe\s+)?(?:extern\s+"[^"\n]+"\s+)?fn\s+'+re.escape(name)+r'\s*\(', optional)
+
+def declaration(text,name):
+    m=re.search(r'^static '+re.escape(name)+r'\s*:[^;]+;',text,re.M)
+    if not m: raise ValueError('missing source static '+name)
+    return m.group()
+
+def source_wrapper(source, out):
+    s=source/'src/native/client/hooks/gameplay/src'
+    texts={name:(s/name).read_text(encoding='utf-8-sig') for name in
+        ['vision_transparency.rs','scis_scope_actor.rs','mac11_catalog.rs','scis_preload.rs','vss_catalog.rs']}
+    pieces=[]
+    def item(file,name,optional=False):
+        result=fn(texts[file],name,optional)
+        if result is not None: pieces.append(dict(file=str(s/file),symbol=name,sha256=hashlib.sha256(result.encode()).hexdigest(),text=result))
+        return result
+    material=item('vision_transparency.rs','material')
+    actor=texts['scis_scope_actor.rs']
+    lease=extract(actor,r'^#\[derive\(Clone, Copy\)\]\nstruct Lease\s*')
+    actor_body='\n'.join([declaration(actor,'READY'),declaration(actor,'LEASE'),lease,
+        item('scis_scope_actor.rs','owns'),item('scis_scope_actor.rs','owns_material_node')])
+    for name in ['owns_vss_node','owns_vss_scope_node']:
+        part=item('scis_scope_actor.rs',name,True)
+        if part: actor_body+='\n'+part
+    wrappers={name:item(name,'owns_vss_scope_node',True) for name in ['mac11_catalog.rs','scis_preload.rs']}
+    for file,body in list(wrappers.items()):
+        if body is None:
+            # Baseline has neither hook nor wrapper. This inert unused bridge
+            # cannot create the requested green behavior: source material calls
+            # native unconditionally and will fail the lens admission assertion.
+            wrappers[file]='pub(crate) fn owns_vss_scope_node(_:usize)->bool{false}'
+    retail=re.search(r'^pub\(super\) const RETAIL_NAME[^;]+;',texts['vss_catalog.rs'],re.M).group()
+    policy_path=s/'vss_emf_glass_policy.rs'
+    policy_decl=''
+    if policy_path.exists():
+        shutil.copy2(policy_path,out/'source-policy.rs')
+        policy_decl='#[path="source-policy.rs"]mod vss_glass;'
+    elif 'vss_glass::' in material:
+        # A broken candidate with a hook but missing its implementation should
+        # compile to behavioral red rather than receiving an invented policy.
+        policy_decl='mod vss_glass{pub(super) fn skip(_:usize,_:usize,_:usize,_:usize,_:impl Fn(usize,usize)->Option<u32>,_:impl FnOnce(usize)->bool)->bool{false}}'
+    shutil.copy2(s/'vss_scope_policy.rs',out/'source-vss-scope-policy.rs')
+    vss_ready=(declaration(texts['vision_transparency.rs'],'VSS_GLASS_READY')
+               if 'static VSS_GLASS_READY:' in texts['vision_transparency.rs']
+               else 'static VSS_GLASS_READY:AtomicBool=AtomicBool::new(false);')
+    root=(HARNESS/'fixture-stubs.rs').read_text()
+    root+='\n'+policy_decl+'\n'+vss_ready+'\n'
+    root+='''
+mod mac11_catalog {
+ // The native name table is unavailable in this isolated process. Only the
+ // known fixture VSS id 124 maps to the exact source retail name; SC-IS is 123.
+ fn native_name_is(n:u32,name:&[u8])->bool{n==124&&name==b"Sniper_VSS"}
+ mod vss {'''+retail+'''}
+ '''+wrappers['mac11_catalog.rs']+'''
+ pub(crate) fn fixture_owner(pawn:usize,gen:u32,world:usize,actor:usize,agen:u32){scis_preload::fixture_owner(pawn,gen,world,actor,agen)}
+ pub(crate) fn fixture_admission_mode(mode:u32,call:impl FnOnce()->usize)->usize{scis_preload::fixture_admission_mode(mode,call)}
+ mod scis_preload {
+ '''+wrappers['scis_preload.rs']+'''
+ pub(super) fn fixture_owner(pawn:usize,gen:u32,world:usize,actor:usize,agen:u32){scope_actor::fixture_owner(pawn,gen,world,actor,agen)}
+ pub(super) fn fixture_admission_mode(mode:u32,call:impl FnOnce()->usize)->usize{scope_actor::fixture_admission_mode(mode,call)}
+ mod scope_actor {
+ use std::sync::{Mutex,atomic::{AtomicBool,Ordering}};
+ use crate::word;
+ mod vss_scope_policy { include!("source-vss-scope-policy-body.rs"); }
+ '''+actor_body+'''
+ pub(super) fn fixture_owner(pawn:usize,gen:u32,world:usize,actor:usize,agen:u32){
+  *LEASE.lock().unwrap()=Some(Lease{pawn,pawn_name:gen,world,actor,actor_name:agen});
+  READY.store(true,Ordering::Release);
+ }
+ pub(super) fn fixture_admission_mode(mode:u32,call:impl FnOnce()->usize)->usize{
+  if mode==2 {READY.store(false,Ordering::Release);}
+  if mode==3 {*LEASE.lock().unwrap()=None;}
+  if mode==4 {let _guard=LEASE.lock().unwrap();call()}else{call()}
+ }
+ }
+ }
+}
+'''
+    # include! inside inline module cannot accept an inner doc comment.
+    # Strip only source module documentation, never executable lines.
+    local=(s/'vss_scope_policy.rs').read_text()
+    (out/'source-vss-scope-policy-body.rs').write_text('\n'.join(line for line in local.splitlines() if not line.startswith('//!'))+'\n')
+    root+='\n'+material+'''
+#[no_mangle]pub extern "C" fn source_material(root:usize,render:usize,node:usize,surface:usize,pawn:usize,gen:u32,world:usize,actor:usize,agen:u32,enabled:u32)->usize{
+ mac11_catalog::fixture_owner(pawn,gen,world,actor,agen);
+ VSS_GLASS_READY.store(enabled!=0,Ordering::Release);
+ material_observer::set_fixture();
+ mac11_catalog::fixture_admission_mode(enabled,||unsafe{material(root,render,node,surface)})
+}
+#[no_mangle]pub extern "C" fn observer_fixture_is_clear()->u32{(!material_observer::peek())as u32}
+'''
+    (out/'source-export.rs').write_text(root,encoding='utf-8')
+    write(out/'SOURCE-BOUND-ITEMS.json',pieces)
+    return dict(material_file=str(s/'vision_transparency.rs'),policy_present=policy_path.exists(),
+        actual_material_entire_body=True,exact_owned_functions=[p['symbol'] for p in pieces if p['file'].endswith('scis_scope_actor.rs')],
+        forwarding_wrappers_from_source={k:fn(texts[k],'owns_vss_scope_node',True) is not None for k in wrappers},
+        boundary='Source function bodies and call ordering compiled verbatim. Native factory, draw entry/zero-return epilogue, selector/setup/cleanup are real retail bytes. Admitted draw body is a counter (no GPU). Native name id124, owner lease READY/LEASE publication, safe test-process word reader, Original slot and inactive brightness/observer integration are fixture leaves. No source init/detour installation/live resource timing is tested.')
+
+def main():
+    ap=argparse.ArgumentParser();ap.add_argument('--source',required=True,type=Path);ap.add_argument('--out',required=True,type=Path);a=ap.parse_args()
+    source=a.source.resolve();out=a.out.resolve()
+    if out==source or source in out.parents: raise SystemExit('refuse output inside source')
+    out.mkdir(parents=True,exist_ok=False)
+    before=pins(source);write(out/'SOURCE-PINS-BEFORE.json',before)
+    rows=[];status=102;behavior='HARNESS_ERROR';metadata={}
+    try:
+        if digest(RETAIL)!=RETAIL_SHA: raise ValueError('retail executable pin mismatch')
+        write(out/'INPUT-PINS.json',dict(retail=dict(path=str(RETAIL),sha256=RETAIL_SHA),harness={str(p):digest(p) for p in HARNESS.iterdir() if p.is_file()},source_before_count=len(before)))
+        for name in ['full-code.h','source-probe.cpp','NATIVE-PINS.json']:shutil.copy2(HARNESS/name,out/name)
+        metadata=source_wrapper(source,out)
+        spec=importlib.util.spec_from_file_location('supplied_build',source/'scripts/build.py');build=importlib.util.module_from_spec(spec);spec.loader.exec_module(build)
+        # The cumulative _repository archive intentionally excludes local build
+        # configuration. Supply only fixture toolchain locations in memory; do
+        # not create a build.local.json or any other file under --source.
+        build.CONFIG=dict(build.CONFIG)
+        build.CONFIG.setdefault('toolchain_root',r'<LOCAL_PATH_04>')
+        build.CONFIG['cargo_target_dir']=str(out/'unused-cargo-target')
+        _,env=build.native_env();env['LIB']=env['LIB'].replace('\\x64','\\x86')
+        commands=[('rustc',[RUST,'--edition=2021','--crate-type=staticlib','--target=i686-pc-windows-msvc','-C','panic=abort','-C','opt-level=2','source-export.rs','-o','source-export.lib']),
+                  ('cl',[CL,'/nologo','/std:c++17','/O2','/EHsc','source-probe.cpp','source-export.lib','userenv.lib','ws2_32.lib','bcrypt.lib','ntdll.lib','advapi32.lib','/link','/OUT:source-probe.exe']),
+                  ('native-replay',[out/'source-probe.exe'])]
+        for label,cmd in commands:
+            cmd=list(map(str,cmd))
+            try:
+                result=subprocess.run(cmd,cwd=out,env=env,capture_output=True,timeout=45)
+                code=result.returncode;stdout=result.stdout;stderr=result.stderr
+            except subprocess.TimeoutExpired as e:
+                code=124;stdout=e.stdout or b'';stderr=(e.stderr or b'')+b'\nHARNESS_PROCESS_TIMEOUT_45S\n'
+            (out/(label+'.stdout.txt')).write_bytes(stdout);(out/(label+'.stderr.txt')).write_bytes(stderr)
+            row=dict(label=label,command=cmd,cwd=str(out),exit=code,stdout=stdout.decode(errors='replace'),stderr=stderr.decode(errors='replace'))
+            rows.append(row);write(out/'COMMANDS.json',rows);print(json.dumps(row),flush=True)
+            if code:
+                if label=='native-replay' and code==3:status=101;behavior='SOURCE_ADMITS_ZERO_ALPHA_VSS_EMF_GLASS'
+                else:status=102;behavior='HARNESS_OR_COMPILATION_ERROR'
+                break
+        else:status=0;behavior='OWNED_VSS_EMF_GLASS_SKIPPED_PRE_NATIVE_NEGATIVES_PRESERVED'
+    except Exception as e:
+        rows.append(dict(label='harness-error',error=type(e).__name__,message=str(e)));write(out/'COMMANDS.json',rows)
+        print('HARNESS_ERROR',type(e).__name__,str(e),flush=True)
+    after=pins(source);write(out/'SOURCE-PINS-AFTER.json',after)
+    if before!=after:status=102;behavior='SOURCE_CHANGED_DURING_CHECK'
+    write(out/'RESULT.json',dict(exit=status,behavior=behavior,source=str(source),source_unchanged=before==after,
+        source_binding=metadata,commands=str(out/'COMMANDS.json'),native_exit=rows[-1].get('exit') if rows else None,
+        artifacts={p.name:digest(p) for p in out.iterdir() if p.is_file() and p.name!='RESULT.json'}))
+    print('SOURCE_CHECK exit='+str(status)+' behavior='+behavior+' source_unchanged='+str(before==after),flush=True)
+    return status
+
+if __name__=='__main__':sys.exit(main())

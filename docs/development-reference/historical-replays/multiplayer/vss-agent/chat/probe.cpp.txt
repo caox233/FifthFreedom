@@ -1,0 +1,213 @@
+#include <windows.h>
+#include <cstdio>
+#include <bcrypt.h>
+#include <cstring>
+#include <string>
+#include <vector>
+using U=unsigned;
+struct S {const wchar_t* data; int count,capacity;};
+struct Native {void*descriptor;void*service;void*send;U space;};
+extern "C" U relay_production(U,U,const Native*);
+extern "C" bool relay_init();
+extern "C" void relay_deinit_guard(U,U);
+extern "C" void relay_log_summary(U,U);
+struct Pin {U a,n;const unsigned char*data;};
+static U signature_calls=0,signature_fail_at=0,log_count=0;
+extern "C" void log_record(const char*p,U n){
+ std::string actual(p,n);char expected[256];
+ auto i=log_count++;sprintf_s(expected,"SCBL_MOD_CHAT_RELAY state=native_attempted channel=%s attempted=%u positive_native_results=%u remote_receipt=unconfirmed",i%2?"team":"global",i,i/2);
+ if(actual!=expected)ExitProcess(90);
+}
+static unsigned checks,failed,unexpected_count;
+static void ck(bool ok,const char* why){++checks;if(!ok){++failed;printf("FAIL %s\n",why);}}
+static void* mem(const unsigned char*b,U n){auto p=VirtualAlloc(0,4096,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);if(!p||n>4096)ExitProcess(80);memcpy(p,b,n);return p;}
+static void pc(unsigned char*p,U o,void*t){*(U*)(p+o+1)=(U)t-(U)(p+o+5);}
+static void bad(){++unexpected_count;printf("UNEXPECTED_NATIVE_DEPENDENCY\n");ExitProcess(89);}
+static U cookie=0x1234,namespace_pair[2]={0x11,0x22},defaults[3]={0,0,0};
+static U descriptor_pair[2]={0x44556677,0x88},descriptor_ready=1;
+static unsigned char *send_code,*ctor_code,*low_code,*dispatch_code,*receive_code,*descriptor_code,*register_code,*registered_code,*predicate_code,*policy_code;
+static U service[3],bridge[2],schema[40],transport[80],transport_vt[3];
+static U policy_object[180],policy_manager[90],policy_chain1[8],policy_chain2[8],other_descriptor[2]={0x33333333,0};
+static U registrations[6][15],registered_list[5],empty_list[5],registration_count=0;
+static U ev[100],cv[400],engine[1]={(U)ev},controller[1]={(U)cv},local_team=1,recipient_id=0;
+static U ui[12]={},routes[12]={},sends=0,native_gate_calls=0,original_ui_calls=0;
+static U expected_message,expected_handle=0x1234,expected_from=2;
+static U mutation=0,*current_net=0,*current_nodes=0;
+static bool force_negative=false,reenter=false;
+static Native bindings;
+static std::wstring visible;
+static U* __cdecl getservice(){return service;}
+static U* __cdecl getengine(){return engine;}
+static U* __fastcall getcontroller(void*,U){return controller;}
+static U __fastcall getteam(void*,U){return local_team;}
+static void __fastcall noop(void*,U){}
+static void __fastcall clear(void*,U,U){}
+static void __fastcall getname(void*p,U,S*out){*out=*(S*)((char*)p+0x10);out->capacity=0;}
+static void __fastcall gettext(void*p,U,S*out){*out=*(S*)((char*)p+0x2c);out->capacity=0;}
+static void __fastcall show(U manager,U,const S*,const S*text,U only,U same){
+ ck(manager==0x7777,"retail UI manager intact"); ck(recipient_id<12,"bounded fixture recipient");
+ ++ui[recipient_id];visible.assign(text->data,text->count?text->count-1:0);
+ ck(only==0||same!=0,"retail UI rejects enemy team receipt");
+}
+static void deliver(U id,void*message){
+ U net[40]={};net[0x88/4]=0x7777;recipient_id=id;local_team=id==4?2:1;
+ ((void(__thiscall*)(void*,void*))receive_code)(net,message);
+}
+// Native policy lookup/registration containers are fixture data, not changed gates.
+static U* __cdecl schema_descriptor(){return other_descriptor;}
+static U* __fastcall lookup(void*,U,U handle){ck(handle==expected_handle,"native policy handle");return policy_object;}
+static void* __fastcall result_init(void*p,U){*(int*)p=0;return p;}
+static void* __fastcall result_ctor(void*p,U,int v){*(int*)p=v;return p;}
+static void* __fastcall result_copy(void*p,U,const int*v){*(int*)p=*v;return p;}
+static U* __stdcall get_type(U*out){out[0]=0x9000;out[1]=0;return out;}
+static U* __stdcall get_bro(U*out){out[0]=0x1000;out[1]=0;return out;}
+static U* __stdcall get_bu(U*out){out[0]=0x3000;out[1]=0;return out;}
+static U* __stdcall get_uro(U*out){out[0]=0x4000;out[1]=0;return out;}
+static U* __stdcall get_ur(U*out){out[0]=0x5000;out[1]=0;return out;}
+static U* __stdcall get_uu(U*out){out[0]=0x6000;out[1]=0;return out;}
+static U* __cdecl known_type(U*out,U*,bool*known){*known=true;*out=1;return out;}
+static U* __cdecl register_master(U*out,U*object,U*descriptor,U*type,U*props,U enabled,U dest,U lo,U hi){
+ ck(*object==0x8888&&*type==0x9000&&enabled==1&&dest==~0u,"retail registration arguments");
+ ck(registration_count<3,"master registration bounded");
+ registrations[registration_count++][2]=*descriptor;*out=1;return out;
+}
+static U* __cdecl register_other(U*out,U*,U*,U*,U*,U,U,U,U){*out=1;return out;}
+static U* __fastcall gate(void*self,U,U*out,U handle,U mode,U*descriptor,void*message,U target,U source,U dest,U lo,U hi,U extra){
+ ++native_gate_calls;
+ ck(mode==8&&handle==expected_handle&&descriptor[0]==descriptor_pair[0],"retail dispatcher uses mode8 and original PR_BR");
+ ck((U)message==expected_message&&((U*)message)[1]==expected_from,"retail borrowed message identity and From preserved");
+ ck(lo==0x11&&hi==0x22&&dest==~0u&&source==0&&extra==0,"retail dispatcher context not match key");
+ ((U*(__thiscall*)(void*,U*,U,U,U*,void*,U,U,U,U,U,U))policy_code)(policy_manager,out,handle,mode,descriptor,message,target,source,dest,lo,hi,extra);
+ if(force_negative)*out=0xfff0bdce;
+ if((int)*out>0){ck(target!=1&&target!=2&&target<12,"no host or sender duplicate");++routes[target];deliver(target,message);}
+ return out;
+}
+__declspec(naked) static void invoke_dispatch(U*event){__asm{
+ push ebp
+ mov ebp,esp
+ push ebx
+ push esi
+ push edi
+ mov esi,[ebp+8]
+ xor edi,edi
+ mov eax,dispatch_code
+ add eax,06dh
+ call eax
+ pop edi
+ pop esi
+ pop ebx
+ mov esp,ebp
+ pop ebp
+ ret
+}}
+static U* __fastcall queue(void*self,U,U*out,U*event){
+ ++sends;
+ ck((U)self==(U)transport+0x30&&event[0]==0x2ce58c8,"native unicast event class");
+ ck(event[1]==0x9999&&((unsigned char*)event)[0x14]==1,"native schema and borrowed flag");
+ ck(event[6]==expected_handle&&event[10]==descriptor_pair[0]&&event[12]==expected_message,"native unicast event fields");
+ if(reenter){reenter=false;ck(relay_production((U)current_net,expected_message,&bindings)==0,"reentrant relay is blocked");}
+ // Execute retail dispatcher and gate, with network/socket delivery simulated.
+ invoke_dispatch(event);*out=force_negative?0xfff0bdce:1;
+ if(mutation==1)current_net[0x50/4]+=0x100;
+ if(mutation==2)current_net[0x14/4]=1;
+ if(mutation==3)namespace_pair[0]=0x99;
+ if(mutation==4)current_net[0x70/4]++;
+ if(mutation==5)current_nodes[3+1]=current_nodes[6+1];
+ return out;
+}
+static void* resolve(U a){switch(a){
+ case 0x206f300:return(void*)getservice;case 0x1fd8220:return ctor_code;case 0x2064760:return low_code;
+ case 0x20d73d0:case 0x104ecd0:case 0x42d7b0:return(void*)noop;case 0x42d850:return(void*)clear;
+ case 0x532210:return(void*)getengine;case 0x104ec10:return(void*)getname;case 0x104ec70:return(void*)gettext;case 0xee55a0:return(void*)show;
+ case 0x2040350:return(void*)gate;case 0x1f97850:return registered_code;case 0x1fdb1b0:return predicate_code;
+ case 0x20656a0:return(void*)schema_descriptor;case 0x203a5f0:return(void*)lookup;case 0x20d73a0:return(void*)result_init;case 0x20d73b0:return(void*)result_ctor;case 0x20d73c0:return(void*)result_copy;
+ case 0x1f924f0:return(void*)known_type;case 0x1f9dd20:return(void*)register_master;case 0x1f9ddd0:return(void*)register_other;
+ default:return(void*)bad;
+}}
+#include "native-code.h"
+extern "C" bool signature_check(U a,U n,const unsigned char*h,U z){
+ ++signature_calls;if(signature_fail_at==signature_calls)return false;
+ for(auto p:pinned)if(p.a==a&&p.n==n){
+  BCRYPT_ALG_HANDLE alg=0;unsigned char digest[32];char hex[65];
+  if(BCryptOpenAlgorithmProvider(&alg,BCRYPT_SHA256_ALGORITHM,0,0)<0)return false;
+  auto status=BCryptHash(alg,0,0,const_cast<PUCHAR>(p.data),n,digest,32);BCryptCloseAlgorithmProvider(alg,0);
+  if(status<0||z!=64)return false;for(U i=0;i<32;++i)sprintf_s(hex+i*2,3,"%02x",digest[i]);
+  return !memcmp(hex,h,64);
+ }
+ return false;
+}
+static void initialize(){
+ send_code=(unsigned char*)mem(send_bytes,sizeof(send_bytes));ctor_code=(unsigned char*)mem(ctor_bytes,sizeof(ctor_bytes));low_code=(unsigned char*)mem(low_bytes,sizeof(low_bytes));dispatch_code=(unsigned char*)mem(dispatch_bytes,sizeof(dispatch_bytes));
+ receive_code=(unsigned char*)mem(receive_bytes,sizeof(receive_bytes));descriptor_code=(unsigned char*)mem(descriptor_bytes,sizeof(descriptor_bytes));register_code=(unsigned char*)mem(register_bytes,sizeof(register_bytes));registered_code=(unsigned char*)mem(registered_bytes,sizeof(registered_bytes));predicate_code=(unsigned char*)mem(predicate_bytes,sizeof(predicate_bytes));policy_code=(unsigned char*)mem(policy_bytes,sizeof(policy_bytes));
+ relocate_all();dispatch_code[0xc]=0xc3;
+ // Stop at the unchanged policy's accepted serialization boundary. This never
+ // patches a rejection branch; actual serialization and sockets are NOT tested.
+ unsigned char accept[]={0x8b,0x45,8,0xc7,0,1,0,0,0,0x5f,0x5e,0x5b,0x8b,0xe5,0x5d,0xc2,0x2c,0};
+ memcpy(policy_code+(0x2040716-0x2040350),accept,sizeof accept);
+ service[1]=(U)bridge;service[2]=(U)transport;bridge[1]=(U)schema;schema[0x90/4]=0x9999;transport[0x30/4]=(U)transport_vt;transport_vt[2]=(U)queue;
+ ev[0x138/4]=(U)getcontroller;cv[0x430/4]=(U)getteam;
+ policy_manager[0x114/4]=(U)policy_chain1;policy_chain1[3]=(U)policy_chain2;policy_object[0x286/4]=0x00010000;
+ U vt[17]={},message[28]={(U)vt},object[2]={0x8888,0};
+ vt[0x14/4]=(U)get_bro;vt[0x18/4]=(U)descriptor_code;vt[0x1c/4]=(U)get_bu;vt[0x20/4]=(U)get_uro;vt[0x24/4]=(U)get_ur;vt[0x28/4]=(U)get_uu;vt[0x40/4]=(U)get_type;
+ ((void(__cdecl*)(void*,void*))register_code)(object,message);
+ registered_list[3]=registration_count;registered_list[4]=(U)registrations;
+ policy_object[(0x8c+0x50)/4]=(U)registered_list;policy_object[(0x8c+0x54)/4]=(U)empty_list;
+ ck(registration_count==3&&registrations[1][2]==descriptor_pair[0],"retail ChatString master registry includes PR_BR");
+ U fake[2]={0xdead,0};
+ ck(((bool(__thiscall*)(void*,U,U*))registered_code)(policy_object,1,descriptor_pair),"retail registered predicate accepts BR");
+ ck(!((bool(__thiscall*)(void*,U,U*))registered_code)(policy_object,1,fake),"retail registered predicate rejects unknown descriptor");
+ bindings={descriptor_code,(void*)getservice,send_code,(U)namespace_pair};
+ FlushInstructionCache(GetCurrentProcess(),0,0);
+}
+static void setup(U*net,U*manager,U*session,U nodes[5][3],U*peers){
+ memset(net,0,0x90);memset(manager,0,0x300);memset(session,0,0x600);
+ net[0]=0x2af70fc;net[0x18/4]=1;net[0x50/4]=(U)session;net[0x6c/4]=expected_handle;net[0x70/4]=0xabcd;net[0x74/4]=0xef01;net[0x88/4]=(U)manager;manager[0x2c0/4]=(U)net;
+ session[0x588/4]=(U)nodes;for(U i=0;i<5;++i){peers[i]=i+1;nodes[i][1]=i==4?(U)session+0x584:(U)nodes[i+1];nodes[i][2]=(U)&peers[i];}
+ current_net=net;current_nodes=(U*)nodes;namespace_pair[0]=0x11;mutation=0;force_negative=false;reenter=false;expected_from=2;
+ memset(ui,0,sizeof ui);memset(routes,0,sizeof routes);sends=0;native_gate_calls=0;original_ui_calls=0;
+}
+static void run_receipt(U*net,U*message){
+ relay_production((U)net,(U)message,&bindings);
+ ++original_ui_calls;deliver(1,message);
+}
+int main(){
+ initialize();U net[40],manager[0x300/4],session[0x600/4],nodes[5][3],peers[5],message[28]={};
+ const wchar_t*texts[]={L"fixture",L"\x65e0\x8bed\x8005 A1"};
+ for(auto text:texts)for(U only:{0u,1u}){
+ setup(net,manager,session,nodes,peers);message[0]=0x2b18344;message[1]=2;((unsigned char*)message)[0x54]=1;((unsigned char*)message)[0x64]=only;
+ *(S*)((char*)message+0x10)={L"fixture",8,0};*(S*)((char*)message+0x2c)={text,(int)wcslen(text)+1,0};expected_message=(U)message;U before[28];memcpy(before,message,sizeof before);
+ run_receipt(net,message);
+ ck(ui[1]==1&&ui[2]==0&&original_ui_calls==1,"host exactly once and no sender reecho");
+ ck(sends==3&&native_gate_calls==3,"master relays to other current peers");
+ ck(ui[3]==1&&ui[5]==1&&ui[4]==(only?0u:1u),"three-client native team filtering");
+ ck(visible==text&&memcmp(before,message,sizeof before)==0,"UTF16 and entire borrowed message unchanged");
+ }
+ for(U kind=0;kind<13;++kind){setup(net,manager,session,nodes,peers);message[0]=0x2b18344;message[1]=2;((unsigned char*)message)[0x54]=1;((unsigned char*)message)[0x64]=0;
+ switch(kind){case 0:net[0x14/4]=1;break;case 1:message[1]=1;break;case 2:message[1]=99;break;case 3:((unsigned char*)message)[0x54]=255;break;case 4:((unsigned char*)message)[0x54]=255;((unsigned char*)message)[0x64]=1;break;case 5:peers[3]=peers[2];break;case 6:nodes[4][1]=(U)nodes[0];break;case 7:net[0]=0;break;case 8:manager[0x2c0/4]=0;break;case 9:net[0x18/4]=~0u;break;case 10:net[0x6c/4]=~0u;break;case 11:message[0]=0;break;case 12:nodes[3][2]=0;break;}
+ auto result=relay_production((U)net,(U)message,&bindings);++original_ui_calls; // Reserved/control is handled by the unchanged outer receive, not shown as text.
+ ck(result==0&&sends==0,"negative context never relays");ck(original_ui_calls==1,"negative context leaves original receive available once");}
+ for(U kind=1;kind<=5;++kind){setup(net,manager,session,nodes,peers);message[0]=0x2b18344;message[1]=2;((unsigned char*)message)[0x54]=1;mutation=kind;run_receipt(net,message);ck(sends==1&&ui[3]==1&&ui[5]==0,"session role namespace match-key or peer-list mutation aborts remaining targets");}
+ // Remote-only lists are valid too; do not require owner in enumerated peers.
+ setup(net,manager,session,nodes,peers);session[0x588/4]=(U)nodes[1];run_receipt(net,message);
+ ck(sends==3&&ui[1]==1&&ui[2]==0,"remote-only peer list still excludes host and sender");
+ for(U i=0;i<5;++i){
+  setup(net,manager,session,nodes,peers);U*a[]={service+1,bridge+1,service+2,transport+0x30/4,transport_vt+2};U saved=*a[i];*a[i]=0;
+  run_receipt(net,message);ck(sends==0&&ui[1]==1,"unavailable native service chain fails closed without losing host UI");*a[i]=saved;
+ }
+ signature_calls=0;signature_fail_at=0;ck(relay_init()&&signature_calls==11,"production init validates all eleven pinned native contracts using real SHA256");
+ relay_deinit_guard((U)net,(U)message); // would call hardcoded retail addresses if READY guard failed.
+ signature_calls=0;signature_fail_at=4;ck(!relay_init()&&signature_calls==4,"production init fails closed on mismatched native contract");
+ relay_deinit_guard((U)net,(U)message);
+ for(U i=0;i<40;++i)relay_log_summary(i%2,i);
+ ck(log_count==16,"production summary emits exactly sixteen fixed safe records then stops");
+ setup(net,manager,session,nodes,peers);reenter=true;run_receipt(net,message);ck(sends==3&&original_ui_calls==1,"reentrant native send does not duplicate relay");
+ setup(net,manager,session,nodes,peers);force_negative=true;run_receipt(net,message);ck(sends==3&&ui[3]==0&&ui[1]==1,"native send failure has no retry and original UI survives");
+ // Actual retail policy rejects a replica object and missing registration.
+ U out=0;policy_object[0x44/4]=1;policy_object[0x180/4]=1;
+ ((U*(__thiscall*)(void*,U*,U,U,U*,void*,U,U,U,U,U,U))policy_code)(policy_manager,&out,expected_handle,8,descriptor_pair,message,3,~0u,~0u,0x11,0x22,0);
+ ck((int)out<0,"actual native mode8 rejects replica object");policy_object[0x44/4]=0;registered_list[3]=0;
+ ((U*(__thiscall*)(void*,U*,U,U,U*,void*,U,U,U,U,U,U))policy_code)(policy_manager,&out,expected_handle,8,descriptor_pair,message,3,~0u,~0u,0x11,0x22,0);
+ ck(out==0xfff0bdce,"actual native mode8 rejects unregistered descriptor");
+ printf("CHAT_RELAY_NATIVE checks=%u failures=%u unexpected_count=%u retail=constructor,unicast,dispatcher,registration_selection,registration_predicate,role_and_registration_gates,receive_team_filter production=relay_with transport=SIMULATED serialization_and_sockets=NOT_TESTED\n",checks,failed,unexpected_count);
+ return failed||unexpected_count?3:0;
+}

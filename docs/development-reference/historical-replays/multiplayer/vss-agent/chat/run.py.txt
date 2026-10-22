@@ -1,0 +1,66 @@
+from pathlib import Path
+import sys,json,hashlib,importlib.util,subprocess,shutil
+P=Path(__file__).resolve().parent
+SRC=Path(sys.argv[1]).resolve(); OUT=Path(sys.argv[2]).resolve();OUT.mkdir(parents=True,exist_ok=False)
+C=Path(r'<LOCAL_PATH_01>')
+sys.path.insert(0,r'<LOCAL_PATH_02>');import native as n
+assert hashlib.sha256(n.b).hexdigest()=='c6b9f330fac1412f19f32a6fd86edb4c66291a6902611e9433b9b0ea659eb4bc'
+blocks=[('send',0x1fdd530,0xd2),('ctor',0x1fd8220,0xcd),('low',0x2064760,0x21),('dispatch',0x2061839,0x9f),('receive',0x104ed60,284),('descriptor',0x10403d0,0x7b),('register',0x7a1290,0x244),('registered',0x1f97850,0xf),('predicate',0x1fdb1b0,0x42),('policy',0x2040350,0x8b9),('dispatch_contract',0x20618a6,0x32),('message_reg',0x105c100,0x128),('service_get',0x206f300,0x7a)]
+globals={0x3288bbc:'cookie',0x34c0084:'defaults[0]',0x34c0088:'defaults[1]',0x2cf5c50:'defaults[2]',0x33ada74:'descriptor_pair[0]',0x33ada78:'descriptor_pair[1]',0x33ada7c:'descriptor_ready',0x338d614:'namespace_pair[0]',0x338d618:'namespace_pair[1]'}
+h='';patches=[];pins=[]
+for name,a,z in blocks:
+ raw=n.raw(a,z);h+=f'static const unsigned char {name}_bytes[]={{'+','.join(hex(v) for v in raw)+'};\n'
+ pins.append(dict(name=name,address=hex(a),bytes=z,sha256=hashlib.sha256(raw).hexdigest()))
+ (OUT/f'native-{a:08x}.bin').write_bytes(raw)
+ for i in n.md.disasm(raw,a):
+  if name not in ['dispatch_contract','message_reg','service_get'] and i.mnemonic in ['call','jmp'] and i.bytes[0] in [0xe8,0xe9]:
+   t=int(i.op_str,16)
+   if not a<=t<a+z:patches.append(f'pc({name}_code,{i.address-a},resolve(0x{t:x}));')
+  if name not in ['dispatch_contract','message_reg','service_get'] and i.disp_size==4 and i.disp in globals:patches.append(f'*(U*)({name}_code+{i.address-a+i.disp_offset})=(U)&{globals[i.disp]};')
+h+='static const Pin pinned[]={' + ','.join('{'+hex(a)+','+str(z)+','+name+'_bytes}' for name,a,z in blocks) + '};\n'
+h+='static void relocate_all(){\n'+'\n'.join(patches)+'\n}\n'
+(OUT/'native-code.h').write_text(h);(OUT/'NATIVE-PINS.json').write_text(json.dumps(pins,indent=2));shutil.copy2(P/'probe.cpp',OUT/'probe.cpp')
+native_present=(SRC/'chat_relay.rs').exists()
+goggle=(SRC/'goggle_feedback_native.rs').read_text(encoding='utf-8')
+assert goggle.count('Receive.call(net, message); // ordinary global/team chat exactly once')==1
+if native_present:
+ assert goggle.count('chat_relay::relay(net, message);')==1
+else:assert 'chat_relay::' not in goggle
+wrapper=r'''
+#![allow(dead_code)]
+extern crate self as tracing;
+#[macro_export] macro_rules! info {($($t:tt)*) => {{let _=format_args!($($t)*);}}}
+extern "C" { fn signature_check(a:usize,n:usize,h:*const u8,z:usize)->bool; fn log_record(p:*const u8,n:usize); }
+
+mod equipment_native {
+ use std::ffi::c_void;
+ #[repr(C)] #[derive(Default)] struct M {base:usize,allocation:usize,ap:u32,size:usize,state:u32,protect:u32,kind:u32}
+ #[link(name="kernel32")] extern "system"{fn VirtualQuery(p:*const c_void,m:*mut M,n:usize)->usize;}
+ pub unsafe fn readable(p:usize,n:usize)->bool{if p<0x10000||n==0{return false} let Some(end)=p.checked_add(n) else{return false};let mut m=M::default();VirtualQuery(p as _,&mut m,std::mem::size_of::<M>())!=0&&m.state==0x1000&&m.protect&0x101==0&&m.protect&0xee!=0&&m.base.checked_add(m.size).is_some_and(|limit|end<=limit)}
+ pub unsafe fn word(p:usize,o:usize)->Option<u32>{let p=p.checked_add(o)?;readable(p,4).then(||(p as *const u32).read_unaligned())}
+ pub unsafe fn signature(a:usize,n:usize,h:&str)->bool{crate::signature_check(a,n,h.as_ptr(),h.len())}
+}
+#[repr(C)] pub struct N {descriptor:usize,service:usize,send:usize,namespace:usize}
+'''
+if native_present:
+ wrapper+=f'#[path = r"{SRC / "chat_relay.rs"}"] mod chat_relay;\n'
+ wrapper+='''#[no_mangle] pub unsafe extern "C" fn relay_init()->bool{chat_relay::init()}
+#[no_mangle] pub unsafe extern "C" fn relay_deinit_guard(net:usize,msg:usize){chat_relay::deinit();chat_relay::relay(net,msg);}
+#[no_mangle] pub unsafe extern "C" fn relay_log_summary(team:u32,n:u32){let out=chat_relay::Outcome{state:"native_attempted",attempted:n,positive_native_results:n/2};if let Some(line)=chat_relay::summary(out,team!=0){log_record(line.as_ptr(),line.len());}}
+#[no_mangle] pub unsafe extern "C" fn relay_production(net:usize,msg:usize,n:*const N)->u32{let n=&*n;let b=chat_relay::Native{descriptor:std::mem::transmute(n.descriptor),service:std::mem::transmute(n.service),send:std::mem::transmute(n.send),namespace:n.namespace};chat_relay::relay_with(net,msg,b).attempted}'''
+else:
+ wrapper+='''#[no_mangle] pub unsafe extern "C" fn relay_init()->bool{false}
+#[no_mangle] pub unsafe extern "C" fn relay_deinit_guard(_:usize,_:usize){}
+#[no_mangle] pub unsafe extern "C" fn relay_log_summary(_:u32,_:u32){}
+// Baseline production ordinary receive has no relay; native Receive runs in probe.cpp.\n#[no_mangle] pub unsafe extern "C" fn relay_production(_:usize,_:usize,_:*const N)->u32{0}'''
+(OUT/'relay-wrapper.rs').write_text(wrapper,encoding='utf-8')
+s=importlib.util.spec_from_file_location('build',C/'scripts/build.py');b=importlib.util.module_from_spec(s);s.loader.exec_module(b);_,env=b.native_env();env['LIB']=env['LIB'].replace('\\x64','\\x86')
+cl=r'<LOCAL_PATH_03>'
+rust=r'<LOCAL_PATH_04>'
+rows=[]
+for cmd in [[rust,'--edition=2021','--crate-type=staticlib','--target=i686-pc-windows-msvc','-C','panic=abort','-C','opt-level=2','relay-wrapper.rs','-o','relay.lib'],[cl,'/nologo','/std:c++17','/O2','/EHsc','probe.cpp','relay.lib','userenv.lib','ws2_32.lib','bcrypt.lib','ntdll.lib','advapi32.lib','/link','/OUT:probe.exe'],[OUT/'probe.exe']]:
+ p=subprocess.run(list(map(str,cmd)),cwd=OUT,env=env,capture_output=True)
+ r=dict(command=list(map(str,cmd)),exit=p.returncode,stdout=p.stdout.decode(errors='replace'),stderr=p.stderr.decode(errors='replace'));rows.append(r)
+ (OUT/'RESULT.json').write_text(json.dumps(dict(source=str(SRC),native_present=native_present,source_hashes={f.name:hashlib.sha256(f.read_bytes()).hexdigest()for f in SRC.glob('*.rs')},commands=rows),indent=2))
+ print(json.dumps(r),flush=True)
+ if p.returncode:sys.exit(p.returncode)

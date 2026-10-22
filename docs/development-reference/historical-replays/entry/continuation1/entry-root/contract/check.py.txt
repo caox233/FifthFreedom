@@ -1,0 +1,69 @@
+from pathlib import Path
+import argparse
+import hashlib
+import importlib.util
+import json
+import subprocess
+import sys
+
+H = Path(__file__).resolve().parent
+p = argparse.ArgumentParser()
+p.add_argument('--source', required=True)
+p.add_argument('--out', required=True)
+a = p.parse_args()
+source = Path(a.source).resolve()
+out = Path(a.out).resolve()
+out.mkdir(parents=True, exist_ok=False)
+
+def sha(f):
+    with Path(f).open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+pins = json.loads((H / 'PINS.json').read_text('utf-8'))
+assert all(sha(H / n) == h for n, h in pins.items())
+game = Path(r"<LOCAL_PATH_01>")
+assert sha(game) == 'c6b9f330fac1412f19f32a6fd86edb4c66291a6902611e9433b9b0ea659eb4bc'
+src = source / 'src/native/client/hooks/gameplay/src'
+local = out / 'source'
+local.mkdir()
+names = ['scis_scope_actor.rs', 'scis_scope_policy.rs', 'vss_scope_policy.rs', 'scis_presentation.rs']
+before = {n: sha(src / n) for n in names}
+for n in names:
+    (local / n).write_bytes((src / n).read_bytes())
+s = (local / 'scis_scope_actor.rs').read_text('utf-8')
+start, end = s.index('fn update_scope('), s.index('fn prepare(')
+exact = s[start:end]
+template = (H / 'fixture.template.rs').read_text('utf-8')
+assert template.count('UPDATE_SOURCE') == 1
+(out / 'fixture.rs').write_text(template.replace('SOURCE_ROOT', local.as_posix()).replace('UPDATE_SOURCE', exact), 'utf-8')
+canonical = Path(r'<LOCAL_PATH_02>')
+spec = importlib.util.spec_from_file_location('native_build', canonical / 'scripts/build.py')
+m = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(m)
+_, env = m.native_env()
+env['LIB'] = env['LIB'].replace('\\x64', '\\x86')
+commands = [
+    ('build', [r'<LOCAL_PATH_03>', '+nightly-2025-10-15', '--edition=2021', '--crate-type', 'cdylib', '--target', 'i686-pc-windows-msvc', 'fixture.rs', '-o', 'fixture.dll']),
+    ('native', [str(H / 'entry.exe'), str(game), str(out / 'fixture.dll')]),
+]
+rows = []
+for name, cmd in commands:
+    r = subprocess.run(cmd, cwd=out, env=env, capture_output=True, timeout=90)
+    stdout, stderr = out / (name + '.stdout.txt'), out / (name + '.stderr.txt')
+    stdout.write_bytes(r.stdout)
+    stderr.write_bytes(r.stderr)
+    rows.append(dict(name=name, command=cmd, exit=r.returncode, stdout=str(stdout), stderr=str(stderr)))
+    (out / 'COMMANDS.json').write_text(json.dumps(rows, indent=2), 'utf-8')
+    if r.returncode and name == 'build':
+        break
+unchanged = all(sha(src / n) == h for n, h in before.items())
+assert unchanged
+result = dict(exit=rows[-1]['exit'], source=str(source), source_pins=before, source_unchanged=True,
+              native_game_sha256=sha(game), harness_pins=pins,
+              scope='Local-owner VSS entry readiness, SCIS regression and non-local-owner exclusion; exact update_scope with production ownership policies',
+              boundary='Native DA6EF0/DA6B10/C94FC0/AA6120 and render-binding worker execute; resource getters, visibility, timing and render scheduler controlled. No GPU pixels or live symptom attribution.',
+              outside_owner_case='pc+60 local flag absent remains unmodified native behavior and can retain empty mesh; not counted as repaired',
+              game_started=False, live_acceptance=False)
+(out / 'RESULT.json').write_text(json.dumps(result, indent=2), 'utf-8')
+print(json.dumps({'exit': result['exit'], 'source_unchanged': True, 'report': str(out / 'RESULT.json')}))
+sys.exit(result['exit'])

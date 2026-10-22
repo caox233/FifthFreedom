@@ -1,0 +1,32 @@
+cargo-features = ["per-package-target"]
+
+[package]
+name = "scbl-gameplay"
+version = "0.1.0"
+edition = "2021"
+forced-target = "i686-pc-windows-msvc"
+
+[lib]
+name = "scbl_gameplay"
+crate-type = ["cdylib"]
+
+[dependencies]
+hooks-addresses = { path = "../hooks-addresses" }
+hooks-plugin-api = { path = "../plugin-api" }
+region = { workspace = true }
+sha2 = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["env-filter"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+retour = { version = "0.4.0-alpha.4", features = [
+  "thiscall-abi",
+  "static-detour",
+] }
+
+[target.'cfg(target_os = "windows")'.dependencies.windows]
+version = "0.54.0"
+features = [
+  "Win32_Foundation",
+  "Win32_System_LibraryLoader",
+]

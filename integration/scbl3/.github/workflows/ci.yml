@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scbl-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository-and-python:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reject generated or oversized tracked files
+        shell: python
+        run: |
+          import pathlib, subprocess, sys
+          files = subprocess.check_output(["git", "ls-files", "-z"]).split(b"\0")
+          forbidden = {"bin", "obj", "target", "temp", "validation", "TestResults", ".work", ".local"}
+          bad = []
+          for raw in filter(None, files):
+              path = pathlib.Path(raw.decode("utf-8"))
+              generated = any(
+                  part in forbidden and not (part == "bin" and index > 0 and path.parts[index - 1] == "src")
+                  for index, part in enumerate(path.parts)
+              )
+              if generated or path.suffix.lower() in {".trx", ".dmp", ".pfx"}:
+                  bad.append(str(path))
+              elif path.is_file() and path.stat().st_size > 25 * 1024 * 1024:
+                  bad.append(f"{path} (>25 MiB)")
+          if bad:
+              print("Forbidden tracked files:\n" + "\n".join(bad))
+              sys.exit(1)
+      - name: Compile Python sources
+        shell: python
+        run: |
+          import py_compile, subprocess
+          files = subprocess.check_output(["git", "ls-files", "*.py"], text=True).splitlines()
+          for path in files:
+              py_compile.compile(path, doraise=True)
+          print(f"compiled {len(files)} Python files")
+      - name: Manager unit tests
+        env:
+          PYTHONPATH: server/manager
+        run: python -m unittest discover -s server/manager/tests -v
+      - name: Cross-component contract checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n server/bootstrap/install.sh scripts/install-server.sh
+          for test in server/test_*.py; do
+            python "$test"
+          done
+
+  launcher-tests:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2025-10-15
+          targets: i686-pc-windows-msvc
+      - uses: arduino/setup-protoc@v3
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('client/**/*.csproj', 'client/**/*.props', 'client/**/*.targets') }}
+          restore-keys: nuget-${{ runner.os }}-
+      - name: Restore and test Windows client solution
+        shell: pwsh
+        run: |
+          dotnet restore client/ScblPublicLauncher/SplinterCellCNLauncher.sln --nologo
+          dotnet test client/ScblPublicLauncher/SplinterCellCNLauncher.sln -c Release --no-restore --nologo
+      - name: Test Hooks
+        shell: pwsh
+        run: scripts/build-rust-components.ps1 -HooksOnly
+      - name: Test native Windows server manager and transactions
+        shell: pwsh
+        run: |
+          dotnet run --project server/windows/SCBL.Server.Tests/SCBL.Server.Tests.csproj -c Release
+          dotnet build server/windows/SCBL.Server.Manager/SCBL.Server.Manager.csproj -c Release --nologo
+          dotnet build server/windows/SCBL.Server.Host/SCBL.Server.Host.csproj -c Release --nologo
+          dotnet build server/windows/SCBL.Server.Update/SCBL.Server.Update.csproj -c Release --nologo
+
+  server-and-router:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2025-10-15
+      - uses: arduino/setup-protoc@v3
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.2'
+          cache: true
+          cache-dependency-path: client/scbl-process-router/go.mod
+      - name: Test Dedicated and Quazal server protocol
+        run: cargo test --locked -p dedicated_server -p quazal -p sc_bl_protocols
+      - name: Test Route Guard
+        working-directory: client/scbl-process-router
+        run: |
+          test -z "$(gofmt -l .)"
+          go test ./...

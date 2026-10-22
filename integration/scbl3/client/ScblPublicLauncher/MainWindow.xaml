@@ -1,0 +1,1974 @@
+<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" x:Class="SplinterCellCNLauncher.MainWindow"
+        Title="SCBL CONNECT"
+        Icon="/logo.ico"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="ClearType"
+        TextOptions.TextHintingMode="Auto"
+        FontFamily="Microsoft YaHei"
+        Height="680"
+        Width="1120"
+        MinHeight="0"
+        MinWidth="0"
+        MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}"
+        MaxWidth="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Width}"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
+        Loaded="TestChannelAwareWindow_Loaded"
+        Closing="Window_Closing"
+        Background="#050607">
+    <Window.Resources>
+        <SolidColorBrush x:Key="WindowBrush" Color="#050607"/>
+        <SolidColorBrush x:Key="InputBrush" Color="#12000000"/>
+        <SolidColorBrush x:Key="InputBorderBrush" Color="#88FFFFFF"/>
+        <SolidColorBrush x:Key="InputFocusBrush" Color="#DDE3E6"/>
+        <SolidColorBrush x:Key="TextMainBrush" Color="#CDD3D6"/>
+        <SolidColorBrush x:Key="TextSubBrush" Color="#A5ADB2"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#DDE3E6"/>
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="#EFF3F5"/>
+        <SolidColorBrush x:Key="ReadyAccentBrush" Color="#8FD2A0"/>
+        <SolidColorBrush x:Key="DangerBrush" Color="#E54858"/>
+
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource TextMainBrush}"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+        </Style>
+
+        <Style x:Key="CaptionText" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource TextSubBrush}"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style x:Key="FieldLabel" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource TextSubBrush}"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="2,0,0,7"/>
+        </Style>
+
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMainBrush}"/>
+            <Setter Property="Background" Value="{StaticResource InputBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="SelectionBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="11">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource InputFocusBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="#0B1722"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.52"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type PasswordBox}">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMainBrush}"/>
+            <Setter Property="Background" Value="{StaticResource InputBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="SelectionBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type PasswordBox}">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="11">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource InputFocusBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="#0B1722"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.52"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="{x:Type Button}">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Width" Value="230"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMainBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
+            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+            <Setter Property="TextOptions.TextHintingMode" Value="Auto"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid x:Name="buttonRoot" Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter VerticalAlignment="Center"
+                                              HorizontalAlignment="Left"
+                                              RecognizesAccessKey="False"
+                                              SnapsToDevicePixels="True"/>
+                            <TextBlock x:Name="launchArrow"
+                                       Grid.Column="1"
+                                       Text="→"
+                                        FontSize="29"
+                                       FontWeight="Normal"
+                                        Margin="18,0,0,1"
+                                       VerticalAlignment="Center"/>
+                            <Border x:Name="underline"
+                                    Grid.ColumnSpan="2"
+                                    Height="1"
+                                    Background="#8BA5AEB2"
+                                    VerticalAlignment="Bottom"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="underline" Property="Height" Value="2"/>
+                                <Setter TargetName="underline" Property="Background" Value="{StaticResource ReadyAccentBrush}"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="underline" Property="Height" Value="2"/>
+                                <Setter TargetName="underline" Property="Background" Value="{StaticResource ReadyAccentBrush}"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="buttonRoot" Property="Opacity" Value="0.68"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="buttonRoot" Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="Progress">
+                                <Setter TargetName="launchArrow" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="Restart">
+                                <Setter TargetName="launchArrow" Property="Text" Value="↻"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="EndGame">
+                                <Setter TargetName="launchArrow" Property="Text" Value="×"/>
+                                <Setter TargetName="underline" Property="Background" Value="#786F7478"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <Style x:Key="DangerButton" TargetType="{x:Type Button}" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Foreground" Value="#B7BEC2"/>
+        </Style>
+
+        <Style x:Key="DialogPrimaryButton" TargetType="{x:Type Button}">
+            <Setter Property="MinWidth" Value="72"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Foreground" Value="#070809"/>
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="0">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource AccentHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#CFCFCF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.42"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DialogSecondaryButton" TargetType="{x:Type Button}">
+            <Setter Property="MinWidth" Value="72"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Foreground" Value="#EDEDED"/>
+            <Setter Property="Background" Value="#08000000"/>
+            <Setter Property="BorderBrush" Value="#70FFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="0">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#28FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#16FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.42"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LauncherDialogScrollBarThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="MinHeight" Value="28"/>
+            <Setter Property="MinWidth" Value="6"/>
+            <Setter Property="Background" Value="#66727A80"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="ThumbVisual"
+                                Width="6"
+                                Margin="1,0"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ThumbVisual" Property="Background" Value="#9A8B989F"/>
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                                <Setter TargetName="ThumbVisual" Property="Background" Value="#C4AAB4B9"/>
+                                <Setter TargetName="ThumbVisual" Property="BorderBrush" Value="#D8D7E1E5"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ThumbVisual" Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LauncherDialogScrollBar" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Width" Value="10"/>
+            <Setter Property="MinWidth" Value="10"/>
+            <Setter Property="Margin" Value="6,0,0,0"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Opacity" Value="0.76"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="ScrollBarRoot" Background="Transparent">
+                            <Border x:Name="TrackVisual"
+                                    Margin="1,0"
+                                    Background="#18000000"
+                                    BorderBrush="#284D5960"
+                                    BorderThickness="1"
+                                    CornerRadius="4"/>
+                            <Track x:Name="PART_Track"
+                                   Orientation="Vertical"
+                                   IsDirectionReversed="True">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                                  Focusable="False"
+                                                  IsTabStop="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                                <Border Background="Transparent"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource LauncherDialogScrollBarThumb}"/>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                                  Focusable="False"
+                                                  IsTabStop="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                                <Border Background="Transparent"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Orientation" Value="Horizontal">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="1"/>
+                                <Setter TargetName="TrackVisual" Property="BorderBrush" Value="#50687880"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=IsKeyboardFocusWithin}"
+                                         Value="True">
+                                <Setter Property="Opacity" Value="1"/>
+                                <Setter TargetName="TrackVisual" Property="BorderBrush" Value="#8AAAC8D8"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LauncherDialogScrollViewer" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="PanningMode" Value="VerticalOnly"/>
+            <Setter Property="Focusable" Value="True"/>
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue"/>
+            <Setter Property="IsDeferredScrollingEnabled" Value="False"/>
+            <Setter Property="FocusVisualStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type Control}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Control}">
+                                    <Border Margin="-2"
+                                            BorderBrush="#8AAAC8D8"
+                                            BorderThickness="1"
+                                            CornerRadius="1"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <Style x:Key="WindowChromeButton" TargetType="{x:Type Button}">
+            <Setter Property="Width" Value="42"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Foreground" Value="#E8E8E8"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="0">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#20FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#12FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="WindowChromeCloseButton" TargetType="{x:Type Button}" BasedOn="{StaticResource WindowChromeButton}">
+            <Setter Property="Foreground" Value="#FFDDE1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="0">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource DangerBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#C73C4B"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SettingsMenuItemStyle" TargetType="{x:Type MenuItem}">
+            <Setter Property="Foreground" Value="{StaticResource TextMainBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                        <Border x:Name="menuBorder"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="0"
+                                Padding="13,9"
+                                Margin="4,2">
+                            <ContentPresenter ContentSource="Header"
+                                              RecognizesAccessKey="False"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="menuBorder" Property="Background" Value="#26FFFFFF"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SettingsContextMenuStyle" TargetType="{x:Type ContextMenu}">
+            <Setter Property="MinWidth" Value="270"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContextMenu}">
+                        <Border Background="#F20A0C0F"
+                                BorderBrush="#55FFFFFF"
+                                BorderThickness="1"
+                                CornerRadius="0"
+                                Padding="0,5"
+                                SnapsToDevicePixels="True">
+                            <Border.Effect>
+                                <DropShadowEffect Color="#000000"
+                                                  BlurRadius="18"
+                                                  ShadowDepth="5"
+                                                  Opacity="0.48"/>
+                            </Border.Effect>
+                            <StackPanel IsItemsHost="True"
+                                        KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModeListBox" TargetType="{x:Type ListBox}">
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="Width" Value="112"/>
+            <!-- Keep a similar amount of line extending beyond both the
+                 Latin and Chinese labels; text width must not drive layout. -->
+            <Setter Property="Tag" Value="88"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="Cycle"/>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Foreground" Value="#788289"/>
+                        <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+                        <Setter Property="FontSize" Value="14"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="MinHeight" Value="28"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <Grid x:Name="itemRoot" Background="Transparent">
+                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="Center"/>
+                                        <Border x:Name="itemUnderline"
+                                                Height="1"
+                                                Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBox}}, Path=Tag}"
+                                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                VerticalAlignment="Bottom"
+                                                Background="Transparent"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="#C4CCD0"/>
+                                        </Trigger>
+                                        <Trigger Property="IsKeyboardFocused" Value="True">
+                                            <Setter TargetName="itemUnderline" Property="Background" Value="{StaticResource ReadyAccentBrush}"/>
+                                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="itemUnderline" Property="Background" Value="{StaticResource ReadyAccentBrush}"/>
+                                            <Setter Property="Foreground" Value="#E2E9E4"/>
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="itemRoot" Property="Opacity" Value="0.45"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBox}">
+                        <Border Background="Transparent" Padding="0">
+                            <ItemsPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="NetworkModeListBox"
+               TargetType="{x:Type ListBox}"
+               BasedOn="{StaticResource ModeListBox}"/>
+
+        <Style x:Key="GameplayModeListBox"
+               TargetType="{x:Type ListBox}"
+               BasedOn="{StaticResource ModeListBox}">
+            <Setter Property="Width" Value="112"/>
+            <Setter Property="Tag" Value="88"/>
+        </Style>
+
+        <Style x:Key="CinematicTextBox" TargetType="{x:Type TextBox}">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMainBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#58FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="1,0,1,4"/>
+            <Setter Property="CaretBrush" Value="#FFFFFF"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="SelectionBrush" Value="#66FFFFFF"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="fieldBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="fieldBorder" Property="BorderBrush" Value="#FFFFFF"/>
+                                <Setter TargetName="fieldBorder" Property="BorderThickness" Value="0,0,0,2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="fieldBorder" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CinematicPasswordBox" TargetType="{x:Type PasswordBox}">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMainBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#58FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="1,0,1,4"/>
+            <Setter Property="CaretBrush" Value="#FFFFFF"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="SelectionBrush" Value="#66FFFFFF"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type PasswordBox}">
+                        <Border x:Name="fieldBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="fieldBorder" Property="BorderBrush" Value="#FFFFFF"/>
+                                <Setter TargetName="fieldBorder" Property="BorderThickness" Value="0,0,0,2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="fieldBorder" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CinematicLinkButton" TargetType="{x:Type Button}">
+            <Setter Property="Foreground" Value="#D4D4D4"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="linkRoot" Background="Transparent" Padding="2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource ReadyAccentBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="linkRoot" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CinematicCheckBox" TargetType="{x:Type CheckBox}">
+            <Setter Property="Foreground" Value="#BFC0C1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="box" Width="17" Height="17" BorderBrush="#8AFFFFFF" BorderThickness="1" Background="#12000000" Margin="0,0,8,0">
+                                <TextBlock x:Name="mark" Text="✓" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="mark" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="box" Property="BorderBrush" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="box" Property="Background" Value="#20FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="box" Property="BorderBrush" Value="{StaticResource ReadyAccentBrush}"/>
+                                <Setter TargetName="box" Property="Background" Value="#20FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModFovSliderDecreaseButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Border Height="4"
+                                Background="{StaticResource ReadyAccentBrush}"
+                                CornerRadius="2"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModFovSliderIncreaseButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Border Height="4"
+                                Background="#3AFFFFFF"
+                                CornerRadius="2"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModFovSliderThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Ellipse x:Name="ThumbCircle"
+                                 Fill="#E7ECEE"
+                                 Stroke="#FF576169"
+                                 StrokeThickness="2"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ThumbCircle" Property="Fill" Value="#FFFFFF"/>
+                                <Setter TargetName="ThumbCircle" Property="Stroke" Value="{StaticResource ReadyAccentBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                                <Setter TargetName="ThumbCircle" Property="Fill" Value="{StaticResource ReadyAccentBrush}"/>
+                                <Setter TargetName="ThumbCircle" Property="Stroke" Value="#FFFFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ThumbCircle" Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModFovSlider" TargetType="{x:Type Slider}">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Slider}">
+                        <Grid Margin="8,0">
+                            <Track x:Name="PART_Track" VerticalAlignment="Center">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                                  Style="{StaticResource ModFovSliderDecreaseButton}"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource ModFovSliderThumb}"/>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                                  Style="{StaticResource ModFovSliderIncreaseButton}"/>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="PART_Track" Property="Opacity" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="PART_Track" Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BottomStatusButton" TargetType="{x:Type Button}" BasedOn="{StaticResource CinematicLinkButton}">
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Foreground" Value="#B8C1C6"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="8,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="statusButtonRoot"
+                                Background="Transparent"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#DEE4E7"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="statusButtonRoot" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="statusButtonRoot" Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="backgroundImage"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="0" To="1" Duration="0:0:0.8"/>
+                    <DoubleAnimation Storyboard.TargetName="heroPanel"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="0" To="1" BeginTime="0:0:0.12" Duration="0:0:0.55"/>
+                    <DoubleAnimation Storyboard.TargetName="heroRevealTransform"
+                                     Storyboard.TargetProperty="Y"
+                                     From="16" To="0" BeginTime="0:0:0.12" Duration="0:0:0.55">
+                        <DoubleAnimation.EasingFunction>
+                            <CubicEase EasingMode="EaseOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation Storyboard.TargetName="authPanel"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="0" To="1" BeginTime="0:0:0.2" Duration="0:0:0.5"/>
+                    <DoubleAnimation Storyboard.TargetName="authRevealTransform"
+                                     Storyboard.TargetProperty="X"
+                                     From="24" To="0" BeginTime="0:0:0.2" Duration="0:0:0.5">
+                        <DoubleAnimation.EasingFunction>
+                            <CubicEase EasingMode="EaseOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+
+    <Viewbox Stretch="Uniform"
+             StretchDirection="DownOnly"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch">
+    <Grid x:Name="rootGrid"
+          Width="1120"
+          Height="680"
+          Background="{StaticResource WindowBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="68"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="70"/>
+        </Grid.RowDefinitions>
+
+        <Image x:Name="backgroundImage"
+               Grid.RowSpan="3"
+               Opacity="0"
+               Source="Assets/scbl-launcher-background-final.png"
+               Stretch="UniformToFill"
+               RenderOptions.BitmapScalingMode="HighQuality"/>
+        <!-- The clean bitmap stays pattern-free. Rain is a separate restrained
+             vector layer so its visibility can be tuned without regenerating art. -->
+        <Viewbox Grid.RowSpan="3"
+                 Stretch="UniformToFill"
+                 IsHitTestVisible="False"
+                 Opacity="0.11">
+            <Canvas Width="1200" Height="750" ClipToBounds="True">
+                <Path Stroke="#B8D3D9DD"
+                      StrokeThickness="0.8"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Data="M54,32 L44,58 M137,6 L126,38 M219,78 L210,104 M305,20 L292,57 M392,106 L382,137 M471,41 L458,79 M568,8 L556,43 M642,89 L631,122 M727,26 L714,64 M809,119 L800,145 M894,52 L881,90 M981,12 L969,47 M1070,83 L1059,116 M1161,33 L1149,68 M92,171 L80,205 M181,132 L170,165 M267,214 L256,246 M351,153 L339,190 M443,236 L434,263 M529,177 L516,215 M613,257 L602,290 M704,188 L691,226 M792,276 L782,305 M876,201 L864,238 M965,297 L954,329 M1053,221 L1040,260 M1141,282 L1131,312 M38,354 L27,386 M128,301 L115,339 M222,392 L212,420 M311,329 L299,366 M401,418 L391,449 M487,351 L475,389 M579,449 L568,482 M665,375 L652,414 M752,467 L742,497 M842,397 L830,435 M933,482 L922,516 M1021,411 L1008,451 M1114,503 L1104,533 M74,529 L62,565 M164,473 L153,507 M255,568 L244,600 M346,501 L333,540 M433,597 L423,626 M521,535 L509,573 M612,626 L601,659 M699,555 L686,594 M789,651 L779,680 M878,581 L866,620 M971,672 L960,706 M1059,603 L1046,643 M1150,690 L1139,723"/>
+                <Path Stroke="#70DCE7EA"
+                      StrokeThickness="0.55"
+                      Data="M102,54 L96,72 M257,12 L249,35 M425,68 L418,89 M603,35 L595,59 M775,72 L768,93 M943,38 L935,62 M1112,61 L1104,85 M52,242 L44,266 M207,188 L199,212 M374,267 L367,288 M548,211 L540,235 M721,249 L713,273 M888,181 L880,205 M1062,258 L1055,279 M1168,203 L1160,227 M111,420 L103,444 M278,353 L270,377 M454,447 L447,468 M631,392 L623,416 M806,438 L799,459 M982,368 L974,392 M1149,454 L1142,475 M31,621 L23,645 M196,551 L188,575 M371,646 L364,667 M546,584 L538,608 M721,684 L714,705 M895,613 L887,637 M1071,701 L1064,722"/>
+            </Canvas>
+        </Viewbox>
+        <Border Grid.RowSpan="3" Background="#18000000"/>
+        <Border Grid.RowSpan="3">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                    <GradientStop Color="#52000000" Offset="0"/>
+                    <GradientStop Color="#08000000" Offset="0.38"/>
+                    <GradientStop Color="#A8000000" Offset="0.66"/>
+                    <GradientStop Color="#F4000000" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+        <Border Grid.RowSpan="3">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                    <GradientStop Color="#08000000" Offset="0"/>
+                    <GradientStop Color="#00000000" Offset="0.48"/>
+                    <GradientStop Color="#B8000000" Offset="0.86"/>
+                    <GradientStop Color="#F0000000" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+
+        <Border x:Name="titleBarDragSurface"
+                Grid.Row="0"
+                Panel.ZIndex="100"
+                Background="#06000000"
+                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Grid Margin="34,0,0,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="txtTopBadge" Text="" Visibility="Collapsed"/>
+                    <TextBlock x:Name="txtAppTitle" VerticalAlignment="Center" Foreground="#D9DFE2" FontSize="17">
+                        <Run Text="SCBL" FontWeight="Bold"/><Run Text=" CONNECT" FontWeight="Light"/>
+                    </TextBlock>
+                    <TextBlock x:Name="txtTestChannelBadge"
+                               Text="（TEST）"
+                               Visibility="Collapsed"
+                               VerticalAlignment="Center"
+                               Foreground="#D9DFE2"
+                               FontFamily="Microsoft YaHei"
+                               FontSize="17"
+                               FontWeight="Light"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Viewbox Width="18" Height="18" Margin="0,0,11,0" VerticalAlignment="Center">
+                        <Viewbox.RenderTransform>
+                            <TranslateTransform Y="2"/>
+                        </Viewbox.RenderTransform>
+                        <Canvas Width="24" Height="24">
+                            <Path Stroke="#ECECEC" StrokeThickness="1.7" Data="M3,9 L7,9 L14,5 L14,19 L7,15 L3,15 Z M7,9 L7,15 M17,8 C19,10 19,14 17,16"/>
+                        </Canvas>
+                    </Viewbox>
+                    <Border x:Name="bdAnnouncementClip" Width="420" Height="24" ClipToBounds="True" VerticalAlignment="Center"
+                            MouseEnter="AnnouncementClip_MouseEnter" MouseLeave="AnnouncementClip_MouseLeave"
+                            SizeChanged="AnnouncementClip_SizeChanged">
+                        <Canvas x:Name="announcementCanvas" Height="24">
+                            <TextBlock x:Name="txtAppSubtitle" Text="公告：周末双倍经验活动进行中  ›"
+                                       Height="24" LineHeight="24" LineStackingStrategy="BlockLineHeight"
+                                       FontSize="13" Foreground="#C7CDD1" TextWrapping="NoWrap" Canvas.Top="0">
+                                <TextBlock.RenderTransform>
+                                    <TranslateTransform x:Name="announcementTransform" X="0"/>
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                        </Canvas>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <StackPanel x:Name="spTitleButtons"
+                    Grid.Row="0"
+                    Panel.ZIndex="110"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,17,24,0">
+            <Button x:Name="btnSettings"
+                    Style="{StaticResource WindowChromeButton}"
+                    Click="SettingsButton_Click"
+                    ToolTip="设置"
+                    AutomationProperties.Name="设置"
+                    Margin="0,0,8,0">
+                <Button.ContextMenu>
+                    <ContextMenu x:Name="settingsMenu"
+                                 Placement="Bottom"
+                                 HorizontalOffset="-230"
+                                 Style="{StaticResource SettingsContextMenuStyle}"
+                                 Opened="SettingsMenu_Opened">
+                        <MenuItem x:Name="miGuide"
+                                  Header="❓ 使用指引"
+                                  Style="{StaticResource SettingsMenuItemStyle}"
+                                  Click="GuideButton_Click"/>
+                        <MenuItem x:Name="miLanguageToggle"
+                                  Header="🌐 中文 / English"
+                                  Style="{StaticResource SettingsMenuItemStyle}"
+                                  Click="LanguageToggleButton_Click"/>
+                        <MenuItem x:Name="miMusicToggle"
+                                  Header="🔊 声音：开启"
+                                  Style="{StaticResource SettingsMenuItemStyle}"
+                                  Click="MusicToggleButton_Click"/>
+                        <Separator Margin="9,4" Background="#35FFFFFF"/>
+                        <MenuItem x:Name="miServerSettings"
+                                  Header="🖧 服务器设置"
+                                  Style="{StaticResource SettingsMenuItemStyle}"
+                                  Click="ServerSettingsMenuItem_Click"/>
+                        <MenuItem x:Name="miTestChannel"
+                                  Header="🧪 测试通道"
+                                  Style="{StaticResource SettingsMenuItemStyle}"
+                                  AutomationProperties.HelpText="切换客户端组件更新通道"
+                                  Click="TestChannelMenuItem_Click"/>
+                        <Separator Margin="9,4" Background="#35FFFFFF"/>
+                        <MenuItem x:Name="miOverwriteSaves"
+                                  Header="💾 覆盖全解锁存档"
+                                  Style="{StaticResource SettingsMenuItemStyle}"
+                                  Click="OverwriteSavesMenuItem_Click"/>
+                        <MenuItem x:Name="miRepairNetwork"
+                                  Header="🛠 修复网络"
+                                  Style="{StaticResource SettingsMenuItemStyle}"
+                                  Click="RepairNetworkMenuItem_Click"/>
+                        <MenuItem x:Name="miExportDiagnostics"
+                                  Header="📦 导出诊断包"
+                                  Style="{StaticResource SettingsMenuItemStyle}"
+                                  Click="ExportDiagnosticsMenuItem_Click"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+                <Viewbox Width="21" Height="21" Stretch="Uniform">
+                    <Canvas Width="24" Height="24">
+                        <Path Fill="#ECECEC"
+                              Data="M19.43,12.98 C19.47,12.66 19.5,12.34 19.5,12 C19.5,11.66 19.47,11.33 19.42,11 L21.54,9.35 C21.73,9.2 21.78,8.93 21.66,8.71 L19.66,5.25 C19.54,5.03 19.27,4.95 19.05,5.03 L16.56,6.03 C16.04,5.63 15.48,5.3 14.87,5.05 L14.5,2.42 C14.47,2.18 14.25,2 14,2 L10,2 C9.75,2 9.54,2.18 9.5,2.42 L9.13,5.05 C8.52,5.3 7.96,5.64 7.44,6.04 L4.95,5.03 C4.72,4.95 4.46,5.03 4.34,5.25 L2.34,8.71 C2.21,8.93 2.27,9.2 2.46,9.35 L4.58,11 C4.53,11.33 4.5,11.67 4.5,12 C4.5,12.33 4.53,12.66 4.58,12.98 L2.46,14.65 C2.27,14.8 2.21,15.07 2.34,15.29 L4.34,18.75 C4.46,18.97 4.73,19.05 4.95,18.97 L7.44,17.96 C7.96,18.36 8.52,18.7 9.13,18.95 L9.5,21.58 C9.54,21.82 9.75,22 10,22 L14,22 C14.25,22 14.46,21.82 14.5,21.58 L14.87,18.95 C15.48,18.7 16.04,18.36 16.56,17.96 L19.05,18.97 C19.27,19.05 19.54,18.97 19.66,18.75 L21.66,15.29 C21.78,15.07 21.73,14.8 21.54,14.65 L19.43,12.98 Z M12,15.5 C10.07,15.5 8.5,13.93 8.5,12 C8.5,10.07 10.07,8.5 12,8.5 C13.93,8.5 15.5,10.07 15.5,12 C15.5,13.93 13.93,15.5 12,15.5 Z"/>
+                    </Canvas>
+                </Viewbox>
+            </Button>
+            <Border Width="1" Height="22" Background="#65FFFFFF" Margin="0,6,12,0"/>
+            <Button x:Name="btnWindowMinimize"
+                    Content="−"
+                    Style="{StaticResource WindowChromeButton}"
+                    Click="WindowMinimizeButton_Click"/>
+            <Button x:Name="btnWindowClose"
+                    Content="×"
+                    Style="{StaticResource WindowChromeCloseButton}"
+                    Click="WindowCloseButton_Click"
+                    Margin="4,0,0,0"/>
+        </StackPanel>
+
+
+        <Grid Grid.Row="1"
+              Panel.ZIndex="4"
+              Margin="76,14,42,18">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="66"/>
+                <ColumnDefinition Width="376"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel x:Name="heroPanel"
+                        Grid.Column="0"
+                        Opacity="0"
+                        Width="396"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,0,36">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform x:Name="heroRevealTransform" Y="16"/>
+                </StackPanel.RenderTransform>
+
+                <Border x:Name="bdStatusPanel" Background="Transparent">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse x:Name="serverStatusLight" Width="9" Height="9" Fill="Gray"
+                                 VerticalAlignment="Center" Margin="0,0,9,0"/>
+                        <TextBlock x:Name="txtConnectionStatusCaption" Text="服务器状态" Visibility="Collapsed"/>
+                        <TextBlock x:Name="txtServerStatus" Text="正在连接服务器"
+                                   Foreground="#C4CDD1" FontSize="14" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock x:Name="txtLaunchModeLabel" Text="启动模式" Visibility="Collapsed"/>
+                <Grid x:Name="launchOptionsPanel"
+                      Width="360"
+                      Height="88"
+                      Margin="0,18,0,10"
+                      HorizontalAlignment="Left"
+                      Loaded="ModeSelectionPanel_Loaded">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="112"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="112"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="112"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock x:Name="txtNetworkModeLabel"
+                                   Text="网络模式"
+                                   Foreground="#778289"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,5"/>
+                        <ListBox x:Name="cmbNetworkMode"
+                                 Width="112"
+                                 Style="{StaticResource NetworkModeListBox}"
+                                 SelectedIndex="0"
+                                 SelectionChanged="NetworkMode_SelectionChanged"
+                                 IsEnabled="{Binding ElementName=cmbGameplayMode, Path=IsEnabled}"
+                                 AutomationProperties.Name="网络模式">
+                            <ListBoxItem x:Name="itemFastNetworkMode" Grid.Row="0" Content="快速"/>
+                            <ListBoxItem x:Name="itemCompatibleNetworkMode" Grid.Row="1" Content="兼容"/>
+                        </ListBox>
+                    </StackPanel>
+                    <Border Grid.Column="1"
+                            Width="1"
+                            Height="58"
+                            Background="#2CFFFFFF"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"/>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock x:Name="txtGameplayModeLabel"
+                                   Text="游戏模式"
+                                   Foreground="#778289"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,5"/>
+                        <ListBox x:Name="cmbGameplayMode"
+                                 Width="112"
+                                 Style="{StaticResource GameplayModeListBox}"
+                                 SelectedIndex="0"
+                                 SelectionChanged="GameplayModePresentation_SelectionChanged"
+                                 AutomationProperties.Name="游戏模式">
+                            <ListBoxItem x:Name="itemOfficialMode"
+                                         Grid.Row="0"
+                                         Content="官方"
+                                         PreviewMouseLeftButtonDown="OfficialModeItem_PreviewMouseLeftButtonDown"
+                                         PreviewKeyDown="OfficialModeItem_PreviewKeyDown"/>
+                            <ListBoxItem x:Name="itemModMode"
+                                         Grid.Row="1"
+                                         Content="模组"
+                                         IsEnabled="False"
+                                         PreviewMouseLeftButtonDown="ModModeItem_PreviewMouseLeftButtonDown"
+                                         PreviewKeyDown="ModModeItem_PreviewKeyDown"/>
+                        </ListBox>
+                    </StackPanel>
+                    <Border Grid.Column="3"
+                            Width="1"
+                            Height="58"
+                            Background="#2CFFFFFF"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"/>
+                    <StackPanel Grid.Column="4">
+                        <TextBlock x:Name="txtRendererLabel"
+                                   Text="渲染模式"
+                                   Foreground="#778289"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,5"/>
+                        <ListBox x:Name="cmbGameExecutable"
+                                 Width="112"
+                                 Style="{StaticResource ModeListBox}"
+                                 SelectedIndex="1"
+                                 AutomationProperties.Name="渲染模式">
+                            <ListBoxItem Grid.Row="1" Content="DX9"/>
+                            <ListBoxItem Grid.Row="0" Content="DX11"/>
+                        </ListBox>
+                    </StackPanel>
+                </Grid>
+
+                <Button x:Name="btnLaunch" Content="启动游戏" Style="{StaticResource PrimaryButton}"
+                        Click="LaunchButton_Click" HorizontalAlignment="Left"
+                        AutomationProperties.Name="启动游戏"/>
+            </StackPanel>
+
+            <!-- The progress surface is a sibling of the bottom-aligned hero stack so
+                 showing it never changes the measured height or shifts the launch UI. -->
+            <StackPanel x:Name="updateProgressPanel"
+                        Grid.Column="0"
+                        Width="286"
+                        Margin="0,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        Opacity="{Binding ElementName=heroPanel, Path=Opacity}"
+                        Visibility="Hidden"
+                        AutomationProperties.LiveSetting="Polite">
+                <TextBlock x:Name="txtUpdateProgress"
+                           Foreground="#AEB8BC"
+                           FontSize="11"
+                           Margin="0,0,0,5"/>
+                <ProgressBar x:Name="updateProgressBar"
+                             Height="5"
+                             Minimum="0"
+                             Maximum="100"
+                             Background="#26343A3D"
+                             Foreground="#8EAAAF9B"
+                             BorderThickness="0"
+                             IsTabStop="False"/>
+            </StackPanel>
+
+            <Border x:Name="authPanel"
+                    Grid.Column="2"
+                    Width="376"
+                    Opacity="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Background="#72080B0D"
+                    BorderBrush="#2EFFFFFF"
+                    BorderThickness="1,0,0,0"
+                    Padding="26,24,22,22">
+                <Border.RenderTransform>
+                    <TranslateTransform x:Name="authRevealTransform" X="24"/>
+                </Border.RenderTransform>
+                <StackPanel>
+                    <TextBlock x:Name="txtSectionTitle"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="#D8DEE1"
+                               VerticalAlignment="Center"
+                               Text="SCBL登录"
+                               Margin="0,0,0,26"/>
+
+                    <!-- 公网入口、虚拟服务端地址均由后台固定配置。 -->
+                    <TextBlock x:Name="txtUsernameLabel" Text="账号" Foreground="#B6BEC3" FontSize="13" Margin="0,0,0,5"/>
+                    <Grid Margin="0,0,0,23">
+                        <TextBox x:Name="txtUsername" Style="{StaticResource CinematicTextBox}"
+                                 InputMethod.IsInputMethodEnabled="False"
+                                 InputMethod.PreferredImeState="Off"
+                                 InputScope="AlphanumericHalfWidth"
+                                 PreviewTextInput="UsernameTextBox_PreviewTextInput"
+                                 DataObject.Pasting="UsernameTextBox_Pasting"
+                                 TextChanged="UsernameTextBox_TextChanged"
+                                 AutomationProperties.Name="账号"/>
+                        <TextBlock x:Name="txtUsernamePlaceholder" Text="输入账号" Foreground="#7B858C" FontSize="16" Margin="1,0,0,5"
+                                   VerticalAlignment="Center" IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=txtUsername}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+
+                    <TextBlock x:Name="txtPasswordLabel" Text="密码" Foreground="#B6BEC3" FontSize="13" Margin="0,0,0,5"/>
+                    <Grid Margin="0,0,0,18">
+                        <PasswordBox x:Name="txtPassword" Style="{StaticResource CinematicPasswordBox}"
+                                     PreviewTextInput="PasswordBox_PreviewTextInput"
+                                     DataObject.Pasting="PasswordBox_Pasting"
+                                     PasswordChanged="PasswordBox_PasswordChanged"
+                                     AutomationProperties.Name="密码"/>
+                        <TextBox x:Name="txtPasswordVisible" Style="{StaticResource CinematicTextBox}"
+                                 Visibility="Collapsed" PreviewTextInput="PasswordBox_PreviewTextInput"
+                                 DataObject.Pasting="PasswordBox_Pasting"
+                                 TextChanged="PasswordVisibleTextBox_TextChanged"
+                                 AutomationProperties.Name="显示的密码"/>
+                        <TextBlock x:Name="txtPasswordPlaceholder" Text="输入密码" Foreground="#7B858C" FontSize="16"
+                                   Margin="1,0,0,5" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                        <Button x:Name="btnPasswordVisibility" Style="{StaticResource CinematicLinkButton}"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Width="38" Height="38"
+                                Margin="0,0,0,3" Click="PasswordVisibilityButton_Click"
+                                ToolTip="显示密码" AutomationProperties.Name="显示密码">
+                            <Viewbox Width="18" Height="18">
+                                <Canvas Width="24" Height="24">
+                                    <Path Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                          StrokeThickness="1.6"
+                                          StrokeStartLineCap="Round"
+                                          StrokeEndLineCap="Round"
+                                          Data="M2.5,12 C5.2,7.8 8.2,6 12,6 C15.8,6 18.8,7.8 21.5,12 C18.8,16.2 15.8,18 12,18 C8.2,18 5.2,16.2 2.5,12 Z M9.3,12 A2.7,2.7 0 1 0 14.7,12 A2.7,2.7 0 1 0 9.3,12"/>
+                                </Canvas>
+                            </Viewbox>
+                        </Button>
+                    </Grid>
+
+                    <Grid>
+                        <CheckBox x:Name="chkRememberPassword" Content="记住密码" IsChecked="True"
+                                  Style="{StaticResource CinematicCheckBox}" VerticalAlignment="Center"/>
+                        <Button x:Name="btnForgotPassword" Content="忘记密码？" Style="{StaticResource CinematicLinkButton}"
+                                HorizontalAlignment="Right" MinHeight="32" Click="ForgotPasswordButton_Click"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2"
+                Panel.ZIndex="4"
+                Background="#82050709"
+                BorderBrush="#24FFFFFF"
+                BorderThickness="0,1,0,0"/>
+
+        <Grid x:Name="bottomStatusGrid" Grid.Row="2" Panel.ZIndex="5" Width="342" Height="34"
+              HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,36,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="bottomPlayersColumn" Width="105"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition x:Name="bottomNetworkColumn" Width="88"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition x:Name="bottomLatencyColumn" Width="91"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnPlayers" Grid.Column="0" Style="{StaticResource BottomStatusButton}" Click="PlayersButton_Click">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Viewbox Width="14" Height="14" Margin="0,0,7,0" VerticalAlignment="Center">
+                        <Canvas Width="16" Height="16">
+                            <Ellipse Width="5" Height="5" Canvas.Left="5.5" Canvas.Top="1.5"
+                                     Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                     StrokeThickness="1.35"/>
+                            <Path Data="M2.8,14 C3.1,10.7 5.1,8.9 8,8.9 C10.9,8.9 12.9,10.7 13.2,14"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                  StrokeThickness="1.35" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        </Canvas>
+                    </Viewbox>
+                    <TextBlock x:Name="txtBottomPlayers" Text="在线玩家 0" FontSize="13"
+                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                               VerticalAlignment="Center" TextTrimming="None"/>
+                </StackPanel>
+            </Button>
+            <Border Grid.Column="1" Width="1" Height="18" Background="#36FFFFFF" VerticalAlignment="Center"/>
+            <Button x:Name="btnCheckNetwork" Grid.Column="2" Style="{StaticResource BottomStatusButton}" Click="CheckNetworkButton_Click">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Viewbox x:Name="networkCheckIcon" Width="14" Height="14" Margin="0,0,7,0" VerticalAlignment="Center">
+                        <Canvas Width="16" Height="16">
+                            <Path Data="M2,5.2 C5.2,2.4 10.8,2.4 14,5.2 M4.5,8.3 C6.5,6.6 9.5,6.6 11.5,8.3 M7.2,11.5 C7.65,11.1 8.35,11.1 8.8,11.5"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                  StrokeThickness="1.35" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        </Canvas>
+                    </Viewbox>
+                    <TextBlock x:Name="txtBottomNetwork" Text="检测网络" FontSize="13"
+                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                               VerticalAlignment="Center" TextTrimming="None"/>
+                </StackPanel>
+            </Button>
+            <Border Grid.Column="3" Width="1" Height="18" Background="#36FFFFFF" VerticalAlignment="Center"/>
+            <StackPanel Grid.Column="4" Orientation="Horizontal" Height="28"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock x:Name="txtBottomLatency" Text="延迟：-- ms"
+                           Foreground="#AAB3B8" FontSize="13" VerticalAlignment="Center"
+                           TextTrimming="None"/>
+            </StackPanel>
+        </Grid>
+        <TextBlock x:Name="txtFooterNotice"
+                   Visibility="Collapsed"
+                  Style="{StaticResource FieldLabel}"
+                  Margin="39,339,40,0"
+                   Grid.Row="1"
+                   FontWeight="Bold"
+                   VerticalAlignment="Top"
+                   TextWrapping="WrapWithOverflow"
+                   ><Run Text="友情提示： 本启动器基于开源项目 5th Echelon 优化制作，"/><Run Text="一键接入，方便游玩。"/><LineBreak/><Run/><Run Text="原项目地址：https://github.com/unixoide/5th-echelon "/><LineBreak/><Run/><LineBreak/><Run Text="国内联机交流群：709112052 "/><LineBreak/><Run Text="等你来♂战！"/></TextBlock>
+
+        <TextBlock x:Name="txtLauncherVersion"
+                   Grid.Row="2"
+                   Panel.ZIndex="4"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Margin="36,0,0,0"
+                   Foreground="#D8D8D8"
+                   FontSize="12"
+                   FontWeight="Normal"
+                   Text="v2.0"/>
+
+
+        <Grid x:Name="playersOverlay"
+              Grid.RowSpan="3"
+              Panel.ZIndex="80"
+              Visibility="Collapsed"
+              Background="#68000000">
+            <Border x:Name="playersPanel"
+                    Width="410"
+                    Background="#CC090A0B"
+                    BorderBrush="#50FFFFFF"
+                    BorderThickness="1,0,0,0"
+                    CornerRadius="0"
+                    Padding="30,26,28,24"
+                    Margin="0,66,38,78"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Stretch"
+                    Opacity="0">
+                <Border.RenderTransform>
+                    <TranslateTransform x:Name="playersPanelTransform" X="28"/>
+                </Border.RenderTransform>
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000"
+                                      BlurRadius="32"
+                                      ShadowDepth="-8"
+                                      Direction="180"
+                                      Opacity="0.55"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,19">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="SCBL NETWORK"
+                                       Foreground="#7FFFFFFF"
+                                       FontSize="10"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock x:Name="txtPlayersTitle"
+                                       Text="在线玩家"
+                                       Foreground="#E0E2E1"
+                                       FontSize="21"
+                                       FontWeight="Normal"/>
+                        </StackPanel>
+                        <Button x:Name="btnRefreshPlayers"
+                                Grid.Column="1"
+                                Content="刷新"
+                                Style="{StaticResource CinematicLinkButton}"
+                                VerticalAlignment="Bottom"
+                                Click="RefreshPlayersButton_Click"
+                                Margin="0,0,16,1"/>
+                        <Button x:Name="btnClosePlayers"
+                                Grid.Column="2"
+                                Content="×"
+                                Style="{StaticResource CinematicLinkButton}"
+                                FontSize="22"
+                                Width="28"
+                                Height="28"
+                                VerticalAlignment="Bottom"
+                                Click="ClosePlayersButton_Click"/>
+                    </Grid>
+
+                    <Grid Grid.Row="1" Margin="0,0,0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="68"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="txtPeerHeaderName"
+                                   Grid.Column="0"
+                                   Text="玩家ID"
+                                   Foreground="#78FFFFFF"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock x:Name="txtPeerHeaderLatency"
+                                   Grid.Column="1"
+                                   Text="延迟"
+                                   Foreground="#78FFFFFF"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   TextAlignment="Right"/>
+                    </Grid>
+
+                    <ScrollViewer Grid.Row="2"
+                                  VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="spPeerList"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid x:Name="modModeOverlay"
+              Grid.RowSpan="3"
+              Visibility="Collapsed"
+              Panel.ZIndex="85"
+              KeyboardNavigation.TabNavigation="Cycle"
+              KeyboardNavigation.ControlTabNavigation="Cycle"
+              KeyboardNavigation.DirectionalNavigation="Cycle"
+              PreviewKeyDown="ModModeOverlay_PreviewKeyDown"
+              AutomationProperties.Name="模组模式设置"
+              Background="#70000000">
+            <Border Width="520"
+                    Background="#D0090A0B"
+                    BorderBrush="#68FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="0"
+                    Padding="26"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000"
+                                      BlurRadius="28"
+                                      ShadowDepth="8"
+                                      Opacity="0.45"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="txtModModeDialogTitle"
+                               Grid.Row="0"
+                               Text="游戏视野设置"
+                               Foreground="{StaticResource TextMainBrush}"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="0,0,0,9"/>
+
+                    <TextBlock x:Name="txtModModeDialogDescription"
+                               Grid.Row="1"
+                               Text="视野范围适用于官方和模组模式；模组会额外加载玩法 DLL。"
+                               Foreground="{StaticResource TextSubBrush}"
+                               FontSize="13"
+                               LineHeight="21"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,20"/>
+
+                    <Border Grid.Row="2"
+                            Background="#16000000"
+                            BorderBrush="#42FFFFFF"
+                            BorderThickness="1"
+                            Padding="16,14"
+                            Margin="0,0,0,18">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="txtModFovLabel"
+                                           Grid.Column="0"
+                                           Text="视野范围（FOV）"
+                                           Foreground="{StaticResource TextMainBrush}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock x:Name="txtModFovValue"
+                                           Grid.Column="1"
+                                           Text="1.20×"
+                                           Foreground="{StaticResource ReadyAccentBrush}"
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           AutomationProperties.LiveSetting="Polite"/>
+                            </Grid>
+
+                            <Slider x:Name="modFovSlider"
+                                    Grid.Row="1"
+                                    Minimum="1.0"
+                                    Maximum="1.3"
+                                    Value="1.2"
+                                    SmallChange="0.05"
+                                    LargeChange="0.1"
+                                    TickFrequency="0.05"
+                                    IsSnapToTickEnabled="True"
+                                    Style="{StaticResource ModFovSlider}"
+                                    AutomationProperties.Name="视野范围倍率"
+                                    AutomationProperties.HelpText="范围 1.0 到 1.3，默认 1.2"
+                                    ValueChanged="ModFovSlider_ValueChanged"/>
+
+                            <Grid Grid.Row="2" Margin="3,3,3,0">
+                                <TextBlock Text="1.0"
+                                           HorizontalAlignment="Left"
+                                           Foreground="#82FFFFFF"
+                                           FontSize="10"/>
+                                <TextBlock Text="1.3"
+                                           HorizontalAlignment="Right"
+                                           Foreground="#82FFFFFF"
+                                           FontSize="10"/>
+                            </Grid>
+
+                            <TextBlock x:Name="txtModFovHint"
+                                       Grid.Row="3"
+                                       Text="范围 1.0–1.3，默认 1.2。此设置由 SCBL 单独应用。"
+                                       Foreground="#8FFFFFFF"
+                                       FontSize="11"
+                                       TextWrapping="Wrap"
+                                       Margin="0,9,0,0"/>
+                        </Grid>
+                    </Border>
+
+                    <StackPanel Grid.Row="3"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+                        <Button x:Name="btnModFovCancel"
+                                MinWidth="72"
+                                Content="取消"
+                                Style="{StaticResource DialogSecondaryButton}"
+                                Click="ModFovCancelButton_Click"
+                                Margin="0,0,10,0"/>
+                        <Button x:Name="btnModFovSave"
+                                MinWidth="72"
+                                Content="保存"
+                                Style="{StaticResource DialogPrimaryButton}"
+                                Click="ModFovSaveButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid x:Name="dialogOverlay"
+              Grid.RowSpan="3"
+              Visibility="Collapsed"
+              Panel.ZIndex="80"
+              KeyboardNavigation.TabNavigation="Cycle"
+              KeyboardNavigation.ControlTabNavigation="Cycle"
+              KeyboardNavigation.DirectionalNavigation="Cycle"
+              Background="#70000000">
+            <Border Width="520"
+                    MaxHeight="520"
+                    Background="#D0090A0B"
+                    BorderBrush="#68FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="0"
+                    Padding="26"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000"
+                                      BlurRadius="28"
+                                      ShadowDepth="8"
+                                      Opacity="0.45"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="txtDialogTitle"
+                               Grid.Row="0"
+                               Text="提示"
+                               Foreground="{StaticResource TextMainBrush}"
+                               FontSize="17"
+                               FontWeight="Bold"
+                               Margin="0,0,0,14"/>
+
+                    <ScrollViewer Grid.Row="1"
+                                  MaxHeight="330"
+                                  Style="{StaticResource LauncherDialogScrollViewer}"
+                                  AutomationProperties.LabeledBy="{Binding ElementName=txtDialogTitle}">
+                        <ScrollViewer.Resources>
+                            <Style TargetType="{x:Type ScrollBar}"
+                                   BasedOn="{StaticResource LauncherDialogScrollBar}"/>
+                        </ScrollViewer.Resources>
+                        <TextBlock x:Name="txtDialogMessage"
+                                   Text="消息内容"
+                                   Foreground="{StaticResource TextSubBrush}"
+                                   FontSize="13"
+                                   LineHeight="22"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,8,0"/>
+                    </ScrollViewer>
+
+                    <StackPanel Grid.Row="2"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Margin="0,16,0,0">
+                        <Button x:Name="btnDialogNo"
+                                MinWidth="72"
+                                Content="取消"
+                                Style="{StaticResource DialogSecondaryButton}"
+                                Click="DialogNoButton_Click"
+                                Margin="0,0,10,0"/>
+                        <Button x:Name="btnDialogYes"
+                                MinWidth="72"
+                                Content="确定"
+                                Style="{StaticResource DialogPrimaryButton}"
+                                Click="DialogYesButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid x:Name="passwordRecoveryOverlay"
+              Grid.RowSpan="3"
+              Panel.ZIndex="85"
+              Visibility="Collapsed"
+              Background="#70000000">
+            <Border Width="480"
+                    Background="#D0090A0B"
+                    BorderBrush="#68FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="0"
+                    Padding="26"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000" BlurRadius="28" ShadowDepth="8" Opacity="0.45"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock x:Name="txtRecoveryTitle"
+                               Text="使用恢复码"
+                               Foreground="{StaticResource TextMainBrush}"
+                               FontSize="17"
+                               FontWeight="Bold"
+                               Margin="0,0,0,6"/>
+                    <TextBlock x:Name="txtRecoveryDescription"
+                               Text="输入恢复码并设置新密码。完成后会生成新的恢复码。"
+                               Style="{StaticResource CaptionText}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,17"/>
+
+                    <TextBlock x:Name="txtRecoveryUsernameLabel" Text="账号" Style="{StaticResource FieldLabel}"/>
+                    <TextBox x:Name="txtRecoveryUsername"
+                             Style="{StaticResource CinematicTextBox}"
+                             Height="41"
+                             Margin="0,0,0,13"
+                             InputMethod.IsInputMethodEnabled="False"/>
+
+                    <TextBlock x:Name="txtRecoveryCodeLabel" Text="恢复码" Style="{StaticResource FieldLabel}"/>
+                    <TextBox x:Name="txtRecoveryCode"
+                             Style="{StaticResource CinematicTextBox}"
+                             Height="41"
+                             CharacterCasing="Upper"
+                             Margin="0,0,0,13"
+                             InputMethod.IsInputMethodEnabled="False"/>
+
+                    <TextBlock x:Name="txtRecoveryNewPasswordLabel" Text="新密码" Style="{StaticResource FieldLabel}"/>
+                    <PasswordBox x:Name="txtRecoveryNewPassword"
+                                 Style="{StaticResource CinematicPasswordBox}"
+                                 Height="41"
+                                 Margin="0,0,0,13"/>
+
+                    <TextBlock x:Name="txtRecoveryConfirmPasswordLabel" Text="确认新密码" Style="{StaticResource FieldLabel}"/>
+                    <PasswordBox x:Name="txtRecoveryConfirmPassword"
+                                 Style="{StaticResource CinematicPasswordBox}"
+                                 Height="41"/>
+
+                    <TextBlock x:Name="txtRecoveryMessage"
+                               MinHeight="20"
+                               Foreground="#F6A7AF"
+                               FontSize="12"
+                               TextWrapping="Wrap"
+                               Margin="2,10,0,0"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                        <Button x:Name="btnRecoveryCancel"
+                                MinWidth="72"
+                                Content="取消"
+                                Style="{StaticResource DialogSecondaryButton}"
+                                Click="RecoveryCancelButton_Click"
+                                Margin="0,0,10,0"/>
+                        <Button x:Name="btnRecoverySubmit"
+                                MinWidth="92"
+                                Content="重置密码"
+                                Style="{StaticResource DialogPrimaryButton}"
+                                Click="RecoverySubmitButton_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Grid x:Name="serverSettingsOverlay"
+              Grid.RowSpan="3"
+              Panel.ZIndex="80"
+              Visibility="Collapsed"
+              Background="#70000000">
+            <Border Width="480"
+                    Background="#D0090A0B"
+                    BorderBrush="#68FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="0"
+                    Padding="26"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000"
+                                      BlurRadius="28"
+                                      ShadowDepth="8"
+                                      Opacity="0.48"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock x:Name="txtServerSettingsTitle"
+                               Text="服务器设置"
+                               FontSize="17"
+                               FontWeight="Bold"
+                               Margin="0,0,0,7"/>
+                    <TextBlock x:Name="txtServerSettingsDescription"
+                               Text="修改联机服务器。保存后启动器会自动重启。"
+                               Style="{StaticResource CaptionText}"
+                               TextWrapping="Wrap"
+                               LineHeight="19"
+                               Margin="0,0,0,17"/>
+
+                    <TextBlock x:Name="txtServerEndpointLabel"
+                               Text="服务器地址（域名/IP:端口）"
+                               Style="{StaticResource FieldLabel}"/>
+                    <TextBox x:Name="txtServerEndpoint"
+                             Style="{StaticResource CinematicTextBox}"
+                             Height="41"
+                             Margin="0,0,0,13"/>
+
+                    <TextBlock x:Name="txtServerUpdatePortLabel"
+                               Text="更新服务端口"
+                               Style="{StaticResource FieldLabel}"/>
+                    <TextBox x:Name="txtServerUpdatePort"
+                             Style="{StaticResource CinematicTextBox}"
+                             Height="41"
+                             Margin="0,0,0,13"
+                             PreviewTextInput="ServerPort_PreviewTextInput"
+                             DataObject.Pasting="ServerPort_Pasting"/>
+
+                    <TextBlock x:Name="txtTestServerEndpointLabel"
+                               Text="测试服务器地址（域名/IP:端口）"
+                               Style="{StaticResource FieldLabel}"/>
+                    <TextBox x:Name="txtTestServerEndpoint"
+                             Style="{StaticResource CinematicTextBox}"
+                             Height="41"
+                             Margin="0,0,0,13"/>
+
+                    <TextBlock x:Name="txtTestServerUpdatePortLabel"
+                               Text="测试服务器更新端口"
+                               Style="{StaticResource FieldLabel}"/>
+                    <TextBox x:Name="txtTestServerUpdatePort"
+                             Style="{StaticResource CinematicTextBox}"
+                             Height="41"
+                             PreviewTextInput="ServerPort_PreviewTextInput"
+                             DataObject.Pasting="ServerPort_Pasting"/>
+
+                    <TextBlock x:Name="txtServerSettingsMessage"
+                               MinHeight="20"
+                               Foreground="#F6A7AF"
+                               FontSize="12"
+                               TextWrapping="Wrap"
+                               Margin="2,10,0,0"/>
+
+                    <Grid Margin="0,15,0,0">
+                        <Button x:Name="btnServerSettingsReset"
+                                HorizontalAlignment="Left"
+                                MinWidth="86"
+                                Content="恢复默认"
+                                Style="{StaticResource DialogSecondaryButton}"
+                                Click="ServerSettingsResetButton_Click"/>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right">
+                            <Button x:Name="btnServerSettingsCancel"
+                                    MinWidth="72"
+                                    Content="取消"
+                                    Style="{StaticResource DialogSecondaryButton}"
+                                    Click="ServerSettingsCancelButton_Click"
+                                    Margin="0,0,10,0"/>
+                            <Button x:Name="btnServerSettingsSave"
+                                    MinWidth="72"
+                                    Content="保存"
+                                    Style="{StaticResource DialogPrimaryButton}"
+                                    Click="ServerSettingsSaveButton_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Canvas x:Name="guideOverlay"
+                Grid.RowSpan="3"
+                Panel.ZIndex="90"
+                Visibility="Collapsed"
+                Background="#70000000">
+            <Border x:Name="guideHighlight"
+                    BorderBrush="#E8FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="0"
+                    Background="#0CFFFFFF"
+                    IsHitTestVisible="False"/>
+
+            <TextBlock x:Name="guideArrow"
+                       Text="▲"
+                       Foreground="#FFFFFF"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Panel.ZIndex="91"
+                       IsHitTestVisible="False"/>
+
+            <Border x:Name="guideCard"
+                     Width="360"
+                     Background="#D0090A0B"
+                     BorderBrush="#68FFFFFF"
+                    BorderThickness="1"
+                     CornerRadius="0"
+                     Padding="22">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000"
+                                      BlurRadius="30"
+                                      ShadowDepth="8"
+                                      Opacity="0.5"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock x:Name="txtGuideStep"
+                               Text="1 / 6"
+                               Foreground="#8F9293"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,10"/>
+                    <TextBlock x:Name="txtGuideTitle"
+                               Text="指引标题"
+                               Foreground="{StaticResource TextMainBrush}"
+                               FontSize="18"
+                               FontWeight="Normal"
+                               Margin="0,0,0,10"/>
+                    <TextBlock x:Name="txtGuideMessage"
+                               Text="指引内容"
+                               Foreground="{StaticResource TextSubBrush}"
+                               FontSize="12.3"
+                               LineHeight="19"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,14"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button x:Name="btnGuideSkip"
+                                Content="跳过"
+                                Width="62"
+                                Style="{StaticResource DialogSecondaryButton}"
+                                Click="GuideSkipButton_Click"
+                                Margin="0,0,8,0"/>
+                        <Button x:Name="btnGuidePrev"
+                                Content="上一步"
+                                Width="72"
+                                Style="{StaticResource DialogSecondaryButton}"
+                                Click="GuidePrevButton_Click"
+                                Margin="0,0,8,0"/>
+                        <Button x:Name="btnGuideNext"
+                                Content="下一步"
+                                Width="76"
+                                Style="{StaticResource DialogPrimaryButton}"
+                                Click="GuideNextButton_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Canvas>
+
+    </Grid>
+    </Viewbox>
+</Window>
