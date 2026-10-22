@@ -1,0 +1,153 @@
+name: Fifth Freedom development candidates
+
+on:
+  push:
+    branches: ['codex/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fifth-freedom-candidate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-inputs:
+    name: Strict complete-package input gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Verify all pinned package inputs without substituting private saves
+        run: python -B scripts/ci_checks.py package-inputs
+      - name: Preserve gate receipt even when blocked
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: complete-package-input-gate-${{ github.sha }}
+          path: artifacts/ci/package-inputs-receipt.json
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-components:
+    name: Windows WPF, x86 hooks, gameplay and LAN components
+    runs-on: windows-2022
+    timeout-minutes: 120
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - name: Install the pinned Rust toolchain and x86 target
+        run: rustup toolchain install nightly-2025-10-15 --profile minimal --target i686-pc-windows-msvc
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Source, UI routing, server contracts and CI tests
+        run: python -B scripts/ci_checks.py source
+      - name: Compile, test and run isolated no-game UI checks without claiming complete-package admission
+        run: python -B scripts/ci_candidate.py windows-components
+      - name: Preserve compile-only components, checksums and build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-compile-only-components-${{ github.sha }}
+          path: |
+            artifacts/ci/windows-components/
+            artifacts/ci/source-receipt.json
+            artifacts/logs/
+          if-no-files-found: error
+          retention-days: 14
+
+  linux-servers:
+    name: Linux ${{ matrix.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [linux-lan-baseline, linux-public-donor-reference]
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      SODIUM_USE_PKG_CONFIG: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install signed Linux native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends build-essential pkg-config cmake libsodium-dev libssl-dev libsqlite3-dev
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install nightly-2025-10-15 --profile minimal
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Build and test the explicitly selected server source
+        run: python -B scripts/ci_candidate.py ${{ matrix.lane }}
+      - name: Preserve reference components and build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ matrix.lane }}-${{ github.sha }}
+          path: |
+            artifacts/ci/${{ matrix.lane }}/
+            artifacts/logs/
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-complete-package:
+    name: Complete Windows candidate (requires admitted inputs)
+    needs: package-inputs
+    runs-on: windows-2022
+    timeout-minutes: 120
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      CI: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - run: rustup toolchain install nightly-2025-10-15 --profile minimal --target i686-pc-windows-msvc
+      - run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Run the unchanged full build, regression and package-verification entry
+        run: python -B scripts/build.py all
+      - name: Verify isolated packaged UI and bundled-save checks without starting a game
+        run: python -B scripts/ci_candidate.py windows-package-smoke
+      - name: Preserve candidate package or failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-complete-candidate-${{ github.sha }}
+          path: |
+            artifacts/*-program.zip
+            artifacts/BUILD-RESULT.json
+            artifacts/ci/windows-package-smoke/
+            artifacts/logs/
+            artifacts/program/**/package/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14
