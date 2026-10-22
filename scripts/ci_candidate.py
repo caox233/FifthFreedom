@@ -14,10 +14,22 @@ import tempfile
 from contextlib import contextmanager
 
 import build
+import ci_diagnostics
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / "artifacts"
 LANES = ("windows-components", "windows-package-smoke", "linux-lan-baseline", "linux-public-donor-reference")
+
+
+def run_build_step(label, args, cwd=None, env=None):
+    """Summarize only logs created by this invocation, never stale cached output."""
+    folder = ART / "logs"
+    before = set(folder.glob("*")) if folder.is_dir() else set()
+    def fresh_logs():
+        return sorted(path for suffix in ("stdout", "stderr")
+                      for path in folder.glob(f"*-{label}.{suffix}.txt") if path not in before)
+    with ci_diagnostics.diagnostic_step(label, fresh_logs):
+        return build.run(label, args, cwd, env)
 
 
 def parse_probe_report(text: str, flag: str) -> int:
@@ -33,6 +45,16 @@ def parse_probe_report(text: str, flag: str) -> int:
 
 
 def run_launcher_probe(program: Path, flag: str, destination: Path) -> dict:
+    label = "launcher-ui-smoke" if flag == "--self-test" else "launcher-bundled-save-smoke"
+    known_labels = ci_diagnostics.known_ui_labels([
+        ROOT / "src/launcher/src/MainWindow.Diagnostics.cs",
+        ROOT / "src/launcher/src/MainWindow.LanToolsProbe.cs",
+    ])
+    with ci_diagnostics.diagnostic_step(label, lambda: [destination / "report.txt", destination / "error.txt"], known_labels):
+        return _run_launcher_probe(program, flag, destination)
+
+
+def _run_launcher_probe(program: Path, flag: str, destination: Path) -> dict:
     if flag not in ("--self-test", "--lan-tools-self-test"):
         raise ValueError("Only reviewed no-game launcher probes are allowed")
     destination.mkdir(parents=True, exist_ok=False)
@@ -130,23 +152,23 @@ def windows_components(receipt: dict) -> None:
     # No asset insertion or MSBuild resource removal. The project wildcards omit
     # privacy-held SAV/META; this remains incomplete-package component evidence.
     launcher = ART / "ci/windows-launcher-compile"
-    build.run("ci-wpf-compile", [build.dotnet(), "publish", ROOT / "src/launcher/src/SplinterCellCNLauncher.csproj",
+    run_build_step("ci-wpf-compile", [build.dotnet(), "publish", ROOT / "src/launcher/src/SplinterCellCNLauncher.csproj",
               "-c", "Release", "-r", "win-x86", "--self-contained", "true", "--nologo", "-o", launcher])
     receipt["launcher_probes"] = [run_launcher_probe(launcher, "--self-test", ART / "ci/windows-components/ui-smoke")]
     for name in ("PortPlan", "BackgroundTaskRegression", "ObserverSession", "NetworkEnvironment"):
-        build.run("ci-test-" + name, [build.dotnet(), "run", "--project", ROOT / f"tests/{name}/{name}.csproj",
+        run_build_step("ci-test-" + name, [build.dotnet(), "run", "--project", ROOT / f"tests/{name}/{name}.csproj",
                   "-c", "Release", "--no-launch-profile"])
     cargo, env = build.native_env()
     env["CARGO_BUILD_JOBS"] = "2"
     env["CARGO_NET_GIT_FETCH_WITH_CLI"] = "true"
     native = ROOT / "src/native"
-    build.run("ci-native-core-tests", [cargo, "test", "--locked", "-p", "hooks-plugin-api", "-p", "hooks-config", "-p", "api", "--lib"], native, env)
+    run_build_step("ci-native-core-tests", [cargo, "test", "--locked", "-p", "hooks-plugin-api", "-p", "hooks-config", "-p", "api", "--lib"], native, env)
     for label, args in (
         ("hooks", ["-p", "hooks", "--lib", "--features", "patch-free,lan-goal-origin"]),
         ("gameplay", ["-p", "scbl-gameplay", "--lib", "--features", "goggle-feedback"]),
         ("lan-server", ["-p", "dedicated_server", "--bin", "dedicated_server"]),
     ):
-        build.run("ci-build-" + label, [cargo, "build", "--release", "--locked", *args], native, env)
+        run_build_step("ci-build-" + label, [cargo, "build", "--release", "--locked", *args], native, env)
     target = Path(env["CARGO_TARGET_DIR"])
     collect("windows-components", {
         "FifthFreedom.component-only.exe": launcher / "FifthFreedom.exe",
@@ -187,12 +209,12 @@ def linux_server(lane: str, receipt: dict) -> None:
     for package in packages:
         args.extend(["-p", package])
     with owned_server_test_env(env) as test_env:
-        build.run("ci-" + lane + "-tests", args, workspace, test_env)
-    build.run("ci-" + lane + "-build", ["cargo", "build", "--release", "--locked", "-p", "dedicated_server", "--bin", "dedicated_server"], workspace, env)
+        run_build_step("ci-" + lane + "-tests", args, workspace, test_env)
+    run_build_step("ci-" + lane + "-build", ["cargo", "build", "--release", "--locked", "-p", "dedicated_server", "--bin", "dedicated_server"], workspace, env)
     if donor:
         manager_env = env.copy()
         manager_env["PYTHONPATH"] = str(workspace / "server/manager")
-        build.run("ci-donor-manager-tests", [sys.executable, "-B", "-m", "unittest", "discover", "-s", "server/manager/tests", "-v"], workspace, manager_env)
+        run_build_step("ci-donor-manager-tests", [sys.executable, "-B", "-m", "unittest", "discover", "-s", "server/manager/tests", "-v"], workspace, manager_env)
     collect(lane, {"dedicated_server": Path(env["CARGO_TARGET_DIR"]) / "release/dedicated_server"}, receipt)
 
 
@@ -203,12 +225,13 @@ def main() -> int:
     receipt = context(args.lane)
     code = 1
     try:
-        if args.lane == "windows-components":
-            windows_components(receipt)
-        elif args.lane == "windows-package-smoke":
-            windows_package_smoke(receipt)
-        else:
-            linux_server(args.lane, receipt)
+        with ci_diagnostics.diagnostic_step(args.lane):
+            if args.lane == "windows-components":
+                windows_components(receipt)
+            elif args.lane == "windows-package-smoke":
+                windows_package_smoke(receipt)
+            else:
+                linux_server(args.lane, receipt)
         receipt["status"] = "package_no_game_checks_passed" if args.lane == "windows-package-smoke" else "components_built_and_selected_tests_passed"
         code = 0
     except Exception as error:

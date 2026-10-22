@@ -9,6 +9,7 @@ from pathlib import Path, PurePosixPath
 import subprocess
 import sys
 import unittest
+import ci_diagnostics
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_TESTS = (
@@ -103,6 +104,7 @@ def result_row(name: str, result: unittest.TestResult) -> dict:
         "suite": name, "executed": result.testsRun,
         "passed": result.testsRun - len(failed_cases) - len(result.skipped) - len(result.expectedFailures) - len(result.unexpectedSuccesses),
         "failed_test_cases": len(failed_cases),
+        "failed_method_ids": sorted({ci_diagnostics.method_id(test) for test, _ in [*result.failures, *result.errors]}),
         "failures": len(result.failures), "errors": len(result.errors),
         "skipped": [{"test": test.id(), "reason": reason} for test, reason in result.skipped],
         "expected_failures": len(result.expectedFailures),
@@ -111,26 +113,49 @@ def result_row(name: str, result: unittest.TestResult) -> dict:
     }
 
 
+def run_suite(name: str, suite, root: Path = ROOT):
+    folder = root / "artifacts/ci/test-logs"
+    folder.mkdir(parents=True, exist_ok=True)
+    class Tee:
+        def __init__(self, log):
+            self.log = log
+        def write(self, text):
+            sys.stderr.write(text)
+            self.log.write(text)
+        def flush(self):
+            sys.stderr.flush()
+            self.log.flush()
+    with (folder / (ci_diagnostics.safe_identifier(name) + ".txt")).open("w", encoding="utf-8") as log:
+        return unittest.TextTestRunner(verbosity=2, stream=Tee(log)).run(suite)
+
+
 def run(mode: str, root: Path = ROOT) -> tuple[dict, int]:
     admission = assess_inputs(root)
     report = {"schema": 1, "mode": mode, "inputs": admission, "suites": [], "game_executed": False, "published": False}
     if mode == "package-inputs":
         sys.path.insert(0, str(root / "tests/build"))
         suite = unittest.TestLoader().loadTestsFromNames(PACKAGE_TESTS)
-        result = unittest.TextTestRunner(verbosity=2).run(suite)
+        result = run_suite("strict-package-inputs", suite, root)
         report["suites"].append(result_row("strict-package-inputs", result))
         code = 0 if result.wasSuccessful() and admission["complete_package_ready"] else 1
+        if not result.wasSuccessful():
+            ci_diagnostics.emit_error(ci_diagnostics.test_failure_summary("strict-package-inputs", result))
     else:
         report["deferred_to_strict_package_gate"] = list(PACKAGE_TESTS)
         for test in PACKAGE_TESTS:
             print("DEFERRED_TO_STRICT_PACKAGE_GATE", test, flush=True)
         code = 1 if admission["errors"] else 0
         for name, suite in source_suites(root):
-            result = unittest.TextTestRunner(verbosity=2).run(suite)
+            result = run_suite(name, suite, root)
             report["suites"].append(result_row(name, result))
             if not result.wasSuccessful():
                 code = 1
+                ci_diagnostics.emit_error(ci_diagnostics.test_failure_summary(name, result))
         report["unavailable_optional_suites"] = [str(Path("tests") / name) for name in ("ui", "server") if not (root / "tests" / name).is_dir()]
+    if admission["errors"]:
+        ci_diagnostics.emit_error(f"step=public-input-admission; rejected_input_events={len(admission['errors'])}; inspect the input receipt artifact")
+    if mode == "package-inputs" and admission["missing_held_package_inputs"]:
+        ci_diagnostics.emit_error(f"step=complete-package-input-admission; missing_privacy_held_inputs={len(admission['missing_held_package_inputs'])}; complete package remains blocked")
     report["exit_code"] = code
     return report, code
 
@@ -140,7 +165,14 @@ def main() -> int:
     parser.add_argument("mode", choices=("source", "package-inputs"))
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args()
-    report, code = run(args.mode)
+    try:
+        with ci_diagnostics.diagnostic_step(args.mode + "-checks"):
+            report, code = run(args.mode)
+    except ci_diagnostics.AnnotatedFailure:
+        code = 1
+        report = {"schema": 1, "mode": args.mode, "status": "runner_initialization_failed", "exit_code": 1,
+                  "inputs": {"status": "unavailable", "complete_package_ready": False, "missing_held_package_inputs": []},
+                  "suites": [], "game_executed": False, "published": False}
     receipt = args.receipt or ROOT / "artifacts/ci" / (args.mode + "-receipt.json")
     receipt.parent.mkdir(parents=True, exist_ok=True)
     receipt.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

@@ -32,7 +32,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: complete-package-input-gate-${{ github.sha }}
-          path: artifacts/ci/package-inputs-receipt.json
+          path: |
+            artifacts/ci/package-inputs-receipt.json
+            artifacts/ci/test-logs/
           if-no-files-found: error
           retention-days: 14
 
@@ -69,6 +71,7 @@ jobs:
           path: |
             artifacts/ci/windows-components/
             artifacts/ci/source-receipt.json
+            artifacts/ci/test-logs/
             artifacts/logs/
           if-no-files-found: error
           retention-days: 14
