@@ -539,11 +539,193 @@
  <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><ContentPresenter/></ControlTemplate></Setter.Value></Setter>
  <Style.Triggers><Trigger Property="IsKeyboardFocused" Value="True"><Setter Property="Foreground" Value="{StaticResource ReadyAccentBrush}"/></Trigger></Style.Triggers>
 </Style>
+
+<!-- SCBL 3.0 presentation resources; LAN interaction templates stay intact. -->
+<Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="LauncherDialogScrollBarThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="MinWidth" Value="6" />
+            <Setter Property="Background" Value="#66727A80" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="ThumbVisual" Width="6" Margin="1,0" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ThumbVisual" Property="Background" Value="#9A8B989F" />
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                                <Setter TargetName="ThumbVisual" Property="Background" Value="#C4AAB4B9" />
+                                <Setter TargetName="ThumbVisual" Property="BorderBrush" Value="#D8D7E1E5" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ThumbVisual" Property="Opacity" Value="0.35" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+<Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="LauncherDialogScrollBar" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Width" Value="10" />
+            <Setter Property="MinWidth" Value="10" />
+            <Setter Property="Margin" Value="6,0,0,0" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Opacity" Value="0.76" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="ScrollBarRoot" Background="Transparent">
+                            <Border x:Name="TrackVisual" Margin="1,0" Background="#18000000" BorderBrush="#284D5960" BorderThickness="1" CornerRadius="4" />
+                            <Track x:Name="PART_Track" Orientation="Vertical" IsDirectionReversed="True">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Focusable="False" IsTabStop="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                                <Border Background="Transparent" />
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource LauncherDialogScrollBarThumb}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}" Focusable="False" IsTabStop="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                                <Border Background="Transparent" />
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Orientation" Value="Horizontal">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="1" />
+                                <Setter TargetName="TrackVisual" Property="BorderBrush" Value="#50687880" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.35" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=IsKeyboardFocusWithin}" Value="True">
+                                <Setter Property="Opacity" Value="1" />
+                                <Setter TargetName="TrackVisual" Property="BorderBrush" Value="#8AAAC8D8" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+<Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="LauncherDialogScrollViewer" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+            <Setter Property="PanningMode" Value="VerticalOnly" />
+            <Setter Property="Focusable" Value="True" />
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
+            <Setter Property="IsDeferredScrollingEnabled" Value="False" />
+            <Setter Property="FocusVisualStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type Control}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Control}">
+                                    <Border Margin="-2" BorderBrush="#8AAAC8D8" BorderThickness="1" CornerRadius="1" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+<Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="SettingsMenuItemStyle" TargetType="{x:Type MenuItem}">
+            <Setter Property="Foreground" Value="{StaticResource TextMainBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="FontFamily" Value="Microsoft YaHei" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                        <Border x:Name="menuBorder" Background="{TemplateBinding Background}" CornerRadius="0" Padding="13,9" Margin="4,2">
+                            <ContentPresenter ContentSource="Header" RecognizesAccessKey="False" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="menuBorder" Property="Background" Value="#26FFFFFF" />
+                                <Setter Property="Foreground" Value="#FFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+<Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="SettingsContextMenuStyle" TargetType="{x:Type ContextMenu}">
+            <Setter Property="MinWidth" Value="270" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContextMenu}">
+                        <Border Background="#F20A0C0F" BorderBrush="#55FFFFFF" BorderThickness="1" CornerRadius="0" Padding="0,5" SnapsToDevicePixels="True">
+                            <Border.Effect>
+                                <DropShadowEffect Color="#000000" BlurRadius="18" ShadowDepth="5" Opacity="0.48" />
+                            </Border.Effect>
+                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+<Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="BottomStatusButton" TargetType="{x:Type Button}" BasedOn="{StaticResource CinematicLinkButton}">
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Foreground" Value="#B8C1C6" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="statusButtonRoot" Background="Transparent" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#DEE4E7" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="statusButtonRoot" Property="Opacity" Value="0.6" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="statusButtonRoot" Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 </Window.Resources>
- <!-- Presentation adapted from SCBL 3.0: full-bleed artwork, left launch surface, right sign-in. -->
- <Grid x:Name="rootGrid" ClipToBounds="True" PreviewGotKeyboardFocus="DialogBoundary_PreviewGotKeyboardFocus" PreviewKeyDown="DialogOverlay_PreviewKeyDown">
-  <Grid.RowDefinitions><RowDefinition Height="72"/><RowDefinition Height="*"/><RowDefinition Height="60"/></Grid.RowDefinitions>
-  <Image x:Name="backgroundImage" Grid.RowSpan="3" Source="Assets/background.png" Stretch="UniformToFill" IsHitTestVisible="False"/>
+ <!-- SCBL 3.0 shell: artwork, menu, mode strip and footer; LAN events remain authoritative. -->
+ <Viewbox Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+ <Grid x:Name="rootGrid" Width="1120" Height="680" Background="{StaticResource WindowBrush}" ClipToBounds="True" PreviewGotKeyboardFocus="DialogBoundary_PreviewGotKeyboardFocus" PreviewKeyDown="DialogOverlay_PreviewKeyDown">
+  <Grid.RowDefinitions><RowDefinition Height="68"/><RowDefinition Height="*"/><RowDefinition Height="70"/></Grid.RowDefinitions>
+  <Image x:Name="backgroundImage" Grid.RowSpan="3" Source="Assets/background.png" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality" IsHitTestVisible="False"/>
+  <!-- Donor rain is a passive vector layer, without a timer or network lifecycle. -->
+  <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Grid.RowSpan="3" Stretch="UniformToFill" IsHitTestVisible="False" Opacity="0.11">
+            <Canvas Width="1200" Height="750" ClipToBounds="True">
+                <Path Stroke="#B8D3D9DD" StrokeThickness="0.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M54,32 L44,58 M137,6 L126,38 M219,78 L210,104 M305,20 L292,57 M392,106 L382,137 M471,41 L458,79 M568,8 L556,43 M642,89 L631,122 M727,26 L714,64 M809,119 L800,145 M894,52 L881,90 M981,12 L969,47 M1070,83 L1059,116 M1161,33 L1149,68 M92,171 L80,205 M181,132 L170,165 M267,214 L256,246 M351,153 L339,190 M443,236 L434,263 M529,177 L516,215 M613,257 L602,290 M704,188 L691,226 M792,276 L782,305 M876,201 L864,238 M965,297 L954,329 M1053,221 L1040,260 M1141,282 L1131,312 M38,354 L27,386 M128,301 L115,339 M222,392 L212,420 M311,329 L299,366 M401,418 L391,449 M487,351 L475,389 M579,449 L568,482 M665,375 L652,414 M752,467 L742,497 M842,397 L830,435 M933,482 L922,516 M1021,411 L1008,451 M1114,503 L1104,533 M74,529 L62,565 M164,473 L153,507 M255,568 L244,600 M346,501 L333,540 M433,597 L423,626 M521,535 L509,573 M612,626 L601,659 M699,555 L686,594 M789,651 L779,680 M878,581 L866,620 M971,672 L960,706 M1059,603 L1046,643 M1150,690 L1139,723" />
+                <Path Stroke="#70DCE7EA" StrokeThickness="0.55" Data="M102,54 L96,72 M257,12 L249,35 M425,68 L418,89 M603,35 L595,59 M775,72 L768,93 M943,38 L935,62 M1112,61 L1104,85 M52,242 L44,266 M207,188 L199,212 M374,267 L367,288 M548,211 L540,235 M721,249 L713,273 M888,181 L880,205 M1062,258 L1055,279 M1168,203 L1160,227 M111,420 L103,444 M278,353 L270,377 M454,447 L447,468 M631,392 L623,416 M806,438 L799,459 M982,368 L974,392 M1149,454 L1142,475 M31,621 L23,645 M196,551 L188,575 M371,646 L364,667 M546,584 L538,608 M721,684 L714,705 M895,613 L887,637 M1071,701 L1064,722" />
+            </Canvas>
+        </Viewbox>
   <Border Grid.RowSpan="3" IsHitTestVisible="False"><Border.Background>
    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
     <GradientStop Color="#28000000" Offset="0"/><GradientStop Color="#08000000" Offset="0.38"/>
@@ -556,13 +738,31 @@
     <GradientStop Color="#B8000000" Offset="0.86"/><GradientStop Color="#F0000000" Offset="1"/>
    </LinearGradientBrush>
   </Border.Background></Border>
-  <Border Grid.Row="0" Background="#25050709" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+  <Border x:Name="titleBarDragSurface" Grid.Row="0" Background="#06000000" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
    <Grid Margin="34,0,260,0">
     <TextBlock x:Name="txtAppTitle" Text="Fifth Freedom" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center"/>
    </Grid>
   </Border>
   <StackPanel x:Name="spTitleButtons" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,24,0">
    <Button x:Name="btnSettings" Content="设置" Width="60" Style="{StaticResource CinematicLinkButton}" Click="SettingsButton_Click"/>
+   <Button x:Name="btnShellMenu" Content="▾" Width="28" Style="{StaticResource WindowChromeButton}"
+           Click="OpenShellSettingsMenu_Click" ToolTip="快捷菜单 / Quick menu" AutomationProperties.Name="快捷菜单 / Quick menu">
+    <Button.ContextMenu>
+     <ContextMenu x:Name="settingsMenu" Placement="Bottom" HorizontalOffset="-230"
+                  Style="{StaticResource SettingsContextMenuStyle}" Opened="ShellSettingsMenu_Opened">
+      <MenuItem x:Name="miGuide" Header="使用指引 / Guide" Style="{StaticResource SettingsMenuItemStyle}" Click="GuideButton_Click"/>
+      <MenuItem x:Name="miLanguageToggle" Header="中文 / English" Style="{StaticResource SettingsMenuItemStyle}" Click="LanguageToggleButton_Click"/>
+      <MenuItem x:Name="miMusicToggle" Header="背景音乐 / Music" Style="{StaticResource SettingsMenuItemStyle}" Click="MusicToggleButton_Click"/>
+      <Separator Margin="9,4" Background="#35FFFFFF"/>
+      <MenuItem x:Name="miLanSettings" Header="LAN / OB 设置" Style="{StaticResource SettingsMenuItemStyle}" Click="SettingsButton_Click"/>
+      <MenuItem x:Name="miRestoreSaves" Header="恢复存档 / Restore saves" Style="{StaticResource SettingsMenuItemStyle}" Click="RestoreSavesButton_Click"/>
+      <MenuItem x:Name="miPlayers" Header="在线玩家 / Players" Style="{StaticResource SettingsMenuItemStyle}" Click="PlayersButton_Click"/>
+      <Separator Margin="9,4" Background="#35FFFFFF"/>
+      <MenuItem x:Name="miExportDiagnostics" Header="导出诊断包 / Export diagnostics" Style="{StaticResource SettingsMenuItemStyle}" Click="ExportDiagnosticsMenuItem_Click"/>
+      <MenuItem x:Name="miAdvancedDiagnostics" Header="高级诊断 / Advanced diagnostics" Style="{StaticResource SettingsMenuItemStyle}" Click="AdvancedDiagnosticsButton_Click"/>
+     </ContextMenu>
+    </Button.ContextMenu>
+   </Button>
    <Button x:Name="btnLanguageToggle" Content="中文 / EN" Width="78" Style="{StaticResource CinematicLinkButton}" Click="LanguageToggleButton_Click"/>
    <Button x:Name="btnMusicToggle" FontFamily="Segoe MDL2 Assets" Content="&#xE767;" ToolTip="背景音乐" AutomationProperties.Name="{Binding ToolTip, RelativeSource={RelativeSource Self}}" Style="{StaticResource WindowChromeButton}" Click="MusicToggleButton_Click"/>
    <Button x:Name="btnGuide" Content="?" ToolTip="使用指引" AutomationProperties.Name="使用指引" Style="{StaticResource WindowChromeButton}" Click="GuideButton_Click"/>
@@ -571,8 +771,17 @@
    <Button x:Name="btnWindowClose" Content="×" ToolTip="关闭" Style="{StaticResource WindowChromeCloseButton}" Click="WindowCloseButton_Click"/>
   </StackPanel>
   <Grid Grid.Row="1" Margin="76,12,42,18">
-   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="40"/><ColumnDefinition Width="376"/></Grid.ColumnDefinitions>
-   <StackPanel x:Name="heroPanel" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,32">
+   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="66"/><ColumnDefinition Width="376"/></Grid.ColumnDefinitions>
+   <StackPanel x:Name="heroPanel" Grid.Column="0" Width="396" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,36">
+    <StackPanel Margin="0,0,0,18">
+     <TextBlock Text="联机环境 / Environment" FontSize="10" Foreground="#778289" Margin="0,0,0,5"/>
+     <ListBox x:Name="cmbNetworkEnvironment" Style="{StaticResource ModeListBox}" Width="360" Tag="310"
+              SelectedValue="Lan" SelectedValuePath="Tag" AutomationProperties.Name="联机环境 / Environment">
+      <ListBoxItem Grid.Row="0" Content="LAN · 局域网" Tag="Lan"/>
+      <ListBoxItem Grid.Row="1" Content="Public · 公网（尚未接线 / unavailable）" Tag="Public" IsEnabled="False"
+                   ToolTip="公网适配器接入后开放；不会自动回落 LAN。Public adapter is not connected; no automatic LAN fallback."/>
+     </ListBox>
+    </StackPanel>
     <Border x:Name="bdStatusPanel" Background="Transparent" Margin="0,0,0,16">
      <StackPanel Orientation="Horizontal">
       <Ellipse x:Name="serverStatusLight" Width="8" Height="8" Fill="#788289" Margin="0,0,9,0" VerticalAlignment="Center"/>
@@ -580,8 +789,8 @@
       <TextBlock x:Name="txtServerStatus" Text="未检测" FontSize="14" MaxWidth="350" TextWrapping="Wrap"/>
      </StackPanel>
     </Border>
-    <Grid Margin="0,0,0,18">
-     <Grid.ColumnDefinitions><ColumnDefinition Width="126"/><ColumnDefinition Width="20"/><ColumnDefinition Width="96"/></Grid.ColumnDefinitions>
+    <Grid x:Name="launchOptionsPanel" Width="358" HorizontalAlignment="Left" Margin="0,0,0,18">
+     <Grid.ColumnDefinitions><ColumnDefinition Width="126"/><ColumnDefinition Width="20"/><ColumnDefinition Width="96"/><ColumnDefinition Width="20"/><ColumnDefinition Width="96"/></Grid.ColumnDefinitions>
      <StackPanel>
       <TextBlock x:Name="txtConnectionModeLabel" Text="联机模式" FontSize="11" Foreground="#9CA8AD" Margin="0,0,0,5"/>
       <ListBox x:Name="cmbConnectionMode" Style="{StaticResource ModeListBox}" Width="124" Tag="112" SelectedIndex="0" SelectionChanged="ConnectionMode_SelectionChanged" AutomationProperties.Name="联机模式">
@@ -594,6 +803,15 @@
       <TextBlock x:Name="txtGameplayModeLabel" Text="游戏模式" FontSize="11" Foreground="#9CA8AD" Margin="0,0,0,5"/>
       <ListBox x:Name="cmbGameplayMode" Style="{StaticResource ModeListBox}" SelectedValue="MOD" SelectedValuePath="Tag" SelectionChanged="GameplayMode_SelectionChanged" AutomationProperties.Name="游戏模式" ToolTip="官方：不加载玩法插件；MOD：需要完整的本版 gameplay 模块。队友请使用相同游戏模式。">
        <ListBoxItem x:Name="itemGameplayMod" Grid.Row="0" Content="MOD" Tag="MOD"/><ListBoxItem x:Name="itemGameplayOfficial" Grid.Row="1" Content="官方" Tag="Official"/>
+      </ListBox>
+     </StackPanel>
+     <Border Grid.Column="3" Width="1" Height="58" Background="#35FFFFFF" VerticalAlignment="Bottom"/>
+     <StackPanel Grid.Column="4">
+      <TextBlock Text="渲染 / Renderer" FontSize="10" Foreground="#778289" Margin="0,0,0,5"/>
+      <ListBox x:Name="cmbGameExecutable" Style="{StaticResource ModeListBox}" Width="96" Tag="80"
+               SelectedValue="DX11" SelectedValuePath="Tag" AutomationProperties.Name="渲染 / Renderer">
+       <ListBoxItem Grid.Row="0" Content="DX11" Tag="DX11"/>
+       <ListBoxItem Grid.Row="1" Content="DX9" Tag="DX9" IsEnabled="False" ToolTip="当前玩法仅支持 DX11 / This gameplay baseline requires DX11"/>
       </ListBox>
      </StackPanel>
     </Grid>
@@ -610,7 +828,7 @@
    <Border x:Name="authPanel" Grid.Column="2" Background="#72080B0D" BorderBrush="#2EFFFFFF" BorderThickness="1,0,0,0" Padding="26,20,22,20" VerticalAlignment="Center">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="470">
      <StackPanel>
-      <TextBlock x:Name="txtSectionTitle" Text="SCBL 登录" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,22"/>
+      <TextBlock x:Name="txtSectionTitle" Text="Fifth Freedom 登录" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,22"/>
       <TextBlock x:Name="txtUsernameLabel" Text="账号" FontSize="13" Foreground="#B6BEC3" Margin="0,0,0,4"/>
       <TextBox x:Name="txtUsername" Style="{StaticResource CinematicTextBox}" Margin="0,0,0,14"
        PreviewTextInput="UsernameTextBox_PreviewTextInput" DataObject.Pasting="UsernameTextBox_Pasting" TextChanged="UsernameTextBox_TextChanged" LostKeyboardFocus="RememberedIdentity_LostKeyboardFocus" AutomationProperties.Name="账号"/>
@@ -639,12 +857,12 @@
   <Border Grid.Row="2" Background="#98050709" BorderBrush="#24FFFFFF" BorderThickness="0,1,0,0"/>
   <StackPanel Grid.Row="2" Margin="36,0,0,0" VerticalAlignment="Center">
    <TextBlock x:Name="txtTopBadge" Text="{x:Static services:LauncherVersion.Badge}" FontSize="11" Foreground="#D8D8D8"/>
-   <Button x:Name="btnPlayersSummary" Content="在线玩家 / 联机质量" HorizontalAlignment="Left" Style="{StaticResource CinematicLinkButton}" FontSize="11" Click="PlayersButton_Click"/>
+   <Button x:Name="btnPlayersSummary" Content="在线玩家 / 联机质量" HorizontalAlignment="Left" Style="{StaticResource BottomStatusButton}" FontSize="11" Click="PlayersButton_Click"/>
   </StackPanel>
-  <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,36,0">
-   <Button x:Name="btnExportDiagnostics" Content="导出诊断包" Style="{StaticResource CinematicLinkButton}" FontSize="12" Click="ExportDiagnostics_Click" ToolTip="导出现存日志全文、字段脱敏持久配置及缺失清单；仍可能含敏感信息，历史有效配置快照尚未实施。不自动上传，不读取数据库或存档。包含网络地址与房间编号，请检查后再分享。"/>
+  <StackPanel x:Name="bottomStatusGrid" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,36,0">
+   <Button x:Name="btnExportDiagnostics" Content="导出诊断包" Style="{StaticResource BottomStatusButton}" FontSize="12" Click="ExportDiagnostics_Click" ToolTip="导出现存日志全文、字段脱敏持久配置及缺失清单；仍可能含敏感信息，历史有效配置快照尚未实施。不自动上传，不读取数据库或存档。包含网络地址与房间编号，请检查后再分享。"/>
    <Border Width="1" Height="16" Background="#55FFFFFF" Margin="16,0"/>
-   <Button x:Name="btnCheckNetwork" Content="检测网络" Style="{StaticResource CinematicLinkButton}" FontSize="12" Click="CheckNetworkButton_Click"/>
+   <Button x:Name="btnCheckNetwork" Content="检测网络" Style="{StaticResource BottomStatusButton}" FontSize="12" Click="CheckNetworkButton_Click"/>
   </StackPanel>
 <Grid x:Name="toolsOverlay" Grid.RowSpan="3" Panel.ZIndex="95" Visibility="Collapsed" Background="#CC000000" KeyboardNavigation.TabNavigation="Cycle" PreviewKeyDown="ToolsOverlay_PreviewKeyDown">
  <Border Width="660" MaxHeight="530" Padding="28,22" Background="#F20B0F11" BorderBrush="#55FFFFFF" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -695,7 +913,7 @@
    <TextBlock Text="Fifth Freedom" FontSize="11" Foreground="{StaticResource ReadyAccentBrush}" Margin="0,0,0,12"/>
    <TextBlock x:Name="txtDialogTitle" Text="提示" FontSize="24" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,16"/>
    <Border Height="1" Background="#35FFFFFF" Margin="0,0,0,18"/>
-   <ScrollViewer x:Name="dialogMessageScroll" MaxHeight="280" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,24" Padding="0,0,10,0">
+   <ScrollViewer x:Name="dialogMessageScroll" Style="{StaticResource LauncherDialogScrollViewer}" MaxHeight="280" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,24" Padding="0,0,10,0">
     <StackPanel>
     <TextBlock x:Name="txtDialogMessage" Text="消息内容" Foreground="#B7C0C5" FontSize="13" LineHeight="23" TextWrapping="Wrap"/>
      <TextBox x:Name="txtDialogRecoveryCode" Visibility="Collapsed" IsReadOnly="True" IsReadOnlyCaretVisible="True" Style="{StaticResource CinematicTextBox}" FontFamily="Consolas" FontSize="16" Margin="0,12,0,0" AutomationProperties.Name="一次性恢复码"/>
@@ -732,4 +950,5 @@
         </Canvas>
 
     
-</Grid></Window>
+</Grid> </Viewbox>
+</Window>

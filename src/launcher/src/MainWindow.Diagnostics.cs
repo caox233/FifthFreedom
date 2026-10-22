@@ -200,7 +200,7 @@ public partial class MainWindow
         Check(!IsValidPasswordInput("\0") && !IsValidPasswordInput(new string('x',4097)),"native encoding and capacity guard retained");
         txtPassword.Password="";
         Check(FindName("btnExportDiagnostics")==btnExportDiagnostics && btnExportDiagnostics.IsEnabled,"export diagnostics replaces old Hook slot and is enabled");
-        foreach(string name in new[]{"txtAppSubtitle","txtFooterNotice","txtLaunchModeLabel","cmbGameExecutable","txtHostDiscovery","btnRestoreHook"})Check(FindName(name)==null,"removed obsolete UI "+name);
+        foreach(string name in new[]{"txtAppSubtitle","txtFooterNotice","txtLaunchModeLabel","txtHostDiscovery","btnRestoreHook"})Check(FindName(name)==null,"removed obsolete UI "+name);
         Check(((System.Windows.Controls.ListBoxItem)cmbGameplayMode.Items[0]).Tag?.ToString()=="MOD" && ((System.Windows.Controls.ListBoxItem)cmbGameplayMode.Items[1]).Tag?.ToString()=="Official","MOD above Official; stable semantic tags");
         Check(chkRememberPassword.IsChecked==true,"remember-password choice visible and enabled by default");
         txtUsername.Text="fixture";txtServer.Text="192.0.2.10";
@@ -230,10 +230,13 @@ public partial class MainWindow
         Check(persisted?.FovScale==1.25,"FOV setting serialization round trip");
         FovReset_Click(this,new RoutedEventArgs());Check(GetSelectedFovScale()==1.2,"FOV reset restores default");
         Check(GetSelectedGameplayMode()=="MOD","gameplay mode defaults to MOD");
-        Check(GetSelectedGameExecutable()=="Blacklist_DX11_game.exe","DX11 remains fixed without a renderer selector");
+        Check(GetSelectedGameExecutable()=="Blacklist_DX11_game.exe","DX11 remains fixed despite the presentation-only renderer selector");
         cmbGameplayMode.SelectedValue="MOD";
         Check(GetSelectedGameplayMode()=="MOD" && GetSelectedGameExecutable()=="Blacklist_DX11_game.exe","MOD is independent of renderer choice");
-        Check(FindName("cmbGameExecutable")==null && GetSelectedGameExecutable()=="Blacklist_DX11_game.exe" && GetSelectedGameplayMode()=="MOD","renderer selector removed; DX11-only and MOD retained");
+        Check(FindName("cmbGameExecutable")==cmbGameExecutable && Equals(cmbGameExecutable.SelectedValue,"DX11") &&
+              cmbGameExecutable.Items.OfType<System.Windows.Controls.ListBoxItem>().Single(x => Equals(x.Tag,"DX9")).IsEnabled==false &&
+              GetSelectedGameExecutable()=="Blacklist_DX11_game.exe" && GetSelectedGameplayMode()=="MOD",
+              "renderer presentation selects DX11, disables DX9, and cannot replace the fixed executable or MOD selection");
         SetBusy(true);Check(!cmbGameplayMode.IsEnabled,"gameplay selection locked while busy");SetBusy(false);
         SetGameStartingState(true);Check(!cmbGameplayMode.IsEnabled,"gameplay selection locked while starting");
         Check(!fovSlider.IsEnabled && !btnFovReset.IsEnabled,"FOV controls locked while starting");
@@ -276,10 +279,20 @@ public partial class MainWindow
         var bytes=Encoding.UTF8.GetBytes(packet);a.Send(bytes,bytes.Length,toB);
         var received=b.Receive(ref remote);Check(ParseHostBroadcastMessage(Encoding.UTF8.GetString(received))!=null,"actual UDP discovery packet decoded");
         b.Send(received,received.Length,remote);a.Receive(ref remote);Check(true,"actual loopback UDP reply received");
+        // Measure the actual presentation surface, so the donor Viewbox's scale
+        // participates in every minimum-window visibility and overlap assertion.
+        var presentationSurface = (FrameworkElement)Content;
         foreach(var size in new[] { new Size(1120,680), new Size(1000,600), new Size(900,580) })
         {
-            rootGrid.Measure(size); rootGrid.Arrange(new Rect(new Point(),size)); rootGrid.UpdateLayout();
-            Rect Bounds(FrameworkElement e) => new(e.TranslatePoint(new Point(), rootGrid), new Size(e.ActualWidth,e.ActualHeight));
+            void ArrangePresentation()
+            {
+                presentationSurface.Measure(size);
+                presentationSurface.Arrange(new Rect(new Point(), size));
+                presentationSurface.UpdateLayout();
+            }
+            ArrangePresentation();
+            Rect Bounds(FrameworkElement e) => e.TransformToAncestor(presentationSurface)
+                .TransformBounds(new Rect(new Point(), new Size(e.ActualWidth, e.ActualHeight)));
             var left=Bounds(heroPanel);var right=Bounds(authPanel);
             Check(left.Right < right.Left && Bounds(btnLaunch).Left < size.Width/2,
                 $"SCBL left launch / right login layout {size.Width}x{size.Height}");
@@ -292,7 +305,7 @@ public partial class MainWindow
                 Check(rect.Width>10 && rect.Height>10 && rect.Left>=0 && rect.Top>=0 && rect.Right<=size.Width+1 && rect.Bottom<=size.Height+1,
                     $"visible control {e.Name} {size.Width}x{size.Height}");
             }
-            ShowDiagnosticDialog(true);rootGrid.Measure(size);rootGrid.Arrange(new Rect(new Point(),size));rootGrid.UpdateLayout();
+            ShowDiagnosticDialog(true);ArrangePresentation();
             var card=Bounds(dialogCard);
             Check(dialogCard.CornerRadius.TopLeft==0 && card.Left>=0 && card.Right<=size.Width && card.Top>=0 && card.Bottom<=size.Height,$"SCBL square dialog stays within {size.Width}x{size.Height}");
             Check(dialogMessageScroll.ScrollableHeight>0,$"long diagnostic message scrolls {size.Width}x{size.Height}");
