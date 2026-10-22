@@ -49,6 +49,7 @@ mod api;
 mod challenge;
 mod clan;
 mod config;
+mod deployment_profile;
 mod lan_runtime;
 mod observer_policy;
 mod game_session;
@@ -73,6 +74,7 @@ mod uplay_win;
 mod user_storage;
 
 use crate::config::Config;
+use crate::deployment_profile::DeploymentProfile;
 
 type NativeServer<'a> = quazal::prudp::Server<'a, fn(ClientInfo), fn(ClientInfo)>;
 
@@ -246,6 +248,9 @@ fn ensure_data_dir() -> io::Result<()> {
 #[derive(argh::FromArgs)]
 /// dedicated server
 struct Args {
+    /// deployment profile: lan (default) or public (not integrated; fails closed)
+    #[argh(option, default = "DeploymentProfile::Lan")]
+    deployment_profile: DeploymentProfile,
     /// path to config file (default: service.toml)
     #[argh(option, short = 'c', long = "config")]
     config_path: Option<PathBuf>,
@@ -287,10 +292,13 @@ where
 fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
     let args = argh::from_env::<Args>();
+    // Resolve deployment before any persistent state or LAN-only startup action.
+    // Public deliberately has no startup plan until its secure adapters exist.
+    let startup_plan = args.deployment_profile.startup_plan()?;
     // Fail closed before data creation, database mutation, listeners or readiness.
     let verified_release = server_api::release_catalog::verify_server_package(&std::env::current_exe()?)?;
     sodiumoxide::init().map_err(|_| eyre::eyre!("crypto initialization failed"))?;
-    let root = args.data_dir.clone().unwrap_or(std::env::current_exe()?.parent().unwrap().join("lan-server-data"));
+    let root = startup_plan.data_root(args.data_dir.clone(), &std::env::current_exe()?)?;
     std::fs::create_dir_all(&root)?;
     std::env::set_current_dir(std::fs::canonicalize(&root)?)?;
     #[cfg(target_os = "windows")]
@@ -384,6 +392,24 @@ fn main() -> color_eyre::Result<()> {
 #[cfg(test)]
 mod user_packet_tests {
     use super::*;
+
+    #[test]
+    fn deployment_cli_defaults_to_lan_without_reinterpreting_transport_names() {
+        use argh::FromArgs;
+        let args = Args::from_args(&["FifthFreedom.Server"], &[]).unwrap();
+        assert_eq!(args.deployment_profile, DeploymentProfile::Lan);
+        for invalid in ["fast", "compatible", "host", "join", "unknown"] {
+            assert!(Args::from_args(&["FifthFreedom.Server"], &["--deployment-profile", invalid]).is_err());
+        }
+    }
+
+    #[test]
+    fn explicit_public_cannot_enable_lan_initialization() {
+        use argh::FromArgs;
+        let args = Args::from_args(&["FifthFreedom.Server"], &["--deployment-profile", "public", "--init-lan", "127.0.0.1"]).unwrap();
+        assert_eq!(args.init_lan, Some(std::net::Ipv4Addr::LOCALHOST));
+        assert_eq!(args.deployment_profile.startup_plan(), Err(crate::deployment_profile::ProfileError::PublicNotIntegrated));
+    }
 
     #[test]
     fn untrusted_virtual_ports_are_dropped_without_panicking() {
