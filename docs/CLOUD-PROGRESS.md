@@ -97,9 +97,11 @@ The reviewed code through `d0ee78e59b3d6c0691c00a224383d27dc6500ada` is in
 [draft PR #1](https://github.com/caox233/FifthFreedom/pull/1).
 [PR source checks 39860607056](https://github.com/caox233/FifthFreedom/actions/runs/39860607056)
 passed. The [PR candidate 39860607037](https://github.com/caox233/FifthFreedom/actions/runs/39860607037)
-passed both Linux jobs and Windows source checks; Windows component compilation
-and no-game checks were still running at this checkpoint. No merge or release
-occurred. The separate source-bound knowledge snapshot is in
+completed with Windows and both Linux component jobs successful. The Windows
+job includes WPF publishing and isolated no-game UI checks, four managed suites,
+native core/API tests and x86 hooks/gameplay plus Windows LAN compilation. The
+overall workflow remains failed because the strict privacy gate failed; complete
+packaging was skipped. No merge or release occurred. The separate source-bound knowledge snapshot is in
 [DevDocs draft PR #1](https://github.com/caox233/FifthFreedom-DevDocs/pull/1).
 
 ## Reusable environment and continuation
@@ -143,3 +145,13 @@ four unchanged production pure-policy modules: seven tests passed. It found no
 confirmed root cause for intermittent scope loss and identifies a narrowly scoped
 late-geometry native replay as the next missing evidence. Accepted VSS EMF/F3
 results and the unresolved bug status remain unchanged.
+
+The first successful Windows component run was
+[39860535649](https://github.com/caox233/FifthFreedom/actions/runs/39860535649),
+against the same implementation commit. Public artifact metadata and exact
+archive digests are recorded in
+[evidence/hosted-candidate-d0ee78e.json](evidence/hosted-candidate-d0ee78e.json).
+These are artifact archive digests; component-specific checksums remain inside
+the corresponding artifact. Full download redirects remained restricted in this
+cloud session. Candidate entry points now use PR/manual only to avoid duplicate
+push-plus-PR builds; no checks or privacy gates were removed.

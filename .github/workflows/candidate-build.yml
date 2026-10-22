@@ -1,8 +1,6 @@
 name: Fifth Freedom development candidates
 
 on:
-  push:
-    branches: ['codex/**']
   pull_request:
   workflow_dispatch:
 

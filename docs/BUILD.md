@@ -4,7 +4,7 @@
 
 后续常规构建使用 GitHub 托管的 Windows/Linux runner，用户电脑无需作为自托管 runner
 保持开机。Windows 编译 WPF、x86 DLL 和 LAN 服务端；Linux 编译并测试服务端。
-PR、手动任务和 `codex/**` 开发分支的候选检查只保存构建日志、校验和与 artifact，
+PR 和手动任务的候选检查只保存构建日志、校验和与 artifact，
 不自动创建正式 Release、部署生产或启动游戏。实际 job 和命令见
 [`tasks/ci-01.md`](tasks/ci-01.md)；配置存在不等于本轮执行成功。
 
