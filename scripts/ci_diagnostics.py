@@ -15,7 +15,8 @@ _COMPILER_CODE = re.compile(r"\berror(?:\[(E[0-9]{4})\]|\s+((?:CS|NETSDK|NU|MSB|
 _EXCEPTIONS = {"RuntimeError", "ValueError", "OSError", "FileNotFoundError", "PermissionError",
                "FileExistsError", "TimeoutExpired", "CalledProcessError", "UnicodeDecodeError",
                "ImportError", "ModuleNotFoundError", "AssertionError", "XamlParseException",
-               "IOException", "InvalidOperationException", "TypeInitializationException"}
+               "IOException", "InvalidOperationException", "TypeInitializationException",
+               "OperationalError", "IntegrityError", "DatabaseError", "ProgrammingError"}
 _KNOWN_SIGNATURES = {
     "dependency-download-failed": ("failed to download", "unable to load the service index"),
     "custom-build-command-failed": ("failed to run custom build command",),
@@ -61,10 +62,18 @@ def test_failure_summary(suite: str, result) -> str:
                    | {method_id(test) for test in result.unexpectedSuccesses})
     shown = names[:MAX_ITEMS]
     suffix = f"; additional_failed_methods={len(names) - len(shown)}" if len(names) > len(shown) else ""
+    exceptions = sorted({kind for _, trace in [*result.failures, *result.errors]
+                         for kind in known_exception_types(trace)})[:MAX_ITEMS]
     return (f"suite={safe_identifier(suite)}; executed_methods={result.testsRun}; "
             f"failed_methods={','.join(shown) or 'none'}; assertion_events={len(result.failures)}; "
             f"error_events={len(result.errors)}; unexpected_successes={len(result.unexpectedSuccesses)}"
+            f"; exception_types={','.join(exceptions) or 'unclassified'}"
             f"{suffix}; full diagnostics remain in the run artifacts")
+
+
+def known_exception_types(text: str) -> list[str]:
+    """Report only fixed known class names; never the adjacent traceback text."""
+    return sorted({name for name in _EXCEPTIONS if re.search(r"\b" + name + r"\b", text)})[:MAX_ITEMS]
 
 
 def known_ui_labels(source_paths) -> set[str]:
@@ -100,7 +109,7 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
         if candidate in allowed and candidate not in labels:
             labels.append(candidate)
     signatures = [name for name, needles in _KNOWN_SIGNATURES.items() if any(needle in text for needle in needles)]
-    exceptions = sorted({name for name in _EXCEPTIONS if re.search(r"\b" + name + r"\b", text)})[:MAX_ITEMS]
+    exceptions = known_exception_types(text)
     return {"compiler_codes": codes, "ui_checks": labels[:MAX_ITEMS],
             "categories": signatures[:MAX_ITEMS], "exception_types": exceptions}
 

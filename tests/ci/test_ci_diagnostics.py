@@ -2,6 +2,7 @@
 from contextlib import redirect_stdout
 import io
 from pathlib import Path
+import sqlite3
 import sys
 import tempfile
 import unittest
@@ -52,6 +53,22 @@ class AnnotationSafetyTests(unittest.TestCase):
                 return "test_private.Class.test_case\n::error::private"
         self.assertEqual(diagnostics.method_id(FakeTest()), "unavailable-test-method")
 
+    def test_method_summary_exposes_only_known_exception_types(self):
+        class DatabaseFixture(unittest.TestCase):
+            def runTest(self):
+                for error in (PermissionError("C:/private/PRIVATE_ACCOUNT.sqlite"),
+                              sqlite3.OperationalError("PRIVATE_DATABASE_CONTENT")):
+                    with self.subTest(error=error):
+                        raise error
+        DatabaseFixture.__qualname__ = "DatabaseFixture"
+        result = unittest.TestResult()
+        DatabaseFixture().run(result)
+        summary = diagnostics.test_failure_summary("server", result)
+        self.assertIn("exception_types=OperationalError,PermissionError", summary)
+        self.assertIn("error_events=2", summary)
+        self.assertNotIn("PRIVATE_", summary)
+        self.assertNotIn("C:/", summary)
+
     def test_compiler_summary_keeps_codes_not_paths_or_values(self):
         text = ("C:/Users/private/App.cs(2): error CS0246: secret=PRIVATE_A\n"
                 "error[E0433]: PRIVATE_B\n"
@@ -79,14 +96,18 @@ class AnnotationSafetyTests(unittest.TestCase):
             self.assertEqual(diagnostics.known_ui_labels([path]), {"static route contract"})
 
     def test_nested_steps_emit_once_and_do_not_print_exception_message(self):
-        output = io.StringIO()
-        with redirect_stdout(output), self.assertRaises(diagnostics.AnnotatedFailure):
-            with diagnostics.diagnostic_step("windows-components"):
-                with diagnostics.diagnostic_step("ci-wpf-compile"):
-                    raise RuntimeError("PRIVATE_TOKEN_VALUE")
-        self.assertEqual(output.getvalue().count("CI_ERROR_SUMMARY"), 1)
-        self.assertIn("step=ci-wpf-compile", output.getvalue())
-        self.assertNotIn("PRIVATE_TOKEN_VALUE", output.getvalue())
+        for actions, prefix in (("false", "CI_ERROR_SUMMARY"), ("true", "::error title=Fifth Freedom CI::")):
+            with self.subTest(github_actions=actions):
+                output = io.StringIO()
+                with patch.dict("os.environ", {"GITHUB_ACTIONS": actions}), redirect_stdout(output):
+                    with self.assertRaises(diagnostics.AnnotatedFailure):
+                        with diagnostics.diagnostic_step("windows-components"):
+                            with diagnostics.diagnostic_step("ci-wpf-compile"):
+                                raise RuntimeError("PRIVATE_TOKEN_VALUE")
+                self.assertEqual(output.getvalue().count(prefix), 1)
+                self.assertEqual(len(output.getvalue().splitlines()), 1)
+                self.assertIn("step=ci-wpf-compile", output.getvalue())
+                self.assertNotIn("PRIVATE_TOKEN_VALUE", output.getvalue())
 
     def test_only_new_step_logs_contribute_codes(self):
         with tempfile.TemporaryDirectory() as temporary:
