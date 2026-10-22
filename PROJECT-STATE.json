@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Source/donor migrated and hash-checked. Local renamed four-component package built and verified; Python 37, package launcher 145, LAN 26, native API 27 passed. Historical 117 files and cumulative four-role set preserved. Privacy review: no confirmed real secrets; 12 opaque save/meta inputs held locally.",
-  "NEXT_EXECUTABLE_ACTION": "Commit and upload reviewed source/docs/resources, create development knowledge base, then existing cloud task fetches exact revision and starts UI/server integration and GitHub Windows/Linux CI. Preserve asset privacy gate.",
+  "LAST_CONFIRMED_RESULT": "Cloud implementation pushed at d0ee78e59b3d6c0691c00a224383d27dc6500ada; draft source PR #1 created. PR source checks run39860607056 passed. First hosted candidate passed both Linux lanes; Windows source failures were identified, CI environment assumption fixed and SQLite fixtures explicitly closed, hosted Windows source rerun passed, compile/no-game stage running. Real native-producer/Python bridge verified; source120 methods118pass2Windows skips. Full package remains privacy-gated.",
+  "NEXT_EXECUTABLE_ACTION": "Read PR candidate39860607037 Windows results and fix actual failures; synchronize source-bound DevDocs and supplemental receipts. Continue UI production adapters, trusted public issuer-key/observer-grant handoff, protected transport and Linux lifecycle with Public closed until reviewed. Receive capture source supplement and complete frozen-input provenance. Preserve all six milestones and retained game bugs.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -18,32 +18,32 @@
     {
       "id": 1,
       "name": "Unify Fifth Freedom branding",
-      "status": "initial_branding_and_package_build_verified_ui_integration_pending"
+      "status": "initial_branding_and_cross_target_wpf_compile_verified_windows_ui_pending"
     },
     {
       "id": 2,
       "name": "SCBL3 UI with retained LAN behavior",
-      "status": "donor_preserved_integration_pending_cloud"
+      "status": "donor_shell_stage1_and_tested_environment_model_implemented_production_adapters_pending"
     },
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "sources_preserved_integration_pending_cloud"
+      "status": "linux_hosted_reference_builds_pass_authenticated_read_bridge_and_native_fixture_verified_public_runtime_pending"
     },
     {
       "id": 4,
       "name": "Reviewed public source and development knowledge base",
-      "status": "public_review_complete_source_push_pending_knowledge_repo_created_empty"
+      "status": "reviewed_cloud_source_branch_pushed_draft_pr1_created_devdocs_snapshot_sync_in_progress"
     },
     {
       "id": 5,
       "name": "Cloud handoff and ongoing implementation",
-      "status": "existing_cloud_running_repo_read_verified_source_pending"
+      "status": "cloud_implementation_and_hosted_candidate_run_active_no_goal_scheduler_interface"
     },
     {
       "id": 6,
       "name": "Standalone development root and safe cleanup",
-      "status": "source_toolchains_117_historical_files_cumulative_roles_preserved_full_dependency_closure_pending"
+      "status": "originals_preserved_upstream_notice_verified_frozen_binary_version_capture_source_and_save_privacy_pending"
     }
   ],
   "continuation_policy": "Code changes primarily in cloud per user. Local work finishes migration, privacy review, current builds and preservation; never auto-start game or private capture.",
@@ -81,11 +81,38 @@
     "personal_data_excluded": true
   },
   "cloud": {
-    "thread_title": "FifthFreedom云端",
+    "thread_title": "FifthFreedom\u4e91\u7aef",
     "repository": "caox233/FifthFreedom",
-    "verified": "running connected Linux x86_64; repository read succeeded",
+    "verified": "running connected Linux x86_64; Git HTTPS fetch/push and official gh repository/PR APIs succeeded",
     "environment_display_name": "not independently exposed by status API",
-    "snapshot_publish_status": "not confirmed"
+    "snapshot_publish_status": "not confirmed",
+    "handoff_commit": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+    "development_branch": "codex/cloud-integration",
+    "knowledge_repository": "caox233/FifthFreedom-DevDocs",
+    "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
+    "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
+    "api_access": "Official gh API initially denied, later succeeded under existing configuration. Actions log/artifact redirect hosts still denied; narrow official environment draft additions saved. No bypass; draft publication unconfirmed.",
+    "latest_pushed_commit": "d0ee78e59b3d6c0691c00a224383d27dc6500ada",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39860607037",
+    "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
+    "hosted_history": [
+      {
+        "run_id": 39858405093,
+        "commit": "0e186f0afeb2756527d0f1eabaa88e5069129d39",
+        "overall": "failure",
+        "linux_matrix": "success",
+        "windows": "source_checks_failed_compile_step_skipped",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39859917025,
+        "commit": "cb9b97d5b9edcd863453d62edf3f1573cf3597fb",
+        "overall": "cancelled_by_next_push_after_windows_failure",
+        "windows": "14_reader_fixture_errors_and_1_ci_environment_assertion",
+        "complete_package": "skipped_private_input_gate_failed"
+      }
+    ],
+    "candidate_windows_source": "passed on PR run39860607037; compile/test/probe stage in progress"
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -93,7 +120,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-22T21:13:51.799609+00:00",
+  "updated_utc": "2026-10-22T21:56:08.181674+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -101,8 +128,84 @@
     "lan_self_tests": 26,
     "native_api_tests": 27,
     "initial_native_api_failure": "stale producer fixture digest after executable rename; regenerated by actual producer, old historical fixture restored unchanged",
-    "github_full_build": "not_yet_configured_or_run",
-    "clean_public_package": "held_default_save_inputs_block_complete_build",
-    "live_game": "not_run"
+    "github_full_build": "both_initial_linux_lanes_passed_windows_source_rerun_passed_component_stage_running_full_package_blocked",
+    "clean_public_package": "strict_gate_failed_missing_8_lan_sav_meta_12_held_total",
+    "live_game": "not_run",
+    "cloud_initial_python": {
+      "tests": 37,
+      "errors": 16,
+      "skipped": 2,
+      "cause": "held SAV/META inputs absent",
+      "exit_code": 1
+    },
+    "cloud_initial_source_logic": {
+      "tests": 35,
+      "passed": 33,
+      "skipped": 2,
+      "exit_code": 0,
+      "scope": "Explicit selection excludes two complete-resource tests; strict resource tests remain unchanged and failing."
+    },
+    "initial_github_source_checks": "https://github.com/caox233/FifthFreedom/actions/runs/39855999361 (reported failure; same failure independently reproduced in cloud)",
+    "cloud_native_api": {
+      "passed": 29,
+      "exit_code": 0
+    },
+    "cloud_native_server": {
+      "passed": 390,
+      "exit_code": 0,
+      "zero_test_targets": 5,
+      "initial_failed_run": "18 required owned fixture directories; corrected runner environment and reran"
+    },
+    "cloud_donor_native_reference": {
+      "passed": 183,
+      "exit_code": 0,
+      "zero_test_targets": 10
+    },
+    "cloud_donor_manager": {
+      "executed": 154,
+      "passed": 153,
+      "skipped": 1,
+      "exit_code": 0
+    },
+    "cloud_wpf_cross_compile": {
+      "warnings": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "windows_runtime_validated": false
+    },
+    "cloud_background_task_regression": {
+      "checks": 10,
+      "exit_code": 0
+    },
+    "cloud_observer_session": {
+      "exit_code": 0
+    },
+    "cloud_portplan": {
+      "exit_code": 134,
+      "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
+    },
+    "cloud_source_current": {
+      "executed": 120,
+      "passed": 118,
+      "skipped": 2,
+      "exit_code": 0,
+      "environment": "GITHUB_ACTIONS=true on Linux; Windows-only skips explicit"
+    },
+    "cloud_authenticated_reader": {
+      "passed": 47,
+      "exit_code": 0,
+      "scope": "synthetic databases only; no listener"
+    },
+    "cloud_native_bridge_fixture": {
+      "rust_passed": 2,
+      "python_passed": 5,
+      "fixture_sha256": "ba92c9917c8de43dd6b83ba31c0d985cba88cc868171d4872ce25cbd5416c663",
+      "scope": "real current native producer, synthetic keys and identities; no production key handoff"
+    },
+    "cloud_network_environment": {
+      "passed": 28,
+      "exit_code": 0,
+      "production_adapters_wired": false
+    }
   }
 }

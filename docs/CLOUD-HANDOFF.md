@@ -2,6 +2,10 @@
 
 This is a migration checkpoint, not a completed UI or server integration.
 
+For subsequent cloud implementation and actual hosted outcomes, read
+[`CLOUD-PROGRESS.md`](CLOUD-PROGRESS.md) together with current project state.
+The initial observations below are retained as the handoff baseline.
+
 The user explicitly prefers subsequent code changes in the cloud. The local
 machine should finish source migration, privacy review, preservation and current
 build verification only; UI/server integration and continuing bug fixes belong
