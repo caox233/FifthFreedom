@@ -97,7 +97,10 @@ The reviewed code through `d0ee78e59b3d6c0691c00a224383d27dc6500ada` is in
 [draft PR #1](https://github.com/caox233/FifthFreedom/pull/1).
 [PR source checks 39860607056](https://github.com/caox233/FifthFreedom/actions/runs/39860607056)
 passed. The [PR candidate 39860607037](https://github.com/caox233/FifthFreedom/actions/runs/39860607037)
-was started for actual Windows verification. No merge or release occurred.
+passed both Linux jobs and Windows source checks; Windows component compilation
+and no-game checks were still running at this checkpoint. No merge or release
+occurred. The separate source-bound knowledge snapshot is in
+[DevDocs draft PR #1](https://github.com/caox233/FifthFreedom-DevDocs/pull/1).
 
 ## Reusable environment and continuation
 
@@ -134,3 +137,9 @@ supplemental patch against the handoff has SHA256
 All 40 changed files reconstructed byte-for-byte from the preserved handoff in a
 fresh temporary directory; applying the reverse patch restored all original
 bytes. This is a cloud source receipt, not a rerun of private local role evidence.
+
+The parallel [VSS lifecycle audit](tasks/vss-lifecycle-audit.md) directly compiled
+four unchanged production pure-policy modules: seven tests passed. It found no
+confirmed root cause for intermittent scope loss and identifies a narrowly scoped
+late-geometry native replay as the next missing evidence. Accepted VSS EMF/F3
+results and the unresolved bug status remain unchanged.

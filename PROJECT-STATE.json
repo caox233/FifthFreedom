@@ -33,7 +33,7 @@
     {
       "id": 4,
       "name": "Reviewed public source and development knowledge base",
-      "status": "reviewed_cloud_source_branch_pushed_draft_pr1_created_devdocs_snapshot_sync_in_progress"
+      "status": "source_draft_pr1_and_source_bound_devdocs_draft_pr1_created"
     },
     {
       "id": 5,
@@ -112,7 +112,9 @@
         "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "passed on PR run39860607037; compile/test/probe stage in progress"
+    "candidate_windows_source": "passed on PR run39860607037; compile/test/probe stage in progress",
+    "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
+    "candidate_linux_matrix": "both jobs passed on PR run39860607037"
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -120,7 +122,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-22T21:56:08.181674+00:00",
+  "updated_utc": "2026-10-22T22:04:28.084686+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -206,6 +208,12 @@
       "passed": 28,
       "exit_code": 0,
       "production_adapters_wired": false
+    },
+    "cloud_vss_policy_audit": {
+      "passed": 7,
+      "exit_code": 0,
+      "scope": "four unchanged production pure-policy modules; no native bind/tick or game execution; no confirmed root cause",
+      "record": "docs/tasks/vss-lifecycle-audit.md"
     }
   }
 }
