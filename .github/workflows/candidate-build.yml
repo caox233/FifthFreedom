@@ -172,7 +172,7 @@ jobs:
           retention-days: 14
 
   linux-public-server-integrity:
-    name: Linux service and Windows client component identity
+    name: Linux service/client identities and static deployment preflight
     needs: [windows-components, linux-lan-baseline]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -193,7 +193,7 @@ jobs:
         with:
           name: linux-lan-baseline-${{ github.sha }}
           path: ${{ runner.temp }}/public-server-inputs/linux
-      - name: Reject mixed-run inputs and verify both identities with the native reader
+      - name: Verify same-run identities and require read-only deployment preflight
         run: python -B scripts/ci_candidate.py linux-public-server-integrity
       - name: Preserve component-only identity evidence without releasing or deploying
         if: always()
@@ -202,6 +202,43 @@ jobs:
           name: linux-public-server-component-candidate-${{ github.sha }}
           path: |
             artifacts/ci/linux-public-server-integrity/
+            artifacts/logs/
+          if-no-files-found: warn
+          retention-days: 14
+
+  linux-socket-isolation:
+    name: Linux native socket ingress isolation (synthetic namespaces)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      SODIUM_USE_PKG_CONFIG: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install signed native build and owned namespace test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends build-essential pkg-config cmake libsodium-dev libssl-dev libsqlite3-dev iproute2
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install nightly-2025-10-15 --profile minimal
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Require controls, ingress isolation and owned namespace cleanup
+        run: python -B scripts/ci_candidate.py linux-socket-isolation
+      - name: Preserve synthetic isolation evidence without enabling Public startup
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-native-socket-isolation-${{ github.sha }}
+          path: |
+            artifacts/ci/linux-socket-isolation/
+            artifacts/ci/test-logs/
             artifacts/logs/
           if-no-files-found: warn
           retention-days: 14

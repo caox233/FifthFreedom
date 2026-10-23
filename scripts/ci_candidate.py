@@ -17,10 +17,11 @@ from contextlib import contextmanager
 import build
 import ci_diagnostics
 import ci_checks
+import ci_public_preflight
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / "artifacts"
-LANES = ("windows-components", "windows-package-smoke", "linux-lan-baseline", "linux-public-donor-reference", "linux-public-control", "linux-public-server-integrity")
+LANES = ("windows-components", "windows-package-smoke", "linux-lan-baseline", "linux-public-donor-reference", "linux-public-control", "linux-public-server-integrity", "linux-socket-isolation")
 
 
 def run_build_step(label, args, cwd=None, env=None):
@@ -318,9 +319,80 @@ def linux_public_server_integrity(receipt: dict) -> None:
         "--expected-commit", receipt["commit"], "--expected-run-id", receipt["run_id"],
         "--expected-run-attempt", receipt["run_attempt"]])
     result = build.read(output / "CANDIDATE-RECEIPT.json")
+    # The real admitted Linux executable inspects fresh owned inputs only. The
+    # adapter never forwards native stdout/stderr or retains key/config/data.
+    with ci_diagnostics.diagnostic_step("ci-static-public-deployment-preflight"):
+        receipt["static_public_preflight"] = ci_public_preflight.check(output, result, Path(os.environ["RUNNER_TEMP"]))
     receipt.update(candidate_path=output.relative_to(ROOT).as_posix(),
                    native_verification=result["native_verification"],
                    complete_windows_client=False, native_public_profile_enabled=False)
+
+
+def validate_socket_receipt(report, probe_sha256):
+    from ci_socket_isolation import PORT_FIELDS, SCOPE
+    if (not isinstance(report, dict) or type(report.get("schema")) is not int or report.get("schema") != 1
+            or report.get("status") != "interface_ingress_isolation_verified"
+            or report.get("interface_isolation_verified") is not True
+            or report.get("probe_sha256") != probe_sha256
+            or report.get("cleanup_errors") != [] or "error" in report
+            or any(type(report.get(name)) is not int or report[name] != 3
+                   for name in ("namespaces_created", "namespaces_removed"))
+            or any(report.get(name) is not value for name, value in SCOPE.items())):
+        raise RuntimeError("Native socket isolation receipt did not prove its required scope and cleanup")
+    observations = report.get("observations")
+    required = [(mode, phase, path, field)
+                for mode in ("ip-only", "interface-bound")
+                for phase, path in (("before", "protected"), ("ingress", "wrong"), ("after", "protected"))
+                for field in PORT_FIELDS]
+    if not isinstance(observations, list) or len(observations) != len(required):
+        raise RuntimeError("Native socket isolation observations are incomplete")
+    for actual, (mode, phase, path, field) in zip(observations, required):
+        allowed = ("timeout", "refused") if mode == "interface-bound" and path == "wrong" else ("echo",)
+        if (not isinstance(actual, dict) or set(actual) != {"mode", "phase", "path", "socket", "observation"}
+                or (actual["mode"], actual["phase"], actual["path"], actual["socket"]) != (mode, phase, path, field)
+                or actual["observation"] not in allowed):
+            raise RuntimeError("Native socket isolation controls or protected paths did not match")
+
+
+def linux_socket_isolation(receipt: dict) -> None:
+    if (sys.platform != "linux" or not receipt["github_actions"] or receipt["tracked_source_dirty"]
+            or receipt["commit"] != os.environ.get("GITHUB_SHA")):
+        raise RuntimeError("Socket ingress isolation requires this clean hosted Linux revision")
+    suite = unittest.TestLoader().discover(str(ROOT / "tests/ci"), pattern="test_socket_isolation.py")
+    tests = list(ci_checks.flatten(suite))
+    required = ("test_socket_isolation.NamespaceFixture.", "test_socket_isolation.ProbeFlowTests.",
+                "test_socket_isolation.RealClientTests.")
+    if any(not any(test.id().startswith(prefix) for test in tests) for prefix in required):
+        raise RuntimeError("Required native socket harness checks were not discovered")
+    result = ci_checks.run_suite("socket-isolation-harness", unittest.TestSuite(tests))
+    receipt["suites"] = [ci_checks.result_row("socket-isolation-harness", result)]
+    if not result.testsRun or not result.wasSuccessful() or result.skipped:
+        ci_diagnostics.emit_error(ci_diagnostics.test_failure_summary("socket-isolation-harness", result))
+        raise RuntimeError("Required Linux socket harness checks did not all execute successfully")
+    workspace = ROOT / "src/native"
+    target = ART / "ci/cargo/linux-socket-isolation"
+    env = os.environ.copy()
+    env.update(CARGO_TARGET_DIR=str(target), CARGO_BUILD_JOBS="2", CARGO_INCREMENTAL="0",
+               CARGO_NET_GIT_FETCH_WITH_CLI="true")
+    run_build_step("ci-socket-probe-build", ["cargo", "build", "--locked", "-p", "quazal",
+                                           "--example", "socket_policy_probe"], workspace, env)
+    folder = ART / "ci/linux-socket-isolation"
+    folder.mkdir(parents=True, exist_ok=False)
+    probe = folder / "socket_policy_probe"
+    shutil.copyfile(target / "debug/examples/socket_policy_probe", probe)
+    probe.chmod(0o755)
+    with probe.open("rb") as handle:
+        probe_sha256 = hashlib.file_digest(handle, "sha256").hexdigest()
+    result_path = folder / "isolation-receipt.json"
+    run_build_step("ci-socket-ingress-isolation", ["sudo", "--non-interactive", "--", sys.executable,
+        "-B", ROOT / "scripts/ci_socket_isolation.py", "--probe", probe, "--output", result_path])
+    report = build.read(result_path)
+    validate_socket_receipt(report, probe_sha256)
+    with probe.open("rb") as handle:
+        if hashlib.file_digest(handle, "sha256").hexdigest() != probe_sha256:
+            raise RuntimeError("Native socket probe changed during verification")
+    receipt.update(socket_isolation=report, probe_sha256=probe_sha256,
+                   native_public_profile_enabled=False, workspace="src/native")
 
 
 def main() -> int:
@@ -339,11 +411,14 @@ def main() -> int:
                 linux_public_control(receipt)
             elif args.lane == "linux-public-server-integrity":
                 linux_public_server_integrity(receipt)
+            elif args.lane == "linux-socket-isolation":
+                linux_socket_isolation(receipt)
             else:
                 linux_server(args.lane, receipt)
         receipt["status"] = ("package_no_game_checks_passed" if args.lane == "windows-package-smoke"
                              else "control_service_candidate_verified" if args.lane == "linux-public-control"
-                             else "native_dual_identity_verified" if args.lane == "linux-public-server-integrity"
+                             else "native_dual_identity_and_static_preflight_verified" if args.lane == "linux-public-server-integrity"
+                             else "interface_ingress_isolation_verified" if args.lane == "linux-socket-isolation"
                              else "components_built_and_selected_tests_passed")
         code = 0
     except Exception as error:
