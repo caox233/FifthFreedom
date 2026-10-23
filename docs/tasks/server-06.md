@@ -130,3 +130,9 @@ Its result must be recorded separately; loopback checks do not establish physica
 interface isolation or real encrypted-overlay operation. Next, verify the hosted
 topology receipt, then implement owned encrypted-overlay lifetime monitoring and
 coordinated listener teardown before considering native Public startup.
+
+Root repeated the complete Quazal suite after the final interface-index change
+was committed: 63 unit, 11 integration and one documentation test passed
+(75 total, no failures/warnings). The log is retained at
+`.local/cloud-receipts/server06-final-quazal.log`. This confirms the final local
+revision; privileged hosted namespace evidence remains a separate requirement.

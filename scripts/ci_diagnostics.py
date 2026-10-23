@@ -26,6 +26,13 @@ _KNOWN_SIGNATURES = {
     "probe-result-incomplete": ("no complete, matching nonzero RESULT",),
     "probe-timeout": ("exceeded 180 seconds",),
 }
+_PREFLIGHT_CODES = {
+    "PREFLIGHT_CANDIDATE_CHANGED", "PREFLIGHT_EXECUTABLE_CHANGED", "PREFLIGHT_FIXTURE_FAILED",
+    "PREFLIGHT_INPUT_LINK_REJECTED", "PREFLIGHT_LINUX_REQUIRED", "PREFLIGHT_NATIVE_REJECTED",
+    "PREFLIGHT_OUTPUT_LIMIT", "PREFLIGHT_PRIVATE_STATE_CHANGED", "PREFLIGHT_PROCESS_FAILED",
+    "PREFLIGHT_PUBLIC_GATE_NOT_CLOSED", "PREFLIGHT_REPORT_INVALID", "PREFLIGHT_REPORT_MISMATCH",
+    "PREFLIGHT_TEMP_INSIDE_CANDIDATE", "PREFLIGHT_TEMP_INVALID", "PREFLIGHT_UNVERIFIED_CANDIDATE",
+}
 
 
 def escape_command_data(text: str) -> str:
@@ -112,8 +119,13 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
             labels.append(candidate)
     signatures = [name for name, needles in _KNOWN_SIGNATURES.items() if any(needle in text for needle in needles)]
     exceptions = known_exception_types(text)
+    # The static native preflight intentionally retains no raw output. Preserve
+    # only its source-defined adapter codes; never echo suffixes, paths or values.
+    preflight = sorted({code for code in _PREFLIGHT_CODES
+                        if re.search(r"(?<![A-Za-z0-9_])" + code + r"(?![A-Za-z0-9_])", text)})[:MAX_ITEMS]
     return {"compiler_codes": codes, "ui_checks": labels[:MAX_ITEMS],
-            "categories": signatures[:MAX_ITEMS], "exception_types": exceptions}
+            "categories": signatures[:MAX_ITEMS], "exception_types": exceptions,
+            "preflight_codes": preflight}
 
 
 def read_bounded_logs(paths) -> str:

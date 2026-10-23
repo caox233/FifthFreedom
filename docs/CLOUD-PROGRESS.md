@@ -283,3 +283,53 @@ check had 98 mode-only mismatches under inherited umask 077, with every byte
 already matching. The successful rerun set umask 022 only inside the patch
 subprocess for these public source files; both receipts are retained. Private
 original four-role evidence was not regenerated or changed.
+
+## Native preflight and enforced socket policy
+
+The Windows metadata compatibility correction passed the actual Windows source
+step in [run 39899786790](https://github.com/caox233/FifthFreedom/actions/runs/39899786790)
+at `7dcecd96d27d7aa6490bab1614a64092b79671ef`. That run then completed with
+Windows and all three Linux component jobs successful. The new combined job
+120244277083 also passed using the actual same-run Windows/Linux artifacts and
+native dual-identity checker. This includes real Windows DPAPI and no-game WPF
+context/owned-exit checks. The strict resource gate failed and complete packaging
+skipped; overall workflow failure is preserved. Exact public artifact metadata
+is in [the hosted receipt](evidence/hosted-candidate-7dcecd9.json); redirected
+archive contents were not downloaded in this cloud session. The prior Windows
+failure remains recorded separately. New SERVER05/06 checks below await their
+own hosted revision.
+
+[SERVER-05](tasks/server-05.md) connects an explicit read-only native preflight
+to the actual Linux/Windows package identities, private issuer key/data directory
+and retained native configuration. Actual Debug and Release programs returned
+the strictly static successful report with `startup_allowed:false`; ordinary
+Public startup and mixed arguments still failed, with test inputs unchanged.
+Those local runs used explicitly inert synthetic Windows role files, not hosted
+client artifacts. They exposed two complete identity markers in the real Linux
+binary when both verifier paths were linked. A shared non-inline retention
+anchor fixed both actual binaries to exactly one marker; the strict count and
+original catalog roles were not relaxed. Final API45 and dedicated341 passed.
+
+[SERVER-06](tasks/server-06.md) routes every native TCP/UDP listener and temporary
+peer socket through explicit immutable socket policy. Linux interface binding
+checks the actual stored interface index; LAN preserves its original binding,
+Tonic nodelay and kernel source information. The final committed Quazal suite
+passed75 (63unit+11integration+1doc), with no warning/error. Real local loopback
+checks passed but do not establish a two-interface boundary.
+
+The [three-namespace harness](tasks/socket-isolation.md) has26 focused checks
+and a dedicated hosted Linux job. It requires successful wrong-path traffic
+under ordinary IP binding before testing wrong-interface rejection, repeats
+correct-path checks and requires all owned processes/namespaces to be removed.
+The real cloud execution failed for missing privilege and created zero namespaces;
+no successful skip was substituted. Hosted privileged execution is still required.
+
+CI adds9 native-preflight adapter and5 socket-result checks. A real local Release
+preflight adapter run passed using synthetic Windows inputs, preserving candidate
+bytes and removing every temporary key/config/data input. The fresh hosted
+assembly job explicitly installs the Ubuntu libraries needed by its system-sodium
+build; a locally static binary does not prove hosted dynamic dependency closure.
+A clean checkout of `5e5ef05940a387bc3f275132acf474ba14674860` passed232 source
+methods:230 passed and two existing Windows-only skips. Full-package readiness
+remains false. None of these checks proves owned encrypted-overlay liveness,
+Public source admission or live gameplay, so Public activation remains closed.

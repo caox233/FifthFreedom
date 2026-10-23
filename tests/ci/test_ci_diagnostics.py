@@ -90,6 +90,23 @@ class AnnotationSafetyTests(unittest.TestCase):
         self.assertEqual(details["ui_checks"], [label])
         self.assertNotIn("PRIVATE", str(details))
 
+    def test_preflight_annotations_keep_only_fixed_codes_without_input_or_raw_output(self):
+        text = ("PREFLIGHT_NATIVE_REJECTED: /private/PRIVATE_KEY.key=PRIVATE_VALUE\n"
+                "PREFLIGHT_REPORT_MISMATCH: PRIVATE_NATIVE_STDOUT\n"
+                "PREFLIGHT_UNKNOWN_PRIVATE_CODE\nPREFLIGHT_PROCESS_FAILED_PRIVATE_SUFFIX\n")
+        details = diagnostics.diagnostic_details(text)
+        self.assertEqual(details["preflight_codes"], ["PREFLIGHT_NATIVE_REJECTED", "PREFLIGHT_REPORT_MISMATCH"])
+        self.assertNotIn("PRIVATE", str(details))
+        self.assertNotIn("/private", str(details))
+        output = io.StringIO()
+        with patch.dict("os.environ", {"GITHUB_ACTIONS": "true"}), redirect_stdout(output):
+            with self.assertRaises(diagnostics.AnnotatedFailure):
+                with diagnostics.diagnostic_step("ci-static-public-deployment-preflight"):
+                    raise RuntimeError(text)
+        self.assertIn("preflight_codes=PREFLIGHT_NATIVE_REJECTED | PREFLIGHT_REPORT_MISMATCH", output.getvalue())
+        self.assertNotIn("PRIVATE", output.getvalue())
+        self.assertNotIn("/private", output.getvalue())
+
     def test_ui_label_allowlist_excludes_dynamic_values(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "Probe.cs"
