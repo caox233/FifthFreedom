@@ -29,17 +29,17 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path "$env:RUNNER_TEMP/ff-loopback" -ErrorAction Stop | Out-Null
           & ./scripts/ci_windows_loopback.ps1 -Report "$env:RUNNER_TEMP/ff-loopback/prerequisite.json"
+      - name: Prepare only the exact default IIS site if it occupies the fixed port
+        id: iis_prepare
+        shell: pwsh
+        run: |
+          & ./scripts/ci_windows_iis.ps1 -Mode Prepare -State "$env:RUNNER_TEMP/ff-loopback/iis-restore-plan.json" -Report "$env:RUNNER_TEMP/ff-loopback/iis-prepare.json"
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           global-json-file: global.json
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
-      - name: Prepare only the exact default IIS site if it occupies the fixed port
-        id: iis_prepare
-        shell: pwsh
-        run: |
-          & ./scripts/ci_windows_iis.ps1 -Mode Prepare -State "$env:RUNNER_TEMP/ff-loopback/iis-restore-plan.json" -Report "$env:RUNNER_TEMP/ff-loopback/iis-prepare.json"
       - name: Run the unchanged real FinalLaunchPreparation on this same runner
         run: python -B scripts/ci_windows_loopback.py --report "${{ runner.temp }}/ff-loopback/suite.json"
       - name: Restore the recorded default IIS site state
