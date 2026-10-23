@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Reviewed source b67af6c passed a fresh detached checkout: 489 passed, two existing Windows-only skips, unchanged tracked files; its canonical patch applied and reversed exactly. The official 05c127a source matrix passed on Linux (484+2 skips) and Windows (397+89 platform-specific skips), both artifact digests verified. The actual 23d5923 ten-patch Windows core/CLI build passed, including eight typed session checks without skips and 20 builder checks. Static output inspection confirms a Packet.dll import in core; runtime dependency closure and Public admission remain open. The native listener checker now distinguishes LISTEN from ESTABLISHED/TIME_WAIT, with real owned-socket red-to-green controls, 16 native and 20 stack regressions. Twelve tests now link the real diagnostic text streaming implementation and also passed on hosted Windows with zero skips and an independently digest-verified receipt. Authenticated Data receive has a separate clean-build recipe; its actual hosted build remains pending. All six milestones remain tracked; these source/build results do not establish complete packaging or live game acceptance.",
-  "NEXT_EXECUTABLE_ACTION": "Follow preserved actual 528 combined-stack and 05c initial-address-correction transport runs, and the new b67 native candidate, to exact results; diagnose any real failure without weakening ownership/authentication gates. Verify the independent authenticated-receive full build and retain the successful b67 Windows streaming receipt. Finish and review the real owned-core Windows Job/process/input-lifetime primitive, then execute its x86 hosted controls. Develop precise nonce/session-bound Data response correlation separately from existing runtime recipes. Determine a source-built Windows dependency closure without silently distributing Packet/Npcap. Keep original evidence and passed gameplay intact; missing Capture/C71/retail extraction inputs and private SAV/META remain explicit. Actual chat serializer coverage needs the exact missing inputs, not an invented protocol.",
+  "LAST_CONFIRMED_RESULT": "Reviewed source b67af6c passed a fresh detached checkout: 489 passed, two existing Windows-only skips, unchanged tracked files; its canonical patch applied and reversed exactly. The official 05c127a source matrix passed on Linux (484+2 skips) and Windows (397+89 platform-specific skips), both artifact digests verified. The actual 23d5923 ten-patch Windows core/CLI build passed, including eight typed session checks without skips and 20 builder checks. Static output inspection confirms a Packet.dll import in core; runtime dependency closure and Public admission remain open. The native listener checker now distinguishes LISTEN from ESTABLISHED/TIME_WAIT, with real owned-socket red-to-green controls, 16 native and 20 stack regressions. Twelve tests now link the real diagnostic text streaming implementation and also passed on hosted Windows with zero skips and an independently digest-verified receipt. The independent authenticated Data receive recipe passed all 44 actual hosted contracts with zero ignored tests and a locked Release core/CLI build; official receipt digests and exact source inventory were independently verified. No runtime or active challenge was executed by that build. All six milestones remain tracked; these source/build results do not establish complete packaging or live game acceptance. The actual 05c guard3 runtime matrix now passed all nine QUIC/WSS/development-TCP correct-pin-before/wrong-pin/restore phases, with verified cleanup and official artifact digest. The older 528 combined stack remains failed: its lease-revoke case recorded partial native/close evidence, but peer-loss failed before combined readiness was confirmed with an unclassified observe error; that old run predates the new OPEN barrier. The actual Windows x86 owned-process primitive passed 17 synthetic-helper cases with zero skips and unchanged apphost bytes; this is not an EasyTier core or driver run.",
+  "NEXT_EXECUTABLE_ACTION": "Retain the verified complete 05c transport matrix; retain the verified 08b3d07 x86 owned-process17 result and follow the b67 native candidate. Preserve the older 528 peer-loss failure and add only bounded fixed-code diagnostics, then verify the reviewed pre-revocation OPEN barrier on actual native/stack runs. Finish real Instance-bound owner IPC, exact Data nonce/session correlation and a separately built Windows no-Packet dependency candidate; keep successful10/44/guard3 recipes distinct until reviewed composition. Preserve accepted gameplay and originals. Missing Capture/retail extraction inputs, private SAV/META, live game/socket acceptance, final distribution conditions and environment publication remain explicit.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -28,7 +28,7 @@
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "owned_overlay_native_stack_harness_implemented_hosted_runtime_failed_before_positive_completion_production_admission_closed"
+      "status": "linux_isolated_overlay_full_matrix_verified_native_combination_partial_owned_windows_chain_pending_production_admission_closed"
     },
     {
       "id": 4,
@@ -239,9 +239,9 @@
     ],
     "candidate_windows_source": "At1974 run39922764910 Windows job120311712409 succeeded. Official component ZIP digest verified; native8, interop3 and source8 each fully passed with zero ignored/skipped; four component hashes and checked PE branding matched. Quick39922765064 separately passed27return+9final and restored IIS.",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "49193b5 run39933668757/job120347846855 passed the complete QUIC correct-pin-before echo phase (TCP, fixed UDP, ephemeral UDP), then failed observe/OVERLAY_ADDRESS_QUERY_UNAVAILABLE. Official artifact digest matched; worker reaped, two namespaces and private stage removed. Wrong-pin/restore and WSS/TCP remain incomplete; exact role/errno is not retained.",
+    "candidate_linux_matrix": "05c127a run39936896183/job120358529852 SUCCESS; official artifact digest and strict consumer verified all nine QUIC/WSS/development-TCP correct-pin/wrong-pin/restore phases, core cleanup/new traffic denial/TUN removal, six namespace removals and private-stage cleanup. Separate current-session challenge, native owner lease and production admission remain unverified.",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "528 Windows component and same-run static jobs passed at official metadata level; native then failed WORKER_NATIVE_LISTENER_OWNERSHIP_INVALID, exact case/port unknown, combined stack still pending. Separate real owned-socket reproductions found and fixed LISTEN cardinality counting established/time-wait connections; exact owner/inode/address/port/unique-listener requirements remain. The new b67 candidate must verify that fix on hosted native/stack execution. Strict held-input gates remain enforced.",
+    "candidate_component_result": "528 component/static jobs succeeded; native failed listener ownership. Its complete stack failed: lease-revoke records READY/five listeners/watchdog92/five ports rebound/TCP EOF-or-reset/overlay alive, but old source lacks pre-OPEN and does not prove closure causality; peer-loss failed observe/WORKER_UNCLASSIFIED_ERROR before combined readiness was confirmed. Both namespace pairs/private stage cleaned. b67 candidate verifies later listener fix; newer8b25109 adds explicit pre-OPEN checks.",
     "knowledge_snapshot_commit": "68779b34e3fb93c803732ce2b645874dfb0a699c",
     "knowledge_snapshot_source": "9d823da309cba4d2872ad2fd2d01821731faa798",
     "knowledge_snapshot_files": 162
@@ -734,8 +734,33 @@
       "active_challenge_verified": false,
       "production_admission": false,
       "record": "docs/tasks/authenticated-receive.md",
-      "independent_build_recipe": "5006e0b eight-patch recipe; exact prepare/reverse/forward verified; hosted run39936896405 in progress",
-      "existing_runtime_recipes_changed": false
+      "independent_build_recipe": "5006e0b eight-patch recipe; exact prepare/reverse/forward verified; actual hosted authenticated-receive job120358530925 in run39936896405 succeeded",
+      "existing_runtime_recipes_changed": false,
+      "actual_hosted_build": {
+        "branch_source": "05c127a544ca8ea70d25f07f3101244b55c43842",
+        "checkout_commit": "d7d819317a4e3ff72efa53400ce258c4154eb783",
+        "run_id": 39936896405,
+        "job_id": 120358530925,
+        "passed": 44,
+        "failed": 0,
+        "ignored": 0,
+        "locked_release_core_cli_built": true,
+        "official_artifact_sha256": "09e287ffda1ac7b0f63073c02fe47dc4243a7a71c2180be786947225e31f230c",
+        "runtime_executed": false,
+        "binary_uploaded": false,
+        "record": "docs/evidence/hosted-authenticated-receive-build-05c127a.json"
+      },
+      "default_builder_compatibility": {
+        "run_id": 39936896405,
+        "job_id": 120358530652,
+        "passed": 35,
+        "failed": 0,
+        "ignored": 0,
+        "locked_release_core_cli_built": true,
+        "official_artifact_sha256": "c27ca2d0f06942c3e112f7da046e48efb05c0a0905ea6f9482efe19b76c410a0",
+        "runtime_executed": false,
+        "record": "docs/evidence/hosted-guard3-builder-compatibility-05c127a.json"
+      }
     },
     "hosted_portable_source_matrix": {
       "source_head": "05c127a544ca8ea70d25f07f3101244b55c43842",
@@ -798,6 +823,63 @@
       "hosted_job": 120363584181,
       "hosted_artifact_sha256": "c203db5c00f0d7bdee38ced6313098607d86a4b02ddde3e9e3809567faf4123b",
       "hosted_record": "docs/evidence/hosted-windows-diagnostic-stream-b67af6c.json"
+    },
+    "hosted_complete_overlay_matrix": {
+      "source_head": "05c127a544ca8ea70d25f07f3101244b55c43842",
+      "checkout_commit": "d7d819317a4e3ff72efa53400ce258c4154eb783",
+      "run_id": 39936896183,
+      "job_id": 120358529852,
+      "conclusion": "success",
+      "transport_phase_pairs_passed": 9,
+      "namespaces_created": 6,
+      "namespaces_removed": 6,
+      "official_artifact_sha256": "a72a3b2cacc7857b4cd4bb8c1bf4a330f2a648dd4568414de7930f9faea00699",
+      "strict_receipt_consumer_exit_code": 0,
+      "private_stage_removed": true,
+      "native_owner_lease_verified": false,
+      "active_nonce_challenge_in_runtime": false,
+      "production_admission": false,
+      "record": "docs/evidence/hosted-owned-overlay-05c127a.json"
+    },
+    "hosted_combined_stack_partial": {
+      "source_head": "528668e22e9b768bf004e1e1788eb6e65cd6190f",
+      "run_id": 39932526946,
+      "job_id": 120355233682,
+      "conclusion": "failure",
+      "lease_revoke_case": "nativeREADY/five owned listeners/watchdog92/five rebound ports/TCP EOF or reset/overlay alive; predates OPEN barrier, no causal closure claim",
+      "peer_loss_case": "observe/WORKER_UNCLASSIFIED_ERROR before combined readiness was confirmed; underlying cause unknown",
+      "worker_reaped": true,
+      "all_four_namespaces_removed": true,
+      "private_stage_removed": true,
+      "official_artifact_sha256": "29adfe90b748e878d7123237f0b3e28dc7743d10ea0e7de970dc79438c7a6d8e",
+      "record": "docs/evidence/hosted-owned-stack-528668e.json"
+    },
+    "cloud_owned_windows_process": {
+      "implementation_commit": "f79ecc642d70bf54631253b42a1a880f8ed28ec3",
+      "portable_passed": 5,
+      "windows_skipped_locally": 12,
+      "retained_return_portable_passed": 14,
+      "retained_return_windows_skipped_locally": 13,
+      "wpf_cross_compile_warnings": 0,
+      "wpf_cross_compile_errors": 0,
+      "actual_windows17_result": "success_17_passed_zero_skipped_x86_synthetic_helper",
+      "architecture_required": "x86 self-contained helper; actual architecture assertion required",
+      "core_or_driver_executed": false,
+      "record": "docs/tasks/owned-core-process.md",
+      "actual_windows_run": 39939697022,
+      "actual_windows_job": 120367800235,
+      "official_artifact_sha256": "a587b7102370bcfed7e3a63f4c230962fb50550aad0e62ff423168bcf41578b1",
+      "actual_apphost_bytes_unchanged": true,
+      "hosted_record": "docs/evidence/hosted-owned-core-08b3d07.json"
+    },
+    "safe_native_incremental_cleanup": {
+      "removed_generated_files": 681,
+      "removed_generated_bytes": 490245263,
+      "retained_entries_verified": 6887,
+      "retained_regular_file_bytes_modes_paths_and_symlink_targets_unchanged": true,
+      "symlink_targets_dereferenced": false,
+      "scope": "six confirmed inactive native incremental directories only; no source, final binary, log, evidence or active EasyTier target deletion",
+      "receipt": ".local/cloud-receipts/cache-cleanup-native-incremental-2/receipt.json"
     }
   }
 }

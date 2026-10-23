@@ -996,3 +996,75 @@ and requirements were preserved. The draft still requires publication through
 the environment UI; no publish or Goal/scheduler tool is exposed, and a fresh
 restoration has not been verified. All six milestones remain tracked; no formal
 Release, production deployment or game/capture launch has occurred.
+
+## Complete Linux transport matrix and partial native composition
+
+The first complete finite guard3 runtime matrix succeeded in
+[05c127a run39936896183](evidence/hosted-owned-overlay-05c127a.json), actual
+merge checkoutd7d819317a4e3ff72efa53400ce258c4154eb783. The official artifact
+SHA256 is a72a3b2cacc7857b4cd4bb8c1bf4a330f2a648dd4568414de7930f9faea00699.
+The strict receipt consumer verified all nine phases: QUIC, WSS and development
+TCP each passed correct-pin-before, wrong-pin rejection and correct-pin restore.
+Both positive phases exercised TCP, fixed UDP and ephemeral UDP echoes. Every
+wrong-pin phase retained the owned TUN while rejecting all three kinds of new
+traffic over the bounded observation. Core reaping, new-traffic denial, TUN
+removal, all six namespace removals and private-stage cleanup are recorded.
+This closes that development matrix, without asserting packet-capture encryption
+proof, the newer active nonce challenge, native owner lease or Public admission.
+Prior failures and their unknown exact errno/role remain unchanged.
+
+The older [528 native composition](evidence/hosted-owned-stack-528668e.json)
+completed with an overall failure. Its lease-revoke case recorded real native
+READY, five owned listeners, watchdog exit92, five rebound ports and held TCP
+EOF/reset while the overlay remained alive. This source predates the explicit
+pre-revocation OPEN barrier, so those samples alone do not prove revocation
+caused the connection closure. The second peer-loss case failed during observe
+with WORKER_UNCLASSIFIED_ERROR before combined readiness was confirmed.
+The missing result field does not establish that the native process never
+reached READY in the background. Its exact cause is unknown;
+the two cases used separate namespaces, so no cross-case TIME_WAIT explanation
+is inferred. Both namespace pairs, worker and private stage were cleaned up.
+The official artifact SHA256 is
+29adfe90b748e878d7123237f0b3e28dc7743d10ea0e7de970dc79438c7a6d8e.
+
+Reviewed8b25109 now requires a bounded OPEN observation on the same held TCP
+socket before revocation or peer shutdown. Real early-FIN/reset and excess-data
+controls reject; native21 and stack22 checks passed, including independent5+2
+new controls. The original deadline is not extended. This improves before/after
+evidence without promising continuous observation or strict causal proof.
+Later hosted runs must exercise this corrected path; the old528 result is not
+rewritten as a pass.
+
+The independent authenticated-receive job120358530925 in run39936896405 also
+succeeded: all44 actual production-linked contracts passed with zero ignored
+tests, followed by locked GNU Release core/CLI compilation. The official three
+JSON receipts match ZIP SHA256
+09e287ffda1ac7b0f63073c02fe47dc4243a7a71c2180be786947225e31f230c,
+the exact699-file source inventory and eight-patch recipe. Independent review
+verified the artifacts. Core/CLI identities are runner static ELF observations;
+no runtime binary was uploaded, downloaded or executed. The successful recipe
+does not yet include the new nonce-correlation work. The separate old35
+compatibility job120358530652 subsequently passed its own35 contracts with zero
+ignored tests and a locked Release build; its official ZIP digest
+c27ca2d0f06942c3e112f7da046e48efb05c0a0905ea6f9482efe19b76c410a0
+and full source inventory were independently verified. The unchanged default
+entry remains distinct from the new44 recipe.
+
+Reviewedf79ecc6 implements atomic Windows Job containment from process creation,
+retains exact process identity and independently checked image/configuration
+handles, and observes the full owned job draining before releasing inputs.
+Local tests passed5 with12 explicit Windows skips; retained return tests passed14
+with13 Windows skips, and WPF cross-compilation had zero warnings/errors. The
+08b3d07 hosted lane requires a real x86 self-contained helper and17 cases with
+zero skips. Actual run39939697022/job120367800235 passed all17 with zero
+skips, including the real32-bit assertion, and the helper apphost hash matched
+before/after. The official single-receipt artifact SHA256 is
+a587b7102370bcfed7e3a63f4c230962fb50550aad0e62ff423168bcf41578b1.
+A synthetic helper is not an executed EasyTier core, owner IPC or live Public
+network; those production-path prerequisites remain in progress.
+
+Six inactive native incremental compiler caches were reclaimed after their owners
+confirmed they were unused:681 generated files,490245263 bytes. All6887 retained
+entries matched before and after by regular-file bytes/modes/path or symlink
+target; symlinks were not traversed. Sources, final binaries, logs and original
+evidence remain. Active EasyTier targets and ongoing compilation were untouched.
