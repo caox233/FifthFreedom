@@ -274,3 +274,35 @@ driver or privileged namespace is started. Evidence is retained in
 `.local/evidence/cloud/query-exit-observation/`. This fixes the demonstrated
 query-exit race; another actual hosted composition must determine its runtime
 result, without assigning it as the uniquely established cause of 432.
+
+## Deterministic syscall-stage test inputs
+
+The clean source check at `507e93f0612495b36508f79fd01956287c1e9e93`
+ran 604 methods: 601 passed, two were skipped and one failed. In the 139-method
+server suite, the synthetic `INTERFACE_RECHECK` fault test instead reached
+`OVERLAY_FDINFO_ENTRY_UNAVAILABLE`. The original aggregate and server failure
+logs remain retained. They do not identify the descriptor that disappeared.
+
+The fixture previously enumerated every descriptor of a real interpreter child
+before injecting a later fault. The spawn barrier proves execution of the
+verified image; it does not promise that interpreter startup has finished or
+that all enumerated descriptors will remain open. The production monitor
+correctly rejects an entry that disappears before its procfs open.
+
+Only the tests change. Synthetic read, TUN-descriptor and final-interface faults
+now select the actual child stdin descriptor, whose `/dev/null` identity is
+checked and which this fixture never closes. A separate owned-child control
+enumerates the real stdin and fd200, explicitly closes fd200 after enumeration,
+and records its actual procfs open returning `ENOENT`. Including both entries
+must still fail at `FDINFO_ENTRY`; selecting only the persistent stdin under
+the same closure must reach the injected `INTERFACE_RECHECK` error. Real child
+image checks, descriptor-leak checks and exact cleanup remain in both cases.
+The interface and TUN metadata are explicitly synthetic; no TUN or namespace
+is created, and no production descriptor is ignored.
+
+The new controlled test and original stage test each pass. The complete local
+server suite passes 140/140, with zero skips. Production monitor bytes remain
+unchanged. Evidence is retained in `.local/evidence/cloud/kernel-stage-fixture/`.
+This demonstrates and removes the fixture's uncontrolled descriptor lifetime;
+it does not assign fd200 to the earlier clean-checkout failure or explain any
+historical hosted runtime failure. A new clean aggregate is still required.

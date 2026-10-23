@@ -373,7 +373,15 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
         await monitor.prepare()
         child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
         self.addAsyncCleanup(child.stop)
-        original_stat, original_open = os.stat, os.open
+        original_stat, original_open, original_listdir = os.stat, os.open, os.listdir
+        # OwnedChild supplies DEVNULL on fd0; this fixture's interpreter never
+        # replaces/closes it. Other startup descriptors can disappear after
+        # exec, so unrelated real entries cannot target later synthetic stages.
+        self.assertEqual(original_stat("fd/0", dir_fd=child.procfd).st_rdev,
+                         original_stat("/dev/null").st_rdev)
+        def stable_stdin(folder):
+            self.assertIn("0", original_listdir(folder))
+            return ["0"]
         descriptors = len(os.listdir("/proc/self/fd"))
         stages = ("NAMESPACE_OBSERVATION", "ADDRESS_QUERY", "FDINFO_DIRECTORY", "FDINFO_LIST",
                   "FDINFO_ENTRY", "FDINFO_READ", "TUN_DESCRIPTOR", "INTERFACE_RECHECK")
@@ -418,8 +426,10 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
                     # disappeared-descriptor case; it is not silently skipped.
                     patches.enter_context(patch("os.listdir", return_value=["999999999"]))
                 elif stage == "FDINFO_READ":
+                    patches.enter_context(patch("os.listdir", side_effect=stable_stdin))
                     patches.enter_context(patch("os.read", side_effect=failure))
                 elif stage in ("TUN_DESCRIPTOR", "INTERFACE_RECHECK"):
+                    patches.enter_context(patch("os.listdir", side_effect=stable_stdin))
                     patches.enter_context(patch("os.read", return_value=b"iff:\tffsynabsent09\n"))
                 with self.assertRaises(LifecycleError) as raised:
                     await monitor.observe(child)
@@ -432,6 +442,100 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
             self.assertIsNone(monitor._index)
             self.assertTrue(child.image_matches())
             self.assertEqual(len(os.listdir("/proc/self/fd")), descriptors)
+
+    async def test_later_synthetic_stage_uses_stable_fd_but_real_disappearance_still_rejects(self):
+        import errno
+        import fcntl
+        import stat
+        import struct
+        import time
+        from types import SimpleNamespace
+        original_listdir, original_stat, original_open = os.listdir, os.stat, os.open
+        code = """import os,sys,time
+from pathlib import Path
+fd=os.open('/dev/null',os.O_RDONLY)
+os.dup2(fd,200)
+if fd!=200:os.close(fd)
+Path(sys.argv[1]).touch()
+while not Path(sys.argv[2]).exists():time.sleep(.001)
+os.close(200)
+Path(sys.argv[3]).touch()
+time.sleep(60)
+"""
+        for stable in (False, True):
+            with self.subTest(stable_stdin=stable):
+                ready = self.directory / (str(stable) + "-ready")
+                release = self.directory / (str(stable) + "-release")
+                closed = self.directory / (str(stable) + "-closed")
+                monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+                await monitor.prepare()
+                child = await OwnedChild.spawn(self.program,
+                    ("-I", "-S", "-c", code, str(ready), str(release), str(closed)))
+                self.addAsyncCleanup(child.stop)
+                async with asyncio.timeout(1):
+                    while not ready.exists():
+                        await asyncio.sleep(.001)
+                self.assertTrue(child.image_matches())
+                before = len(original_listdir("/proc/self/fd"))
+                selected, missing_entries = [], []
+                def list_then_close(folder):
+                    values = original_listdir(folder)
+                    self.assertIn("200", values)
+                    self.assertIn("0", values)
+                    release.touch()
+                    deadline = time.monotonic() + 1
+                    while not closed.exists() and time.monotonic() < deadline:
+                        time.sleep(.001)
+                    self.assertTrue(closed.exists())
+                    with self.assertRaises(FileNotFoundError):
+                        original_stat("fd/200", dir_fd=child.procfd)
+                    # Select only the two actual entries whose lifetime this
+                    # fixture controls; ready/closed markers can briefly open
+                    # other descriptors in the interpreter.
+                    result = ["0"] if stable else ["0", "200"]
+                    selected.extend(result)
+                    return result
+                def observe_open(path, *args, **kwargs):
+                    try:
+                        return original_open(path, *args, **kwargs)
+                    except FileNotFoundError:
+                        missing_entries.append(path)
+                        raise
+                def ioctl(_fd, request, _argument):
+                    value = bytearray(256)
+                    if request == 0x8913:
+                        struct.pack_into("H", value, 16, 1)
+                    elif request == 0x8915:
+                        value[20:24] = socket.inet_aton(monitor.address)
+                    else:
+                        raise AssertionError("unexpected ioctl")
+                    return bytes(value)
+                def synthetic_tun_stat(path, *args, **kwargs):
+                    if isinstance(path, str) and path.startswith("fd/") and kwargs.get("dir_fd") == child.procfd:
+                        return SimpleNamespace(st_mode=stat.S_IFCHR, st_rdev=os.makedev(10, 200))
+                    return original_stat(path, *args, **kwargs)
+                # ioctl/TUN metadata and the final failure are synthetic; the
+                # selected entries come from real enumeration, fd200 really
+                # closes, and its subsequent procfs open really fails.
+                with patch("socket.if_nametoindex", side_effect=[123, PermissionError(errno.EACCES, "PRIVATE")]), \
+                        patch.object(fcntl, "ioctl", side_effect=ioctl), \
+                        patch("os.listdir", side_effect=list_then_close), \
+                        patch("os.open", side_effect=observe_open), \
+                        patch("os.read", return_value=b"iff:\tffsynabsent09\n"), \
+                        patch("os.stat", side_effect=synthetic_tun_stat):
+                    with self.assertRaises(LifecycleError) as failed:
+                        await monitor.observe(child)
+                expected = "INTERFACE_RECHECK" if stable else "FDINFO_ENTRY"
+                self.assertEqual(str(failed.exception), "OVERLAY_" + expected + "_UNAVAILABLE")
+                self.assertEqual(kernel_query_failure(failed.exception)["errno_class"],
+                                 "EACCES" if stable else "ENOENT")
+                self.assertEqual(selected, ["0"] if stable else ["0", "200"])
+                self.assertEqual(missing_entries, [] if stable else ["200"])
+                self.assertIsNone(monitor._index)
+                self.assertTrue(child.image_matches())
+                self.assertEqual(len(original_listdir("/proc/self/fd")), before)
+                await child.stop()
+                self.assertTrue(child.closed)
 
     async def test_initial_missing_ipv4_is_pending_but_never_owned_readiness(self):
         import errno
