@@ -353,7 +353,7 @@
     "Wintun official binary terms obtained; final Permitted API use, unchanged DLL and accompanying redistribution conditions still require package review",
     "Review corresponding-source and notices for final redistributed artifacts",
     "Donor Linux installer follows latest while Windows default is 2.6.4; future integration must consume reviewed fixed lock",
-    "No Windows driver signature/runtime validation, EasyTier execution, real tunnel test or deployment performed"
+    "The read-only dependency audit does not execute runtimes; separately verified finite Wintun session lifetimes do not establish Windows owned overlay, secure peer/source-route admission, complete packaging or production deployment"
   ],
   "source_binary_rebuild_verified": false,
   "publication_approved": false,
@@ -384,6 +384,21 @@
       "bytes": 550928,
       "sha256": "d694fa46ab4cfebcb2632d094c7aa97278eef2f8052438621766d863ae98a931",
       "byte_identity_by_sha256_and_size": true
+    }
+  ],
+  "audit_runtime_fields_scope": "Top-level and artifact installed/runtime_executed fields describe this read-only audit; independent development executions are referenced separately and grant no publication or Public admission.",
+  "independent_development_runtime_evidence": [
+    {
+      "kind": "wintun_retained_session_lifecycle",
+      "path": "docs/evidence/hosted-wintun-319bf44.json",
+      "sha256": "e84c1e44ed0d5e2b9d35e3c9a1276a07042ecfb9eb472aa09500ed589faabd39",
+      "source_head_sha": "319bf445073b362acf8129a80ff0bf68f19e53a5",
+      "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39930667783",
+      "real_session_cases_passed": 2,
+      "driver_runtime_executed": true,
+      "public_admission": false,
+      "publication_approved": false,
+      "complete_overlay_verified": false
     }
   ]
 }

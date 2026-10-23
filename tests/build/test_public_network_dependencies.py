@@ -125,6 +125,30 @@ class PublicNetworkDependenciesTests(unittest.TestCase):
         self.assertTrue(any("Npcap" in row for row in lock["closure_holds"]))
         self.assertTrue(any("Wintun" in row and "package review" in row for row in lock["closure_holds"]))
 
+    def test_independent_driver_receipt_does_not_change_read_only_audit_gates(self):
+        lock = json.loads(audit.LOCK.read_text())
+        reference, = lock['independent_development_runtime_evidence']
+        data = (audit.ROOT / reference['path']).read_bytes()
+        self.assertEqual(hashlib.sha256(data).hexdigest(), reference['sha256'])
+        receipt = json.loads(data)
+        self.assertEqual(reference['source_head_sha'], receipt['source_head_sha'])
+        self.assertEqual(reference['run_url'], receipt['run_url'])
+        self.assertEqual(reference['real_session_cases_passed'], receipt['sanitized_receipt']['probe']['passed'])
+        self.assertTrue(reference['driver_runtime_executed'])
+        self.assertTrue(receipt['sanitized_receipt']['runtime_executed'])
+        self.assertFalse(reference['complete_overlay_verified'])
+        self.assertFalse(reference['public_admission'])
+        self.assertFalse(reference['publication_approved'])
+        official = next(row for row in lock['artifacts'] if row['id'] == 'wintun-official-0.14.1')
+        dll = next(row for row in official['required_members'] if row['name'] == 'wintun/bin/amd64/wintun.dll')
+        self.assertEqual(dll['sha256'], receipt['sanitized_receipt']['dll_sha256'])
+        with tempfile.TemporaryDirectory() as folder:
+            result, code = audit.verify(lock, Path(folder))
+        self.assertEqual(code, 2)
+        for field in ('closure_complete', 'publication_approved', 'runtime_executed', 'installed'):
+            self.assertFalse(result[field])
+        self.assertTrue(any('Npcap' in hold for hold in result['closure_holds']))
+
     def test_original_wintun_notice_is_checked_as_bytes_and_normalization_is_rejected(self):
         real_lock = json.loads(audit.LOCK.read_text())
         notice = next(row for row in real_lock["license_references"] if row["id"] == "wintun-prebuilt-0.14.1")
