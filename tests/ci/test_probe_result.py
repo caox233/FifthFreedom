@@ -114,6 +114,48 @@ class ProbeResultTests(unittest.TestCase):
         self.assertIn("fixed_codes=NATIVE_READY_TIMEOUT", output)
         self.assertNotIn("WORKER_EVENT_INVALID", output)
 
+    def test_containment_preflight_has_distinct_no_runtime_scope_and_complete_cleanup(self):
+        value = {"schema": overlay_producer.CONTAINMENT_SCHEMA, "status": "containment_preflight_verified",
+            "input_identity": "synthetic_profile_only_no_executable", "precondition_failures": [],
+            "runtime_executed": False, "runtime_binary_uploaded": False, "production_admission": False,
+            "raw_runtime_output_retained": False,
+            "transports": [{"transport": transport, "status": "containment_pair_verified",
+                "namespaces_created": 2, "namespaces_removed": 2, "cleanup_errors": []}
+                for transport in overlay_producer.TRANSPORTS]}
+        self.assertEqual(self.inspect("containment", value), (0, ""))
+        self.assertFalse(probe.verified("easytier", value))
+        for change in ("scope", "missing_transport", "cleanup", "count", "schema", "input"):
+            bad = copy.deepcopy(value)
+            if change == "scope": bad["runtime_executed"] = True
+            if change == "missing_transport": bad["transports"].pop()
+            if change == "cleanup": bad["transports"][0]["cleanup_errors"] = ["OWNED_NAMESPACE_CLEANUP_FAILED"]
+            if change == "count": bad["transports"][0]["namespaces_removed"] = True
+            if change == "schema": bad["schema"] = overlay_producer.SCHEMA
+            if change == "input": bad["input_identity"] = "PRIVATE_INPUT"
+            with self.subTest(change=change):
+                self.assertFalse(probe.verified("containment", bad))
+
+    def test_nft_diagnostics_accept_exact_producer_shapes_but_no_keys_values_or_suffixes(self):
+        changes = [([{"rule": {"expr": [{"match": {"right": "tcp"}}]}}],
+                    [{"rule": {"expr": [{"match": {"right": 6}}]}}]),
+                   ([{"chain": {"prio": 0}}], [{"chain": {"prio": "filter"}}]),
+                   ([{"rule": {"expr": [{"match": {"op": "=="}}]}}],
+                    [{"rule": {"expr": [{"match": {"op": "in"}}]}}])]
+        for expected, actual in changes:
+            codes = overlay_producer.nft_difference_codes(expected, actual)
+            value = {"transports": [{"fixed_diagnostics": codes}], "error": "CONTAINMENT_CHANGED"}
+            self.assertEqual(probe.nft_diagnostics(value), sorted(codes))
+            result, output = self.inspect("containment", value, 1)
+            self.assertEqual(result, 1)
+            self.assertIn("nft_shape=", output)
+        for code in ("NFT_I0_RULE_PRIVATE_KEY_MISSING_KEY", "NFT_I64_RULE_MISSING_KEY",
+                     "NFT_I0_RULE_PRIVATE_VALUE_TO_TCP", "NFT_I0_RULE_TYPE_STRING_TO_PRIVATE_TYPE",
+                     "NFT_I0_RULE_TYPE_STRING_TO_INTEGER_PRIVATE_SUFFIX", "NFT_I0_RULE_COUNT_1_TO_9000",
+                     "NFT_PRIVATE_SECRET", "NFT_I0_RULE_MISSING_KEY /PRIVATE_PATH"):
+            value = {"transports": [{"fixed_diagnostics": [code]}]}
+            self.assertEqual(probe.nft_diagnostics(value), [])
+            self.assertNotIn("PRIVATE", self.inspect("containment", value, 1)[1])
+
     def test_missing_malformed_and_oversized_receipts_do_not_certify_zero_exit(self):
         for content in (None, b"PRIVATE_NOT_JSON", b"x" * (256 * 1024 + 1),
                         b'{"status":"PRIVATE_FIRST","status":"PRIVATE_SECOND"}'):

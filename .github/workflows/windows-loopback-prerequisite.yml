@@ -1,0 +1,48 @@
+name: Windows final-login loopback prerequisite
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-loopback-prerequisite.yml'
+      - 'scripts/ci_windows_loopback.*'
+      - 'tests/FinalLaunchPreparation/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fifth-windows-loopback-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  loopback-prerequisite:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Read fixed port observations and bind only a fresh owned socket
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "$env:RUNNER_TEMP/ff-loopback" -ErrorAction Stop | Out-Null
+          & ./scripts/ci_windows_loopback.ps1 -Report "$env:RUNNER_TEMP/ff-loopback/prerequisite.json"
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Run the unchanged real FinalLaunchPreparation on this same runner
+        run: python -B scripts/ci_windows_loopback.py --report "${{ runner.temp }}/ff-loopback/suite.json"
+      - name: Preserve only sanitized observations and suite result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-loopback-prerequisite-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/ff-loopback/prerequisite.json
+            ${{ runner.temp }}/ff-loopback/suite.json
+          if-no-files-found: warn
+          retention-days: 14

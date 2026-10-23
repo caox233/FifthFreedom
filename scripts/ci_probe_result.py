@@ -24,12 +24,45 @@ WORKER_EVENT_EOF WORKER_READY_INVALID WORKER_COMMAND_FAILED WORKER_REPLY_EOF WOR
 WORKER_REPLY_LIMIT WORKER_REPLY_TIMEOUT WORKER_START_FAILED WORKER_EXITED
 WORKER_CORE_PROFILE_MISMATCH WORKER_CORE_EXITED WORKER_TUN_NOT_READY WORKER_OWNERSHIP_LOST
 NAMESPACE_TOOL_FAILED NAMESPACE_TOOL_TIMEOUT NAMESPACE_TOOL_OUTPUT_LIMIT NAMESPACE_TOOL_START_FAILED
-CONTAINMENT_CHANGED CONTAINMENT_READBACK_INVALID DEFAULT_ROUTE_FORBIDDEN
+CONTAINMENT_CHANGED CONTAINMENT_READBACK_INVALID CONTAINMENT_PREFLIGHT_INCOMPLETE DEFAULT_ROUTE_FORBIDDEN
 OVERLAY_READY_TIMEOUT OVERLAY_TRANSFER_CONTRACT_FAILED OWNED_CORE_EXIT_NOT_CONFIRMED
 OWNED_NAMESPACE_CLEANUP_FAILED OWNED_WORKER_CLEANUP_FAILED PRIVATE_STAGE_CLEANUP_FAILED
 PRIVATE_STAGE_IDENTITY_CHANGED SOCKET_PROBE_NOT_READY STOPPED_OVERLAY_STILL_TRANSFERS
 WRONG_PIN_INFRASTRUCTURE_OR_AUTH_INVALID SERVER_INFRASTRUCTURE_UNHEALTHY TRANSPORT_MATRIX_INCOMPLETE
 DEVELOPMENT_PROBE_FAILED DEVELOPMENT_PROBE_CANCELLED IMAGE_HASH_MISMATCH IMAGE_IDENTITY_INVALID""".split())
+
+
+
+_NFT_KEYS = "TABLE CHAIN RULE FAMILY NAME TYPE HOOK PRIO POLICY EXPR MATCH OP LEFT RIGHT META KEY PAYLOAD PROTOCOL FIELD CT ACCEPT DROP COUNTER PACKETS BYTES SET PREFIX ADDR LEN".split()
+_NFT_ENUMS = "INET INPUT OUTPUT FORWARD FILTER DROP ACCEPT IP IP6 TCP UDP IPV4 IPV6 NFPROTO IIFNAME OIFNAME L4PROTO SADDR DADDR SPORT DPORT STATE ESTABLISHED RELATED NEW INVALID UNTRACKED EQ NE IN AND OR".split()
+_NFT_TYPES = "OBJECT LIST STRING INTEGER BOOL NULL OTHER".split()
+_NFT_INDEX = r"(?:[0-9]|[1-5][0-9]|6[0-3])"
+_NFT_TOKEN = "(?:" + "|".join(_NFT_KEYS) + r"|I" + _NFT_INDEX + ")"
+_NFT_ENUM = "(?:" + "|".join(_NFT_ENUMS) + ")"
+_NFT_TYPE = "(?:" + "|".join(_NFT_TYPES) + ")"
+_NFT_COUNT = "(?:" + _NFT_INDEX + "|OVER63)"
+_NFT_DIAGNOSTIC = re.compile(
+    r"NFT_(?:" + _NFT_TOKEN + "(?:_" + _NFT_TOKEN + ")*)?_"
+    r"(?:EXTRA_KEY|MISSING_KEY|UNCLASSIFIED_KEY_DIFFERENCE|UNCLASSIFIED_INDEX_OVER63|"
+    r"TYPE_" + _NFT_TYPE + "_TO_" + _NFT_TYPE + "|COUNT_" + _NFT_COUNT + "_TO_" + _NFT_COUNT +
+    "|" + _NFT_ENUM + "_TO_" + _NFT_ENUM + "|" + _NFT_TYPE + r"_VALUE_DIFFERENT)\Z")
+
+
+def nft_diagnostics(value):
+    rows = value.get("transports") if type(value) is dict else None
+    if type(rows) is not list:
+        return []
+    result = set()
+    for row in rows[:3]:
+        values = row.get("fixed_diagnostics") if type(row) is dict else None
+        if type(values) is not list:
+            continue
+        for code in values[:16]:
+            if (type(code) is str and len(code) <= 160 and
+                    (code in ("NFT_UNCLASSIFIED_DEEP_DIFFERENCE", "NFT_UNCLASSIFIED_DIFFERENCE")
+                     or _NFT_DIAGNOSTIC.fullmatch(code))):
+                result.add(code)
+    return sorted(result)[:4]
 
 
 def booleans(value, expected):
@@ -101,6 +134,19 @@ def verified(kind, value):
             and all(value.get(key) is True for key in ("copied_package_native_verified", "source_package_unchanged",
                 "private_tree_removed", "all_owned_children_reaped", "no_default_routes"))
             and type(value.get("owned_namespaces_removed")) is int and value["owned_namespaces_removed"] == 3)
+    if kind == "containment":
+        rows = value.get("transports")
+        return (value.get("schema") == "ff-easytier-containment-preflight-v1"
+            and value.get("status") == "containment_preflight_verified"
+            and value.get("input_identity") == "synthetic_profile_only_no_executable"
+            and value.get("precondition_failures") == []
+            and all(value.get(key) is False for key in ("runtime_executed", "runtime_binary_uploaded",
+                "production_admission", "raw_runtime_output_retained"))
+            and type(rows) is list and all(type(row) is dict for row in rows)
+            and [row.get("transport") for row in rows] == ["quic", "wss", "tcp"]
+            and all(row.get("status") == "containment_pair_verified" and row.get("cleanup_errors") == []
+                and all(type(row.get(key)) is int and row[key] == 2 for key in ("namespaces_created", "namespaces_removed"))
+                for row in rows))
     rows = value.get("transports")
     return (kind == "easytier" and value.get("schema") == "ff-easytier-isolated-development-probe-v1"
         and value.get("status") == "isolated_development_matrix_verified"
@@ -136,13 +182,15 @@ def inspect(kind, exit_code, receipt, error_log):
     codes = sorted(code for code in CODES
                    if re.search(r"(?<![A-Za-z0-9_])" + code + r"(?![A-Za-z0-9_])", text))[:8]
     reason = ",".join(codes) or ("PROBE_SUCCESS_RECEIPT_INVALID" if exit_code == 0 else "UNCLASSIFIED_PROBE_FAILURE")
-    ci_diagnostics.emit_error("probe=" + kind + "; fixed_codes=" + reason + "; no raw probe output published")
+    shape = nft_diagnostics(value)
+    fields = "; nft_shape=" + ",".join(shape) if shape else ""
+    ci_diagnostics.emit_error("probe=" + kind + "; fixed_codes=" + reason + fields + "; no raw probe output published")
     return 1
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--kind", choices=("native", "easytier"), required=True)
+    parser.add_argument("--kind", choices=("native", "easytier", "containment"), required=True)
     parser.add_argument("--exit-code", type=int, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--error-log", type=Path, required=True)
