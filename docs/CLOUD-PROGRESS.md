@@ -266,3 +266,20 @@ instance lacks effective NET_ADMIN/NET_RAW/SYS_ADMIN and a TUN device, and an
 owned empty `unshare --net true` probe returned EPERM. Isolated privileged
 network testing belongs in an explicitly checked hosted Linux job, not a claim
 of local runtime verification or a connection to an old deployment.
+
+[Run 39898671437](https://github.com/caox233/FifthFreedom/actions/runs/39898671437)
+against `463aa521e5cdb3345e460442bacf8050bd42aef8` then completed with a new
+Windows source-test failure in `public_server_candidate`. Windows compilation,
+new DPAPI/WPF checks and the dependent dual-identity assembly did not execute.
+Linux LAN, donor and control jobs passed. This failure is separate from the
+unchanged strict resource gate and requires its own fix/rerun;
+[official job evidence](evidence/hosted-candidate-463aa52.json) is retained.
+
+The supplemental source patch from the original handoff to `463aa52` has SHA256
+`ecb523925d1b1c65670895affe83271a553014b04ac3c4ff63708f87076830f8`.
+All 98 changed paths reconstructed with exact bytes and modes, and reverse
+application restored all originals in owned temporary directories. An initial
+check had 98 mode-only mismatches under inherited umask 077, with every byte
+already matching. The successful rerun set umask 022 only inside the patch
+subprocess for these public source files; both receipts are retained. Private
+original four-role evidence was not regenerated or changed.

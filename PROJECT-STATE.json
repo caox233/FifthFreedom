@@ -92,7 +92,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Official gh API initially denied, later succeeded under existing configuration. Actions log/artifact redirect hosts still denied; narrow official environment draft additions saved. No bypass; draft publication unconfirmed.",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39895749771",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39898671437",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -137,13 +137,22 @@
         "overall": "failure",
         "all_component_jobs": "success_windows_linux_lan_donor_protected_control",
         "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39898671437,
+        "commit": "463aa521e5cdb3345e460442bacf8050bd42aef8",
+        "overall": "failure",
+        "windows": "failed_source_public_server_candidate_suite; compile_dpapi_wpf_skipped",
+        "linux_lan_donor_control": "success",
+        "cross_platform_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
       }
     ],
     "candidate_windows_source": "passed on PR run39895749771",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
     "candidate_linux_matrix": "LAN, donor and protected-control jobs passed on PR run39895749771",
     "validated_implementation_commit": "f54c9358c0e8df6775c4f29ed91ea3a91e870a80",
-    "candidate_component_result": "All four component jobs passed on run39895749771; overall failure is the strict privacy gate; full package skipped. Later implementation requires a new hosted run."
+    "candidate_component_result": "Latest463aa52 run39898671437 failed Windows source candidate-builder tests; three Linux jobs passed; crossbundle skipped. Previously f54c935 run39895749771 all four component jobs passed. Fix and rerun required."
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -151,7 +160,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T04:07:41.919443+00:00",
+  "updated_utc": "2026-10-23T04:17:23.489600+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
