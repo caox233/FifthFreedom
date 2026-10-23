@@ -60,7 +60,7 @@ def git_archive(work, lock):
         if actual != expected:
             raise BuildError("EASYTIER_UPSTREAM_IDENTITY_MISMATCH")
     archive = work / "original.tar"
-    subprocess.run(["git", "archive", "--format=tar", "--output", str(archive), "FETCH_HEAD"], cwd=checkout, check=True, capture_output=True)
+    subprocess.run(["git", "-c", "core.autocrlf=false", "-c", "core.eol=lf", "archive", "--format=tar", "--output", str(archive), "FETCH_HEAD"], cwd=checkout, check=True, capture_output=True)
     source.checked_bytes(archive, lock["archive"])
     return archive
 

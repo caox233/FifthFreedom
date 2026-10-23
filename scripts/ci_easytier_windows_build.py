@@ -22,9 +22,91 @@ FEATURE = "ff-windows-session-observer"
 OVERRIDE = b'\n[patch."https://github.com/EasyTier/rust-tun"]\ntun-easytier = { path = "../tun-source" }\n'
 TUN_SOURCE = "git+https://github.com/EasyTier/rust-tun#12378839e7985283df0e4fb536b7137230356db5"
 
+# Reviewed fixed diagnostics from the three local producer modules.
+SAFE_ERROR_CODES = frozenset({
+    'EASYTIER_BUILD_COMMAND_FAILED',
+    'EASYTIER_CHECKOUT_IDENTITY_MISMATCH',
+    'EASYTIER_COMPILED_PLATFORM_MISMATCH',
+    'EASYTIER_FIXED_SOURCE_FETCH_FAILED',
+    'EASYTIER_HOSTED_LINUX_REQUIRED',
+    'EASYTIER_PREPARED_SOURCE_CHANGED',
+    'EASYTIER_REQUIRED_CONTRACT_COUNT_MISMATCH',
+    'EASYTIER_TARGET_INSIDE_SOURCE',
+    'EASYTIER_UPSTREAM_IDENTITY_MISMATCH',
+    'SOURCE_ARCHIVE_LAYOUT_INVALID',
+    'SOURCE_ARCHIVE_LIMIT',
+    'SOURCE_ARCHIVE_SPECIAL_ENTRY',
+    'SOURCE_CARGO_LOCK_MISMATCH',
+    'SOURCE_INPUT_DIGEST_MISMATCH',
+    'SOURCE_INPUT_INVALID',
+    'SOURCE_LINK_COLLISION',
+    'SOURCE_LINK_SET_MISMATCH',
+    'SOURCE_LINK_TARGET_INVALID',
+    'SOURCE_LINK_TARGET_MISSING',
+    'SOURCE_OMISSION_MISMATCH',
+    'SOURCE_OUTPUT_EXISTS',
+    'SOURCE_OUTPUT_INVALID',
+    'SOURCE_OUTPUT_LINK',
+    'SOURCE_OUTPUT_PARENT_INVALID',
+    'SOURCE_OUTPUT_PREBUILT',
+    'SOURCE_PATCH_PATH_INVALID',
+    'SOURCE_PATCH_REJECTED',
+    'SOURCE_PATCH_SCOPE_OR_DIGEST_MISMATCH',
+    'SOURCE_REQUIRED_BASE_MISMATCH',
+    'SOURCE_UNREVIEWED_PREBUILT',
+    'WINDOWS_BASE_LOCK_DIGEST',
+    'WINDOWS_BASE_NOTICE_DIGEST',
+    'WINDOWS_BUILD_BASE',
+    'WINDOWS_BUILD_COMMAND_FAILED',
+    'WINDOWS_BUILD_PATCH_DIGEST',
+    'WINDOWS_CALLER_FEATURE_OR_DEPENDENCY_MISSING',
+    'WINDOWS_CALLER_RESOLUTION',
+    'WINDOWS_CHECKOUT_CHANGED',
+    'WINDOWS_DUPLICATE_OVERRIDE',
+    'WINDOWS_GUARD_BASE',
+    'WINDOWS_GUARD_DIGEST',
+    'WINDOWS_HOSTED_RUNNER_REQUIRED',
+    'WINDOWS_LINK_INPUT_DIGEST',
+    'WINDOWS_LINK_INPUT_NOT_PINNED',
+    'WINDOWS_OUTPUT_NOT_PE',
+    'WINDOWS_OUTPUT_WRONG_MACHINE',
+    'WINDOWS_PATCH_PATH',
+    'WINDOWS_PATCH_REJECTED',
+    'WINDOWS_PATCH_SCOPE',
+    'WINDOWS_PINNED_PROTOC_REQUIRED',
+    'WINDOWS_PREPARED_IDENTITY_MISMATCH',
+    'WINDOWS_PREPARED_SOURCE_CHANGED',
+    'WINDOWS_RECIPE_DIGEST',
+    'WINDOWS_RECIPE_PATH',
+    'WINDOWS_SESSION_BASE',
+    'WINDOWS_SESSION_DIGEST',
+    'WINDOWS_SOURCE_FILE',
+    'WINDOWS_SOURCE_LINK',
+    'WINDOWS_SOURCE_PATH',
+    'WINDOWS_TUN_ASYNC_MISSING',
+    'WINDOWS_TUN_LOCK_AMBIGUOUS',
+    'WINDOWS_TUN_LOCK_INPUT',
+    'WINDOWS_TUN_RESOLUTION_AMBIGUOUS',
+    'WINDOWS_TUN_RESOLUTION_NOT_PAIRED',
+    'WINDOWS_UNEXPECTED_BINARY_INPUT',
+    'WINDOWS_UNRELATED_LOCK_CHANGE',
+})
+
 
 class BuildError(ValueError):
     pass
+
+
+def failure_fields(error):
+    code = str(error) if isinstance(error, (BuildError, source.PreparationError, linux_build.BuildError)) else ""
+    known_types = {"BuildError", "PreparationError", "FileNotFoundError", "FileExistsError", "PermissionError",
+                   "OSError", "ValueError", "KeyError", "StopIteration", "CalledProcessError", "TimeoutExpired"}
+    result = {"error_code": code if code in SAFE_ERROR_CODES else "WINDOWS_BUILD_FAILED",
+              "error_type": type(error).__name__ if type(error).__name__ in known_types else "OtherError"}
+    for key, value in (("errno", getattr(error, "errno", None)), ("returncode", getattr(error, "returncode", None))):
+        if type(value) is int and -255 <= value <= 65535:
+            result[key] = value
+    return result
 
 
 def require(condition, code):
@@ -269,7 +351,7 @@ def build(work, output, prepared, lock, environment=None, cargo="cargo"):
         receipt["status"] = "paired_windows_core_cli_built_not_executed"
         return receipt
     except (OSError, ValueError, KeyError, StopIteration, subprocess.SubprocessError) as error:
-        receipt.update(status="failed", error_code=str(error) if isinstance(error, BuildError) else "WINDOWS_BUILD_FAILED")
+        receipt.update(status="failed", **failure_fields(error))
         raise
     finally:
         (output / "receipt.json").write_bytes(source.encoded(receipt))
@@ -299,15 +381,19 @@ def main():
     try:
         for name in ("easytier-fetch", "tun-fetch"):
             (work / name).mkdir()
+        run["stage"] = "fetch-easytier-archive"
         easytier_archive = linux_build.git_archive(work / "easytier-fetch", linux)
+        run["stage"] = "fetch-tun-archive"
         tun_archive = linux_build.git_archive(work / "tun-fetch", lock["tun"])
+        run["stage"] = "prepare-paired-source"
         prepared = prepare(easytier_archive, tun_archive, work, lock)
+        run["stage"] = "metadata-and-build"
         result = build(work, output, prepared, lock)
         result.update(checkout_commit=commit, run_id=run["run_id"], run_attempt=run["run_attempt"])
         (output / "receipt.json").write_bytes(source.encoded(result))
         run["status"] = "paired_windows_build_verified_not_executed"
     except (OSError, ValueError, KeyError, StopIteration, subprocess.SubprocessError) as error:
-        run.update(status="failed", error_code=str(error) if isinstance(error, BuildError) else "WINDOWS_BUILD_FAILED")
+        run.update(status="failed", **failure_fields(error))
         raise
     finally:
         run_path.write_bytes(source.encoded(run))

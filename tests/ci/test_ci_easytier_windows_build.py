@@ -2,6 +2,7 @@
 import difflib
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -126,6 +127,27 @@ class WindowsPairedSourceTests(unittest.TestCase):
         with self.assertRaisesRegex(build.BuildError, "PREPARED_IDENTITY"):
             self.prepare()
 
+    def test_real_git_archive_is_canonical_under_windows_crlf_configuration(self):
+        checkout = self.root / "synthetic-upstream"
+        checkout.mkdir()
+        subprocess.run(["git", "init", "--quiet"], cwd=checkout, check=True, capture_output=True)
+        (checkout / "text.rs").write_bytes(b"fn main() {\n    // exact LF source\n}\n")
+        subprocess.run(["git", "-c", "core.autocrlf=false", "add", "text.rs"], cwd=checkout, check=True, capture_output=True)
+        subprocess.run(["git", "-c", "user.name=Source Fixture", "-c", "user.email=fixture@example.invalid",
+                        "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", "synthetic source"],
+                       cwd=checkout, check=True, capture_output=True)
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=checkout, text=True).strip()
+        tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=checkout, text=True).strip()
+        canonical = subprocess.check_output(["git", "-c", "core.autocrlf=false", "-c", "core.eol=lf", "archive", "--format=tar", "HEAD"], cwd=checkout)
+        lock = {"upstream": {"repository": str(checkout), "commit": commit, "tree": tree},
+                "archive": self.fixture.row(canonical)}
+        destination = self.root / "archive-output"
+        destination.mkdir()
+        with patch.dict(os.environ, {"GIT_CONFIG_COUNT": "2", "GIT_CONFIG_KEY_0": "core.autocrlf",
+                                     "GIT_CONFIG_VALUE_0": "true", "GIT_CONFIG_KEY_1": "core.eol", "GIT_CONFIG_VALUE_1": "crlf"}):
+            archive = build.linux_build.git_archive(destination, lock)
+        self.assertEqual(archive.read_bytes(), canonical)
+
     def test_lock_transform_changes_only_exact_git_tun_source(self):
         original = self.fixture.items["Cargo.lock"]
         changed = tomllib.loads(build.transform_lock(original).decode())
@@ -183,6 +205,14 @@ class WindowsPairedSourceTests(unittest.TestCase):
         data = (self.output / "receipt.json").read_text()
         self.assertNotIn("PRIVATE_SENTINEL", data)
         self.assertEqual(json.loads(data)["runs"][0]["rust_codes"], ["E0425"])
+
+    def test_failure_fields_only_accept_known_codes_and_bounded_stdlib_metadata(self):
+        known = build.failure_fields(build.source.PreparationError("SOURCE_INPUT_DIGEST_MISMATCH"))
+        self.assertEqual(known["error_code"], "SOURCE_INPUT_DIGEST_MISMATCH")
+        for error in (build.source.PreparationError("PRIVATE_SENTINEL"), ValueError("PRIVATE_SENTINEL"),
+                      subprocess.CalledProcessError(3, ["PRIVATE_SENTINEL"], stderr="PRIVATE_SENTINEL")):
+            self.assertNotIn("PRIVATE_SENTINEL", json.dumps(build.failure_fields(error)))
+        self.assertEqual(build.failure_fields(subprocess.CalledProcessError(3, ["not-exported"]))["returncode"], 3)
 
     def test_compiler_location_is_only_an_exact_known_public_source_suffix(self):
         data = b" --> C:\\PRIVATE\\easytier\\caller.rs:12:4\n --> C:\\PRIVATE\\secret.txt:9:1\n"
