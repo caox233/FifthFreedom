@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Reviewed SERVER15 actual-stack harness31f1e5e and UI08 native source-bound revocable connector75db71b implemented; fresh31f1e5e source checkout376=374passed+2existingWindows-onlyskips. Actual568Windows managed suites passed but hooks tests failed compile E0425; retained external C71 fixture dependency reproduced and separated behind strict failed input gate,13 replays held. Actualf85full overlay failed worker EOF/cleanup after successful containment/builds. Reviewed3b0fadc fixes exact-child reap race and adds fixed diagnostics;6c11c8b wires actual combined stack CI. New1bcandidate running; ordinaryPublic/fullpackage/sixgoals incomplete.",
-  "NEXT_EXECUTABLE_ACTION": "Follow actual1bWindows IPC8/interop3/source8 and component results; diagnose new6c full-overlay fixed phase codes and run correct/wrong-pin/restore controls. Execute same-run actual SERVER15 native+overlay A/B controls after new candidate assembly. Continue genuine Windows owned adapter/session issuer work without weakening closed production admission. Retain six goals, privateSAV/META, missingCapture/C71/native-replay inputs, exact asset notices and distinct live acceptance.",
+  "LAST_CONFIRMED_RESULT": "At1b6cdab actual Windows native return8 and native/managed interop3 passed; UI08 source transport then failed. Reviewed2ace336 corrects documented IP_UNICAST_IF getter host order; actual rerun not yet reached. Actual9e1c7a1 quick/full Windows pinpointed case15 to owned test-directory cleanup after child exit and both disposals, not configuration ACK. Actual6c overlay progressed to OVERLAY_READY_TIMEOUT; exact root cause remains unresolved. Reviewed c7ffe7a packages7 pinned loader notices+exact provenance without changing component checksum contract; fresh clean405=403passed+2existingWindows-onlyskips and exact patch roundtrip passed. Six-goal migration/Public/fullpackage remain incomplete.",
+  "NEXT_EXECUTABLE_ACTION": "Fix and actually rerun the bounded Windows owned-test-directory cleanup, then reach UI08 source8 and complete component/branding/same-run lifecycle checks. Diagnose6c actual overlay readiness timeout using pinned QUIC producer/consumer semantics and bounded real observation, then run correct/wrong-pin/restore and SERVER15 A/B controls. Continue minimal genuine Windows retained-session ownership without inventing a new driver product or opening production Public prematurely. Preserve all six goals, accepted gameplay results, privateSAV/META, absentCapture/C71/VSS native inputs, exact asset notices and independent live acceptance.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -92,7 +92,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Official gh API initially denied, later succeeded under existing configuration. Actions log/artifact redirect hosts still denied; narrow official environment draft additions saved. No bypass; draft publication unconfirmed.",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39918375705",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39921420622",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -217,13 +217,34 @@
         "linux_lan_donor_control_namespace": "success",
         "same_run_native_lifecycle_and_assembly": "skipped_windows_dependency_failed",
         "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39918375705,
+        "commit": "1b6cdabcec13c3e1b313501ec4306c67ebcbf9f8",
+        "overall": "failure",
+        "windows": "managed_suites_native_return8_and_native_managed_interop3_passed; source_transport_failed_before_branding_and_final_components",
+        "linux_lan_donor_control_namespace": "success",
+        "same_run_native_lifecycle_and_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39919260768,
+        "commit": "6c11c8b85633ea5e2977ea0131c86ee01b316bbb",
+        "overall": "failure",
+        "windows": "PublicNativeReturn_case15_UnauthorizedAccessException_at_old_coarse_CONFIG_ACK_phase; no_specific_cleanup_cause_inferred_for_this_run",
+        "linux_lan_donor_control_namespace": "success",
+        "same_run_native_lifecycle_and_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "1b6cdab source checks passed; Windows compile/test executing. Previous568managed suites passed but hooks test compilation failed E0425; native IPC/source/interop not executed there.",
+    "candidate_windows_source": "1b native IPC8 and native/managed interop3 passed before UI08 source transport failure. New9e quick39921420637 and full120307306021 failed actual managed case15 OWNED_DIRECTORY_CLEANUP, owned child exited and process/config disposed, no readonly attribute. Source8 and latest complete components remain unverified.",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
     "candidate_linux_matrix": "1b6cdab LAN/donor/control and ingress namespaces succeeded; source-only and strict containment runs also succeeded; actual overlay matrix remains unverified.",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "Latest1bcandidate Windows running. Distinct strict package-input and retained native replay-input gates failed; full package skipped. No positive complete-package claim."
+    "candidate_component_result": "Latest9e Windows failed during test-owned directory cleanup. Strict package and C71 replay input gates remain failed; complete package skipped. Historical component passes remain revision-bound.",
+    "knowledge_snapshot_commit": "896c632841d1f623abfdbc318b1a146b8b8a7251",
+    "knowledge_snapshot_source": "00e6971b9608e89a7efe6e1398814ea95ec111a2",
+    "knowledge_snapshot_files": 110
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -231,7 +252,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T07:41:19.070515+00:00",
+  "updated_utc": "2026-10-23T08:05:19.668667+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -239,7 +260,7 @@
     "lan_self_tests": 26,
     "native_api_tests": 27,
     "initial_native_api_failure": "stale producer fixture digest after executable rename; regenerated by actual producer, old historical fixture restored unchanged",
-    "github_full_build": "four_hosted_component_lanes_passed_strict_privacy_gate_failed_complete_package_skipped",
+    "github_full_build": "historical2b66f30_four_hosted_components_passed; latest9eWindows_test_cleanup_failed; fullpackage_privacy_gate_unresolved",
     "clean_public_package": "strict_gate_failed_missing_8_lan_sav_meta_12_held_total",
     "live_game": "not_run",
     "cloud_initial_python": {
@@ -296,11 +317,11 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "executed": 376,
-      "passed": 374,
+      "executed": 405,
+      "passed": 403,
       "skipped": 2,
       "exit_code": 0,
-      "environment": "fresh detached checkout31f1e5eb0eb1bb5aa880ce998b83cfca6c4f69ee; .local/cloud-receipts/clean-checkout-31f1e5eb0eb1/receipt.json",
+      "environment": "fresh detached checkoutc7ffe7ac8370d5bf664e22bc6d7c61a466c08a76; .local/cloud-receipts/clean-checkout-c7ffe7ac8370/receipt.json",
       "tracked_files_unchanged": true,
       "complete_package": false
     },
@@ -458,14 +479,16 @@
       "portable_managed_passed": 14,
       "windows_managed_pending": 0,
       "native_contract_passed": 9,
-      "windows_native_pending": 8,
+      "windows_native_pending": 0,
       "wpf_crosscompile_warnings": 0,
       "wpf_crosscompile_errors": 0,
-      "cross_language_windows_runtime": "three_actual_owned_child_cases_implemented; actual_shared_TOML_parser_fixec4e403_passed; Windows_pending",
+      "cross_language_windows_runtime": "actual same-run Rust helper/C# owned-process IPC3 passed in1b6cdab; package/loadedDLL admission explicitly not exercised",
       "public_enabled": false,
       "windows_managed_passed_this_run": 25,
-      "hosted_run": 39915438707,
-      "earlier_unexplained_failure_resolved": false
+      "hosted_run": 39918375705,
+      "earlier_unexplained_failure_resolved": false,
+      "windows_native_passed_this_run": 8,
+      "later_managed_failure": "9e actual owned directory cleanup after child exit/disposal; earlier0acunknown failure not retroactively explained"
     },
     "hosted_overlay_guard2_build": {
       "run_id": 39905205148,
@@ -504,15 +527,15 @@
       "local_checks_passed": 25,
       "actual_local_preflight_exit": 1,
       "actual_local_runtime_started": false,
-      "actual_hosted": "f85run39916016529 containment/coreCLI/native-probe builds passed; actual runtime failed WORKER_REPLY_EOF/OWNED_WORKER_CLEANUP_FAILED/TRANSPORT_MATRIX_INCOMPLETE. Actual phase and root cause unknown;3b0fadc adds bounded phase diagnostics and fixes independently reproduced child-reap race, not yet proved hosted cause.",
+      "actual_hosted": "6c39919260513 actual containment/guard3/coreCLI/native-probe builds passed, runtime failed OVERLAY_READY_TIMEOUT/TRANSPORT_MATRIX_INCOMPLETE; prior EOF/reap failure did not recur. Timeout alone does not prove core/TUN/peer readiness or locate its exact cause.",
       "scope": "owned QUIC/WSS/TCP positives, wrong configured key with same PSK, restore; native SocketPolicy traffic and cleanup; not production admission"
     },
     "cloud_canonical_patch_proof": {
       "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
-      "target": "31f1e5eb0eb1bb5aa880ce998b83cfca6c4f69ee",
-      "patch_sha256": "4cd14dbc41681767d3d43b70524f65023e2165aed2a8d5e1eed24eadd0b18be2",
+      "target": "c7ffe7ac8370d5bf664e22bc6d7c61a466c08a76",
+      "patch_sha256": "4ac4f3b3f2cc37613dbba4f370a3007ddd8adaf1e200738bd286b2a1ecf0e954",
       "original_paths": 1312,
-      "forward_paths": 1520,
+      "forward_paths": 1536,
       "reverse_paths": 1312,
       "reverse_git_clean": true,
       "scope": "exact canonical Git blob bytes, modes and pathsets; checkout CRLF expansion is separate; original private four-role evidence not changed"
@@ -571,7 +594,9 @@
       "windows_source_contracts_pending": 8,
       "type_check": "actual Rust API and tests with declaration-only local wrapper; not whole Windows DLL build",
       "production_issuer": "closed; no actual Windows owned kernel-session chain yet",
-      "game_udp_confinement_verified": false
+      "game_udp_confinement_verified": false,
+      "option_readback_fix_commit": "2ace33616b9444761b734a769889a1e1be15f297",
+      "actual_hosted": "1bsource_transport_failed; later6c/9emanaged cleanup failure prevented fixed source suite execution"
     },
     "retained_native_replay_input_gate": {
       "implementation_commit": "1b6cdabcec13c3e1b313501ec4306c67ebcbf9f8",
@@ -582,6 +607,19 @@
       "actual_hosted_run": 39918375705,
       "actual_hosted_gate": "failure",
       "full_native_replay_verified": false
+    },
+    "fusionfix_loader_provenance": {
+      "identity_commit": "116555bc0939c594cd4d6ec6bec5c068782bbd53",
+      "packaging_commit": "c7ffe7ac8370d5bf664e22bc6d7c61a466c08a76",
+      "loader": "official Ultimate ASI Loader v9.7.0 Win32 dinput8.dll is byte-identical to frozen version.dll",
+      "upstream_source": "f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc",
+      "pinned_notice_texts": 7,
+      "embedded_binary_identities": 3,
+      "packaging_and_assembly_checks_passed": 29,
+      "independent_same_checks_passed": 29,
+      "permission_closure": false,
+      "independent_rebuild": false,
+      "binary_executed": false
     }
   }
 }

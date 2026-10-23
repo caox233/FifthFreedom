@@ -636,3 +636,50 @@ Patch SHA256 is4cd14dbc41681767d3d43b70524f65023e2165aed2a8d5e1eed24eadd0b18be2.
 This supplements cloud receipts and does not replace the private PC originals.
 Complete resource packaging, native replay closure and live acceptance remain
 separate open work within the original six milestones.
+
+
+## Actual native interop passed; Windows cleanup and overlay readiness isolated
+
+The [1b6cdab Windows run](https://github.com/caox233/FifthFreedom/actions/runs/39918375705)
+actually passed native return8 and same-run Rust/C# interop3, then failed the
+new source-transport suite before branding/component completion. The original
+configuration framing/ACK and owned pipe path were exercised. Whole-package and
+loaded-DLL admission were explicitly outside the synthetic helper seam.
+
+Microsoft documents that IP_UNICAST_IF accepts network order on set and returns
+host order on get. Reviewed2ace336 removes the erroneous second conversion on
+readback while keeping the exact interface/source/length checks. Its hosted
+verification is still pending: the later6c run failed managed case15, and
+[9e1c7a1 quick](https://github.com/caox233/FifthFreedom/actions/runs/39921420637)
+and full Windows checks precisely located that later failure at owned-directory
+cleanup after child exit and process/config disposal, with no read-only attribute.
+The earlier coarse CONFIG_ACK label alone had not established a pipe failure.
+No production ACL or TLS requirement was relaxed. The original0ac unexplained
+return failure is not retroactively assigned this cause.
+
+The [6c11c8b full overlay run](https://github.com/caox233/FifthFreedom/actions/runs/39919260513)
+passed containment and real builds then failed OVERLAY_READY_TIMEOUT and
+TRANSPORT_MATRIX_INCOMPLETE. The earlier worker EOF/reap codes did not recur.
+That progression is not proof of a ready core/TUN/secure peer; exact timeout
+observations and pinned QUIC address semantics remain the next diagnostic work.
+
+Exact static comparison identifies the retained loader as official Ultimate ASI
+Loader v9.7.0 Win32, and matches its three embedded binary inputs to tagged source
+blobs. Commit116555b retains seven exact upstream notices and unresolved ASI,
+embedded terms/SDK/MPL distribution and independent-rebuild holds. Reviewed
+c7ffe7a carries the seven texts and exact provenance JSON into Windows components,
+same-run assembled candidates and complete-package outputs. An initially proposed
+shared checksum list would violate the downstream fixed-component contract;
+review caught it before commit. Separate notice checksums preserve that contract.
+Actual collector-to-consumer regression plus retained assembly/provenance checks
+passed29/29 independently. No frozen archive or binary pin changed.
+
+A fresh detachedc7ffe7a checkout passed405 methods:403 passed and two existing
+Windows-only skips, tracked files unchanged. Report SHA256 is
+5403395e8551f026b2263151db7245cc52c0b20734c9924fbf300dfb54827ea3.
+The canonical patch fromfc8ef510 to this revision applied and reversed with exact
+bytes/modes/pathsets:1312→1536→1312, clean status. Patch SHA256 is
+4ac4f3b3f2cc37613dbba4f370a3007ddd8adaf1e200738bd286b2a1ecf0e954.
+Private original evidence remains unchanged. DevDocs896c632 is separately pushed
+and binds110 snapshot files, including108 exact mirrors, to source00e6971;
+subsequent source work requires a later explicitly bound snapshot.
