@@ -359,3 +359,29 @@ The focused probe suite remains 31 tests; monitor diagnosis and the actual
 runtime matrix require their own results.
 
 The combined-owner failure adapter now admits 71 additional, individually enumerated existing production failure codes from its monitor, lease, supervisor and worker. This changes diagnostics only: unknown prefix matches remain masked, and successful stop/control paths do not emit failures. The worker protocol and runtime gates are unchanged.
+
+The later actual `4b49da7` matrix, run `39944703157` / job `120384530669`,
+passed all six QUIC/WSS phases and TCP's correct-pin-before and wrong-pin phases.
+TCP's correct-pin-after did not complete: the worker reported
+`observe / OVERLAY_ADDRESS_QUERY_UNAVAILABLE`, with cleanup reaped. All six
+namespaces and the private stage were removed. This source already contained
+the narrow initial UP-but-no-IPv4 pending behavior. The receipt does not identify
+the failing side, errno or whether this monitor had previously observed its TUN;
+none is inferred from the stage code. The earlier complete `05c127a` matrix
+remains a separate passing result.
+
+New failure frames may include one optional `kernel_query` object, extracted
+only from the actual production monitor exception and bound to the strictly
+parsed profile's initiator/responder role. The production validator requires
+the exact syscall stage/code pairing, one of thirteen fixed errno classes,
+an exact prior-observation boolean and the current-call link state. Raw errno
+text, interface names, addresses and paths are excluded. Ordinary six-field
+failure frames remain accepted. Unknown fields, mismatched codes, invalid roles,
+success/pending shapes and metadata left in a prior state cannot supply details.
+Cleanup failure remains independent of the original query failure.
+
+The focused probe suite passes 34 checks, including strict JSON projection and
+negative controls; the production monitor's syscall tests are separate. No
+readiness, retry, pending or rejection rule changes. These added diagnostics
+still require a new hosted run to identify the actual next failure, if any;
+they do not retroactively establish the cause of the `4b49da7` failure.

@@ -384,6 +384,51 @@ SUPERVISOR_STOPPED""".split()
             self.assertEqual(frame["code"], "WORKER_UNCLASSIFIED_ERROR")
             self.assertNotIn(code, json.dumps(frame))
 
+    def test_kernel_query_frame_adds_only_current_failure_and_validated_profile_role(self):
+        # Projection contracts use an explicitly synthetic extractor result;
+        # production syscall classification is tested with the monitor itself.
+        details = dict(query_stage="ipv4_address", errno_class="EADDRNOTAVAIL",
+            previously_observed=True, link_up=True)
+        error = worker.LifecycleError("OVERLAY_ADDRESS_QUERY_UNAVAILABLE")
+        for profile in profiles():
+            for cleanup in (None, "WORKER_CHILD_CLEANUP_FAILED"):
+                state = dict(phase="observe", cleanup_code=cleanup, profile_role=profile.role)
+                with patch.object(worker, "kernel_query_failure", return_value=details):
+                    value = worker.failure_record(error, state)
+                decoded = json.loads(json.dumps(value))
+                self.assertTrue(worker.valid_failure_record(decoded))
+                self.assertEqual(decoded["kernel_query"], dict(role=profile.role, **details))
+                self.assertEqual(decoded["cleanup_reaped"], cleanup is None)
+                self.assertEqual(decoded["code"], "OVERLAY_ADDRESS_QUERY_UNAVAILABLE")
+        # A previous record in state is not authority for a later exception.
+        state = dict(phase="observe", cleanup_code=None, profile_role="initiator", kernel_query=details)
+        self.assertNotIn("kernel_query", worker.failure_record(error, state))
+        with patch.object(worker, "kernel_query_failure", return_value=details):
+            for changed in (dict(profile_role="other"), dict(profile_role=None), dict(phase="arguments")):
+                self.assertNotIn("kernel_query", worker.failure_record(error, dict(state, **changed)))
+            self.assertNotIn("kernel_query", worker.failure_record(worker.LifecycleError("OVERLAY_LINK_QUERY_UNAVAILABLE"), state))
+
+    def test_kernel_query_frame_rejects_inconsistent_fields_types_or_unknown_values(self):
+        value = dict(event="failed", schema=worker.FAILURE_SCHEMA, phase="observe",
+            code="OVERLAY_ADDRESS_QUERY_UNAVAILABLE", cleanup_reaped=True, cleanup_code=None,
+            kernel_query=dict(role="initiator", query_stage="ipv4_address", errno_class="EPERM",
+                previously_observed=False, link_up=True))
+        self.assertTrue(worker.valid_failure_record(value))
+        for key, changed in (("role", "unknown"), ("role", True), ("query_stage", "link_flags"),
+                ("query_stage", "private-stage"), ("errno_class", "EPERM: secret"),
+                ("errno_class", 1), ("errno_class", "EADDRNOTAVAIL"),
+                ("previously_observed", 1), ("link_up", 1), ("extra", "secret")):
+            row = copy.deepcopy(value)
+            row["kernel_query"][key] = changed
+            self.assertFalse(worker.valid_failure_record(row), key)
+        for key, changed in (("event", "observed"), ("phase", "arguments"),
+                ("code", "OVERLAY_TUN_NOT_OWNED"), ("kernel_query", None)):
+            self.assertFalse(worker.valid_failure_record(dict(value, **{key: changed})))
+        for key in value["kernel_query"]:
+            row = copy.deepcopy(value)
+            del row["kernel_query"][key]
+            self.assertFalse(worker.valid_failure_record(row))
+
     def test_source_failure_survives_successful_or_failed_independent_cleanup(self):
         from unittest.mock import Mock, AsyncMock
         profile = profiles()[1]
@@ -411,6 +456,8 @@ SUPERVISOR_STOPPED""".split()
                     asyncio.run(worker.serve(document, state))
             record = raised.exception.record
             self.assertEqual((record["phase"], record["code"]), ("observe", code))
+            self.assertEqual(state["profile_role"], profile.role)
+            self.assertNotIn("kernel_query", record)  # A code string is not syscall evidence.
             self.assertEqual(record["cleanup_reaped"], not cleanup_fails)
             self.assertEqual(record["cleanup_code"], "WORKER_CHILD_CLEANUP_FAILED" if cleanup_fails else None)
             self.assertTrue(worker.valid_failure_record(record))

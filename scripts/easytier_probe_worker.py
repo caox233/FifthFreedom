@@ -20,7 +20,8 @@ from fifth_freedom_control.easytier_profile import (ProfileError, PeerObservatio
     PEER_OBSERVATION_REASONS, core_arguments,
     parse_peer_observation, parse_profile, peer_query_arguments)
 from fifth_freedom_control.owned_process import LifecycleError, OwnedChild, VerifiedExecutable, _BOOTSTRAP
-from fifth_freedom_control.overlay_supervisor import KernelTunMonitor
+from fifth_freedom_control.overlay_supervisor import (KernelTunMonitor,
+    kernel_query_failure, valid_kernel_query_failure)
 from fifth_freedom_control.secure_config import AdmissionError, read_private
 from ci_socket_isolation import observe_echo, parse_ready, PORT_FIELDS
 
@@ -185,20 +186,35 @@ def fixed_failure_code(error):
 
 
 def failure_record(error, state):
-    return dict(event="failed", schema=FAILURE_SCHEMA,
+    value = dict(event="failed", schema=FAILURE_SCHEMA,
         phase=state["phase"] if state["phase"] in FAILURE_PHASES else "arguments",
         code=fixed_failure_code(error), cleanup_reaped=state["cleanup_code"] is None,
         cleanup_code=state["cleanup_code"])
+    details = kernel_query_failure(error)
+    role = state.get("profile_role")
+    if (details is not None and value["phase"] in ("observe", "echo")
+            and type(role) is str and role in ("initiator", "responder")
+            and valid_kernel_query_failure(details, value["code"])):
+        value["kernel_query"] = dict(role=role, **details)
+    return value
 
 
 def valid_failure_record(value):
-    return (type(value) is dict and set(value) == {"event", "schema", "phase", "code", "cleanup_reaped", "cleanup_code"}
+    fields = {"event", "schema", "phase", "code", "cleanup_reaped", "cleanup_code"}
+    base_valid = (type(value) is dict and set(value) in (fields, fields | {"kernel_query"})
         and value["event"] == "failed" and value["schema"] == FAILURE_SCHEMA
         and type(value["phase"]) is str and value["phase"] in FAILURE_PHASES
         and type(value["code"]) is str and value["code"] in FAILURE_CODES
         and type(value["cleanup_reaped"]) is bool
         and (value["cleanup_code"] is None or type(value["cleanup_code"]) is str and value["cleanup_code"] in CLEANUP_CODES)
         and value["cleanup_reaped"] == (value["cleanup_code"] is None))
+    if not base_valid or "kernel_query" not in value:
+        return base_valid
+    details = value["kernel_query"]
+    return (value["phase"] in ("observe", "echo") and type(details) is dict and set(details) == {
+            "role", "query_stage", "errno_class", "previously_observed", "link_up"}
+        and type(details["role"]) is str and details["role"] in ("initiator", "responder")
+        and valid_kernel_query_failure({key: item for key, item in details.items() if key != "role"}, value["code"]))
 
 
 def fail(code):
@@ -378,6 +394,7 @@ async def cleanup_children(core, probe, handles):
 async def serve(manifest, state):
     state["phase"] = "profile"
     profile = parse_profile(json.dumps(manifest["profile"]).encode())
+    state["profile_role"] = profile.role
     handles, core, probe = [], None, None
     failure = None
     try:
