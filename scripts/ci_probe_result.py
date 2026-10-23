@@ -48,6 +48,8 @@ STACK_PAUSED_OVERLAY_CHANGED STACK_PAUSE_ALREADY_REQUESTED STACK_PAUSE_BUDGET_IN
 STACK_PAUSE_EXPIRED STACK_REVOKE_CLEANUP_INVALID STACK_SOCKET_TABLE_INVALID STACK_SOCKET_TABLE_LIMIT
 STACK_START_FAILED""".split())
 CODES.update({"WORKER_REPORTED_FAILURE", "WORKER_FAILURE_FRAME_INVALID"})
+_STARTUP_MODULES = frozenset(("ci_socket_isolation", "ci_easytier_probe", "ci_native_lifecycle",
+    "easytier_probe_worker", "public_server_candidate", "fifth_freedom_control", "cryptography"))
 
 
 
@@ -282,6 +284,14 @@ def inspect(kind, exit_code, receipt, error_log):
     readiness = readiness_diagnostics(value)
     if readiness:
         fields += "; readiness_timeouts=" + ",".join(readiness)
+    exceptions = ci_diagnostics.known_exception_types(text)
+    if exceptions:
+        fields += "; exception_types=" + ",".join(exceptions)
+    missing = sorted({match[1] for line in text.splitlines()
+        if (match := re.fullmatch(r"ModuleNotFoundError: No module named '([a-z_]+)'", line))
+        and match[1] in _STARTUP_MODULES})
+    if missing:
+        fields += "; missing_modules=" + ",".join(missing)
     ci_diagnostics.emit_error("probe=" + kind + "; fixed_codes=" + reason + fields + "; no raw probe output published")
     return 1
 

@@ -236,6 +236,18 @@ class ProbeResultTests(unittest.TestCase):
         self.error_log.write_text("CHECKOUT_VERIFICATION_FAILED_PRIVATE_SUFFIX /PRIVATE_GIT_PATH\n")
         self.assertNotIn("CHECKOUT_VERIFICATION_FAILED", self.inspect("native", {}, 1)[1])
 
+    def test_startup_failure_diagnostics_never_publish_traceback_paths_or_unknown_modules(self):
+        self.error_log.write_text("Traceback (most recent call last):\n  File /PRIVATE_PATH\n"
+            "ModuleNotFoundError: No module named 'ci_socket_isolation'\n")
+        result, output = self.inspect("containment", {}, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("exception_types=ModuleNotFoundError", output)
+        self.assertIn("missing_modules=ci_socket_isolation", output)
+        for text in ("ModuleNotFoundError: No module named 'PRIVATE_MODULE'\n",
+                     "ModuleNotFoundError: No module named 'ci_socket_isolation' /PRIVATE_PATH\n"):
+            self.error_log.write_text(text)
+            self.assertNotIn("missing_modules=", self.inspect("native", {}, 1)[1])
+
     def test_containment_preflight_has_distinct_no_runtime_scope_and_complete_cleanup(self):
         value = {"schema": overlay_producer.CONTAINMENT_SCHEMA, "status": "containment_preflight_verified",
             "input_identity": "synthetic_profile_only_no_executable", "precondition_failures": [],
