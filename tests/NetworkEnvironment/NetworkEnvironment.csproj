@@ -9,5 +9,6 @@
   <ItemGroup>
     <Compile Include="../../src/launcher/src/Services/NetworkEnvironment.cs" Link="NetworkEnvironment.cs" />
     <Compile Include="../../src/launcher/src/Services/NetworkEnvironmentController.cs" Link="NetworkEnvironmentController.cs" />
+    <Compile Include="../../src/launcher/src/Services/LanEnvironmentLease.cs" Link="LanEnvironmentLease.cs" />
   </ItemGroup>
 </Project>

@@ -74,6 +74,16 @@ public interface INetworkEnvironmentLease : IAsyncDisposable
     long? LatencyMilliseconds { get; }
 }
 
+/// <summary>
+/// An explicitly selected LAN Join role may wait for an address or a compatible
+/// server. This permits leaving an owned host while offline; it never grants
+/// remote readiness, and is not applicable to Host or Public candidates.
+/// </summary>
+public interface IConfiguredLanJoinLease : INetworkEnvironmentLease
+{
+    bool IsConfigured { get; }
+}
+
 public interface INetworkEnvironmentAdapter
 {
     NetworkEnvironmentKind Environment { get; }

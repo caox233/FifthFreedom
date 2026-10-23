@@ -331,6 +331,87 @@ static class Program
             catch (ArgumentException) { }
             return Task.CompletedTask;
         });
+        await Case("configured LAN Join can replace Host while offline without false readiness", async () =>
+        {
+            var lan = new FakeAdapter(NetworkEnvironmentKind.Lan);
+            var host = new FakeLease(); lan.Enqueue(host);
+            int closes = 0;
+            var join = new LanEnvironmentLease(true, () => { closes++; return Task.CompletedTask; }); lan.Enqueue(join);
+            await using var controller = new NetworkEnvironmentController(lan, () => default);
+            await controller.ChangeAsync(Host);
+            var result = await controller.ChangeAsync(Join);
+            Check(result.Outcome == NetworkEnvironmentChangeOutcome.Applied && result.Rollback == NetworkEnvironmentRollback.NotNeeded,
+                "offline Join incorrectly rolled back");
+            Check(result.Snapshot.Selection == Join && !result.Snapshot.IsReady && result.Snapshot.Status == NetworkEnvironmentStatus.Disconnected,
+                "offline Join falsely ready");
+            Check(host.Disposals == 1 && closes == 0, "old host ownership not released");
+            var unchanged = await controller.ChangeAsync(Join);
+            Check(unchanged.Outcome == NetworkEnvironmentChangeOutcome.Unchanged && lan.Calls == 2, "configured role unexpectedly reactivated");
+            join.ReportCapabilities(true, 17);
+            Check(controller.Snapshot.IsReady && controller.Snapshot.Status == NetworkEnvironmentStatus.Ready && controller.Snapshot.LatencyMilliseconds == 17,
+                "real observation did not restore readiness");
+            join.ReportCapabilities(false);
+            Check(!controller.Snapshot.IsReady && controller.Snapshot.Status == NetworkEnvironmentStatus.Disconnected && controller.Snapshot.LatencyMilliseconds is null,
+                "lost capabilities kept readiness");
+        });
+        await Case("configured Join marker cannot admit a not-ready Host or Public candidate", async () =>
+        {
+            foreach (var selection in new[] {Host, Fast})
+            {
+                int closes = 0;
+                var invalid = new LanEnvironmentLease(true, () => { closes++; return Task.CompletedTask; });
+                var lan = new FakeAdapter(NetworkEnvironmentKind.Lan); var pub = new FakeAdapter(NetworkEnvironmentKind.Public);
+                (selection == Host ? lan : pub).Enqueue(invalid);
+                await using var controller = new NetworkEnvironmentController(lan, () => default, pub);
+                var result = await controller.ChangeAsync(selection);
+                Check(result.Outcome == NetworkEnvironmentChangeOutcome.ConnectionFailed && !result.Snapshot.IsReady && closes == 1,
+                    "configured marker widened readiness admission");
+            }
+        });
+        await Case("failed Host activation restores explicitly configured offline Join", async () =>
+        {
+            var lan = new FakeAdapter(NetworkEnvironmentKind.Lan);
+            lan.Enqueue(new LanEnvironmentLease(true, () => Task.CompletedTask));
+            lan.Enqueue(new FakeLease(ready: false));
+            lan.Enqueue(new LanEnvironmentLease(true, () => Task.CompletedTask));
+            await using var controller = new NetworkEnvironmentController(lan, () => default);
+            await controller.ChangeAsync(Join);
+            var result = await controller.ChangeAsync(Host);
+            Check(result.Outcome == NetworkEnvironmentChangeOutcome.ConnectionFailed && result.Rollback == NetworkEnvironmentRollback.Restored
+                && result.Snapshot.Selection == Join && !result.Snapshot.IsReady, "offline rollback misreported");
+        });
+        await Case("production LAN lease closes once and rejects late capability results", async () =>
+        {
+            int closes = 0;
+            var entered = Gate<bool>(); var finish = Gate<bool>();
+            var lease = new LanEnvironmentLease(true, async () => { closes++; entered.SetResult(true); await finish.Task; });
+            lease.ReportCapabilities(true, 5);
+            Task first = lease.DisposeAsync().AsTask(); await entered.Task;
+            lease.ReportCapabilities(true, 12);
+            Check(!lease.IsReady && !lease.IsConfigured && lease.LatencyMilliseconds is null, "closing role was republished");
+            Task second = lease.DisposeAsync().AsTask(); finish.SetResult(true); await Task.WhenAll(first, second);
+            lease.ReportCapabilities(true);
+            Check(closes == 1 && !lease.IsReady && !lease.IsConfigured, "lease cleanup duplicated or late observation accepted");
+        });
+        await Case("production LAN lease retains failed owned cleanup for retry", async () =>
+        {
+            int closes = 0;
+            var lease = new LanEnvironmentLease(false, () => { if (++closes == 1) throw new IOException("synthetic cleanup"); return Task.CompletedTask; });
+            lease.ReportCapabilities(true, 2);
+            try { await lease.DisposeAsync(); throw new Exception("failure hidden"); } catch (IOException) { }
+            Check(!lease.IsReady, "failed close reports readiness");
+            await lease.DisposeAsync();
+            Check(closes == 2, "failed cleanup ownership lost");
+        });
+        await Case("production host lease observes owned process exit without waiting for a new probe", async () =>
+        {
+            bool alive = true;
+            await using var lease = new LanEnvironmentLease(false, () => Task.CompletedTask, () => alive);
+            lease.ReportCapabilities(true, 5);
+            Check(lease.IsReady && lease.LatencyMilliseconds == 5, "live owned host not ready");
+            alive = false;
+            Check(!lease.IsReady && lease.LatencyMilliseconds is null && !lease.IsConfigured, "exited host still presented as ready");
+        });
         Console.WriteLine($"RESULT {_passed} network environment cases passed. No real networking, game or process launch.");
     }
 }

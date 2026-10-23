@@ -50,7 +50,8 @@ public sealed class NetworkEnvironmentController : IAsyncDisposable
                 return _state with
                 {
                     IsReady = ready,
-                    Status = disconnected ? NetworkEnvironmentStatus.Disconnected : _state.Status,
+                    Status = disconnected ? NetworkEnvironmentStatus.Disconnected
+                        : ready && _state.Status == NetworkEnvironmentStatus.Disconnected ? NetworkEnvironmentStatus.Ready : _state.Status,
                     LatencyMilliseconds = ready ? SafeLatency(_owned!) : null,
                     GameActive = activity.GameActive,
                     OwnedLaunch = activity.OwnedLaunch
@@ -86,7 +87,7 @@ public sealed class NetworkEnvironmentController : IAsyncDisposable
                 SetStatus(NetworkEnvironmentStatus.Unavailable);
                 return Result(NetworkEnvironmentChangeOutcome.Unavailable, requested);
             }
-            if (_owned is not null && _state.Selection == requested && _state.IsReady && _owned.IsReady)
+            if (_owned is not null && _state.Selection == requested && CanActivate(requested, _owned))
                 return Result(NetworkEnvironmentChangeOutcome.Unchanged, requested);
             // An incompletely stopped lease must not be overlapped by a new host.
             if (_pendingCleanup.Count != 0)
@@ -122,15 +123,16 @@ public sealed class NetworkEnvironmentController : IAsyncDisposable
                 activity = _readActivity();
                 if (activity.GameActive) failure = NetworkEnvironmentChangeOutcome.RejectedGameActive;
                 else if (activity.OwnedLaunch) failure = NetworkEnvironmentChangeOutcome.RejectedOwnedLaunch;
-                else if (candidate is not null && candidate.IsReady)
+                else if (candidate is not null && CanActivate(requested, candidate))
                 {
                     lock (_sync)
                     {
                         if (!_closed && !linked.IsCancellationRequested)
                         {
                             _owned = candidate;
-                            _state = _state with { Selection = requested, IsReady = true, IsSwitching = false,
-                                Status = NetworkEnvironmentStatus.Ready, LatencyMilliseconds = SafeLatency(candidate) };
+                            _state = _state with { Selection = requested, IsReady = candidate.IsReady, IsSwitching = false,
+                                Status = candidate.IsReady ? NetworkEnvironmentStatus.Ready : NetworkEnvironmentStatus.Disconnected,
+                                LatencyMilliseconds = candidate.IsReady ? SafeLatency(candidate) : null };
                             candidate = null;
                             return Result(NetworkEnvironmentChangeOutcome.Applied, requested);
                         }
@@ -158,7 +160,7 @@ public sealed class NetworkEnvironmentController : IAsyncDisposable
                     // Caller cancellation stops the requested change, not restoration.
                     // Closing the controller still cancels restoration through its lifetime.
                     restored = await _adapters[previous.Environment].ConnectAsync(previous, _lifetime.Token).ConfigureAwait(false);
-                    if (restored is not null && restored.IsReady && !IsClosed)
+                    if (restored is not null && CanActivate(previous, restored) && !IsClosed)
                         rollback = NetworkEnvironmentRollback.Restored;
                 }
                 catch (Exception) { /* Rollback outcome remains explicit and not-ready. */ }
@@ -184,6 +186,10 @@ public sealed class NetworkEnvironmentController : IAsyncDisposable
         }
         finally { _changes.Release(); }
     }
+
+    private static bool CanActivate(NetworkEnvironmentSelection selection, INetworkEnvironmentLease lease)
+        => lease.IsReady || (selection.Environment == NetworkEnvironmentKind.Lan && selection.LanRole == LanRole.Join
+            && lease is IConfiguredLanJoinLease { IsConfigured: true });
 
     private bool IsClosed { get { lock (_sync) return _closed; } }
     private static long? SafeLatency(INetworkEnvironmentLease lease)

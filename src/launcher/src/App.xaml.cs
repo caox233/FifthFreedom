@@ -49,7 +49,7 @@ public partial class App : Application
             if(modeCheck) {System.IO.File.WriteAllText(System.IO.Path.GetFullPath(e.Args[2]),await w.RunModeCheckAsync(e.Args[1],e.Args[2]));Shutdown();return;}
             if(handoffCheck) {System.IO.File.WriteAllText(System.IO.Path.GetFullPath(e.Args[2]),await w.RunHandoffCheckAsync(e.Args[1],e.Args[2]));Shutdown();return;}
             if(HostCheckMode) {System.IO.File.WriteAllText(System.IO.Path.GetFullPath(e.Args[2]),await w.RunHostUiCheckAsync(e.Args[1]));Shutdown();return;}
-            if(e.Args[0]=="--self-test") {System.IO.File.WriteAllText(System.IO.Path.GetFullPath(e.Args[1]),w.RunIsolatedChecks());Shutdown();return;}
+            if(e.Args[0]=="--self-test") {System.IO.File.WriteAllText(System.IO.Path.GetFullPath(e.Args[1]),await w.RunAllIsolatedChecksAsync());Shutdown();return;}
             if(e.Args[0].StartsWith("--preview-dialog")) w.ShowDiagnosticDialog(e.Args[0].EndsWith("-long"));
             if(toolsPreview)w.ShowToolsPreview(e.Args[0].Replace("--preview-","").Replace("settings","home"));
             var root=(FrameworkElement)w.Content;

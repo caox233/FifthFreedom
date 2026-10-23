@@ -162,7 +162,12 @@ public partial class MainWindow
             if(txtServer.Text!=endpoint) throw new Exception("Host UI lost the selected port");
             using var c=await ScblLan.LanConnection.ConnectAsync(endpoint,ip,CancellationToken.None);
             if(!c.Capabilities.Ready)throw new Exception("Host UI marked ready before services were ready");
-            return $"PASS actual StartHostModeServerFromUiAsync\nHOST_READY {endpoint}\nPASS server textbox retains actual API port\nPASS real capabilities ready\nPASS owned process stopped in finally\n";
+            if (_networkEnvironment?.Snapshot.Selection?.LanRole != LanRole.Host || !_networkEnvironment.Snapshot.IsReady)
+                throw new Exception("Host runtime did not publish the owned environment lease");
+            var change = await ChangeLanRoleAsync(LanRole.Join);
+            if (change.Outcome != NetworkEnvironmentChangeOutcome.Applied || IsDedicatedServerRunning() || change.Snapshot.IsReady)
+                throw new Exception("Join did not close the owned host or falsely claimed readiness");
+            return $"PASS actual StartHostModeServerFromUiAsync\nHOST_READY {endpoint}\nPASS server textbox retains actual API port\nPASS real capabilities ready\nPASS controller owns ready LAN host\nPASS offline Join closes only its owned host\nPASS owned process stopped in finally\n";
         }
         catch (Exception ex) { operationFailure = ex; throw; }
         finally
@@ -171,6 +176,68 @@ public partial class MainWindow
             if (!StopDedicatedServer("isolated UI test complete"))
                 throw new IOException("Owned host process exit was not confirmed during isolated UI cleanup; retry stopping it.", operationFailure);
         }
+    }
+
+    internal async Task<string> RunAllIsolatedChecksAsync()
+    {
+        string existing = RunIsolatedChecks();
+        var checks = existing.Split('\n').Where(line => line.StartsWith("PASS ", StringComparison.Ordinal)).ToList();
+        void Check(bool condition, string label)
+        {
+            if (!condition) throw new InvalidOperationException(label);
+            checks.Add("PASS " + label);
+        }
+        txtServer.Text = "127.0.0.1:50051";
+        _isGameRunning = false; _isGameStarting = false; _isBusy = false;
+        InitializeNetworkEnvironment();
+        try
+        {
+            // Enter from a worker to exercise the actual production adapter's
+            // Dispatcher boundary; no fake adapter or remote server is involved.
+            var selected = await Task.Run(() => _networkEnvironment!.ChangeAsync(NetworkEnvironmentSelection.ForLan(LanRole.Join)));
+            Check(selected.Outcome == NetworkEnvironmentChangeOutcome.Applied && selected.Snapshot.Selection?.LanRole == LanRole.Join,
+                "production dispatcher adapter activates LAN Join from a worker");
+            Check(txtServer.Text == "127.0.0.1:50051", "initial Join preserves a saved endpoint for an independently owned local server");
+            Check(!selected.Snapshot.IsReady && _activeLanEnvironmentLease is { IsConfigured: true, IsReady: false },
+                "Join selection without a capability observation does not claim readiness");
+            RenderNetworkEnvironment();
+            Check(Equals(cmbNetworkEnvironment.SelectedValue, "Lan") && cmbNetworkEnvironment.Items.OfType<System.Windows.Controls.ListBoxItem>()
+                .Single(x => Equals(x.Tag, "Public")).IsEnabled == false,
+                "production environment presentation keeps Public unavailable");
+            var lease = _activeLanEnvironmentLease;
+            var rejected = await _networkEnvironment!.ChangeAsync(NetworkEnvironmentSelection.ForPublic(PublicTransport.Fast));
+            Check(rejected.Outcome == NetworkEnvironmentChangeOutcome.Unavailable && ReferenceEquals(lease, _activeLanEnvironmentLease),
+                "Public request leaves the existing LAN generation intact");
+            _isGameRunning = true;
+            var blocked = await _networkEnvironment.ChangeAsync(NetworkEnvironmentSelection.ForLan(LanRole.Host));
+            Check(blocked.Outcome == NetworkEnvironmentChangeOutcome.RejectedGameActive && !IsDedicatedServerRunning(),
+                "actual launcher activity blocks host activation before process start");
+            _isGameRunning = false;
+            _ownedGameLaunchActive = true;
+            blocked = await _networkEnvironment.ChangeAsync(NetworkEnvironmentSelection.ForLan(LanRole.Host));
+            Check(blocked.Outcome == NetworkEnvironmentChangeOutcome.RejectedOwnedLaunch && !IsDedicatedServerRunning(),
+                "owned launch blocks production environment switching");
+            _ownedGameLaunchActive = false;
+            Check(!TryPublishLanCapabilities(lease, txtServer.Text, "192.0.2.254", true, 1) && !lease!.IsReady,
+                "stale bind observation cannot publish readiness");
+            Check(!TryPublishLanCapabilities(lease, "192.0.2.254:50051", _settings.BindOverride, true, 1) && !lease!.IsReady,
+                "stale endpoint observation cannot publish readiness");
+            Check(await CloseNetworkEnvironmentAsync(), "production adapter closes on the WPF dispatcher without deadlock");
+            Check(_activeLanEnvironmentLease is null && _networkEnvironment.Snapshot.IsClosed && !lease!.IsConfigured,
+                "closed LAN generation is released and cannot restore readiness");
+            _networkEnvironment = null; _networkEnvironmentClosing = false;
+            var fresh = await ChangeLanRoleAsync(LanRole.Join);
+            Check(fresh.Outcome == NetworkEnvironmentChangeOutcome.Applied && _activeLanEnvironmentLease is not null,
+                "a fresh controller creates a distinct owned LAN generation");
+            Check(!TryPublishLanCapabilities(lease, txtServer.Text, _settings.BindOverride, true, 1) && !_activeLanEnvironmentLease!.IsReady,
+                "late capability observation cannot cross an identical endpoint generation");
+        }
+        finally
+        {
+            _isGameRunning = false; _ownedGameLaunchActive = false;
+            if (_networkEnvironment is not null) await _networkEnvironment.DisposeAsync();
+        }
+        return string.Join(Environment.NewLine, checks) + $"\nRESULT {checks.Count} isolated UI/protocol checks passed.\n";
     }
 
     internal string RunIsolatedChecks()
