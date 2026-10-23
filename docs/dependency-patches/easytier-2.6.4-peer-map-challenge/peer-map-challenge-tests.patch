@@ -1,0 +1,312 @@
+diff --git a/easytier/src/peers/peer.rs b/easytier/src/peers/peer.rs
+index d4c3572..9dd659e 100644
+--- a/easytier/src/peers/peer.rs
++++ b/easytier/src/peers/peer.rs
+@@ -212,6 +212,13 @@ impl Peer {
+         self.conns.get(id).map(|entry| Arc::clone(entry.value()))
+     }
+ 
++    #[cfg(test)]
++    pub(super) fn replace_challenge_connection_for_test(
++        &self, id: PeerConnId, connection: Arc<PeerConn>,
++    ) -> Option<Arc<PeerConn>> {
++        self.conns.insert(id, connection)
++    }
++
+     pub async fn send_msg(&self, msg: ZCPacket) -> Result<(), Error> {
+         let Some(conn) = self.select_conn().await else {
+             return Err(Error::PeerNoConnectionError(self.peer_node_id));
+diff --git a/easytier/src/peers/peer_map_data_challenge.rs b/easytier/src/peers/peer_map_data_challenge.rs
+index ed74e5c..d5abee9 100644
+--- a/easytier/src/peers/peer_map_data_challenge.rs
++++ b/easytier/src/peers/peer_map_data_challenge.rs
+@@ -154,3 +154,289 @@ impl PeerMap {
+         }
+     }
+ }
++
++#[cfg(test)]
++mod fifth_freedom_peer_map_challenge_contract {
++    use super::*;
++    use base64::prelude::{BASE64_STANDARD, Engine as _};
++    use crate::{
++        common::{
++            config::{ConfigLoader, TomlConfigLoader},
++            global_ctx::tests::get_mock_global_ctx,
++            new_peer_id,
++            stun::MockStunInfoCollector,
++        },
++        instance::instance::Instance,
++        peers::{create_packet_recv_chan, recv_packet_from_chan, PacketRecvChanReceiver,
++                peer_session::PeerSessionStore},
++        proto::common::{SecureModeConfig, NatType},
++        tunnel::{packet_def::PacketType, ring::create_ring_tunnel_pair},
++    };
++
++    fn secure(config: &dyn ConfigLoader) -> [u8; 32] {
++        let private = x25519_dalek::StaticSecret::random_from_rng(rand::rngs::OsRng);
++        let public = x25519_dalek::PublicKey::from(&private);
++        config.set_secure_mode(Some(SecureModeConfig {
++            enabled: true,
++            local_private_key: Some(BASE64_STANDARD.encode(private.as_bytes())),
++            local_public_key: Some(BASE64_STANDARD.encode(public.as_bytes())),
++        }));
++        *public.as_bytes()
++    }
++
++    struct Fixture {
++        instance: Option<Instance>,
++        map: Arc<PeerMap>,
++        peer: Arc<Peer>,
++        connection: Arc<PeerConn>,
++        server: PeerConn,
++        server_rx: PacketRecvChanReceiver,
++        _client_rx: Option<PacketRecvChanReceiver>,
++        key: [u8; 32],
++        local_id: PeerId,
++        remote_id: PeerId,
++        conn_id: PeerConnId,
++        endpoints: DataChallengeEndpoints,
++    }
++    impl Fixture {
++        async fn new(use_instance: bool) -> Self {
++            let (tx, rx) = create_packet_recv_chan();
++            let (instance, map, cc, local_id, rx) = if use_instance {
++                let config = TomlConfigLoader::default();
++                let mut flags = config.get_flags();
++                flags.disable_p2p = true;
++                config.set_flags(flags);
++                secure(&config);
++                let instance = Instance::new(config);
++                let ctx = instance.get_global_ctx();
++                ctx.replace_stun_info_collector(Box::new(MockStunInfoCollector {
++                    udp_nat_type: NatType::Unknown,
++                }));
++                let map = instance.get_peer_manager().get_peer_map();
++                let id = instance.peer_id();
++                (Some(instance), map, ctx, id, None)
++            } else {
++                let ctx = get_mock_global_ctx();
++                secure(ctx.config.as_ref());
++                let id = new_peer_id();
++                (None, Arc::new(PeerMap::new(tx, ctx.clone(), id)), ctx, id, Some(rx))
++            };
++            let remote_id = new_peer_id();
++            let sc = get_mock_global_ctx();
++            let key = secure(sc.config.as_ref()); // independent synthetic owner config
++            let (client_tunnel, server_tunnel) = create_ring_tunnel_pair();
++            let mut client = PeerConn::new(local_id, cc, client_tunnel, Arc::new(PeerSessionStore::new()));
++            let mut server = PeerConn::new(remote_id, sc, server_tunnel, Arc::new(PeerSessionStore::new()));
++            let (a, b) = tokio::join!(client.do_handshake_as_client(), server.do_handshake_as_server());
++            a.unwrap(); b.unwrap();
++            let conn_id = client.get_conn_id();
++            let (server_tx, server_rx) = create_packet_recv_chan();
++            server.start_recv_loop(server_tx).await;
++            map.add_new_peer_conn(client).await.unwrap();
++            let peer = map.get_peer_by_id(remote_id).unwrap();
++            let connection = peer.challenge_connection(&conn_id).unwrap();
++            Self { instance, map, peer, connection, server, server_rx, _client_rx: rx,
++                key, local_id, remote_id, conn_id,
++                endpoints: DataChallengeEndpoints { local_ipv4: "10.66.0.10".parse().unwrap(),
++                    remote_ipv4: "10.66.0.20".parse().unwrap(), local_port: 23001, remote_port: 23002 } }
++        }
++        fn start(&self, budget: Duration) -> impl Future<Output=Result<PeerDataChallenge,DataChallengeError>> + use<> {
++            self.map.send_data_challenge_on_connection(self.remote_id,self.conn_id,self.key,self.endpoints,budget)
++        }
++        async fn echo(&mut self) {
++            let packet = tokio::time::timeout(Duration::from_secs(1), recv_packet_from_chan(&mut self.server_rx)).await.unwrap().unwrap();
++            let mut bytes = packet.payload().to_vec();
++            {
++                let mut ip = pnet::packet::ipv4::MutableIpv4Packet::new(&mut bytes).unwrap();
++                let src = ip.get_source(); let dst = ip.get_destination();
++                ip.set_source(dst); ip.set_destination(src);
++                ip.set_checksum(pnet::packet::ipv4::checksum(&ip.to_immutable()));
++            }
++            {
++                let mut udp = pnet::packet::udp::MutableUdpPacket::new(&mut bytes[20..]).unwrap();
++                let src = udp.get_source(); let dst = udp.get_destination();
++                udp.set_source(dst); udp.set_destination(src);
++                let checksum = pnet::packet::udp::ipv4_checksum(&udp.to_immutable(), &self.endpoints.remote_ipv4, &self.endpoints.local_ipv4);
++                udp.set_checksum(if checksum == 0 { 0xffff } else { checksum });
++            }
++            let mut packet = ZCPacket::new_with_payload(&bytes);
++            packet.fill_peer_manager_hdr(self.remote_id, self.local_id, PacketType::Data as u8);
++            self.server.send_msg(packet).await.unwrap();
++        }
++        async fn echo_accepted(&mut self) {
++            self.echo().await;
++            // Real receive-loop delivery happens after the AEAD/correlation
++            // filter. Negative membership tests must not pass merely because
++            // the correct response is still waiting to be processed.
++            let rx = self._client_rx.as_mut().unwrap();
++            tokio::time::timeout(Duration::from_secs(1), recv_packet_from_chan(rx))
++                .await.unwrap().unwrap();
++        }
++        async fn completed(&mut self, ticket: &mut PeerDataChallenge) -> PeerDataChallengeResponse {
++            self.echo().await;
++            tokio::time::timeout(Duration::from_secs(1), async {
++                loop {
++                    if let Some(response) = ticket.take_response() { break response; }
++                    tokio::task::yield_now().await;
++                }
++            }).await.unwrap()
++        }
++    }
++
++    #[tokio::test]
++    async fn actual_instance_map_noise_response_is_one_use() {
++        // Constructs actual Instance and map; never calls Instance::run, opens
++        // a listener/TUN or starts core. Background P2P is explicitly disabled.
++        let mut f = Fixture::new(true).await;
++        let mut ticket = f.instance.as_ref().unwrap().send_owned_data_challenge(
++            f.remote_id, f.conn_id, f.key, f.endpoints, Duration::from_secs(2),
++        ).await.unwrap();
++        let response = f.completed(&mut ticket).await;
++        assert_eq!(response.connection_id(), f.conn_id);
++        assert!(response.round_trip_if_current().is_some());
++        assert!(ticket.take_response().is_none());
++        assert!(response.round_trip_if_current().is_some());
++    }
++
++    #[tokio::test]
++    async fn exact_ids_key_and_bounds_do_not_fall_back() {
++        let f = Fixture::new(false).await;
++        let mut wrong_key = f.key; wrong_key[0] ^= 1;
++        for (peer, conn, key, budget) in [
++            (f.remote_id.wrapping_add(1), f.conn_id, f.key, Duration::from_secs(2)),
++            (f.remote_id, PeerConnId::new_v4(), f.key, Duration::from_secs(2)),
++            (f.remote_id, f.conn_id, wrong_key, Duration::from_secs(2)),
++            (f.remote_id, f.conn_id, f.key, Duration::ZERO),
++            (f.remote_id, f.conn_id, f.key, Duration::from_secs(4)),
++        ] {
++            assert!(f.map.send_data_challenge_on_connection(peer,conn,key,f.endpoints,budget).await.is_err());
++        }
++        assert!(f.start(Duration::from_secs(2)).await.is_ok());
++    }
++
++    #[tokio::test]
++    async fn unpolled_future_retains_no_map_peer_or_connection_owner() {
++        let f = Fixture::new(false).await;
++        let before = (Arc::strong_count(&f.map), Arc::strong_count(&f.peer), Arc::strong_count(&f.connection));
++        let future = f.start(Duration::from_secs(2));
++        assert_eq!(before, (Arc::strong_count(&f.map), Arc::strong_count(&f.peer), Arc::strong_count(&f.connection)));
++        let weak = Arc::downgrade(&f.map);
++        drop(f);
++        assert!(weak.upgrade().is_none());
++        assert!(matches!(future.await, Err(DataChallengeError::Unavailable)));
++    }
++
++    #[tokio::test]
++    async fn retained_connection_does_not_survive_peer_removal_as_current() {
++        let mut f = Fixture::new(false).await;
++        let mut ticket = f.start(Duration::from_secs(2)).await.unwrap();
++        f.echo_accepted().await;
++        f.map.close_peer(f.remote_id).await.unwrap();
++        assert!(!f.connection.is_closed()); // real old object deliberately retained
++        assert!(ticket.take_response().is_none());
++    }
++
++    #[tokio::test]
++    async fn same_peer_id_new_arc_and_same_connection_are_rejected() {
++        let mut f = Fixture::new(false).await;
++        let mut ticket = f.start(Duration::from_secs(2)).await.unwrap();
++        f.echo_accepted().await;
++        let replacement = Arc::new(Peer::new(f.remote_id, f.map.packet_send.clone(), f.map.global_ctx.clone()));
++        replacement.replace_challenge_connection_for_test(f.conn_id, f.connection.clone());
++        f.map.peer_map.insert(f.remote_id, replacement);
++        assert!(!f.connection.is_closed());
++        assert!(ticket.take_response().is_none());
++    }
++
++    #[tokio::test]
++    async fn same_connection_key_new_arc_does_not_keep_old_response_current() {
++        let mut f = Fixture::new(false).await;
++        let mut ticket = f.start(Duration::from_secs(2)).await.unwrap();
++        let response = f.completed(&mut ticket).await;
++        let other = Fixture::new(false).await;
++        f.peer.replace_challenge_connection_for_test(f.conn_id, other.connection.clone());
++        assert!(!f.connection.is_closed());
++        assert!(response.round_trip_if_current().is_none());
++    }
++
++    #[tokio::test]
++    async fn observed_removal_is_sticky_after_same_arc_reinsertion() {
++        let mut f = Fixture::new(false).await;
++        let mut ticket = f.start(Duration::from_secs(2)).await.unwrap();
++        let response = f.completed(&mut ticket).await;
++        f.map.peer_map.remove(&f.remote_id);
++        assert!(response.round_trip_if_current().is_none());
++        f.map.peer_map.insert(f.remote_id, f.peer.clone());
++        assert!(response.round_trip_if_current().is_none());
++    }
++
++    #[tokio::test]
++    async fn actual_map_owner_drop_invalidates_a_retained_response() {
++        let mut f = Fixture::new(false).await;
++        let mut ticket = f.start(Duration::from_secs(2)).await.unwrap();
++        let response = f.completed(&mut ticket).await;
++        let retained = f.connection.clone();
++        let weak = Arc::downgrade(&f.map);
++        drop(f);
++        assert!(weak.upgrade().is_none());
++        assert!(response.round_trip_if_current().is_none());
++        drop(retained);
++    }
++
++    #[tokio::test]
++    async fn late_send_completion_rechecks_peer_membership() {
++        let f = Fixture::new(false).await;
++        let mut ticket = f.start(Duration::from_secs(2)).await.unwrap();
++        let inner = ticket.inner.take().unwrap();
++        let membership = ticket.membership.clone();
++        let (release, waiter) = tokio::sync::oneshot::channel();
++        let future = finish_send(membership, async { waiter.await.unwrap(); Ok(inner) });
++        tokio::pin!(future);
++        assert!(futures::poll!(&mut future).is_pending());
++        f.map.peer_map.remove(&f.remote_id);
++        release.send(()).unwrap();
++        assert!(matches!(future.await, Err(DataChallengeError::Unavailable)));
++        // Post-await failure dropped the actual nonce ticket; no stuck slot.
++        assert!(f.connection.send_data_challenge(f.remote_id,f.key,f.endpoints,Duration::from_secs(2)).await.is_ok());
++    }
++
++    #[tokio::test]
++    async fn cancel_and_timeout_drop_the_real_inflight_nonce_ticket() {
++        let f = Fixture::new(false).await;
++        for cancel in [true, false] {
++            let mut ticket = f.start(Duration::from_millis(50)).await.unwrap();
++            let inner = ticket.inner.take().unwrap();
++            let future = finish_send(ticket.membership.clone(), async {
++                let _owned = inner;
++                std::future::pending::<Result<DataChallenge,DataChallengeError>>().await
++            });
++            let mut future = Box::pin(future);
++            assert!(futures::poll!(&mut future).is_pending());
++            if cancel { drop(future); }
++            else { assert!(matches!(future.await,Err(DataChallengeError::TimedOut))); }
++            let fresh = f.connection.send_data_challenge(f.remote_id,f.key,f.endpoints,Duration::from_secs(2)).await.unwrap();
++            drop(fresh);
++        }
++    }
++
++    #[tokio::test]
++    async fn delaying_first_poll_does_not_reset_original_budget() {
++        let f = Fixture::new(false).await;
++        let future = f.start(Duration::from_millis(20));
++        tokio::time::sleep(Duration::from_millis(30)).await;
++        assert!(future.await.is_err());
++        assert!(f.start(Duration::from_secs(2)).await.is_ok());
++    }
++
++    #[tokio::test]
++    async fn dropping_expired_wrapper_cannot_clear_the_new_nonce() {
++        let mut f = Fixture::new(false).await;
++        let old = f.start(Duration::from_millis(20)).await.unwrap();
++        // Drain that request without replying; it must not complete a later nonce.
++        recv_packet_from_chan(&mut f.server_rx).await.unwrap();
++        tokio::time::sleep(Duration::from_millis(30)).await;
++        let mut fresh = f.start(Duration::from_secs(2)).await.unwrap();
++        drop(old);
++        assert!(f.completed(&mut fresh).await.round_trip_if_current().is_some());
++    }
++}

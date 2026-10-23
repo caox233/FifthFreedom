@@ -1,0 +1,222 @@
+diff --git a/easytier/src/instance/instance.rs b/easytier/src/instance/instance.rs
+index 0f00908..73ae3b1 100644
+--- a/easytier/src/instance/instance.rs
++++ b/easytier/src/instance/instance.rs
+@@ -1143,6 +1143,24 @@ impl Instance {
+         self.peer_manager.clone()
+     }
+ 
++    /// Starts a challenge on this Instance's actual current peer map. This is a
++    /// bounded membership observation, not Instance/process/NIC ownership or a lease.
++    pub fn send_owned_data_challenge(
++        &self,
++        peer_id: PeerId,
++        conn_id: PeerConnId,
++        expected_static_key: [u8; 32],
++        endpoints: crate::peers::peer_conn::DataChallengeEndpoints,
++        timeout: std::time::Duration,
++    ) -> impl std::future::Future<
++        Output = Result<crate::peers::peer_map::PeerDataChallenge,
++                        crate::peers::peer_conn::DataChallengeError>,
++    > + Send + use<> {
++        self.peer_manager.get_peer_map().send_data_challenge_on_connection(
++            peer_id, conn_id, expected_static_key, endpoints, timeout,
++        )
++    }
++
+     pub async fn close_peer_conn(
+         &mut self,
+         peer_id: PeerId,
+diff --git a/easytier/src/peers/peer.rs b/easytier/src/peers/peer.rs
+index 63af93f..d4c3572 100644
+--- a/easytier/src/peers/peer.rs
++++ b/easytier/src/peers/peer.rs
+@@ -207,6 +207,11 @@ impl Peer {
+             .map(|conn| conn.clone())
+     }
+ 
++    // Internal exact-connection selection only. No public Arc escape hatch.
++    pub(super) fn challenge_connection(&self, id: &PeerConnId) -> Option<Arc<PeerConn>> {
++        self.conns.get(id).map(|entry| Arc::clone(entry.value()))
++    }
++
+     pub async fn send_msg(&self, msg: ZCPacket) -> Result<(), Error> {
+         let Some(conn) = self.select_conn().await else {
+             return Err(Error::PeerNoConnectionError(self.peer_node_id));
+diff --git a/easytier/src/peers/peer_map.rs b/easytier/src/peers/peer_map.rs
+index 46e55aa..b645992 100644
+--- a/easytier/src/peers/peer_map.rs
++++ b/easytier/src/peers/peer_map.rs
+@@ -29,6 +29,10 @@ use super::{
+     route_trait::{ArcRoute, NextHopPolicy},
+ };
+ 
++#[path = "peer_map_data_challenge.rs"]
++mod data_challenge;
++pub use data_challenge::{PeerDataChallenge, PeerDataChallengeResponse};
++
+ pub struct PeerMap {
+     global_ctx: ArcGlobalCtx,
+     my_peer_id: PeerId,
+diff --git a/easytier/src/peers/peer_map_data_challenge.rs b/easytier/src/peers/peer_map_data_challenge.rs
+new file mode 100644
+index 0000000..ed74e5c
+--- /dev/null
++++ b/easytier/src/peers/peer_map_data_challenge.rs
+@@ -0,0 +1,156 @@
++//! Bounded observations of actual map membership, not a process/NIC lease.
++use super::*;
++use crate::peers::peer_conn::{
++    DataChallenge, DataChallengeEndpoints, DataChallengeError, DataChallengeResponse,
++};
++use std::{
++    future::Future,
++    sync::{Weak, atomic::{AtomicBool, Ordering}},
++    time::{Duration, Instant},
++};
++
++struct Membership {
++    map: Weak<PeerMap>,
++    peer: Weak<Peer>,
++    connection: Weak<PeerConn>,
++    peer_id: PeerId,
++    conn_id: PeerConnId,
++    deadline: Instant,
++    revoked: AtomicBool,
++}
++
++impl Membership {
++    fn current_connection(&self) -> Option<Arc<PeerConn>> {
++        // Each table read releases its DashMap guard before any other read or
++        // await. These are bounded observations, not an atomic global snapshot.
++        let checked = || {
++            if self.revoked.load(Ordering::Acquire) || Instant::now() >= self.deadline {
++                return None;
++            }
++            let map = self.map.upgrade()?;
++            let peer = self.peer.upgrade()?;
++            let connection = self.connection.upgrade()?;
++            if !Arc::ptr_eq(&map.get_peer_by_id(self.peer_id)?, &peer)
++                || peer.peer_node_id != self.peer_id
++                || !Arc::ptr_eq(&peer.challenge_connection(&self.conn_id)?, &connection)
++                || connection.get_conn_id() != self.conn_id
++                || connection.is_closed()
++                || !Arc::ptr_eq(&map.get_peer_by_id(self.peer_id)?, &peer)
++                || self.revoked.load(Ordering::Acquire)
++                || Instant::now() >= self.deadline
++            {
++                return None;
++            }
++            Some(connection)
++        };
++        let result = checked();
++        if result.is_none() {
++            // Once loss is actually observed, reinsertion cannot resurrect this
++            // request. An unobserved same-object remove/reinsert is not claimed
++            // to be detected; this interface offers sampled current membership.
++            self.revoked.store(true, Ordering::Release);
++        }
++        result
++    }
++}
++
++/// No external constructor/Clone/serde and no retained strong runtime owner.
++pub struct PeerDataChallenge {
++    membership: Arc<Membership>,
++    inner: Option<DataChallenge>,
++}
++
++/// Generated at most once; currentness may be read repeatedly within the budget.
++pub struct PeerDataChallengeResponse {
++    membership: Arc<Membership>,
++    inner: DataChallengeResponse,
++}
++
++impl PeerDataChallenge {
++    pub fn take_response(&mut self) -> Option<PeerDataChallengeResponse> {
++        if self.membership.current_connection().is_none() {
++            self.inner = None;
++            return None;
++        }
++        let inner = self.inner.as_mut()?.take_response()?;
++        self.inner = None;
++        let response = PeerDataChallengeResponse {
++            membership: self.membership.clone(),
++            inner,
++        };
++        response.round_trip_if_current()?;
++        Some(response)
++    }
++}
++
++impl PeerDataChallengeResponse {
++    pub fn connection_id(&self) -> PeerConnId {
++        self.inner.connection_id()
++    }
++
++    pub fn round_trip_if_current(&self) -> Option<Duration> {
++        self.membership.current_connection()?;
++        let result = self.inner.round_trip_if_current()?;
++        self.membership.current_connection()?;
++        Some(result)
++    }
++}
++
++async fn finish_send<F>(
++    membership: Arc<Membership>,
++    send: F,
++) -> Result<PeerDataChallenge, DataChallengeError>
++where
++    F: Future<Output = Result<DataChallenge, DataChallengeError>>,
++{
++    membership.current_connection().ok_or(DataChallengeError::Unavailable)?;
++    let inner = tokio::time::timeout_at(membership.deadline.into(), send)
++        .await
++        .map_err(|_| DataChallengeError::TimedOut)??;
++    membership.current_connection().ok_or(DataChallengeError::Unavailable)?;
++    Ok(PeerDataChallenge { membership, inner: Some(inner) })
++}
++
++impl PeerMap {
++    /// Selects this exact current map entry, never a default/relay replacement.
++    /// Only the send operation temporarily upgrades its exact connection; the
++    /// returned future does not retain this map or peer. IPC cancellation must
++    /// drop that future. Timeout covers selection-to-result, with no new budget.
++    pub fn send_data_challenge_on_connection(
++        self: &Arc<Self>,
++        peer_id: PeerId,
++        conn_id: PeerConnId,
++        expected_static_key: [u8; 32],
++        endpoints: DataChallengeEndpoints,
++        timeout: Duration,
++    ) -> impl Future<Output = Result<PeerDataChallenge, DataChallengeError>> + Send + use<> {
++        let selected = (|| {
++            if peer_id == 0 || conn_id.is_nil()
++                || timeout < Duration::from_millis(10) || timeout > Duration::from_secs(3)
++            {
++                return Err(DataChallengeError::InvalidInput);
++            }
++            let deadline = Instant::now() + timeout;
++            let peer = self.get_peer_by_id(peer_id).ok_or(DataChallengeError::Unavailable)?;
++            let connection = peer.challenge_connection(&conn_id).ok_or(DataChallengeError::Unavailable)?;
++            let membership = Arc::new(Membership {
++                map: Arc::downgrade(self), peer: Arc::downgrade(&peer),
++                connection: Arc::downgrade(&connection), peer_id, conn_id, deadline,
++                revoked: AtomicBool::new(false),
++            });
++            membership.current_connection().ok_or(DataChallengeError::Unavailable)?;
++            Ok(membership)
++        })();
++        async move {
++            let membership = selected?;
++            let connection = membership.current_connection().ok_or(DataChallengeError::Unavailable)?;
++            let remaining = membership.deadline.saturating_duration_since(Instant::now());
++            if remaining < Duration::from_millis(10) {
++                return Err(DataChallengeError::TimedOut);
++            }
++            finish_send(membership, connection.send_data_challenge(
++                peer_id, expected_static_key, endpoints, remaining,
++            )).await
++        }
++    }
++}
