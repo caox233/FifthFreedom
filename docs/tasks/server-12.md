@@ -1,0 +1,154 @@
+# SERVER-12 — explicit owned EasyTier profile
+
+Status: ready-for-agent (profile/parser implemented; runtime composition pending).
+
+`src/public/fifth_freedom_control/easytier_profile.py` is the shared production
+recipe parser, private TOML emitter and bounded peer-observation parser. It does
+not launch EasyTier or grant native admission. The supervisor and native owner
+lease consume its canonical public recipe digest as `runtime_profile_sha256`;
+the executable digest remains a separate identity. Source/license publication
+holds and the complete-package private-input gate are unchanged.
+
+## Recipe and APIs
+
+`scripts/easytier-probe-profile.schema.json` describes
+`ff-easytier-owned-probe-v1`. The Python parser additionally rejects ambiguous
+encodings and enforces the cross-field constraints. The entire recipe contains
+only these fields: schema, purpose, transport, initiator/responder role, UUIDv4
+instance ID, explicit network name, interface name, RPC port, local/remote
+endpoints and the existing `RuntimeCandidateIdentity`. Endpoints contain numeric
+RFC1918 underlay IPv4, distinct usable addresses on one separate /30 overlay,
+an explicit listener port and a canonical base64 X25519 public key. Secrets,
+arbitrary flags, hostnames, proxy URLs, default routes and extra fields are not
+recipe inputs.
+
+The purpose is always `owned-isolated-development`. Transport is exactly `tcp`,
+`quic` or `wss`; TCP is a development probe for the shared inner Noise/lifetime
+boundary. QUIC/WSS emission and parsing do **not** constitute runtime acceptance
+of the product's Fast/Compatible transports. Every future isolated test receipt
+must identify its actual transport.
+
+- `parse_profile(bytes) -> ProbeProfile`; at most 16 KiB, duplicate keys rejected.
+- `.canonical_bytes`: sorted-key, compact ASCII JSON plus one LF. `.sha256` is
+  SHA256 of exactly those bytes. Schema-version changes are required when the
+  fixed emission/security policy changes. The digest contains no PSK/private key
+  and is an identity, not approval or evidence that containment exists.
+- `emit_private_toml(profile, network_secret=bytes, local_private_key=bytes)`
+  requires explicit 32-byte secrets. The caller must obtain the PSK and private
+  keys from a CSPRNG, share only the PSK between the two owned nodes, and supply
+  the corresponding public keys in the public recipes. The function checks the
+  local key pair and rejects low-order remote keys through audited X25519. It
+  cannot establish randomness by inspecting supplied bytes.
+- `write_private_toml(absolute_path, content)` creates a new Linux file using
+  retained directory descriptors, `O_EXCL`, `O_NOFOLLOW`, mode 0600 and an owned
+  0700 parent. It refuses replacement and unsafe ancestors. A failed write may
+  leave an owner-only incomplete file; it is never reported as successful or
+  automatically removed/replaced.
+- `core_arguments(profile, absolute_config_path)` fixes `--disable-env-parsing`,
+  `--rpc-portal 127.0.0.1:PORT` and `--rpc-portal-whitelist 127.0.0.1/32`.
+  The owner must provide the existing clean environment and preserve the private
+  config object for the entire child lifetime; arguments alone do not pin a file.
+- `peer_query_arguments(profile)` fixes the same loopback address, explicit
+  instance UUID and `--verbose peer list`.
+- `parse_peer_observation(profile, bytes) -> PeerObservation` consumes at most
+  64 KiB and returns only the profile digest, connection UUID and peer IDs.
+
+Private generation lazily imports `cryptography==50.0.0`, pinned in
+`scripts/requirements-profile.txt`. Missing cryptography fails generation with a
+fixed error; public parsing and the zipapp import do not need it. CI must install
+this exact binary wheel dependency before emitter tests; tests do not skip a
+missing or wrong crypto provider. This requirement does not claim completed
+runtime dependency/source redistribution closure.
+
+## Exact pinned upstream mapping
+
+These references are to EasyTier commit
+`8428a89d2dabc94c97d370ec607c6ca142473626`, with the two separately reviewed
+SERVER-07 session/ingress guards. The original release binary locks remain
+unchanged; use the distinct candidate identity produced by the clean builder.
+
+- [Config and merge behavior](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/common/config.rs#L525):
+  `network_identity`, `[secure_mode]`, explicit `listeners`, `[[peer]]` URI and
+  public key. Only initiator emits a connector; responder has explicit `peer=[]`.
+  Both have a numeric listener. Omitted listeners could enable default listeners,
+  so omission is not used.
+- [Flags schema](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/proto/common.proto#L7):
+  secure mode, AES-256-GCM, IPv4 TUN and explicit interface are required. Proxy,
+  exit-node, DNS, UDP broadcast, KCP/QUIC **proxy** input/relay, foreign relay,
+  UPnP, hole punching and optional P2P discovery are disabled. QUIC-proxy flags
+  do not disable the selected QUIC tunnel transport. Mapped listeners, proxy
+  networks, advertised extra routes, exits, port forwards and UDP/v6 STUN lists
+  are empty. There is no invented general `disable_advertise` flag: the intended
+  overlay route still exists. `disable_relay_data` is not a strict ingress ACL.
+- [RPC bind parser](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/rpc_service/api.rs#L178):
+  omitted or port-only portal can bind broadly; both are prohibited here.
+- [CLI verbose branch](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/easytier-cli.rs#L1428):
+  ordinary JSON is a table projection without keys/authentication. Verbose emits
+  `PeerRoutePair[]`, using the generated Rust serde format: key bytes are integer
+  arrays, `secure_auth_level` is integer 3 for `NetworkSecretConfirmed`, UUIDs in
+  default/direct connection fields are four big-endian u32 parts.
+- [PeerConnInfo](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/proto/api_instance.proto#L33),
+  [auth enum](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/proto/peer_rpc.proto#L324)
+  and [route join](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/proto/api.rs#L175)
+  establish the bounded observation schema. Require one returned route/peer and
+  one open connection, nonzero distinct IDs, expected network, both expected
+  static keys, auth level 3, expected direction, direct cost/next hop, remote
+  overlay /30, no proxy CIDRs, matching default/direct connection UUID and exact
+  numeric tunnel endpoints. Only the initiating end's source port may be
+  ephemeral. The parser rejects extra returned peers or ambiguous instances.
+
+The CLI joins **routes** to peers. Unrouted connections can be absent from this
+projection; it is not an exhaustive connection inventory, key allowlist or proof
+of packet encryption. A missing/default connection selection simply fails the
+observation until the actual source reports the required state.
+
+The upstream shared-secret proof currently returns `NetworkSecretConfirmed`
+before optional `peer_public_key` checking. A configured key plus this observation
+is not a handshake pin. The fixed two-node development probe additionally needs
+its fresh dedicated PSK and exact peer-only kernel containment. Before product
+clients send credentials, the expected server key must be authenticated during
+handshake; a finite explicit-pin contract/patch is the next separate task.
+
+## Owner/provider integration still required
+
+The root provider must verify the distinct patched core **and matching CLI**,
+retain their exact executable/child handles, own the namespace and RPC endpoint,
+and limit query lifetime/output without shell execution. Run the CLI only in
+the exact core namespace against that core's verified loopback listener. Parsing
+arbitrary supplied JSON or connecting to an unowned loopback service is not
+readiness. Never persist raw CLI output, config dumps or runtime logs.
+
+Empty UDP/v6 STUN lists and hole-punch flags do not disable upstream TCP STUN
+defaults. The owned namespace must have no default route or external DNS access
+and kernel egress must permit only the explicit owned underlay peer/protocol/
+listener flow, its established responses, loopback RPC and required overlay
+traffic. Record blocked discovery attempts honestly; do not label them disabled.
+No production endpoint, driver installation or network-policy bypass is needed.
+
+Only the composed owner can combine current key/auth observation, exact child and
+TUN ownership, verified containment, protected native socket/source policy and
+the native lease contract. Loss of any observation must revoke readiness and
+close accepted native connections before owned overlay teardown. This module
+does not move that admission gate.
+
+## Verification
+
+`python3 -m unittest discover -s tests/server -p test_easytier_profile.py -v`
+passes nine focused tests locally: all six transport/direction configurations,
+RFC 7748 key-pair controls, malformed/ambiguous recipe rejection, canonical
+identity, private file safety and negative auth/key/route/endpoint observations.
+The Windows-only limitation is the explicitly Linux dirfd/owner writer check;
+emitter/key tests run on Windows after the pinned dependency is installed.
+Fixtures are synthetic and do not claim a live RPC observation.
+
+`docs/dependency-patches/easytier-2.6.4-profile/profile-parser-check.rs` also
+instantiates the real upstream `TomlConfigLoader`, compares every emitted flag
+and required endpoint/secure field, and checks disabled/empty options. It uses
+six ignored synthetic RFC 7748 configs and creates no GlobalCtx, core, TUN, RPC
+or network socket. The actual GNU/default-feature run exited 0 with **6/6**
+profiles accepted; the upstream parser file remained byte-for-byte unchanged.
+The exact command, source/log digests and scope flags are in
+`docs/dependency-patches/easytier-2.6.4-profile/receipt.json`. Raw logs and synthetic
+private configs remain ignored. Rust was 1.95.0 with the same explicit toolchain
+setup recorded for SERVER-07; the verifier is an example copied into the ignored
+checkout, not a modified or executed official runtime binary.
