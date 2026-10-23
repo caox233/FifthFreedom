@@ -4,6 +4,7 @@ The native test calls release_for_login + issue_auth_token and compares the
 checked-in JSON byte-for-byte. Both key epochs and all identities are synthetic.
 """
 from contextlib import closing
+from dataclasses import replace
 from datetime import datetime, timezone
 import hashlib
 import ipaddress
@@ -25,8 +26,10 @@ finally:
 
 
 class NativeTokenFixtureTests(unittest.TestCase):
+    fixture_path = FIXTURE
+
     def setUp(self):
-        self.fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+        self.fixture = json.loads(self.fixture_path.read_text(encoding="utf-8"))
         self.assertEqual(self.fixture["schema"], 1)
         self.assertIn("Synthetic", self.fixture["purpose"])
         self.assertEqual(self.fixture["key_hex"], "71" * 32)
@@ -103,6 +106,24 @@ class NativeTokenFixtureTests(unittest.TestCase):
         changed = token[:start] + ("A" if token[start] != "A" else "B") + token[start + 1:]
         with self.assertRaisesRegex(AdmissionError, "^AUTH_TOKEN_INVALID$"):
             self.read(token=changed)
+
+
+class NativeObserverFixtureTests(NativeTokenFixtureTests):
+    fixture_path = FIXTURE.with_name("native_observer_token_v1.json")
+
+    def test_current_native_signed_observer_grant_requires_matching_run_and_live_policy(self):
+        self.assertEqual(self.claims["observer_admitted_run"], self.claims["game_run"]["instance"])
+        bridge = AuthenticatedSessionBridge(self.reader, AuthBridgeConfig.from_hex(self.fixture["key_hex"]), clock=lambda: self.now)
+        with self.assertRaisesRegex(AdmissionError, "^OB_NOT_ALLOWED$"):
+            bridge.read(self.fixture["token"], self.claims["source_ip"], self.package, protocol_version=1, observer_requested=True)
+        allowed = SessionReader(self.path, replace(self.reader.policy, observer_allowed=True))
+        bridge = AuthenticatedSessionBridge(allowed, AuthBridgeConfig.from_hex(self.fixture["key_hex"]), clock=lambda: self.now)
+        self.assertEqual(len(bridge.read(self.fixture["token"], self.claims["source_ip"], self.package,
+                                       protocol_version=1, observer_requested=True)), 1)
+        with closing(sqlite3.connect(self.path)) as connection, connection:
+            connection.execute("UPDATE game_runs SET retired_at=CURRENT_TIMESTAMP WHERE user_id=1000")
+        with self.assertRaisesRegex(AdmissionError, "^AUTH_RUN_REVOKED_OR_STALE$"):
+            bridge.read(self.fixture["token"], self.claims["source_ip"], self.package, protocol_version=1, observer_requested=True)
 
 
 if __name__ == "__main__":

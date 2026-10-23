@@ -152,12 +152,25 @@ class AuthenticatedBridgeTests(unittest.TestCase):
         with self.assertRaisesRegex(AdmissionError, "PROTOCOL_VERSION_UNSUPPORTED"):
             self.read(protocol_version=2)
 
-    def test_existing_token_does_not_authorize_observer_even_with_forged_extension(self):
+    def test_observer_requires_native_signed_matching_grant_and_server_policy(self):
         allowed = SessionReader(self.path, replace(self.policy, observer_allowed=True))
         bridge = AuthenticatedSessionBridge(allowed, AuthBridgeConfig(KEY), clock=lambda: NOW)
-        for token in [signed(), signed(claims(observer_admitted_run=NONCE))]:
+        for token in [signed(), signed(claims(observer_grant=NONCE))]:
             with self.assertRaisesRegex(AdmissionError, "OB_NOT_ALLOWED"):
                 bridge.read(token, "10.66.0.10", package(), protocol_version=1, observer_requested=True)
+        grant = signed(claims(observer_admitted_run=NONCE))
+        self.assertEqual(len(bridge.read(grant, "10.66.0.10", package(), protocol_version=1, observer_requested=True)), 1)
+        with self.assertRaisesRegex(AdmissionError, "OB_NOT_ALLOWED"):
+            self.read(grant, observer_requested=True)
+        for value in [True, "a" * 32, "0" * 32, NONCE.upper(), ""]:
+            with self.assertRaisesRegex(AdmissionError, "AUTH_TOKEN_INVALID"):
+                bridge.read(signed(claims(observer_admitted_run=value)), "10.66.0.10", package(),
+                            protocol_version=1, observer_requested=True)
+        # The client cannot add the new field while retaining an old signature.
+        old = signed().split(".")
+        old[1] = base64.urlsafe_b64encode(json.dumps(claims(observer_admitted_run=NONCE), separators=(",", ":")).encode()).rstrip(b"=").decode()
+        with self.assertRaisesRegex(AdmissionError, "AUTH_TOKEN_INVALID"):
+            bridge.read(".".join(old), "10.66.0.10", package(), protocol_version=1, observer_requested=True)
 
     def test_oversized_nonascii_noncanonical_and_unknown_version_tokens_fail_closed(self):
         token = signed()

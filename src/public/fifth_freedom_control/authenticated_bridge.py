@@ -158,11 +158,17 @@ def _verify_claims(token, source_ip, config, approved_release, now):
         raise AdmissionError("AUTH_GAME_RUN_REQUIRED")
     # Product/nonce canonicality, package admission and current persisted run are
     # checked by SessionReader, using this signed pair without request overrides.
-    # No observer grant is signed by the existing issuer. Never synthesize it
-    # from token extensions, client headers, or an observer_requested boolean.
+    # Optional native grant is signed only after native observer-policy admission.
+    # Absence preserves the old token format and grants no observer authority.
+    # Never infer this grant from HTTP metadata or the request boolean.
+    observer_grant = payload.get("observer_admitted_run")
+    if observer_grant is not None and (not isinstance(observer_grant, str)
+            or re.fullmatch(r"[0-9a-f]{32}", observer_grant) is None
+            or observer_grant == "0" * 32 or observer_grant != run["instance"]):
+        raise AdmissionError("AUTH_TOKEN_INVALID")
     return AuthenticatedGameIdentity(
         payload["user_id"], username, payload["auth_version"], canonical_source,
-        run["product"], run["instance"], signed_release.storage_key,
+        run["product"], run["instance"], signed_release.storage_key, observer_grant,
     )
 
 

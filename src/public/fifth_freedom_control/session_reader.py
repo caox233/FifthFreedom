@@ -15,6 +15,7 @@ import ipaddress
 from pathlib import Path
 import re
 import sqlite3
+import time
 from typing import Mapping
 
 GAME_PRODUCTS = {"scbl-lan/2/game/official": 1, "scbl-lan/2/game/mod": 2}
@@ -162,7 +163,12 @@ class SessionReader:
         try:
             # mode=ro forbids missing-file creation and writes. The transaction
             # makes revocation/run checks and session selection one DB snapshot.
-            with closing(sqlite3.connect(self.database.resolve().as_uri() + "?mode=ro", uri=True)) as connection:
+            with closing(sqlite3.connect(self.database.resolve().as_uri() + "?mode=ro", uri=True, timeout=1.0)) as connection:
+                # A canceled HTTPS request must not leave an unbounded database
+                # worker behind. Bound both lock wait and SQLite VM work; the
+                # transaction remains read-only and consistent across queries.
+                deadline = time.monotonic() + 2.0
+                connection.set_progress_handler(lambda: int(time.monotonic() >= deadline), 1000)
                 connection.execute("BEGIN")
                 principal = connection.execute(
                     """SELECT u.username,u.auth_version,r.source_ip FROM users u JOIN game_runs r ON r.user_id=u.id

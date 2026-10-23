@@ -1,1 +1,1 @@
-"""Public control-plane seams; no listener, process startup or deployment."""
+"""Read-only control-plane bridge and explicit Linux HTTPS candidate runtime."""
