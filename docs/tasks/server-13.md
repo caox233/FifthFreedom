@@ -1,0 +1,163 @@
+# SERVER-13 — owned isolated EasyTier development probe
+
+Status: ready-for-agent. Harness and focused local checks implemented; actual
+hosted QUIC/WSS/TCP results are still required. Production Public admission stays
+closed. This does not complete the native owner-lease integration or live gameplay
+acceptance.
+
+## Fixed scope and inputs
+
+`scripts/ci_easytier_probe.py` is an explicit development operation for a
+GitHub-hosted Linux runner with existing TUN, NET_ADMIN and SYS_ADMIN privileges.
+It is separate from the build-only workflow. It never installs a driver, runs the
+game, uses historical endpoints or opens a production listener.
+
+The same job must first build the six-patch guard3 source using the reviewed
+`scripts/easytier-source.lock.json` and `scripts/ci_easytier_build.py`. The probe
+checks the receipt's exact upstream/build/lock/ordered-patch identities, all 35
+finite contracts and successful Release step. Guard2 receipts fail. Actual core
+and CLI bytes must match that job's build receipt; local historical ELF hashes
+are not substituted for a new hosted build.
+
+The native synthetic echo executable is built from
+`src/native/server/quazal/examples/socket_policy_probe.rs` with
+`cargo build --locked -p quazal --example socket_policy_probe` in `src/native`.
+Its TCP, UDP and ephemeral UDP listeners use the production interface-bound
+`SocketPolicy`. This is not a gameplay server or native owner-lease simulation.
+
+Python uses `scripts/requirements-profile.txt` (`cryptography==50.0.0`). Profile
+generation, validation and RPC parsing reuse the production
+`fifth_freedom_control.easytier_profile` module. No duplicate recipe schema or
+handwritten X25519 implementation is introduced.
+
+## Isolation and ownership
+
+For each transport the parent creates exactly two fresh owned namespaces and a
+private veth pair directly between them. Underlay and overlay use separate RFC
+1918 /30 pairs. No host link, route, sysctl, NAT or forwarding change is made.
+Both IPv4 and IPv6 routing tables must have no default route.
+
+Before core startup, each namespace receives an nftables inet ruleset with
+default-drop input/output/forward chains. Permitted traffic is limited to:
+
+- the exact loopback TCP RPC address/port and its responses;
+- the exact veth IPv4 peer pair and selected responder listener port (QUIC uses
+  UDP; WSS/TCP use TCP), with established reply direction;
+- TCP/UDP on the exact owned overlay interface and pair, including the native
+  probe's ephemeral ports and responses.
+
+All remaining packets reach drop counters or drop policy. The complete nft JSON
+ruleset is read back and compared, preserving expression order and rule order
+within each chain. Only handles, metadata and numeric counter values are
+normalized; extra accept rules, tables or changed policies fail. Rules and routes
+are checked again after the positive/negative controls. TCP STUN is contained,
+not claimed disabled. Counter totals show blocked packets without identifying
+them as STUN; no packet capture is performed.
+
+Each child enters through `easytier_probe_worker.py`. The parent first acquires
+the worker pidfd, then releases its startup barrier. The single-thread worker
+checks the inherited namespace fd identity, calls `setns`, confirms its own
+namespace identity, and only then starts asyncio or children. It directly uses
+production `OwnedChild.spawn` for the core and `KernelTunMonitor` for the exact
+child's TUN fd/interface/address. An `ip netns exec` wrapper is used only for
+short setup/readback tools, never as the core's owner.
+
+Core/CLI/native-probe bytes are copied only after same-snapshot size/hash checks
+to a root-owned private directory under `/tmp`, then validated again with
+`VerifiedExecutable`. No runner checkout ancestry is loosened. The core's output
+is discarded because upstream configuration output can contain secrets.
+
+CLI and native READY output use a development-only bounded pipe wrapper around
+the existing production verified-fd bootstrap (hash, parent-death barrier,
+no-new-privileges and fd exec). CLI queries have a 65,536-byte limit and two-second
+deadline; failure, overflow and timeout kill/reap the exact owned process before
+releasing its handles. CLI stderr goes to DEVNULL, and raw RPC output is never
+written to an artifact. The query is the fixed verbose peer-list command for the
+same candidate and namespace. The parser checks the expected direct connection,
+network, local/remote Noise keys, authentication level 3, role, endpoints and
+overlay route. Its route-joined view is not a complete connection inventory or
+an independent production admission decision.
+
+Each role gets CSPRNG X25519 material and a shared 32-byte random PSK through
+private memory/files. Secret TOML uses the reviewed owned-directory, exclusive
+0600 writer. Private manifests/configs/keys and runtime ELF copies are excluded
+from artifacts and removed at cleanup. Core/CLI launch environments contain only
+fixed PATH/LANG/TZ values.
+
+## Required runtime controls
+
+The matrix includes product Fast/QUIC and Compatible/WSS plus TCP as a development
+control. Each transport retains the same responder core and native echo process
+through all three phases:
+
+1. Correct expected server pin: both owned TUNs and bounded authenticated peer
+   observations must be ready; TCP/UDP/ephemeral UDP echoes must pass.
+2. Stop/reap only the initiator and restart it with the same local key, network
+   and PSK but a different valid expected server public key. Repeated actual echo
+   attempts over at least eight seconds must fail, while its core/TUN and the
+   responder core/TUN/native probe stay alive. This avoids treating an immediate
+   pre-handshake timeout, parser-only rejection or crashed infrastructure as the
+   pin negative. It is a bounded observation window, not a perpetual guarantee.
+3. Stop/reap that initiator and restore the correct pin; authenticated readiness
+   and all three echoes must pass again with the same responder and containment.
+
+Finally the exact responder core is stopped/reaped, its TUN must disappear, and
+new echo attempts must fail. This last assertion demonstrates owned overlay
+lifetime effects. It does **not** assert production native readiness revocation,
+accepted-session closure or owner-lease enforcement; those need the separate
+real native lifecycle harness/composition.
+
+Source-level Noise/AEAD/ingress/pin contracts and actual runtime observations are
+separate evidence. Encryption flags, RPC fields or a successful echo alone are
+not packet-level cryptographic proof. The finite 35 source contracts are retained
+with their original scope; no broader exploit claim is added here.
+
+Cleanup uses only retained worker/child handles and exact created namespace
+identities. It attempts every owned child/descriptor even if an earlier close
+fails. One SIGTERM/SIGINT unwinds cleanup; repeated signals cannot interrupt that
+cleanup. SIGKILL cannot yield a cleanup receipt. No process-name searches, global
+PID kills or namespace-prefix deletions are used. Missing acknowledgement or
+cleanup errors make the receipt fail.
+
+## Execution and evidence
+
+The new explicit hosted workflow should run the source unit suite, same-job
+guard3 build and native probe build, then invoke the absolute setup-python binary:
+
+```sh
+mkdir -p artifacts/ci/easytier-probe
+sudo --non-interactive \
+  --preserve-env=GITHUB_ACTIONS,RUNNER_ENVIRONMENT,GITHUB_SHA -- \
+  /absolute/setup-python -B scripts/ci_easytier_probe.py \
+  --build-receipt /same-job/build/receipt.json \
+  --core /same-job/target/release/easytier-core \
+  --cli /same-job/target/release/easytier-cli \
+  --socket-probe /same-job/native/socket_policy_probe \
+  --socket-probe-sha256 ACTUAL_SAME_JOB_SHA256 \
+  --output artifacts/ci/easytier-probe/receipt.json
+```
+
+Only a sanitized receipt is eligible for the probe artifact: candidate/source
+identities, profile digests, transport/phase results, drop counts and cleanup
+status. The ordinary runner pre-creates the artifact parent; the new sanitized
+receipt is explicitly 0644 even under a private sudo umask. No shared ancestry
+permissions are changed. No ELF, private stage, configuration, raw RPC or runtime log is uploaded.
+Third-party source/license publication holds remain independent; running this
+explicit synthetic test does not approve redistribution or production use.
+
+Local verification on 2026-10-23:
+
+- `python -B -m unittest discover -s tests/ci -p test_ci_easytier_probe.py -v`:
+  17 passed. Tests include real benign Linux ELF fd execution/overflow/timeout
+  cleanup, receipt identity rejection, full ruleset mutation rejection,
+  infrastructure negatives, matrix cleanup and per-child cleanup failure handling.
+  Unit tests do not start EasyTier, TUN or namespaces.
+- Actual probe entrypoint: exit 1, fixed stdout failure code, zero stderr bytes;
+  failures are `GITHUB_HOSTED_REQUIRED`, `ROOT_NAMESPACE_PRIVILEGES_REQUIRED`,
+  `NET_ADMIN_AND_SYS_ADMIN_REQUIRED`, `EXISTING_TUN_REQUIRED`, `NFT_REQUIRED`.
+  No core or namespace was started. Command/output/receipt originals remain at
+  `.local/evidence/cloud/server13-probe-precondition/`.
+
+No hosted positive is recorded yet. The next executable action is the reviewed,
+explicit privileged workflow and inspection of its actual receipt; a source/unit
+pass or this truthful precondition failure cannot replace that run.
