@@ -227,11 +227,14 @@ class ProbeResultTests(unittest.TestCase):
 
     def test_failure_annotation_uses_fixed_codes_and_no_raw_paths_values_or_unknown_suffix(self):
         self.error_log.write_text("NATIVE_READY_TIMEOUT /PRIVATE_PATH key=PRIVATE_VALUE\n"
+            "CHECKOUT_VERIFICATION_FAILED /PRIVATE_GIT_PATH\n"
             "WORKER_EVENT_INVALID_PRIVATE_SUFFIX PRIVATE_UNKNOWN_CODE\n")
         result, output = self.inspect("native", {"error": "PRIVATE_RECEIPT_VALUE", "status": "failed"}, 1)
         self.assertEqual(result, 1)
-        self.assertIn("fixed_codes=NATIVE_READY_TIMEOUT", output)
+        self.assertIn("fixed_codes=CHECKOUT_VERIFICATION_FAILED,NATIVE_READY_TIMEOUT", output)
         self.assertNotIn("WORKER_EVENT_INVALID", output)
+        self.error_log.write_text("CHECKOUT_VERIFICATION_FAILED_PRIVATE_SUFFIX /PRIVATE_GIT_PATH\n")
+        self.assertNotIn("CHECKOUT_VERIFICATION_FAILED", self.inspect("native", {}, 1)[1])
 
     def test_containment_preflight_has_distinct_no_runtime_scope_and_complete_cleanup(self):
         value = {"schema": overlay_producer.CONTAINMENT_SCHEMA, "status": "containment_preflight_verified",
