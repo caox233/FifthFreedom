@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official job metadata and digest-verified complete sanitized stack/containment receipts; exact checkout source verified, runtime binaries and raw runtime output not downloaded",
+  "run_id": 39943233020,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39943233020",
+  "source_head": "4322658bd7f3c4489888f62311293da0e73899d9",
+  "checkout_commit": "2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+  "job": {
+    "id": 120389777286,
+    "name": "Same-run owned overlay and native development composition",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "artifact": {
+    "id": 12498643746,
+    "name": "owned-overlay-native-development-receipt-2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+    "size_in_bytes": 1809,
+    "digest": "sha256:c445d4e3d8a1e05b55d970c9abd0ce0e5bea77983fc4ede6aca7a72a21242a95"
+  },
+  "official_zip_digest_verified": true,
+  "sanitized_receipt": {
+    "schema": "ff-owned-overlay-native-stack-development-v1",
+    "status": "failed",
+    "scope": {
+      "transport": "tcp",
+      "purpose": "owned-isolated-development",
+      "production_admission": false,
+      "ordinary_public_enabled": false,
+      "game_executed": false,
+      "complete_client_package": false,
+      "runtime_binary_uploaded": false,
+      "raw_runtime_output_retained": false
+    },
+    "cases": [
+      {
+        "case": "lease-revoke",
+        "status": "owned_stack_case_verified",
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "actual_native_ready": true,
+        "owned_listeners": 5,
+        "runtime_profile_sha256": "3eb5a98f29ea883d8d36994c28cf3ce1f829806e3298fd091233c4a107f14d5c",
+        "established_tcp": true,
+        "native_watchdog_exit": 92,
+        "ports_rebound": 5,
+        "held_tcp_eof_or_reset": true,
+        "overlay_alive_during_close": true,
+        "containment_after": [
+          {
+            "input": 0,
+            "output": 24,
+            "forward": 0
+          },
+          {
+            "input": 0,
+            "output": 25,
+            "forward": 0
+          }
+        ]
+      },
+      {
+        "case": "peer-loss",
+        "status": "failed",
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "error": "WORKER_REPORTED_FAILURE",
+        "worker_failure": {
+          "event": "failed",
+          "schema": "ff-easytier-worker-failure-v1",
+          "phase": "observe",
+          "code": "QUERY_IMAGE_CHANGED",
+          "cleanup_reaped": true,
+          "cleanup_code": null
+        }
+      }
+    ],
+    "precondition_failures": [],
+    "copied_package_native_verified": true,
+    "source_package_unchanged": true,
+    "private_stage_removed": true,
+    "source_commit": "2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+    "run_id": "39943233020",
+    "run_attempt": "1",
+    "runtime_candidate": {
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+      "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+      "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+      "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+      "executable_sha256": "efaf9acf151be8763a725683a91d8bb1ada6a8eee074e0df748c4843f87b8ad0",
+      "executable_size": 28593032,
+      "role": "easytier-core",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "cli_identity": {
+      "bytes": 12261752,
+      "sha256": "3f9eca232d5fca68798c959ffd1d3100e0debf8620e3432bc5291a1996a2216b"
+    },
+    "error": "STACK_CASES_INCOMPLETE"
+  },
+  "containment_receipt": {
+    "checkout_commit": "2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+    "input_identity": "synthetic_profile_only_no_executable",
+    "precondition_failures": [],
+    "production_admission": false,
+    "raw_runtime_output_retained": false,
+    "runtime_binary_uploaded": false,
+    "runtime_executed": false,
+    "schema": "ff-easytier-containment-preflight-v1",
+    "status": "containment_preflight_verified",
+    "transports": [
+      {
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "status": "containment_pair_verified",
+        "transport": "quic"
+      },
+      {
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "status": "containment_pair_verified",
+        "transport": "wss"
+      },
+      {
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "status": "containment_pair_verified",
+        "transport": "tcp"
+      }
+    ]
+  },
+  "strict_receipt_consumer_exit_code": 1,
+  "checkout_source_verification": [
+    {
+      "path": "scripts/ci_owned_stack.py",
+      "bytes": 15416,
+      "sha256": "e08206183509c16af3d803e3ff5956b29432115c4a464a9944edf8ba2e9ba79b",
+      "checkout_matches_source_head": true
+    },
+    {
+      "path": "scripts/owned_stack_worker.py",
+      "bytes": 21144,
+      "sha256": "09615cbafe6db7f0928d93e7df7dae59c064a755a5fcd236c947a5ac62ab7413",
+      "checkout_matches_source_head": true
+    },
+    {
+      "path": "scripts/ci_native_lifecycle.py",
+      "bytes": 32573,
+      "sha256": "8144e773c49d85fc718b01fcc2c1888e990acc220d17c723c3f696f5376f7fcf",
+      "checkout_matches_source_head": true
+    }
+  ],
+  "scope_notes": [
+    "The lease-revoke case completed actual native readiness, five listeners, an established TCP connection, watchdog exit 92, five rebound ports and EOF/reset while the overlay remained alive. This checkout includes the explicit bounded pre-control OPEN acknowledgement; the source checks it after the pause barrier and before revocation. This is finite ordered evidence, not universal closure causation.",
+    "The peer-loss case failed during observe with QUERY_IMAGE_CHANGED, cleanup_reaped true and no cleanup error code. No successful peer-loss native-ready or cleanup/revocation assertions are inferred from the successful first case. This fixed reason identifies a query-image verification rejection; it does not by itself prove on-disk binary mutation or establish the race/underlying cause.",
+    "Both independent namespace pairs were removed without cleanup errors (four namespaces total), private-stage removal completed, the copied native package was verified and the source package remained unchanged. The overall composition failed.",
+    "The source includes OPEN and the bounded stack observation diagnostic adapter, but predates eba13de observer-policy changes and the later optional kernel-query details. Earlier unclassified 528668e peer-loss failure is not assigned this new cause.",
+    "The native lifecycle job in this same run passed all five cases; Windows/Linux components, namespace isolation and same-run assembly/static preflight also passed. Both strict private-input gates failed and complete Windows packaging skipped.",
+    "This is the separate guard3 TCP development runtime. New authenticated Data challenge59/Windows composition build identities are not runtime-admitted by this result. No production provider, real game, complete client package, deployment or publication was enabled.",
+    "Executable SHA values inside the runner receipt are retained as runner observations, not local independent binary rehashes. Downloaded artifact digest verification covers only the sanitized JSON ZIP."
+  ]
+}
