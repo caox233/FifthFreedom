@@ -769,6 +769,8 @@ NetworkMode = "PublicTunnel"
 
 #[cfg(target_os = "windows")]
 mod launch_pipe;
+#[cfg(target_os = "windows")]
+pub mod launch_owner;
 
 #[cfg(target_os = "windows")]
 fn lan_pipe_config(content: &str) -> anyhow::Result<String> {

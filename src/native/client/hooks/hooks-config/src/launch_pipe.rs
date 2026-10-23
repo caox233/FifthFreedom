@@ -125,6 +125,12 @@ pub(super) fn receive(content: &str) -> anyhow::Result<String> {
         }
     };
     let pipe = Pipe::new(file)?;
+    // Observe kernel identity before reading any declarations from the frame.
+    // Missing rights/observation does not change LAN. Public return later fails
+    // closed unless this observation matches its independent launch anchor.
+    let owner = if std::env::var_os("FF_PUBLIC_RETURN_V1").is_some() {
+        super::launch_owner::observe(pipe.handle())
+    } else { None };
     let mut length = [0u8; 4];
     pipe.read_exact(&mut length, deadline)?;
     let length = u32::from_le_bytes(length) as usize;
@@ -133,7 +139,9 @@ pub(super) fn receive(content: &str) -> anyhow::Result<String> {
     pipe.read_exact(&mut bytes, deadline)?;
     pipe.acknowledge(deadline)?;
     // Preserve the existing receipt-ACK protocol; parsing remains the caller's job.
-    Ok(String::from_utf8(bytes)?)
+    let content = String::from_utf8(bytes)?;
+    super::launch_owner::remember(owner);
+    Ok(content)
 }
 
 #[cfg(test)]

@@ -209,6 +209,8 @@ macro_rules! connect {
 }
 
 mod publication;
+mod public_return;
+pub(crate) fn stop_public_return() { public_return::stop(); }
 pub use publication::{clear_game_session, publish_game_session};
 use publication::{republish_local_game_session, retry_pending_game_session};
 
@@ -373,6 +375,7 @@ const NATIVE_LOGIN_DEADLINE: std::time::Duration = std::time::Duration::from_sec
 // invalidate the current owner. Drop precedes releasing that lock.
 struct AuthenticationAttempt {
     completed: bool,
+    publication: Option<public_return::AuthenticationPublication>,
 }
 
 impl Drop for AuthenticationAttempt {
@@ -394,8 +397,11 @@ fn login_response_token(response: server_api::users::LoginResponse) -> Result<Me
 }
 
 async fn authenticate_async(username: &str, password: &str) -> Result<(), Error> {
+    // Local owner/package verification and worker creation are off LOGIN_LOCK
+    // and this function is only reached from normal login execution, not init.
+    public_return::prepare();
     let _login = LOGIN_LOCK.get_or_init(|| tokio::sync::Mutex::new(())).lock().await;
-    let mut attempt = AuthenticationAttempt { completed: false };
+    let mut attempt = AuthenticationAttempt { completed: false, publication: public_return::begin() };
     clear_observer_admission();
     *CREDS.lock().unwrap() = Some((username.to_owned(), password.to_owned()));
     let result = async {
@@ -404,7 +410,7 @@ async fn authenticate_async(username: &str, password: &str) -> Result<(), Error>
         let release = crate::release_identity::declaration().map_err(Error::IO)?;
         let instance = current_game_instance()?;
         let requested = observer_requested();
-        let mut request = game_login_request(username, password, mode, instance, release)?;
+        let mut request = game_login_request(username, password, mode, instance, release.clone())?;
         if requested { request.metadata_mut().insert(server_api::observer_contract::REQUEST_HEADER,"1".parse()?); }
         let response = client.login(request).await?;
         let acknowledged = response.metadata().get(server_api::observer_contract::ADMITTED_RUN_HEADER)
@@ -412,13 +418,19 @@ async fn authenticate_async(username: &str, password: &str) -> Result<(), Error>
         if !server_api::observer_contract::accepted(requested,instance,acknowledged) {
             return Err(Error::LoginFailure);
         }
-        let token = login_response_token(response.into_inner())?;
-        Ok((token,requested))
+        let response = response.into_inner();
+        let publication = if attempt.publication.is_some() {
+            Some(return_authentication(&response, username, mode, instance, &release, requested)?)
+        } else { None };
+        let token = login_response_token(response)?;
+        Ok((token,requested,publication))
     }.await;
+    let mut publication = None;
     let result = match result {
-        Ok((token,observer)) => {
+        Ok((token,observer,returned)) => {
             *TOKEN.lock().unwrap() = Some(token);
             OBSERVER_ADMITTED.store(observer,std::sync::atomic::Ordering::Release);
+            publication = returned;
             info!("Game identity login acknowledged");
             Ok(())
         }
@@ -429,7 +441,36 @@ async fn authenticate_async(username: &str, password: &str) -> Result<(), Error>
         }
     };
     attempt.completed = true;
+    let owner = attempt.publication.take();
+    drop(attempt);
+    drop(_login);
+    // A newer login can now acquire the lock and advance the return generation.
+    // Publication checks that exact attempt again; never await IPC here.
+    if let (Some(owner), Some(value)) = (owner, publication) { owner.publish(value); }
     result
+}
+
+fn return_authentication(response: &server_api::users::LoginResponse, username: &str,
+    mode: hooks_config::GameplayMode, instance: &str, release: &server_api::users::PackageIdentity,
+    observer_requested: bool) -> Result<server_api::public_return_contract::ReturnedAuthentication, Error> {
+    use server_api::public_return_contract::{ContextExpectation, ReturnedAuthentication, screen_token};
+    let config = hooks_config::get().ok_or(Error::LoginFailure)?;
+    let source_ip = config.networking.ip_address.ok_or(Error::LoginFailure)?;
+    let user = response.user.as_ref().ok_or(Error::LoginFailure)?;
+    if !response.error.is_empty() || user.username != username || user.ips.len() != 1 || user.ips[0] != source_ip.to_string() {
+        return Err(Error::LoginFailure);
+    }
+    let release = server_api::release_contract::ReleaseIdentity::new(release.schema, &release.release_id,
+        &release.compat_id, &release.manifest_sha256).map_err(|_| Error::LoginFailure)?;
+    let product = match mode {
+        hooks_config::GameplayMode::Official => server_api::gameplay_contract::GameplayMode::Official.product(),
+        hooks_config::GameplayMode::Mod => server_api::gameplay_contract::GameplayMode::Mod.product(),
+    };
+    // Decoded numeric user_id is metadata only. Account identity returned to the
+    // launcher comes independently from this same actual LoginResponse.user.
+    screen_token(&response.token, &ContextExpectation { username, source_ip, product, instance,
+        release: &release, observer_requested }).map_err(|_| Error::LoginFailure)?;
+    ReturnedAuthentication::new(response.token.clone(), user.id.clone(), user.username.clone()).map_err(|_| Error::LoginFailure)
 }
 
 async fn bounded_native_login(future: impl Future<Output=Result<(), Error>>, deadline: std::time::Duration) -> Result<(), Error> {
