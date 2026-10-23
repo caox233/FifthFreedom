@@ -84,7 +84,7 @@ def source_suites(root: Path = ROOT):
     if not set(PACKAGE_TESTS).issubset(found):
         raise RuntimeError("Package-input test identities changed; review the explicit CI split")
     yield "build-source-logic", unittest.TestSuite(test for test in build_tests if test.id() not in PACKAGE_TESTS)
-    for directory in ("ui", "server", "public_candidate", "ci"):
+    for directory in ("ui", "server", "public_candidate", "public_server_candidate", "ci"):
         path = root / "tests" / directory
         if path.is_dir():
             suite = unittest.TestLoader().discover(str(path))

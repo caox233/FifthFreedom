@@ -20,7 +20,7 @@ import ci_checks
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / "artifacts"
-LANES = ("windows-components", "windows-package-smoke", "linux-lan-baseline", "linux-public-donor-reference", "linux-public-control")
+LANES = ("windows-components", "windows-package-smoke", "linux-lan-baseline", "linux-public-donor-reference", "linux-public-control", "linux-public-server-integrity")
 
 
 def run_build_step(label, args, cwd=None, env=None):
@@ -137,6 +137,7 @@ def context(lane: str) -> dict:
         "schema": 1, "lane": lane, "commit": commit, "tracked_source_dirty": dirty,
         "github_actions": os.environ.get("GITHUB_ACTIONS") == "true",
         "run_id": os.environ.get("GITHUB_RUN_ID"),
+        "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
         "complete_package": False, "game_executed": False,
         "live_acceptance": False, "deployed": False, "published": False,
     }
@@ -239,7 +240,12 @@ def linux_server(lane: str, receipt: dict) -> None:
         manager_env = env.copy()
         manager_env["PYTHONPATH"] = str(workspace / "server/manager")
         run_build_step("ci-donor-manager-tests", [sys.executable, "-B", "-m", "unittest", "discover", "-s", "server/manager/tests", "-v"], workspace, manager_env)
-    collect(lane, {"dedicated_server": Path(env["CARGO_TARGET_DIR"]) / "release/dedicated_server"}, receipt)
+    files = {"dedicated_server": Path(env["CARGO_TARGET_DIR"]) / "release/dedicated_server"}
+    if not donor:
+        run_build_step("ci-public-package-verifier-build", ["cargo", "build", "--release", "--locked", "-p", "api",
+                                                           "--example", "verify_public_package"], workspace, env)
+        files["verify_public_package"] = Path(env["CARGO_TARGET_DIR"]) / "release/examples/verify_public_package"
+    collect(lane, files, receipt)
 
 
 def required_public_suite(root: Path):
@@ -301,6 +307,22 @@ def linux_public_control(receipt: dict) -> None:
     receipt["deployment_templates"] = rows
 
 
+def linux_public_server_integrity(receipt: dict) -> None:
+    if (not sys.platform.startswith("linux") or not receipt["github_actions"]
+            or receipt["tracked_source_dirty"] or receipt["commit"] != os.environ.get("GITHUB_SHA")):
+        raise RuntimeError("Public server identity assembly requires this clean hosted Linux revision")
+    inputs = Path(os.environ["RUNNER_TEMP"]) / "public-server-inputs"
+    output = ART / "ci/linux-public-server-integrity/candidate"
+    run_build_step("ci-public-server-integrity", [sys.executable, "-B", ROOT / "scripts/public_server_candidate.py",
+        "--windows-artifact", inputs / "windows", "--linux-artifact", inputs / "linux", "--output", output,
+        "--expected-commit", receipt["commit"], "--expected-run-id", receipt["run_id"],
+        "--expected-run-attempt", receipt["run_attempt"]])
+    result = build.read(output / "CANDIDATE-RECEIPT.json")
+    receipt.update(candidate_path=output.relative_to(ROOT).as_posix(),
+                   native_verification=result["native_verification"],
+                   complete_windows_client=False, native_public_profile_enabled=False)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("lane", choices=LANES)
@@ -315,10 +337,13 @@ def main() -> int:
                 windows_package_smoke(receipt)
             elif args.lane == "linux-public-control":
                 linux_public_control(receipt)
+            elif args.lane == "linux-public-server-integrity":
+                linux_public_server_integrity(receipt)
             else:
                 linux_server(args.lane, receipt)
         receipt["status"] = ("package_no_game_checks_passed" if args.lane == "windows-package-smoke"
                              else "control_service_candidate_verified" if args.lane == "linux-public-control"
+                             else "native_dual_identity_verified" if args.lane == "linux-public-server-integrity"
                              else "components_built_and_selected_tests_passed")
         code = 0
     except Exception as error:
