@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official job metadata and digest-verified complete sanitized native lifecycle receipt; runtime binaries and raw runtime output were not downloaded",
+  "run_id": 39938418762,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39938418762",
+  "source_head": "b67af6ca1014510dfb16469a416f3e049be9b06b",
+  "checkout_commit": "61323a20c02f1081988e30dac0d0fdcd89c48162",
+  "job": {
+    "id": 120375464994,
+    "name": "Same-run native owned lifecycle in synthetic namespaces",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "id": 12496247112,
+    "name": "native-owned-lifecycle-receipt-61323a20c02f1081988e30dac0d0fdcd89c48162",
+    "size_in_bytes": 658,
+    "digest": "sha256:97c50af2562bd4f1d28ed7ff8e8df1bc387a4dbd2e5e50aa7943884d1a7ea3dd"
+  },
+  "official_zip_digest_verified": true,
+  "sanitized_receipt": {
+    "schema": 1,
+    "status": "native_owned_lifecycle_verified",
+    "source_commit": "61323a20c02f1081988e30dac0d0fdcd89c48162",
+    "run_id": "39938418762",
+    "run_attempt": "1",
+    "scope": {
+      "synthetic_runtime_bindings": true,
+      "controlled_native_startup_test": true,
+      "encrypted_overlay_verified": false,
+      "production_provider_open": false,
+      "game_executed": false,
+      "complete_windows_client": false,
+      "deployed": false,
+      "published": false
+    },
+    "cases": [
+      {
+        "case": "withheld",
+        "no_state_created": true,
+        "native_reaped": true
+      },
+      {
+        "case": "denied",
+        "no_state_created": true,
+        "native_reaped": true
+      },
+      {
+        "case": "eof",
+        "actual_listener_count": 5,
+        "protected_http_and_tcp_verified": true,
+        "wrong_interface_rejected": true,
+        "established_connection_closed": true,
+        "all_five_ports_released": true,
+        "native_exit": 92,
+        "native_reaped": true
+      },
+      {
+        "case": "expiry",
+        "actual_listener_count": 5,
+        "protected_http_and_tcp_verified": true,
+        "wrong_interface_rejected": true,
+        "established_connection_closed": true,
+        "all_five_ports_released": true,
+        "native_exit": 92,
+        "native_reaped": true
+      },
+      {
+        "case": "parent_death",
+        "actual_listener_count": 5,
+        "protected_http_and_tcp_verified": true,
+        "wrong_interface_rejected": true,
+        "established_connection_closed": true,
+        "all_five_ports_released": true,
+        "native_exit": 92,
+        "native_reaped": true
+      }
+    ],
+    "copied_package_native_verified": true,
+    "source_package_unchanged": true,
+    "private_tree_removed": true,
+    "owned_namespaces_removed": 3,
+    "all_owned_children_reaped": true,
+    "no_default_routes": true
+  },
+  "strict_receipt_consumer_exit_code": 0,
+  "scope_notes": [
+    "The source includes the reviewed LISTEN-only socket ownership correction. This successful run does not prove the unique cause of the earlier 528668e failure.",
+    "All five cases completed: withheld and denied admission created no state; EOF, expiry and parent death each observed five listeners, protected HTTP/TCP, wrong-interface rejection, connection closure, port release and native exit 92.",
+    "This source predates the later explicit pre-revocation OPEN barrier. Recorded connection closure alone does not prove revocation caused closure; the strengthened check requires its own actual candidate result.",
+    "This native namespace harness uses synthetic runtime bindings. It does not verify the encrypted overlay/native composition, production provider, game execution, complete Windows package, deployment or publication.",
+    "Windows components and same-run identity/static-preflight jobs also succeeded; the composition job remained in progress at recording. Both strict private-input gates still fail and the complete-package job is skipped.",
+    "Artifact digest verification covers the downloaded sanitized JSON ZIP, not an independently downloaded or executed runtime binary."
+  ]
+}
