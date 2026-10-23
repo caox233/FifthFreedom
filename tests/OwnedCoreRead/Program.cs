@@ -43,6 +43,25 @@ internal static partial class Program
                 catch(IOException error) when(error.Message=="OWNED_CORE_READ_CLEANUP_FAILED") { }
                 Check(!owner.IsAlive&&!c.IsOpen);f.ExpectedCleanupFailureObserved(c);
             },true);
+            await Case("only explicit fixed RPC modes can add arguments",()=>{
+                string root=Path.GetFullPath(Path.Combine(Path.GetTempPath(),"ff-rpc-declaration"));
+                OwnedCoreLaunchInputs inputs(OwnedCoreRpcMode mode)=>new(Path.Combine(root,"child.exe"),1,new string('1',64),Path.Combine(root,"config.json"),1,new string('2',64),rpcMode:mode);
+                Check(inputs(OwnedCoreRpcMode.Default).FixedRpcArguments=="");
+                Reject(()=>inputs((OwnedCoreRpcMode)99));return Task.CompletedTask;
+            });
+            await Case("ending reads cancels pending IO but retains exact live owner and pins until dispose",async()=>{
+                await using var f=new Fixture("stall");var c=await f.Start();
+                var pending=c.ObserveAsync("10.66.0.10");await f.RequestArrived();
+                c.EndReads();c.EndReads();await RejectAsync(()=>pending);
+                Check(!c.IsOpen&&c.Lifetime.IsCancellationRequested&&c.IsOwnedProcessAlive);
+                await RejectAsync(()=>c.ObserveAsync("10.66.0.10"));
+                Reject(()=>File.WriteAllText(f.Config,"must remain pinned"));
+                await c.DisposeAsync();Check(!c.IsOwnedProcessAlive);File.WriteAllText(f.Config,"released");
+            },true);
+            await Case("actual owned child receives only the fixed nonzero loopback RPC arguments",async()=>{
+                await using var f=new Fixture("rpc-fixed");await using var c=await f.Start(OwnedCoreRpcMode.LoopbackProbe);
+                Check(await c.ObserveAsync("10.66.0.10") is {Index:7});
+            },true);
             Console.WriteLine($"RESULT {passed} passed; {skipped} skipped");return 0;
         }catch{return 1;}
     }
@@ -57,7 +76,7 @@ internal static partial class Program
     {
         internal readonly string Root,Config,Arrived;private readonly string image;private readonly List<OwnedCoreReadChannel> channels=[];
         internal Fixture(string mode,string? executable=null){Root=Path.Combine(Path.GetTempPath(),"ff-core-read-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(Root);image=executable??Environment.ProcessPath!;Config=Path.Combine(Root,"config.json");Arrived=Path.Combine(Root,"arrived");File.WriteAllText(Config,JsonSerializer.Serialize(new{mode,arrived=Arrived,started=Path.Combine(Root,"started")}));}
-        internal async Task<OwnedCoreReadChannel> Start(){string hash(string p){using var s=File.OpenRead(p);return Convert.ToHexStringLower(SHA256.HashData(s));}var inputs=new OwnedCoreLaunchInputs(image,new FileInfo(image).Length,hash(image),Config,new FileInfo(Config).Length,hash(Config));var c=await OwnedCoreReadChannel.StartAsync(inputs,Instance);channels.Add(c);File.WriteAllText(Path.Combine(Root,"started"),"started");return c;}
+        internal async Task<OwnedCoreReadChannel> Start(OwnedCoreRpcMode rpcMode=OwnedCoreRpcMode.Default){string hash(string p){using var s=File.OpenRead(p);return Convert.ToHexStringLower(SHA256.HashData(s));}var inputs=new OwnedCoreLaunchInputs(image,new FileInfo(image).Length,hash(image),Config,new FileInfo(Config).Length,hash(Config),rpcMode:rpcMode);var c=await OwnedCoreReadChannel.StartAsync(inputs,Instance);channels.Add(c);File.WriteAllText(Path.Combine(Root,"started"),"started");return c;}
         internal Task RequestArrived()=>Until(()=>File.Exists(Arrived));
         internal void ExpectedCleanupFailureObserved(OwnedCoreReadChannel channel)=>channels.Remove(channel);
         public async ValueTask DisposeAsync(){foreach(var c in channels)await c.DisposeAsync();await DeleteOwnedDirectoryAsync(Root,()=>true);}
@@ -65,8 +84,10 @@ internal static partial class Program
     private static async Task<int> Helper(string[] args)
     {
         bool descendant=args.Length==2&&args[0]=="--peer";
-        string config=descendant?args[1]:args.Length==7&&args[0]=="--config-file"?args[1]:throw new InvalidOperationException();
+        string config=descendant?args[1]:(args.Length is 7 or 9)&&args[0]=="--config-file"?args[1]:throw new InvalidOperationException();
         using var cfg=JsonDocument.Parse(File.ReadAllBytes(config));string mode=cfg.RootElement.GetProperty("mode").GetString()!;
+        if(!descendant){Check(args[2]=="--disable-env-parsing"&&args[3]=="--console-log-level"&&args[4]=="off"&&args[5]=="--file-log-level"&&args[6]=="off");
+            Check(mode=="rpc-fixed"?args.Length==9&&args[7]=="--rpc-portal"&&args[8]=="127.0.0.1:15998":args.Length==7);}
         if(mode=="foreign"&&!descendant){using var p=Process.Start(new ProcessStartInfo(Environment.ProcessPath!){UseShellExecute=false,ArgumentList={"--peer",config}})!;await Task.Delay(20000);return 0;}
         using var descriptor=JsonDocument.Parse(Environment.GetEnvironmentVariable(OwnedCoreReadDescriptor.Variable)!);var d=descriptor.RootElement;
         using var stop=new CancellationTokenSource(TimeSpan.FromSeconds(25));

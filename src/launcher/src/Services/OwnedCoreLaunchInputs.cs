@@ -4,23 +4,35 @@ using Microsoft.Win32.SafeHandles;
 
 namespace SplinterCellCNLauncher.Services;
 
+internal enum OwnedCoreRpcMode { Default, LoopbackProbe }
+
 // Declared independent bytes for one process attempt. This is not publisher,
 // dependency-license, configuration-policy or Public-readiness admission.
 internal sealed class OwnedCoreLaunchInputs
 {
     internal string Executable { get; }
     internal string Configuration { get; }
+    internal string FixedRpcArguments { get; }
     private readonly long imageLength, configurationLength;
     private readonly string imageHash, configurationHash;
     private readonly OwnedCoreDependencyInputs? dependencies;
     internal OwnedCoreLaunchInputs(string executable, long imageLength, string imageHash,
-        string configuration, long configurationLength, string configurationHash, OwnedCoreDependencyInputs? dependencies = null)
+        string configuration, long configurationLength, string configurationHash, OwnedCoreDependencyInputs? dependencies = null,
+        OwnedCoreRpcMode rpcMode = OwnedCoreRpcMode.Default)
     {
         Executable = Canonical(executable); Configuration = Canonical(configuration);
         if (imageLength is <= 0 or > 256 * 1024 * 1024 || configurationLength is <= 0 or > 1024 * 1024
             || !Digest(imageHash) || !Digest(configurationHash) || Executable.Equals(Configuration, StringComparison.OrdinalIgnoreCase)) throw Invalid();
         this.imageLength = imageLength; this.imageHash = imageHash;
         this.configurationLength = configurationLength; this.configurationHash = configurationHash;
+        FixedRpcArguments = rpcMode switch
+        {
+            OwnedCoreRpcMode.Default => "",
+            // Upstream port 0 scans candidate ports using wildcard temporary
+            // listeners. An explicit nonzero endpoint has no such fallback.
+            OwnedCoreRpcMode.LoopbackProbe => " --rpc-portal 127.0.0.1:15998",
+            _ => throw Invalid(),
+        };
         dependencies?.RequireAdjacentTo(Executable);
         var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
         if (dependencies is not null && (string.Equals(dependencies.FilePath, Configuration, comparison)

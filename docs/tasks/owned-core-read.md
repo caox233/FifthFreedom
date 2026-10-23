@@ -3,6 +3,8 @@
 Status: implemented and independently reviewed; actual Windows managed 19, native 8,
 interop 4 and retained owner 17 passed with zero skips. The [official run receipt](../evidence/hosted-owned-read-4b49da7.json)
 binds run `39944703650`, source `4b49da7` and both sanitized artifacts.
+The follow-up normal suite now has 22 cases; its three additions await hosted
+execution and do not change the earlier 19-case evidence.
 This is a historical observation channel. It does not enable Public, construct a
 live overlay lease, authenticate a remote peer or run the full EasyTier core.
 
@@ -75,7 +77,7 @@ not valid evidence of current routing or an ongoing session after return.
 
 ## Verification and exact source composition
 
-- `tests/OwnedCoreRead` links the actual production classes. Eight portable cases
+- The initial `tests/OwnedCoreRead` suite links the actual production classes. Eight portable cases
   pass locally. All 19 passed on hosted Windows, including eleven platform cases:
   actual owned pipe identity, unavailable response, nonce/replay rejection,
   pending cancellation, bounded timeout, EOF with a still-live child, process
@@ -114,3 +116,34 @@ runtime assets and real route/UDP/peer proof remain gates.
 Windows API contract reference:
 
 - [CreateNamedPipeW and PIPE_REJECT_REMOTE_CLIENTS](https://learn.microsoft.com/windows/win32/api/winbase/nf-winbase-createnamedpipew)
+
+## Finite shutdown and explicit loopback RPC follow-up
+
+`EndReads()` invokes the existing permanent close path: pending reads are rejected,
+the lifetime is cancelled and the pipe closes. It neither stops the exact process
+nor releases its image/configuration/dependency pins. `IsOwnedProcessAlive` reads
+the existing retained process handle. Callers still own `DisposeAsync()` and must
+use it to drain the exact job, including descendants. These APIs do not assert
+that Rust cleanup ran, a NIC disappeared or a session remains usable.
+
+The finite future core experiment can first end reads, independently check the
+exact observed NIC identity disappears while that same core is alive, and finally
+drain the job. Timeout, core death or a remaining NIC must be recorded accurately;
+forced job termination cannot be reported as successful normal Instance cleanup.
+
+`OwnedCoreRpcMode.LoopbackProbe` adds only the fixed pair
+`--rpc-portal 127.0.0.1:15998`. Undefined modes reject; callers cannot supply an
+arbitrary argument string. Default mode retains the original seven arguments
+byte for byte. Upstream RPC port zero invokes a candidate-port scan that briefly
+binds a wildcard socket, so this mode uses an explicit nonzero port. Collision
+must fail rather than select another port. This limits the RPC bind destination;
+it is not a complete inert configuration or a production network isolation rule.
+
+The three added normal cases check invalid modes, actual pending-I/O cancellation
+and permanent closure with the live owned process/configuration pin retained
+until final disposal, and actual child receipt of exactly the fixed RPC arguments.
+The helper validates all seven existing arguments and the optional two extra
+arguments before answering the real pipe. Current local results are 9 passes and
+13 explicit Windows skips (22 total); native 8/interop 4 protocols are unchanged.
+The separate dependency suite checks official DLL file lifetime; the new read
+case itself checks configuration file sharing, not DLL loading or loader search.

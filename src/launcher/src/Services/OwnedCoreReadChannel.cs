@@ -22,6 +22,11 @@ internal sealed class OwnedCoreReadChannel : IAsyncDisposable
     private Task cancellationNotification = Task.CompletedTask;
     internal CancellationToken Lifetime => lifetime.Token;
     internal bool IsOpen { get { lock (gate) return !closed && owner.IsAlive; } }
+    internal bool IsOwnedProcessAlive => owner.IsAlive;
+    // End only this read attempt, giving the real endpoint EOF. Input pins and
+    // exact job ownership remain held until DisposeAsync. This does not confirm
+    // Instance/NIC cleanup; callers must independently observe it, then drain.
+    internal void EndReads() => Close();
     private OwnedCoreReadChannel(OwnedCoreReadDescriptor descriptor, NamedPipeServerStream pipe, OwnedCoreProcess owner)
     { this.descriptor = descriptor; this.pipe = pipe; this.owner = owner; }
     internal static async Task<OwnedCoreReadChannel> StartAsync(OwnedCoreLaunchInputs inputs, string instance, CancellationToken cancellationToken = default)

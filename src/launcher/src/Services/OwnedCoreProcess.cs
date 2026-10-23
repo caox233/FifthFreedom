@@ -60,7 +60,7 @@ internal sealed class OwnedCoreProcess : IAsyncDisposable
             string block = extra + $"PATH={Environment.SystemDirectory}\0SystemRoot={windows}\0TEMP={temporary}\0TMP={temporary}\0WINDIR={windows}\0\0";
             environment = Marshal.StringToHGlobalUni(block);
             var startup = new StartupInfoEx { Startup = new StartupInfo { Size = Marshal.SizeOf<StartupInfoEx>() }, Attributes = attributes };
-            string command = $"\"{specification.Executable}\" --config-file \"{specification.Configuration}\" --disable-env-parsing --console-log-level off --file-log-level off";
+            string command = $"\"{specification.Executable}\" --config-file \"{specification.Configuration}\" --disable-env-parsing --console-log-level off --file-log-level off" + specification.FixedRpcArguments;
             cancellationToken.ThrowIfCancellationRequested();
             if (!CreateProcessW(specification.Executable, new StringBuilder(command), IntPtr.Zero, IntPtr.Zero, false,
                 0x00080000 | 0x00000400 | 0x00000004 | 0x08000000, environment,
