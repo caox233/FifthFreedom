@@ -17,7 +17,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src/public"))
 from fifth_freedom_control.easytier_profile import (
-    ProfileError, core_arguments, emit_private_toml, parse_peer_observation,
+    ProfileError, PeerObservationError, core_arguments, emit_private_toml, parse_peer_observation,
     parse_profile, peer_query_arguments, write_private_toml,
 )
 
@@ -161,6 +161,54 @@ class ProfileTests(unittest.TestCase):
                     observed = parse_peer_observation(profile, json.dumps(peer_json(profile)).encode())
                     self.assertEqual(observed.profile_sha256, profile.sha256)
                     self.assertEqual(observed.remote_peer_id, 102)
+
+    def test_quic_initiator_accepts_only_pinned_producer_wildcard_bind_forms(self):
+        profile = parsed(recipe("quic", "initiator"))
+        for host in ("0.0.0.0", "[::]"):
+            data = peer_json(profile)
+            data[0]["peer"]["conns"][0]["tunnel"]["local_addr"]["url"] = f"quic://{host}:35000"
+            result = parse_peer_observation(profile, json.dumps(data).encode())
+            self.assertEqual(result.remote_peer_id, 102)
+            self.assertEqual(result.local_bind_kind, "wildcard")
+        for transport, role in (("tcp", "initiator"), ("wss", "initiator"), ("quic", "responder")):
+            other = parsed(recipe(transport, role))
+            for host in ("0.0.0.0", "[::]"):
+                data = peer_json(other)
+                data[0]["peer"]["conns"][0]["tunnel"]["local_addr"]["url"] = f"{transport}://{host}:35000"
+                with self.assertRaises(ProfileError): parse_peer_observation(other, json.dumps(data).encode())
+        for url in ("quic://[::1]:35000", "quic://[::ffff:0.0.0.0]:35000", "quic://10.99.0.1:35000",
+                    "quic://0.0.0.0:0", "quic://[::]:65536", "quic://[::]", "quic://[::]:35000?proxy=x"):
+            data = peer_json(profile)
+            data[0]["peer"]["conns"][0]["tunnel"]["local_addr"]["url"] = url
+            with self.assertRaises(ProfileError): parse_peer_observation(profile, json.dumps(data).encode())
+
+    def test_actual_upstream_url_and_serde_fixture_roundtrip(self):
+        fixture = json.loads((ROOT / "docs/dependency-patches/easytier-2.6.4-profile/quic-bind-serde-fixture.json").read_bytes())
+        self.assertEqual(len(fixture), 3)
+        profile = parsed(recipe("quic", "initiator"))
+        for index, projection in enumerate(fixture):
+            # Full production-generated PeerRoutePair serde: key byte arrays,
+            # auth enum, UUID fields, IPv4 route and all tunnel URL fields.
+            observed = parse_peer_observation(profile, json.dumps(projection).encode())
+            self.assertEqual(observed.local_bind_kind, "wildcard" if index < 2 else "exact")
+
+    def test_observation_failure_reasons_are_fixed_and_keep_old_error_contract(self):
+        profile = parsed(recipe("quic", "initiator"))
+        cases = [(b"private-invalid-input", "PEER_JSON_INVALID"), (b"[]", "PEER_SET_EMPTY")]
+        for field, url, expected in (("local_addr", "quic://10.99.0.1:35000", "PEER_LOCAL_BIND_INVALID"),
+                ("remote_addr", "quic://0.0.0.0:22002", "PEER_REMOTE_ENDPOINT_INVALID")):
+            data = peer_json(profile); data[0]["peer"]["conns"][0]["tunnel"][field]["url"] = url
+            cases.append((json.dumps(data).encode(), expected))
+        for raw, reason in cases:
+            with self.assertRaises(PeerObservationError) as caught:
+                parse_peer_observation(profile, raw)
+            self.assertEqual(str(caught.exception), "PEER_OBSERVATION_INVALID")
+            self.assertEqual(caught.exception.reason, reason)
+            self.assertNotIn("private", repr(caught.exception))
+        for field in ("remote_addr", "resolved_remote_addr"):
+            data = peer_json(profile)
+            data[0]["peer"]["conns"][0]["tunnel"][field]["url"] = "quic://0.0.0.0:22002"
+            with self.assertRaises(ProfileError): parse_peer_observation(profile, json.dumps(data).encode())
 
     def test_rejects_wrong_auth_key_network_direction_and_unencrypted_state(self):
         profile = parsed()

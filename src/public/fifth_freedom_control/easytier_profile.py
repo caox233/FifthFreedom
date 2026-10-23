@@ -23,6 +23,20 @@ class ProfileError(ValueError):
     """Only fixed error codes; never include input, private TOML or RPC output."""
 
 
+PEER_OBSERVATION_REASONS = frozenset("""
+PEER_JSON_INVALID PEER_SET_EMPTY PEER_SET_INVALID PEER_CONNECTIONS_INVALID
+PEER_IDENTITY_OR_AUTH_INVALID PEER_ROUTE_INVALID PEER_CONNECTION_ID_INVALID
+PEER_DIRECT_ROUTE_INVALID PEER_TUNNEL_SHAPE_INVALID PEER_TUNNEL_PROTOCOL_INVALID
+PEER_LOCAL_BIND_INVALID PEER_REMOTE_ENDPOINT_INVALID PEER_RESOLVED_ENDPOINT_INVALID
+""".split())
+
+
+class PeerObservationError(ProfileError):
+    def __init__(self, reason):
+        super().__init__("PEER_OBSERVATION_INVALID")
+        self.reason = reason if reason in PEER_OBSERVATION_REASONS else "PEER_JSON_INVALID"
+
+
 SCHEMA = "ff-easytier-owned-probe-v1"
 PURPOSE = "owned-isolated-development"
 MAX_RECIPE = 16384
@@ -315,6 +329,9 @@ class PeerObservation:
     connection_id: str
     local_peer_id: int
     remote_peer_id: int
+    # QUIC initiator RPC can describe a wildcard socket bind, never source-IP
+    # proof. The owning namespace/egress policy supplies that separate boundary.
+    local_bind_kind: str = "exact"
     # No raw RPC output, keys, secrets or arbitrary upstream error strings.
 
 
@@ -324,16 +341,18 @@ def _rpc_key(value):
     return bytes(value)
 
 
-def _tunnel_endpoint(value, scheme, address, port=None):
+def _tunnel_endpoint(value, scheme, address, port=None, *, allow_unspecified=False):
     _object(value, ("url",))
     if type(value["url"]) is not str or len(value["url"]) > 128:
         _fail()
     url = urlsplit(value["url"])
     actual_port = url.port
-    if (url.scheme != scheme or url.hostname != address or url.username is not None or url.password is not None
+    allowed_hosts = (address, "0.0.0.0", "::") if allow_unspecified else (address,)
+    if (url.scheme != scheme or url.hostname not in allowed_hosts or url.username is not None or url.password is not None
             or url.query or url.fragment or url.path not in ("", "/") or actual_port is None
             or not 1 <= actual_port <= 65535 or port is not None and actual_port != port):
         _fail()
+    return "wildcard" if url.hostname in ("0.0.0.0", "::") else "exact"
 
 
 def parse_peer_observation(profile, content):
@@ -344,17 +363,21 @@ def parse_peer_observation(profile, content):
     unrouted connections or substitute for a handshake key allowlist.
     """
     profile = _validated(profile)
+    reason = "PEER_JSON_INVALID"
     try:
         pairs = _json(content, MAX_PEERS)
+        reason = "PEER_SET_EMPTY" if type(pairs) is list and not pairs else "PEER_SET_INVALID"
         if type(pairs) is not list or len(pairs) != 1:
             _fail()
         pair = _object(pairs[0], ("peer", "route"))
         peer, route = pair["peer"], pair["route"]
         if type(peer) is not dict or type(route) is not dict:
             _fail()
+        reason = "PEER_CONNECTIONS_INVALID"
         if type(peer["conns"]) is not list or len(peer["conns"]) != 1:
             _fail()
         conn = peer["conns"][0]
+        reason = "PEER_IDENTITY_OR_AUTH_INVALID"
         remote_id = _integer(peer["peer_id"], 1, 2**32 - 1)
         local_id = _integer(conn["my_peer_id"], 1, 2**32 - 1)
         if (local_id == remote_id or conn["peer_id"] != remote_id or route["peer_id"] != remote_id
@@ -368,29 +391,40 @@ def parse_peer_observation(profile, content):
                 or _rpc_key(conn["noise_local_static_pubkey"]) != _key(profile.local.public_key)
                 or _rpc_key(conn["noise_remote_static_pubkey"]) != _key(profile.remote.public_key)):
             _fail()
+        reason = "PEER_ROUTE_INVALID"
         ipv4 = _object(route["ipv4_addr"], ("address", "network_length"))
         address = _object(ipv4["address"], ("addr",))["addr"]
         if (type(address) is not int or address != int(profile.remote.overlay.ip)
                 or type(ipv4["network_length"]) is not int or ipv4["network_length"] != 30
                 or route["proxy_cidrs"] != []):
             _fail()
+        reason = "PEER_CONNECTION_ID_INVALID"
         conn_id = conn["conn_id"]
         parsed_id = uuid.UUID(conn_id)
         if str(parsed_id) != conn_id:
             _fail()
         # UUID is protobuf's four big-endian u32 parts, not a string here.
         parts = {f"part{i + 1}": int.from_bytes(parsed_id.bytes[i*4:i*4+4], "big") for i in range(4)}
+        reason = "PEER_DIRECT_ROUTE_INVALID"
         if (peer["default_conn_id"] != parts or peer["directly_connected_conns"] != [parts]
                 or any(type(value) is not int for value in peer["default_conn_id"].values())):
             _fail()
+        reason = "PEER_TUNNEL_SHAPE_INVALID"
         tunnel = _object(conn["tunnel"], ("tunnel_type", "local_addr", "remote_addr", "resolved_remote_addr"))
+        reason = "PEER_TUNNEL_PROTOCOL_INVALID"
         if tunnel["tunnel_type"] != profile.transport:
             _fail()
-        _tunnel_endpoint(tunnel["local_addr"], profile.transport, profile.local.underlay_ipv4,
-                         profile.local.listen_port if profile.role == "responder" else None)
+        # Pinned quic.rs publishes endpoint.local_addr(), which describes the
+        # wildcard UDP bind for an initiator, not the selected packet source.
+        # All other role/transport combinations retain exact local addresses.
+        reason = "PEER_LOCAL_BIND_INVALID"
+        local_bind_kind = _tunnel_endpoint(tunnel["local_addr"], profile.transport, profile.local.underlay_ipv4,
+                         profile.local.listen_port if profile.role == "responder" else None,
+                         allow_unspecified=profile.transport == "quic" and profile.role == "initiator")
         for name in ("remote_addr", "resolved_remote_addr"):
+            reason = "PEER_REMOTE_ENDPOINT_INVALID" if name == "remote_addr" else "PEER_RESOLVED_ENDPOINT_INVALID"
             _tunnel_endpoint(tunnel[name], profile.transport, profile.remote.underlay_ipv4,
                              profile.remote.listen_port if profile.role == "initiator" else None)
-        return PeerObservation(profile.sha256, conn_id, local_id, remote_id)
+        return PeerObservation(profile.sha256, conn_id, local_id, remote_id, local_bind_kind)
     except (ValueError, TypeError, KeyError, AttributeError, OverflowError):
-        _fail("PEER_OBSERVATION_INVALID")
+        raise PeerObservationError(reason) from None

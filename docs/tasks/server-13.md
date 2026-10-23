@@ -268,3 +268,33 @@ protocol/reaping and independent source-error plus cleanup-error injection. No
 EasyTier core, TUN or namespace runs in those tests. No timeout, containment rule,
 readiness check or production admission gate was relaxed; another actual hosted
 run must supply the missing runtime diagnosis.
+
+The next full run,
+[39919260513](https://github.com/caox233/FifthFreedom/actions/runs/39919260513),
+job 120300259865 at `6c11c8b85633ea5e2977ea0131c86ee01b316bbb`, failed with
+`OVERLAY_READY_TIMEOUT` and `TRANSPORT_MATRIX_INCOMPLETE`. The original sanitized
+receipt was subsequently obtained through the normal official artifact path:
+its sole row is QUIC, with no completed transfer phases, no cleanup errors,
+two namespaces created and removed, and the private stage removed. It did not
+record the last TUN/query observation, so those states remain unknown for that
+run. The lack of a worker-failure annotation is not an authentication success.
+
+Source inspection identified the QUIC bind-address parser mismatch documented
+in [SERVER-12](server-12.md). Its narrowly corrected parser and producer-linked
+synthetic serialization evidence do not retrospectively assign a root cause to
+this hosted timeout. The next probe also records a strict
+`ff-easytier-readiness-timeout-v1` object on timeout: the role, expected
+authentication mode, bounded observation count and final fixed observation.
+That observation distinguishes TUN pending, CLI query failure, parser rejection
+and authenticated state; parser rejection carries a source-defined reason enum.
+It includes only checked booleans and fixed state/bind-kind strings, never raw
+RPC, addresses, keys, exception text or arbitrary upstream strings. Unknown and
+extra fields, inconsistent states and a successful state represented as a
+timeout are rejected. It is a last observation, not a lease or readiness grant.
+
+The 15-second readiness deadline, query output/lifetime limits, namespace/nft
+containment, exact-child cleanup and production admission gate are unchanged.
+Current focused checks pass: 27 probe, 12 profile, 18 production owned-overlay
+monitor and 20 combined-stack tests. The real upstream serialization example
+also passed without network activity. Actual QUIC/WSS/TCP matrix acceptance
+still requires a subsequent hosted run with these changes.

@@ -16,7 +16,8 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src/public"))
 sys.path.insert(0, str(ROOT / "scripts"))
-from fifth_freedom_control.easytier_profile import (ProfileError, core_arguments,
+from fifth_freedom_control.easytier_profile import (ProfileError, PeerObservationError,
+    PEER_OBSERVATION_REASONS, core_arguments,
     parse_peer_observation, parse_profile, peer_query_arguments)
 from fifth_freedom_control.owned_process import LifecycleError, OwnedChild, VerifiedExecutable, _BOOTSTRAP
 from fifth_freedom_control.overlay_supervisor import KernelTunMonitor
@@ -24,6 +25,26 @@ from fifth_freedom_control.secure_config import AdmissionError, read_private
 from ci_socket_isolation import observe_echo, parse_ready, PORT_FIELDS
 
 CLEAN_ENV = {"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "TZ": "UTC"}
+READINESS_SCHEMA = "ff-easytier-readiness-observation-v1"
+QUERY_FAILURE_CODES = frozenset(("PIPE_READ_LIMIT_INVALID", "PIPE_READ_TIMEOUT", "PIPE_CHILD_FAILED",
+    "PIPE_OUTPUT_LIMIT", "PIPE_CHILD_EXITED", "PIPE_READ_FAILED", "WORKER_UNCLASSIFIED_ERROR"))
+
+
+def valid_readiness_record(value):
+    if (type(value) is not dict or set(value) != {"schema", "core_image_matches", "tun_owned",
+            "peer_authenticated", "query_state", "query_code", "local_bind_kind"}
+            or value["schema"] != READINESS_SCHEMA or value["core_image_matches"] is not True
+            or type(value["tun_owned"]) is not bool or type(value["peer_authenticated"]) is not bool
+            or type(value["query_state"]) is not str):
+        return False
+    state, code, bind = value["query_state"], value["query_code"], value["local_bind_kind"]
+    if not value["tun_owned"]:
+        return not value["peer_authenticated"] and state == "tun-pending" and code is None and bind is None
+    if value["peer_authenticated"]:
+        return state == "authenticated" and code is None and type(bind) is str and bind in ("exact", "wildcard")
+    return (bind is None and type(code) is str
+        and (state == "query-failed" and code in QUERY_FAILURE_CODES
+             or state == "parse-rejected" and code in PEER_OBSERVATION_REASONS))
 
 
 class ProbeError(RuntimeError):
@@ -325,12 +346,14 @@ async def serve(manifest, state):
             observation = await monitor.observe(core)
             if action == "observe":
                 authenticated = False
+                query_state, query_code, local_bind_kind = "tun-pending", None, None
                 if observation is not None:
                     state["phase"] = "peer-query"
                     try:
                         raw = await asyncio.to_thread(bounded_query, cli_image, peer_query_arguments(profile))
-                        parse_peer_observation(profile, raw)
+                        peer_observation = parse_peer_observation(profile, raw)
                         authenticated = True
+                        query_state, local_bind_kind = "authenticated", peer_observation.local_bind_kind
                     except QueryCleanupUnconfirmed as error:
                         state["cleanup_code"] = "CLI_CHILD_CLEANUP_UNCONFIRMED"
                         raise error.cause from None
@@ -339,15 +362,22 @@ async def serve(manifest, state):
                         # bounded executor query has completed its own close.
                         state["cleanup_code"] = "CLI_CHILD_CLEANUP_UNCONFIRMED"
                         raise
-                    except (ProfileError, ProbeError):
-                        pass
+                    except PeerObservationError as error:
+                        query_state, query_code = "parse-rejected", error.reason
+                    except ProbeError as error:
+                        code = fixed_failure_code(error)
+                        query_state = "query-failed"
+                        query_code = code if code in QUERY_FAILURE_CODES else "WORKER_UNCLASSIFIED_ERROR"
                     state["phase"] = "observe"
                 if not core.image_matches():
                     fail("WORKER_CORE_EXITED")
                 _reply({"event": "observation", "tun_owned": observation is not None,
                         "peer_authenticated": authenticated,
                         "interface_index": observation.interface_index if observation is not None else None,
-                        "probe_alive": probe.alive if probe is not None else None})
+                        "probe_alive": probe.alive if probe is not None else None,
+                        "readiness": dict(schema=READINESS_SCHEMA, core_image_matches=True,
+                            tun_owned=observation is not None, peer_authenticated=authenticated,
+                            query_state=query_state, query_code=query_code, local_bind_kind=local_bind_kind)})
             elif action == "start-probe":
                 state["phase"] = "probe-start"
                 if observation is None or probe is not None or profile.role != "responder":

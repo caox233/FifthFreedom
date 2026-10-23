@@ -31,6 +31,13 @@ def profiles(transport="quic"):
         [X25519PrivateKey.generate(), X25519PrivateKey.generate()])
 
 
+def readiness(tun_owned, authenticated):
+    return dict(schema=worker.READINESS_SCHEMA, core_image_matches=True, tun_owned=tun_owned,
+        peer_authenticated=authenticated, query_state="authenticated" if authenticated else "parse-rejected" if tun_owned else "tun-pending",
+        query_code=None if authenticated or not tun_owned else "PEER_SET_EMPTY",
+        local_bind_kind="exact" if authenticated else None)
+
+
 class ContainmentTests(unittest.TestCase):
     def test_rules_bind_three_drop_chains_and_only_exact_pair_interfaces_and_ports(self):
         for transport in probe.TRANSPORTS:
@@ -174,6 +181,45 @@ class ContainmentTests(unittest.TestCase):
 
 
 class ReceiptAndControlTests(unittest.TestCase):
+    def test_readiness_timeout_preserves_last_fixed_observation_without_raw_rpc(self):
+        from unittest.mock import Mock
+        endpoint = Mock()
+        observations = [readiness(False, False), readiness(True, False)]
+        endpoint.command.side_effect = [dict(event="observation", tun_owned=value["tun_owned"],
+            peer_authenticated=value["peer_authenticated"], readiness=value) for value in observations]
+        with patch.object(probe.time, "monotonic", side_effect=[0, 1, 16]), patch.object(probe.time, "sleep"):
+            with self.assertRaises(probe.ReadinessTimeout) as caught:
+                probe.await_ready(endpoint)
+        record = caught.exception.record
+        self.assertTrue(probe.valid_readiness_timeout(record))
+        self.assertEqual(record["observation_count"], 2)
+        self.assertEqual(record["last_observation"], observations[-1])
+        self.assertEqual(str(caught.exception), "OVERLAY_READY_TIMEOUT")
+        self.assertFalse(probe.valid_readiness_timeout(dict(record, raw_rpc="secret")))
+        self.assertFalse(probe.valid_readiness_timeout(dict(record, observation_count=True)))
+        self.assertFalse(probe.valid_readiness_timeout(dict(record, last_observation=readiness(True, True))))
+        self.assertFalse(probe.valid_readiness_timeout(dict(record, expected_authenticated=False)))
+        for changed in (dict(observations[-1], query_code="private-secret"),
+                        dict(observations[-1], extra="private-secret"),
+                        dict(observations[-1], local_bind_kind="wildcard"),
+                        dict(observations[-1], core_image_matches=1)):
+            self.assertFalse(worker.valid_readiness_record(changed))
+            endpoint.command.side_effect = None
+            endpoint.command.return_value = dict(event="observation", tun_owned=True, peer_authenticated=False, readiness=changed)
+            with self.assertRaisesRegex(probe.ProbeError, "OBSERVATION_INVALID"):
+                probe.await_ready(endpoint)
+
+    def test_authenticated_wildcard_bind_is_observation_not_source_address_proof(self):
+        from unittest.mock import Mock
+        observed = dict(readiness(True, True), local_bind_kind="wildcard")
+        self.assertTrue(worker.valid_readiness_record(observed))
+        endpoint = Mock()
+        endpoint.command.return_value = dict(event="observation", tun_owned=True, peer_authenticated=True, readiness=observed)
+        self.assertEqual(probe.await_ready(endpoint)["readiness"], observed)
+        endpoint.command.return_value["tun_owned"] = False
+        with self.assertRaisesRegex(probe.ProbeError, "OBSERVATION_INVALID"):
+            probe.await_ready(endpoint)
+
     def test_worker_failure_frame_is_strict_and_never_echoes_unknown_messages(self):
         state = dict(phase="observe", cleanup_code=None)
         value = worker.failure_record(worker.LifecycleError("OVERLAY_TUN_NOT_OWNED"), state)
@@ -346,7 +392,8 @@ class ReceiptAndControlTests(unittest.TestCase):
                 def command(self, action, **_):
                     if action == "observe":
                         return dict(event="observation", tun_owned=not self.core_stopped,
-                            peer_authenticated="wrong" not in self.name, probe_alive=self.probe_started)
+                            peer_authenticated="wrong" not in self.name, probe_alive=self.probe_started,
+                            readiness=readiness(not self.core_stopped, "wrong" not in self.name))
                     if action == "start-probe":
                         self.probe_started = True
                         return dict(event="probe-ready", **dict(zip(probe.PORT_FIELDS, (12001, 12002, 12003))))

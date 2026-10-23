@@ -156,3 +156,39 @@ The exact command, source/log digests and scope flags are in
 private configs remain ignored. Rust was 1.95.0 with the same explicit toolchain
 setup recorded for SERVER-07; the verifier is an example copied into the ignored
 checkout, not a modified or executed official runtime binary.
+
+## Pinned QUIC bind-address correction
+
+The pinned producer describes a QUIC initiator's **UDP socket bind address** in
+`TunnelInfo.local_addr`, which may be `0.0.0.0` or `::`; it does not necessarily
+describe the selected packet source address. At exact upstream commit
+`8428a89d2dabc94c97d370ec607c6ca142473626`,
+[`quic.rs:354`](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/tunnel/quic.rs#L354)
+creates wildcard client endpoints (and can reuse a configured server endpoint
+from its pool). The connector at
+[`quic.rs:584`](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/tunnel/quic.rs#L584)
+serializes `endpoint.local_addr()` through `build_url_from_socket_addr`.
+
+The observation parser now accepts exactly the configured local IPv4 address or
+those two wildcard hosts **only for QUIC initiators**, with a valid nonzero port.
+TCP/WSS initiators and every responder retain the exact local-address checks;
+responder ports, both remote endpoints, secure auth level 3, both keys, network,
+direct route and unique-connection requirements remain unchanged. IPv6 loopback,
+mapped IPv4 forms, other local addresses, invalid ports, proxy query strings and
+wildcard remote endpoints remain rejected. `PeerObservation.local_bind_kind`
+explicitly distinguishes `wildcard` from `exact`. Neither kind is a substitute
+for the independent owned namespace, route and full nft source/egress checks.
+
+The new regression failed before the correction (9 passed, 1 error), then passed.
+The current profile suite has 12 passing tests. A pure example uses the actual
+pinned upstream URL helper, `PeerConnInfo`/`PeerInfo`/`Route` types and
+`list_peer_route_pair` join, then the same generated serde used by the single-
+instance verbose CLI. Its three full projections verify key byte arrays, auth
+enum values, connection UUID fields, IPv4 route fields and all tunnel URL forms.
+Inputs are synthetic public RFC 7748 vectors and fixed example addresses; no
+socket, async runtime, core, RPC or TUN was created.
+The example, resulting synthetic fixture, exact source hashes and command/log
+receipts are under `docs/dependency-patches/easytier-2.6.4-profile/` as
+`quic-bind-serde-*` and `quic-bind-receipt.json`. This corrects a confirmed
+producer/consumer semantic mismatch; it does not by itself establish the cause
+of any hosted readiness timeout or prove successful network operation.

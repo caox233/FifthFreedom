@@ -26,7 +26,8 @@ from fifth_freedom_control.easytier_profile import parse_profile, emit_private_t
 from fifth_freedom_control.owned_process import LifecycleError, VerifiedExecutable
 from fifth_freedom_control.overlay_supervisor import RuntimeCandidateIdentity
 from ci_socket_isolation import OwnedNamespaces, IsolationError, PORT_FIELDS
-from easytier_probe_worker import CLEAN_ENV, ProbeError, WorkerFailure, valid_failure_record, fail
+from easytier_probe_worker import (CLEAN_ENV, ProbeError, WorkerFailure, valid_failure_record,
+    valid_readiness_record, fail)
 
 PIN_GUARD = "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328"
 TRANSPORTS = ("quic", "wss", "tcp")
@@ -38,6 +39,24 @@ class ContainmentMismatch(ProbeError):
     def __init__(self, diagnostics):
         super().__init__("CONTAINMENT_CHANGED")
         self.diagnostics = diagnostics
+
+
+class ReadinessTimeout(ProbeError):
+    def __init__(self, role, authenticated, samples, last):
+        super().__init__("OVERLAY_READY_TIMEOUT")
+        self.record = dict(schema="ff-easytier-readiness-timeout-v1", role=role,
+            expected_authenticated=authenticated, observation_count=samples, last_observation=last)
+
+
+def valid_readiness_timeout(value):
+    return (type(value) is dict and set(value) == {"schema", "role", "expected_authenticated", "observation_count", "last_observation"}
+        and value["schema"] == "ff-easytier-readiness-timeout-v1"
+        and type(value["role"]) is str and value["role"] in ("initiator", "responder")
+        and type(value["expected_authenticated"]) is bool
+        and type(value["observation_count"]) is int and 1 <= value["observation_count"] <= 2048
+        and valid_readiness_record(value["last_observation"])
+        and not (value["last_observation"]["tun_owned"]
+                 and (not value["expected_authenticated"] or value["last_observation"]["peer_authenticated"])))
 
 
 def encoded(value):
@@ -553,17 +572,24 @@ class NamespaceWorker:
         return self.cleaned
 
 
-def await_ready(worker, *, authenticated=True):
+def await_ready(worker, *, authenticated=True, role="initiator"):
+    if role not in ("initiator", "responder") or type(authenticated) is not bool:
+        fail("OBSERVATION_INVALID")
     deadline = time.monotonic() + 15
+    samples = 0
     while True:
         result = worker.command("observe")
-        if (result.get("event") != "observation" or type(result.get("tun_owned")) is not bool
-                or type(result.get("peer_authenticated")) is not bool):
+        if (type(result) is not dict or result.get("event") != "observation"
+                or not valid_readiness_record(result.get("readiness"))
+                or type(result.get("tun_owned")) is not bool or type(result.get("peer_authenticated")) is not bool
+                or result["tun_owned"] != result["readiness"]["tun_owned"]
+                or result["peer_authenticated"] != result["readiness"]["peer_authenticated"]):
             fail("OBSERVATION_INVALID")
+        samples += 1
         if result["tun_owned"] and (not authenticated or result["peer_authenticated"]):
             return result
-        if time.monotonic() >= deadline:
-            fail("OVERLAY_READY_TIMEOUT")
+        if samples >= 2048 or time.monotonic() >= deadline:
+            raise ReadinessTimeout(role, authenticated, samples, result["readiness"])
         time.sleep(0.1)
 
 
@@ -633,7 +659,7 @@ def run_transport(transport, candidate, images, stage, ip, nft):
         server = NamespaceWorker(namespaces, topology.names[1], server_path); workers.append(server)
         client_path = manifest(stage, transport + "-client-good1", namespaces, profiles[0], keys[0], secret, images)
         client = NamespaceWorker(namespaces, topology.names[0], client_path); workers.append(client)
-        await_ready(client); await_ready(server)
+        await_ready(client); await_ready(server, role="responder")
         ready = server.command("start-probe")
         if ready.get("event") != "probe-ready":
             fail("SOCKET_PROBE_NOT_READY")
@@ -670,7 +696,7 @@ def run_transport(transport, candidate, images, stage, ip, nft):
         restored = parse_profile(json.dumps(restored).encode())
         restored_path = manifest(stage, transport + "-client-good2", namespaces, restored, keys[0], secret, images)
         client = NamespaceWorker(namespaces, topology.names[0], restored_path); workers.append(client)
-        await_ready(client); await_ready(server)
+        await_ready(client); await_ready(server, role="responder")
         row["phases"].append(dict(phase="correct-pin-after", profile_sha256=restored.sha256,
             echo=echo(client, server, ports, True)))
         row["blocked_packets"] = {role: namespaces.containment(name, nft, profile)
@@ -689,6 +715,8 @@ def run_transport(transport, candidate, images, stage, ip, nft):
         row["error"] = diagnostic(error)
         if isinstance(error, WorkerFailure):
             row["worker_failure"] = error.record
+        if isinstance(error, ReadinessTimeout):
+            row["readiness_timeout"] = error.record
         if isinstance(error, ContainmentMismatch):
             row["fixed_diagnostics"] = error.diagnostics
     except KeyboardInterrupt:
