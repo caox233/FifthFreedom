@@ -64,6 +64,16 @@ peer/connection, interface, RPC or process permanently revokes this monitor.
 Changing back to good JSON cannot revive it. RPC's route-joined peer view is not
 a complete connection inventory or independent cryptographic proof.
 
+The peer authentication level and Noise keys describe the completed handshake;
+`is_closed=false` describes current local connection state. Neither proves that
+authenticated peer data arrived recently. In the pinned runtime, Ping/Pong can
+bypass encryption, so their continued receipt cannot fill that gap. The monitor
+currently consumes no current-session authenticated-receive counter, timestamp
+or challenge response. Repeating unchanged peer JSON can refresh the local
+observation time indefinitely while adding no authenticated-traffic evidence.
+This limits the monitor to the existing contained development recipe; it is
+insufficient for production admission or production lease renewal.
+
 ## Direct owner composition
 
 The existing supervisor runs this monitor before every native service observation.
@@ -73,6 +83,12 @@ It binds the parsed profile digest, core executable digest and observed interfac
 to the separately verified native configuration, service package and admitted
 Windows client identity. It derives none of those expectations from a native
 HELLO. A stalled owner cannot use the old observation to renew indefinitely.
+The 0.5s check measures the age of the local CLI/kernel observation only. It does
+not bound the age of a remote authenticated event. A future production provider
+must validate a reviewed current-session cryptographic freshness contract before
+using this composition; a passive receive observation alone also does not create
+an active challenge or idle-peer liveness policy. `ClosedPublicAdmission` stays
+closed while that capability is absent.
 
 The composition below assumes the independent same-build, private-config,
 package and current containment checks have already succeeded. It is a concrete
@@ -132,6 +148,14 @@ layers. That failed log is retained; the corrected assertion verifies every
 cleanup targets the same reaped child. Results and source hashes remain in
 `.local/evidence/cloud/server14/`.
 
+A later scope regression repeats the same synthetic historical peer response
+through actual owned core/CLI interpreter children. It confirms that local query
+time advances and the development binding remains usable, while the production
+factory still rejects before spawning a child. This deliberately demonstrates
+the missing authenticated-traffic guarantee; it does not simulate encrypted
+traffic or change the original 18-test evidence above.
+The resulting owned-overlay suite passes 19/19 on Linux with zero skips.
+
 Next: independently review this module and feed the already-reviewed hosted
 worker's genuine same-build core/CLI, owned namespace/TUN and peer observations
 through it. Then compose with the real component-only native package and lease
@@ -141,6 +165,8 @@ Keep the original wrong-pin/restore probe matrix unchanged: it intentionally
 retains the responder through peer loss, whereas a native-serving monitor must
 permanently revoke on that loss. A separate bounded combined worker must own the
 core from initial spawn and bind the native configuration to the actual recipe
-and core digest. It must observe real five-listener readiness, established TCP
-closure after peer loss and exact cleanup, with independent containment checks
-before and after. An already running core cannot be adopted into the supervisor.
+and core digest. SERVER-15 separates actual five-listener readiness and TCP
+closure after lease revocation from peer-loss process/listener cleanup; remote
+timeouts after peer loss are not EOF evidence. Containment checks apply before
+and after both controls. An already running core cannot be adopted into the
+supervisor.

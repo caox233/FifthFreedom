@@ -432,6 +432,29 @@ class OwnedOverlayTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaisesRegex(LifecycleError, "PUBLIC_PROFILE_NOT_READY"):
             create_public_supervisor(self.profile.candidate)
 
+    async def test_repolling_unchanged_handshake_state_never_authorizes_production(self):
+        core, monitor = await self.core(), self.monitor()
+        await monitor.prepare()
+        historical_reply = self.reply.read_bytes()
+        arguments = dict(config_sha256="a" * 64, service_manifest_sha256="b" * 64,
+                         admitted_client_storage_key="synthetic-admitted-client")
+        first = await monitor.observe(core)
+        first_local_time = monitor._observed_at
+        development_binding = monitor.lease_binding(**arguments)
+        second = await monitor.observe(core)
+        self.assertEqual(first, second)
+        self.assertEqual(self.reply.read_bytes(), historical_reply)
+        self.assertGreater(monitor._observed_at, first_local_time)
+        self.assertEqual(monitor.lease_binding(**arguments), development_binding)
+        # Real owned CLI queries refreshed only local state. This inert peer
+        # sent no authenticated runtime data and cannot become an admission
+        # proof merely by being polled again.
+        with mock.patch.object(OwnedChild, "spawn") as spawn:
+            with self.assertRaisesRegex(LifecycleError, "PUBLIC_PROFILE_NOT_READY"):
+                create_public_supervisor(self.profile.candidate)
+            spawn.assert_not_called()
+        self.assertEqual(self.revocations, [])
+
     async def test_profile_image_and_namespace_inputs_cannot_be_substituted(self):
         changed = json.loads(self.recipe)
         changed["candidate"]["executable_sha256"] = "f" * 64

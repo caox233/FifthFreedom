@@ -5,6 +5,9 @@ This module verifies local process/TUN/RPC observations. It cannot establish a
 production deployment policy or replace the patched runtime's crypto contracts.
 The caller must pin core AND CLI to one verified build receipt: a caller-chosen
 CLI digest alone cannot prove that its well-shaped JSON came from that runtime.
+Peer authentication fields describe handshake history. Recent local polling is
+not evidence of recently authenticated peer traffic; this module has no such
+receive observation and cannot authorize production lease renewal.
 """
 import asyncio
 from dataclasses import dataclass
@@ -216,6 +219,9 @@ class OwnedOverlayMonitor:
     No existing PID is adopted and no boolean can bypass a check.
     The finite recipe still has purpose owned-isolated-development. Production
     create_public_supervisor remains closed and does not instantiate this class.
+    Peer auth level/keys and is_closed=false do not establish authenticated-data
+    freshness: the retained runtime permits unencrypted Ping/Pong. The local
+    observation timestamp measures this query, not a remote cryptographic event.
     """
     def __init__(self, recipe, core, cli, namespace_fd, *, revoke, limits=QueryLimits()):
         self._namespace_fd = -1
@@ -330,6 +336,8 @@ class OwnedOverlayMonitor:
             if self._accepted is not None and self._accepted != after:
                 raise LifecycleError("OVERLAY_OWNERSHIP_LOST")
             self._accepted, self._peer, self._rpc = after, peer, rpc
+            # Local snapshot age only; peer fields report handshake history,
+            # not a current-session authenticated receive event.
             self._observed_at = time.monotonic()
             return after
         except BaseException as error:
@@ -341,10 +349,13 @@ class OwnedOverlayMonitor:
             self._observing = False
 
     def lease_binding(self, *, config_sha256, service_manifest_sha256, admitted_client_storage_key):
-        """Fresh local observation plus separately verified native package data.
+        """Development binding from a recent local snapshot and native identity.
 
         Intended as NativeOwnerLease's binding callback, immediately following
         this monitor in OwnedSupervisor. It starts no independent heartbeat.
+        The 0.5s bound is local query age, not authenticated-traffic freshness.
+        Repeated unchanged peer JSON can satisfy it; production admission must
+        remain closed until a separate reviewed current-session proof exists.
         """
         try:
             self._check(self._child)

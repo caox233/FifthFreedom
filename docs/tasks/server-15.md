@@ -7,7 +7,7 @@ remains closed.
 ## Problem and implementation
 
 SERVER-13's guard3 EasyTier probe and SERVER-11's native lease lifecycle probe
-exercise separate systems. SERVER-14 supplied the reusable production observer.
+exercise separate systems. SERVER-14 supplied the reusable owned observer.
 This task connects `OwnedOverlayMonitor`, `OwnedSupervisor` and
 `NativeOwnerLease` to the actual core/CLI and actual native executable in one
 owned namespace. The first combined profile is explicitly TCP development;
@@ -38,8 +38,12 @@ until the parent owns a worker pidfd and releases the START barrier. The
 single-threaded worker enters that namespace before creating its asyncio loop
 or children. Core, CLI and native use their existing verified ELF handles and
 exact process ownership. `OwnedOverlayMonitor` observes the real owned TUN,
-loopback RPC listener inode and bounded CLI peer result; its fresh proof drives
-the actual parent lease, with no independent renewal timer. Native READY and all
+loopback RPC listener inode and bounded CLI peer result; its recent local
+observation drives the development parent lease, with no independent renewal
+timer. This is not authenticated-traffic freshness: peer auth level and Noise
+keys report handshake history, and plaintext Ping/Pong may keep local connection
+state alive. The current monitor has no current-session authenticated-receive or
+challenge observation. Native READY and all
 five kernel listener inodes must belong to the exact native child. A remote
 TCP connection is then established across the overlay and sent an HTTP/2
 preface; no account RPC or game runs, and no HTTP/2 handshake is claimed.
@@ -61,7 +65,7 @@ preface; no account RPC or game runs, and no HTTP/2 handshake is claimed.
 2. **Peer loss in a new epoch.** The second case has fresh namespace, profile,
    keys, core/native ownership and private data. After genuine READY/five
    listeners/held TCP, the driver stops and reaps the exact peer worker/core.
-   The unwrapped production monitor must permanently revoke before native
+   The unwrapped owned monitor must permanently revoke before native
    cleanup awaits. The actual supervisor must reap native and core, and no
    native listening socket may remain. A remote connection timeout after its
    network disappears is never counted as EOF; this case makes no such claim.
@@ -73,6 +77,14 @@ skip exists. Cleanup uses owned workers/children and retained namespace
 identities; private state is deleted only within the fresh identity-checked
 tree. A failed or forcibly killed worker cannot produce a successful child
 cleanup claim.
+
+These controls test explicit owner revocation and actual removal of the owned
+peer. They do not test an adversary preserving handshake state with plaintext
+keepalives, and a successful development receipt would not establish continuous
+authenticated peer liveness. The ordinary production factory stays closed;
+the new authenticated-receive work must be reviewed and integrated separately
+before any production freshness claim. Existing A/B result fields retain their
+original development meaning.
 
 ## Hosted invocation
 
@@ -139,7 +151,7 @@ introduced. The complete client package privacy gate remains unchanged.
 
 The SERVER-15 command already is the minimal executable development assembly.
 It loads genuine component and guard3 identities, creates the isolated owned
-namespace/profile, then invokes the existing production monitor, supervisor
+namespace/profile, then invokes the existing owned monitor, supervisor
 and parent lease. A second launcher or synthetic admission issuer would add no
 missing capability. `create_public_supervisor` correctly remains closed: the
 only implemented runtime recipe has purpose `owned-isolated-development`, the
