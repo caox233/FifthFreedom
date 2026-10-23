@@ -1,6 +1,7 @@
 # Exact owned Windows core process primitive
 
-Status: implemented; review and actual Windows synthetic-child execution pending.
+Status: implemented and independently reviewed; actual Windows x86 synthetic-child
+17/17 execution passed at source `08b3d07`.
 Public remains unavailable. This slice runs no EasyTier core, overlay, driver or
 game. Its tests execute a separately built synthetic helper only.
 
@@ -96,10 +97,17 @@ time; production ownership never uses it.
 Actual local results: 5 passed / 12 explicitly Windows-only skipped. The retained
 Public native-return suite passed 14 portable cases with 13 Windows-only skips,
 and the WPF project cross-compiled with zero warnings/errors. These are not
-Windows process execution results. The intended hosted lane publishes a private
-x86 self-contained test helper, matching the launcher's process architecture,
-then requires all 17 cases and zero skips. It does not execute the full core or
-publish a runtime package.
+Windows process execution results. The [official hosted receipt](../evidence/hosted-owned-core-08b3d07.json) now
+records run `39939697022`, job `120367800235`: all 17 cases passed with zero skips.
+The job published a private self-contained `win-x86` helper; case 06 also checked
+the actual process architecture. The adapter verified its apphost hash before
+and after execution. The official artifact ZIP digest and exact JSON member
+were independently downloaded and matched; the binary itself was not uploaded,
+so its hash is the runner measurement. Actual parent termination killed the
+owned child and descendant, and the separate same-image child survived explicit
+owned-job shutdown. This does not execute the full core or publish a runtime
+package; the exceptional post-create kernel-validation failure remains reviewed
+without fault injection.
 
 The [actual ten-patch core build](../evidence/hosted-windows-easytier-23d5923.json)
 still directly imports `packet.dll`. The concrete Public provider remains closed
