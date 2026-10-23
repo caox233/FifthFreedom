@@ -137,6 +137,9 @@ def run_case(case, candidate, images, stage, identity, ip, nft):
         for name, profile in zip(topology.names, profiles): namespaces.containment(name, nft, profile)
         if case == "lease-revoke":
             require(server.command("pause") == dict(event="paused", fresh_observation=True), "STACK_PAUSE_NOT_ENTERED")
+            require(client.command("open") == dict(event="open", held_connection=True)
+                    and client.pidfd >= 0 and not select.select([client.pidfd], [], [], 0)[0],
+                    "STACK_HELD_CONNECTION_NOT_OPEN")
             require(server.command("revoke") == dict(event="native-stopped", exit_code=92,
                 rebound_ports=5, server_overlay_alive=True), "STACK_NATIVE_REVOKE_FAILED")
             require(client.command("closed") == dict(event="closed", actual_eof_or_reset=True,
@@ -146,6 +149,9 @@ def run_case(case, candidate, images, stage, identity, ip, nft):
             row.update(native_watchdog_exit=92, ports_rebound=5, held_tcp_eof_or_reset=True,
                        overlay_alive_during_close=True)
         else:
+            require(client.command("open") == dict(event="open", held_connection=True)
+                    and client.pidfd >= 0 and not select.select([client.pidfd], [], [], 0)[0],
+                    "STACK_HELD_CONNECTION_NOT_OPEN")
             require(client.stop(), "STACK_EXACT_PEER_STOP_FAILED")
             await_state(server, revoked=True, timeout=20)
             row.update(exact_peer_reaped=True, monitor_permanently_revoked=True,

@@ -181,3 +181,29 @@ The failure path retained the original fixed code and suppressed a private
 sentinel. This establishes the diagnostic repair, not the root cause of the
 separate earlier full-overlay hosted EOF and not successful encrypted runtime
 startup. That root cause awaits the new hosted phase/code evidence.
+
+## Sample the held connection before either control
+
+The combination now reuses SERVER-11's bounded observation of the already held
+TCP socket before proceeding with its test control. Case A first receives the
+real monitor's pause acknowledgement, then the client's ordered OPEN
+acknowledgement, and only then revokes the native lease. This work consumes the
+existing single pause budget; it does not create a new lease or extend the
+1.8-second fault barrier. Case B checks OPEN immediately before stopping its
+exact peer. The client checks its exact core image before and after the socket
+sample, and refuses a second OPEN or a CLOSED command without OPEN. No fresh
+connection is substituted for the held one.
+
+Queued FIN/reset, any other read error, more than16KiB of protocol data, or a
+100ms observation budget expiry rejects before the control. Early-close errors
+use the fixed `STACK_HELD_CONNECTION_NOT_OPEN` reason without raw socket output.
+Two additional worker tests use actual TCP and the production command handler,
+with explicitly injected core and monitor objects: early FIN with or without
+protocol bytes cannot ACK open, cleanup still runs, and a live socket can ACK
+open before a later real FIN ACKs closed. The local stack suite passes22/22.
+
+This closes a test evidence gap demonstrated by a separate real synthetic peer
+that closed before any revocation. It does not identify a hosted failure's
+cause, establish authenticated traffic freshness, or prove that a close between
+the two observation points was caused exclusively by revocation. The existing
+native process exit, port-release and overlay-survival evidence remains required.

@@ -293,6 +293,32 @@ async def worker(case, configuration, package):
         image.close()
 
 
+def held_open(stream):
+    """Sample this held connection before the control; never open a new one.
+
+    Drain only bounded protocol bytes. Actual EAGAIN is the open observation;
+    EOF/reset are already-closed failures, not evidence about a later revoke.
+    """
+    deadline, received = time.monotonic() + .1, 0
+    previous_timeout = stream.gettimeout()
+    stream.setblocking(False)
+    try:
+        while True:
+            require(time.monotonic() < deadline, "CLIENT_OPEN_CHECK_TIMEOUT")
+            try:
+                block = stream.recv(4096)
+            except BlockingIOError:
+                require(time.monotonic() < deadline, "CLIENT_OPEN_CHECK_TIMEOUT")
+                return
+            except OSError:
+                raise ProbeError("CLIENT_CONNECTION_NOT_OPEN") from None
+            require(block, "CLIENT_CONNECTION_NOT_OPEN")
+            received += len(block)
+            require(received <= 16384, "CLIENT_OUTPUT_LIMIT")
+    finally:
+        stream.settimeout(previous_timeout)
+
+
 def peer_client(address, mode):
     if mode == "verify":
         for port, path in ((80, "/"), (8000, "/mp_balancing.ini")):
@@ -323,6 +349,9 @@ def peer_client(address, mode):
         # preface, without invoking an account RPC or claiming an H2 handshake.
         stream.sendall(b"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n" + b"\0\0\0\x04\0\0\0\0\0")
         emit("CONNECTED")
+        require(sys.stdin.buffer.readline(65) == b"CHECK_OPEN\n", "CLIENT_COMMAND_INVALID")
+        held_open(stream)
+        emit("OPEN")
         require(sys.stdin.buffer.readline(65) == b"CHECK_CLOSED\n", "CLIENT_COMMAND_INVALID")
         stream.settimeout(3)
         received = 0
@@ -439,6 +468,9 @@ def execute_case(namespaces, package, private, case):
         hold = start_process(namespaces.execute(namespaces.topology.names[1],
             [sys.executable, "-I", "-S", script, "--client", namespaces.topology.protected_ip, "hold"]))
         require(read_event(hold, "CONNECTED", 5) == {"event": "CONNECTED"}, "CONNECTION_NOT_ESTABLISHED")
+        command(hold, "CHECK_OPEN")
+        require(read_event(hold, "OPEN", 3) == {"event": "OPEN"}
+                and hold.poll() is None, "CONNECTION_NOT_OPEN")
         command(worker_process, {"eof": "EOF", "expiry": "EXPIRY", "parent_death": "PARENT_DEATH"}[case])
         if case == "parent_death":
             require(worker_process.wait(timeout=5) == 0, "PARENT_EXIT_FAILED")

@@ -254,6 +254,74 @@ class CleanupTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(OSError): os.fstat(read)
 
 
+class HeldConnectionWorkerTests(unittest.IsolatedAsyncioTestCase):
+    """Production worker commands on real TCP; core/monitor are explicit stubs."""
+
+    async def run_client_commands(self, *, early_fin, protocol_bytes):
+        _, profiles = pair()
+        document = dict(profile=asdict(profiles[0]), config='/tmp/synthetic-only-config',
+            **{role: dict(path='/tmp/synthetic-' + role, sha256='1' * 64, bytes=64)
+               for role in ('core', 'cli')})
+        listener = socket.socket(); listener.bind(('127.0.0.1', 0)); listener.listen(1)
+        listener.setblocking(False); self.addCleanup(listener.close)
+        loop = asyncio.get_running_loop()
+        accept = asyncio.create_task(loop.sock_accept(listener))
+        real_connect = loop.sock_connect
+        async def connect(stream, _address):
+            return await real_connect(stream, listener.getsockname())
+        core = Mock(); core.image_matches.return_value = True; core.stop = AsyncMock()
+        monitor = Mock(); monitor.prepare = AsyncMock(); monitor.close = AsyncMock()
+        monitor.observe = AsyncMock(return_value=object())
+        monitor.core_spec.return_value = worker.ChildSpec(None, ())
+        actions = iter(('hold', 'open', 'closed', 'stop'))
+        accepted = None
+        async def command(_descriptor):
+            nonlocal accepted
+            action = next(actions)
+            if action == 'open':
+                accepted, _ = await asyncio.wait_for(accept, 2)
+                self.addCleanup(accepted.close)
+                accepted.setblocking(False)
+                if protocol_bytes:
+                    await loop.sock_sendall(accepted, protocol_bytes)
+                if early_fin:
+                    accepted.shutdown(socket.SHUT_WR)
+            elif action == 'closed':
+                accepted.shutdown(socket.SHUT_WR)
+            return {'action': action}
+        events = []
+        def reply(event, **values): events.append(dict(event=event, **values))
+        state = dict(phase='arguments', cleanup_code=None)
+        with patch.object(worker, 'VerifiedExecutable', side_effect=[Mock(), Mock()]), \
+             patch.object(worker, 'OwnedOverlayMonitor', return_value=monitor), \
+             patch.object(worker.OwnedChild, 'spawn', new=AsyncMock(return_value=core)), \
+             patch.object(worker, 'input_line', new=command), patch.object(worker, 'reply', new=reply), \
+             patch.object(loop, 'sock_connect', new=connect):
+            try:
+                if early_fin:
+                    with self.assertRaisesRegex(worker.ProbeError, '^STACK_HELD_CONNECTION_NOT_OPEN$'):
+                        await worker.serve(document, -1, state)
+                else:
+                    await worker.serve(document, -1, state)
+            finally:
+                if not accept.done(): accept.cancel()
+                await asyncio.gather(accept, return_exceptions=True)
+        core.stop.assert_awaited_once(); monitor.close.assert_awaited_once()
+        return events
+
+    async def test_worker_rejects_fin_before_open_and_preserves_cleanup(self):
+        for content in (b'', b'synthetic protocol bytes before FIN'):
+            with self.subTest(queued_bytes=bool(content)):
+                events = await self.run_client_commands(early_fin=True, protocol_bytes=content)
+                self.assertEqual([event['event'] for event in events], ['started', 'connected'])
+
+    async def test_worker_open_ack_precedes_later_real_close_ack(self):
+        events = await self.run_client_commands(early_fin=False, protocol_bytes=b'synthetic protocol bytes')
+        self.assertEqual([event['event'] for event in events], ['started', 'connected', 'open', 'closed', 'stopped'])
+        self.assertEqual(events[2], dict(event='open', held_connection=True))
+        self.assertEqual(events[3], dict(event='closed', actual_eof_or_reset=True, client_core_alive=True))
+
+
 @unittest.skipUnless(sys.platform == "linux" and hasattr(os, "pidfd_open") and hasattr(signal, "pidfd_send_signal"),
                      "Linux verified ELF/pidfd lifecycle")
 class RealChildCompositionTests(unittest.IsolatedAsyncioTestCase):

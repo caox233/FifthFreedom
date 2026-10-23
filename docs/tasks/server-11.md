@@ -205,3 +205,28 @@ The full local harness suite passes 16/16, including all prior input and cleanup
 tests. These controls do not execute the native artifact or create namespaces,
 TUNs, game processes or a production provider. A new isolated hosted native and
 combined-stack run is still required to determine their actual result.
+
+## Held TCP observation before the revocation control
+
+A separate real loopback control found a gap in the connection evidence: the
+peer could receive FIN before any revocation, yet the old client would emit
+CONNECTED then CLOSED with exit0. This involved a synthetic Python TCP peer,
+no native process or lease; it is not an attribution of a hosted failure.
+
+Each positive native case now requests CHECK_OPEN from the existing held TCP
+client and requires its ordered OPEN acknowledgement before sending EOF,
+EXPIRY or PARENT_DEATH to the native owner. The same socket is sampled in
+nonblocking mode, draining at most16KiB of protocol data within100ms. Only
+actual EAGAIN acknowledges open; queued FIN, reset, any other socket failure,
+excess data or an expired budget rejects. Its original socket timeout is
+restored. CHECK_CLOSED cannot bypass this step. The later closure still requires
+actual EOF/reset and never treats a timeout as success.
+
+Five additional Linux tests exercise the real client subprocess command
+protocol against real loopback TCP, including early FIN with and without queued
+data, early reset, over-limit data, open then later close, and refusal to skip
+the OPEN acknowledgement. The old subprocess implementation fails the last
+regression; the current harness passes21/21 locally. No native artifact,
+namespace or game is executed. These are two bounded observations before and
+after the control, not proof of strict causation between them or authenticated
+peer freshness; a natural close between observations remains possible.

@@ -14,6 +14,7 @@ from pathlib import Path
 import signal
 import shutil
 import socket
+import struct
 import subprocess
 import sys
 import tempfile
@@ -333,6 +334,81 @@ class NativeListenerOwnershipTests(unittest.IsolatedAsyncioTestCase):
             with self.assertRaisesRegex(probe.ProbeError, '^NATIVE_LISTENER_OWNERSHIP_INVALID$'):
                 self.check()
         self.check()
+
+
+@unittest.skipUnless(sys.platform == 'linux', 'Linux selectable worker pipes')
+class NativeHeldConnectionTests(unittest.TestCase):
+    """Actual client command protocol and TCP; no native or lease is started."""
+
+    def held_client(self):
+        listener = socket.socket()
+        self.addCleanup(listener.close)
+        listener.bind(('127.0.0.1', 0)); listener.listen(1); listener.settimeout(3)
+        code = textwrap.dedent('''
+            import sys
+            sys.path.insert(0, sys.argv[1])
+            import ci_native_lifecycle as probe
+            connect = probe.socket.create_connection
+            probe.socket.create_connection = lambda address, timeout: connect(('127.0.0.1', int(sys.argv[2])), timeout)
+            raise SystemExit(probe.dispatch(['--client', '127.0.0.1', 'hold']))
+        ''')
+        process = subprocess.Popen([sys.executable, '-I', '-S', '-c', code, str(ROOT / 'scripts'),
+            str(listener.getsockname()[1])], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL, bufsize=0)
+        self.addCleanup(probe.stop_owned, process)
+        stream, _ = listener.accept()
+        self.addCleanup(stream.close)
+        stream.settimeout(3)
+        self.assertTrue(stream.recv(128).startswith(b'PRI * HTTP/2.0'))
+        self.assertEqual(probe.read_event(process, 'CONNECTED', 3), {'event': 'CONNECTED'})
+        return process, stream
+
+    def test_existing_open_connection_is_acknowledged_before_later_real_close(self):
+        process, stream = self.held_client()
+        stream.sendall(b'synthetic bounded protocol bytes')
+        probe.command(process, 'CHECK_OPEN')
+        self.assertEqual(probe.read_event(process, 'OPEN', 3), {'event': 'OPEN'})
+        self.assertIsNone(process.poll())
+        stream.shutdown(socket.SHUT_WR)
+        probe.command(process, 'CHECK_CLOSED')
+        self.assertEqual(probe.read_event(process, 'CLOSED', 3), {'event': 'CLOSED'})
+        self.assertEqual(process.wait(timeout=3), 0)
+
+    def test_fin_before_control_is_rejected_with_or_without_queued_protocol_bytes(self):
+        for content in (b'', b'synthetic protocol bytes preceding FIN'):
+            with self.subTest(queued_bytes=bool(content)):
+                process, stream = self.held_client()
+                stream.sendall(content)
+                stream.shutdown(socket.SHUT_WR)
+                probe.command(process, 'CHECK_OPEN')
+                with self.assertRaisesRegex(probe.ProbeError, '^WORKER_CLIENT_CONNECTION_NOT_OPEN$'):
+                    probe.read_event(process, 'OPEN', 3)
+                self.assertEqual(process.wait(timeout=3), 1)
+
+    def test_precontrol_protocol_bytes_cannot_exceed_bound(self):
+        process, stream = self.held_client()
+        stream.sendall(b'x' * 17000)
+        probe.command(process, 'CHECK_OPEN')
+        with self.assertRaisesRegex(probe.ProbeError, '^WORKER_CLIENT_OUTPUT_LIMIT$'):
+            probe.read_event(process, 'OPEN', 3)
+        self.assertEqual(process.wait(timeout=3), 1)
+
+    def test_reset_before_control_is_rejected(self):
+        process, stream = self.held_client()
+        stream.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
+        stream.close()
+        probe.command(process, 'CHECK_OPEN')
+        with self.assertRaisesRegex(probe.ProbeError, '^WORKER_CLIENT_CONNECTION_NOT_OPEN$'):
+            probe.read_event(process, 'OPEN', 3)
+        self.assertEqual(process.wait(timeout=3), 1)
+
+    def test_close_command_cannot_bypass_precontrol_open_ack(self):
+        process, stream = self.held_client()
+        stream.shutdown(socket.SHUT_WR)
+        probe.command(process, 'CHECK_CLOSED')
+        with self.assertRaisesRegex(probe.ProbeError, '^WORKER_CLIENT_COMMAND_INVALID$'):
+            probe.read_event(process, 'CLOSED', 3)
+        self.assertEqual(process.wait(timeout=3), 1)
 
 
 @unittest.skipUnless(sys.platform == 'linux', 'Linux pidfds, subreaper and signals')

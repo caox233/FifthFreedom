@@ -195,6 +195,7 @@ async def serve(document, namespace_fd, state):
     handles, core, monitor, supervisor, startup, owner, held = [], None, None, None, None, None, None
     monitor_revocations = []
     stopped = False
+    held_open_checked = False
     primary_failure = False
     pause = None
     try:
@@ -265,7 +266,16 @@ async def serve(document, namespace_fd, state):
                     b"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n" + b"\0\0\0\x04\0\0\0\0\0"), 1)
                 if await monitor.observe(core) is None: fail("STACK_CLIENT_NOT_AUTHENTICATED")
                 reply("connected", established_tcp=True)
-            elif action == "closed" and core is not None and held is not None:
+            elif action == "open" and core is not None and held is not None and not held_open_checked:
+                if not core.image_matches(): fail("STACK_CLIENT_CORE_LOST")
+                try:
+                    native.held_open(held)
+                except (native.ProbeError, OSError):
+                    fail("STACK_HELD_CONNECTION_NOT_OPEN")
+                if not core.image_matches(): fail("STACK_CLIENT_CORE_LOST")
+                held_open_checked = True
+                reply("open", held_connection=True)
+            elif action == "closed" and core is not None and held is not None and held_open_checked:
                 await held_closed(held, 1.0)
                 if not core.image_matches(): fail("STACK_CLIENT_CORE_LOST")
                 reply("closed", actual_eof_or_reset=True, client_core_alive=True)
