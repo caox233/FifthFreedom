@@ -291,6 +291,16 @@ class ReceiptAndControlTests(unittest.TestCase):
             self.assertFalse(worker.valid_failure_record(dict(value, **{key: changed})))
         self.assertFalse(worker.valid_failure_record(dict(value, extra="SECRET")))
         self.assertFalse(worker.valid_failure_record(dict(value, cleanup_reaped=False)))
+        # The combined worker must preserve a failed pre-revocation held-TCP
+        # control, including an independently failed cleanup, in this protocol.
+        for cleanup in (None, "WORKER_CHILD_CLEANUP_FAILED"):
+            held = worker.failure_record(worker.ProbeError("STACK_HELD_CONNECTION_NOT_OPEN"),
+                dict(phase="parent-command", cleanup_code=cleanup))
+            reopened = json.loads(json.dumps(held))
+            self.assertTrue(worker.valid_failure_record(reopened))
+            self.assertEqual(reopened["code"], "STACK_HELD_CONNECTION_NOT_OPEN")
+            self.assertEqual(reopened["cleanup_reaped"], cleanup is None)
+            self.assertEqual(reopened["cleanup_code"], cleanup)
 
     def test_source_failure_survives_successful_or_failed_independent_cleanup(self):
         from unittest.mock import Mock, AsyncMock
