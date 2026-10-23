@@ -286,10 +286,13 @@ class ProbeResultTests(unittest.TestCase):
 
     def test_native_worker_wrapping_and_namespace_command_codes_stay_fixed(self):
         for code in ("WORKER_WITHHELD_ADMISSION_WROTE_STATE", "WORKER_PUBLIC_OWNER_LEASE_INVALID",
+                     "WORKER_CLIENT_CONNECTION_NOT_OPEN", "WORKER_CLIENT_OPEN_CHECK_TIMEOUT", "WORKER_CONNECTION_NOT_OPEN",
+                     "STACK_HELD_CONNECTION_NOT_OPEN",
                      "COMMAND_FAILED", "COMMAND_START_FAILED", "COMMAND_TIMEOUT", "COMMAND_OUTPUT_TOO_LARGE"):
             self.error_log.write_text(code + "\n")
             self.assertIn("fixed_codes=" + code + ";", self.inspect("native", {}, 1)[1])
         for value in ("WORKER_PRIVATE_UNKNOWN", "WORKER_WITHHELD_ADMISSION_WROTE_STATE_PRIVATE_SUFFIX",
+                      "WORKER_CLIENT_CONNECTION_NOT_OPEN_PRIVATE_SUFFIX", "STACK_HELD_CONNECTION_NOT_OPEN_PRIVATE_SUFFIX",
                       "COMMAND_FAILED_PRIVATE_SUFFIX"):
             self.error_log.write_text(value + "\n")
             output = self.inspect("native", {}, 1)[1]

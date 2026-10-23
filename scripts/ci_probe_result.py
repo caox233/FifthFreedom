@@ -90,6 +90,10 @@ CHILD_BOOTSTRAP_CLEANUP_FAILED CHILD_START_FAILED CHILD_STOP_BUDGET_INVALID CHIL
 CHILD_STOP_TIMEOUT""".split())
 CODES.update(_NATIVE_LIFECYCLE_CODES)
 CODES.update("WORKER_" + code for code in _NATIVE_LIFECYCLE_CODES)
+_NATIVE_OPEN_CODES = frozenset(("CLIENT_CONNECTION_NOT_OPEN", "CLIENT_OPEN_CHECK_TIMEOUT", "CONNECTION_NOT_OPEN"))
+CODES.update(_NATIVE_OPEN_CODES)
+CODES.update("WORKER_" + code for code in _NATIVE_OPEN_CODES)
+CODES.add("STACK_HELD_CONNECTION_NOT_OPEN")
 _STARTUP_MODULES = frozenset(("ci_socket_isolation", "ci_easytier_probe", "ci_native_lifecycle",
     "easytier_probe_worker", "public_server_candidate", "fifth_freedom_control", "cryptography"))
 
