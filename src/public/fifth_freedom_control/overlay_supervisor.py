@@ -7,6 +7,7 @@ native package admission, source policy or an egress-isolated namespace.
 """
 import asyncio
 from dataclasses import dataclass, field
+import errno
 from enum import Enum
 import ipaddress
 import os
@@ -364,7 +365,16 @@ class KernelTunMonitor:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as probe:
                 flags = struct.unpack_from("H", fcntl.ioctl(probe.fileno(), 0x8913, request), 16)[0]
                 unavailable = "OVERLAY_ADDRESS_QUERY_UNAVAILABLE"
-                address = socket.inet_ntoa(fcntl.ioctl(probe.fileno(), 0x8915, request)[20:24])
+                try:
+                    address = socket.inet_ntoa(fcntl.ioctl(probe.fileno(), 0x8915, request)[20:24])
+                except OSError as error:
+                    # The runtime creates/raises its TUN before assigning IPv4.
+                    # Only that initial missing-address state may remain pending
+                    # under the owner's startup deadline; it grants no ownership
+                    # observation and commits no interface index or native lease.
+                    if self._index is None and flags & 1 and error.errno == errno.EADDRNOTAVAIL:
+                        return None
+                    raise
             if not flags & 1 or address != self.address:
                 raise LifecycleError("OVERLAY_ADDRESS_OR_LINK_LOST")
             unavailable = "OVERLAY_FDINFO_DIRECTORY_UNAVAILABLE"

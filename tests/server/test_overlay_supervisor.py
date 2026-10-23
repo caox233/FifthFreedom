@@ -425,6 +425,74 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(child.image_matches())
             self.assertEqual(len(os.listdir("/proc/self/fd")), descriptors)
 
+    async def test_initial_missing_ipv4_is_pending_but_never_owned_readiness(self):
+        import errno
+        import fcntl
+        import struct
+        monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        await monitor.prepare()
+        child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
+        self.addAsyncCleanup(child.stop)
+        descriptors = len(os.listdir("/proc/self/fd"))
+        original_ioctl = fcntl.ioctl
+        missing_label = struct.pack("256s", b"lo:ffdiag")
+        # Read-only real Linux control: UP loopback has no IPv4 address with
+        # this label. No interface, address or namespace is created or changed.
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as probe:
+            self.assertTrue(struct.unpack_from("H", original_ioctl(probe.fileno(),
+                0x8913, missing_label), 16)[0] & 1)
+            with self.assertRaises(OSError) as missing:
+                original_ioctl(probe.fileno(), 0x8915, missing_label)
+            self.assertEqual(missing.exception.errno, errno.EADDRNOTAVAIL)
+        def actual_missing_address(fd, request, _value):
+            # Only the lookup target/discovery is synthetic; both ioctl results
+            # below come from the actual kernel, not an injected errno.
+            return original_ioctl(fd, request, missing_label)
+        with patch("socket.if_nametoindex", return_value=123), \
+                patch.object(fcntl, "ioctl", side_effect=actual_missing_address):
+            self.assertIsNone(await monitor.observe(child))
+            self.assertIsNone(monitor._index)
+            # Once readiness has committed an index, the identical real
+            # missing-address syscall must fail, never return pending.
+            monitor._index = 123
+            with self.assertRaisesRegex(LifecycleError, "^OVERLAY_ADDRESS_QUERY_UNAVAILABLE$"):
+                await monitor.observe(child)
+        self.assertTrue(child.image_matches())
+        self.assertEqual(len(os.listdir("/proc/self/fd")), descriptors)
+
+    async def test_initial_address_pending_never_swallows_other_failures_or_tun_ownership(self):
+        import errno
+        import fcntl
+        import struct
+        monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        await monitor.prepare()
+        child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
+        self.addAsyncCleanup(child.stop)
+        cases = [(number, True, None, "OVERLAY_ADDRESS_QUERY_UNAVAILABLE")
+                 for number in (errno.EPERM, errno.EIO, errno.ENODEV, errno.EACCES)]
+        cases += [(errno.EADDRNOTAVAIL, False, None, "OVERLAY_ADDRESS_QUERY_UNAVAILABLE"),
+                  (None, True, "10.23.0.2", "OVERLAY_ADDRESS_OR_LINK_LOST"),
+                  (None, True, "10.23.0.1", "OVERLAY_TUN_NOT_OWNED")]
+        for number, up, address, expected in cases:
+            def ioctl(_fd, request, _value):
+                result = bytearray(256)
+                if request == 0x8913:
+                    struct.pack_into("H", result, 16, int(up))
+                elif request == 0x8915:
+                    if number is not None:
+                        raise OSError(number, "PRIVATE ADDRESS ERROR SENTINEL")
+                    result[20:24] = socket.inet_aton(address)
+                else:
+                    raise AssertionError("unexpected ioctl")
+                return bytes(result)
+            with self.subTest(errno=number, up=up, address=address), \
+                    patch("socket.if_nametoindex", return_value=123), \
+                    patch.object(fcntl, "ioctl", side_effect=ioctl):
+                with self.assertRaisesRegex(LifecycleError, "^" + expected + "$"):
+                    await monitor.observe(child)
+            self.assertIsNone(monitor._index)
+            self.assertTrue(child.image_matches())
+
     async def test_pidfd_failure_withholds_release_and_reaps_bootstrap(self):
         marker = self.directory / "must-not-run"
         processes = []

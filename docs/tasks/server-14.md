@@ -170,3 +170,34 @@ closure after lease revocation from peer-loss process/listener cleanup; remote
 timeouts after peer loss are not EOF evidence. Containment checks apply before
 and after both controls. An already running core cannot be adopted into the
 supervisor.
+
+## Initial IPv4 assignment window
+
+The exact guard3 `VirtualNic.create_tun` creates an UP interface before
+`NicCtx.run` awaits IPv4 assignment. That later path performs `link_up`, removes
+old IPv4 addresses and adds the configured address. A first monitor query can
+therefore see an interface before its IPv4 address exists.
+
+`KernelTunMonitor` now returns pending only when no successful observation has
+committed an interface index, the actual link flags contain UP, and the address
+ioctl returns exactly `EADDRNOTAVAIL`. It returns no ownership observation and
+commits no index, readiness or native lease. The owner's existing startup
+deadline still bounds this wait. Any other errno, a down link, a configured wrong
+address, missing TUN ownership, or the same missing-address error after successful
+observation remains a failure. No retry after admitted address loss is added.
+
+A read-only Linux control queries an absent IPv4 label on loopback: flags
+succeed and `SIOCGIFADDR` returns `EADDRNOTAVAIL`. The regression passes this real
+kernel result through a monitor with explicitly synthetic discovery/lookup
+targets and a real owned child; it creates no interface, address or namespace.
+The retained pre-fix log fails at `OVERLAY_ADDRESS_QUERY_UNAVAILABLE`. The fix
+passes that pending case, rejects the same error after an index was accepted,
+and rejects permission/I/O/no-device errors, wrong addresses and a process with
+no TUN. The full lifecycle suite passes 20/20 locally with zero skips.
+
+This fixes the independently demonstrated initial-observation defect. It does
+not establish the exact errno or worker role in hosted run 39933668757. That
+run's receipt already records `correct-pin-before` TCP, fixed UDP and ephemeral
+UDP echoes; a later observation failed in the address-query stage, and both
+namespaces plus private state were cleaned. Its successful phase and later
+failure remain intact. A new hosted matrix must establish the complete result.
