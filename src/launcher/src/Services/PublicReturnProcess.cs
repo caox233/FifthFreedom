@@ -10,6 +10,7 @@ namespace SplinterCellCNLauncher.Services;
 internal sealed class PublicReturnProcess : IDisposable
 {
     private readonly SafeProcessHandle handle;
+    private static IOException Invalid() => new("PUBLIC_RETURN_REJECTED");
     internal uint Pid { get; }
     internal ulong CreationFileTime { get; }
     internal string ImagePath { get; }
@@ -18,22 +19,27 @@ internal sealed class PublicReturnProcess : IDisposable
     {
         this.handle = handle;
         Pid = GetProcessId(handle);
-        if (Pid == 0 || !GetProcessTimes(handle, out ulong creation, out _, out _, out _)) throw PublicReturnProtocol.Invalid();
+        if (Pid == 0 || !GetProcessTimes(handle, out ulong creation, out _, out _, out _)) throw Invalid();
         CreationFileTime = creation;
         var image = new StringBuilder(32768); uint count = (uint)image.Capacity;
-        if (!QueryFullProcessImageName(handle, 0, image, ref count)) throw PublicReturnProtocol.Invalid();
+        if (!QueryFullProcessImageName(handle, 0, image, ref count)) throw Invalid();
         ImagePath = Path.GetFullPath(image.ToString());
-        if (!Alive) throw PublicReturnProtocol.Invalid();
+        if (!Alive) throw Invalid();
     }
     internal static PublicReturnProcess Capture(Process exactProcess, string expectedPath)
     {
         if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("PUBLIC_RETURN_WINDOWS_REQUIRED");
-        if (!DuplicateHandle(GetCurrentProcess(), exactProcess.SafeHandle, GetCurrentProcess(), out SafeProcessHandle owned, 0, false, 2))
-            throw PublicReturnProtocol.Invalid();
+        return Capture(exactProcess.SafeHandle, expectedPath);
+    }
+    internal static PublicReturnProcess Capture(SafeProcessHandle exactHandle, string expectedPath)
+    {
+        if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("PUBLIC_RETURN_WINDOWS_REQUIRED");
+        if (!DuplicateHandle(GetCurrentProcess(), exactHandle, GetCurrentProcess(), out SafeProcessHandle owned, 0, false, 2))
+            throw Invalid();
         try
         {
             var result = new PublicReturnProcess(owned);
-            if (!string.Equals(result.ImagePath, Path.GetFullPath(expectedPath), StringComparison.OrdinalIgnoreCase)) throw PublicReturnProtocol.Invalid();
+            if (!string.Equals(result.ImagePath, Path.GetFullPath(expectedPath), StringComparison.OrdinalIgnoreCase)) throw Invalid();
             return result;
         }
         catch { owned.Dispose(); throw; }
@@ -41,7 +47,7 @@ internal sealed class PublicReturnProcess : IDisposable
     internal bool Matches(uint pid, ulong creation) => Pid == pid && CreationFileTime == creation && Alive;
     internal static (uint Pid, ulong Creation) ObserveAcknowledged(Process process)
     {
-        if (!GetProcessTimes(process.SafeHandle, out ulong creation, out _, out _, out _)) throw PublicReturnProtocol.Invalid();
+        if (!GetProcessTimes(process.SafeHandle, out ulong creation, out _, out _, out _)) throw Invalid();
         return (GetProcessId(process.SafeHandle), creation);
     }
     public void Dispose() => handle.Dispose();
