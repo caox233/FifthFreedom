@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -87,6 +88,12 @@ internal sealed class LoopbackTlsServer : IAsyncDisposable
     private readonly TcpListener listener = new(IPAddress.Loopback, 0);
     private readonly CancellationTokenSource stop = new();
     private readonly Task worker;
+    private string stage = "ACCEPT";
+    private sealed record FailureDetails(string Type, string Native);
+    private FailureDetails? failure;
+    internal string DiagnosticStage => Volatile.Read(ref stage);
+    internal string DiagnosticException => Volatile.Read(ref failure)?.Type ?? "NONE";
+    internal string DiagnosticNative => Volatile.Read(ref failure)?.Native ?? "NONE";
     internal readonly ConcurrentQueue<CapturedRequest> Requests = new();
     internal readonly TaskCompletionSource<bool> RequestArrived = new(TaskCreationOptions.RunContinuationsAsynchronously);
     internal string Origin => $"https://127.0.0.1:{((IPEndPoint)listener.LocalEndpoint).Port}";
@@ -98,15 +105,51 @@ internal sealed class LoopbackTlsServer : IAsyncDisposable
             {
                 using var socket = await listener.AcceptTcpClientAsync(stop.Token);
                 using var tls = new SslStream(socket.GetStream(), leaveInnerStreamOpen: false);
+                Volatile.Write(ref stage, "TLS");
                 await tls.AuthenticateAsServerAsync(new SslServerAuthenticationOptions { ServerCertificate = certificates.Server,
                     EnabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13 }, stop.Token);
+                Volatile.Write(ref stage, "REQUEST");
                 var request = await ReadRequest(tls, stop.Token);
                 Requests.Enqueue(request); RequestArrived.TrySetResult(true);
+                Volatile.Write(ref stage, "RESPONSE");
                 await respond(tls, request, stop.Token);
+                Volatile.Write(ref stage, "COMPLETE");
             }
             catch (Exception error) when (error is OperationCanceledException or IOException or AuthenticationException or SocketException
-                || error is InvalidOperationException && stop.IsCancellationRequested) { }
+                || error is InvalidOperationException && stop.IsCancellationRequested)
+            {
+                string type = error.GetType().Name;
+                string[] allowed = ["OperationCanceledException", "IOException", "AuthenticationException", "SocketException", "InvalidOperationException"];
+                Volatile.Write(ref failure, new(allowed.Contains(type, StringComparer.Ordinal) ? type : "OtherException", NativeFailure(error)));
+            }
         });
+    }
+    // Synthetic-server diagnostics only: fixed codes, no exception message,
+    // raw numeric error, certificate, private key, address or request content.
+    private static string NativeFailure(Exception error)
+    {
+        for (int depth = 0; depth < 4; depth++)
+        {
+            if (error is Win32Exception native)
+                return unchecked((uint)native.NativeErrorCode) switch {
+                    0x8009030E => "NO_CREDENTIALS", 0x8009030D => "UNKNOWN_CREDENTIALS",
+                    0x80090331 => "ALGORITHM_MISMATCH", 0x80090326 => "ILLEGAL_MESSAGE",
+                    0x80090325 => "UNTRUSTED_ROOT", 0x80090322 => "WRONG_PRINCIPAL",
+                    0x80090328 => "CERT_EXPIRED", 0x80090304 => "INTERNAL_ERROR",
+                    0x80090016 => "BAD_KEYSET", _ => "OTHER"
+                };
+            if (error.InnerException is not { } inner) break;
+            error = inner;
+        }
+        return "NONE";
+    }
+    internal async Task ObserveFailureAsync()
+    {
+        // Allow an already failing peer to publish its diagnostic before sampling;
+        // never wait indefinitely for a server still accepting/reading a request.
+        try { await worker.WaitAsync(TimeSpan.FromMilliseconds(250)); }
+        catch (TimeoutException) { }
+        catch (Exception) { Interlocked.CompareExchange(ref failure, new("OtherException", "OTHER"), null); }
     }
     private static async Task<CapturedRequest> ReadRequest(SslStream stream, CancellationToken token)
     {

@@ -167,7 +167,20 @@ internal static class Program
             var profile = Profile(server.Origin); string token = Token(Claims(package.Package));
             using var context = Context(profile, package.Package, token: token);
             using var client = new PublicSessionControlClient(profile, certificates.Handler(), TimeSpan.FromSeconds(8));
-            var snapshot = await client.QueryAsync(context);
+            System.Collections.ObjectModel.ReadOnlyCollection<PublicSessionSnapshot> snapshot;
+            try { snapshot = await client.QueryAsync(context); }
+            catch (Exception error)
+            {
+                await server.ObserveFailureAsync();
+                string code = error is PublicControlException ? error.Message switch {
+                    "PUBLIC_CONTROL_REQUEST_REJECTED" => "REQUEST_REJECTED",
+                    "PUBLIC_CONTROL_RESPONSE_INVALID" => "RESPONSE_INVALID",
+                    "PUBLIC_CONTROL_TRANSPORT_FAILED" => "TRANSPORT_FAILED",
+                    "PUBLIC_CONTROL_TIMEOUT" => "TIMEOUT", _ => "OTHER"
+                } : "OTHER";
+                Console.WriteLine($"CI_TLS_FAILURE suite=PublicSessionControl case=05 client={code} server_stage={server.DiagnosticStage} server_exception={server.DiagnosticException} native={server.DiagnosticNative}");
+                throw;
+            }
             Check(snapshot.Count == 1 && snapshot[0].Members.Count == 2 && snapshot[0].SessionId == 10, "Valid session missing");
             var request = server.Requests.Single();
             Check(request.RequestLine == "POST /v1/sessions HTTP/1.1" && request.Headers["Authorization"] == "Bearer " + token, "Wrong request purpose or bearer");
