@@ -56,7 +56,7 @@ pub(super) fn run(raw: &str) -> io::Result<()> {
     // adapter probing occurs: explicit IPv4 is required below.
     let config = hooks_config::get_or_load(&executable).map_err(|_| invalid())?;
     if config.user.username != "synthetic-client" || config.user.account_id != "synthetic-account"
-        || !config.user.password.is_empty() || config.gameplay_mode != hooks_config::GameplayMode::Mod
+        || config.user.password != "synthetic-password" || config.gameplay_mode != hooks_config::GameplayMode::Mod
         || config.networking.ip_address != Some(std::net::Ipv4Addr::new(10, 66, 0, 10))
         || config.networking.adapter.is_some() { return Err(invalid()); }
     let owner = hooks_config::launch_owner::observed_launch_owner().ok_or_else(invalid)?;

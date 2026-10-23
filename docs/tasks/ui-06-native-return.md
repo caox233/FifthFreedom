@@ -126,3 +126,21 @@ This seam has passed i686 Windows **type-checking only** locally. Actual managed
 invocation `--native-interop <exact hooks test executable>` and hosted evidence
 are pending; the existing separate native and managed results cannot substitute
 for that run.
+
+### Shared configuration fixture correction
+
+Pre-execution inspection found a deterministic interoperability input error:
+the first probe supplied an empty password, while retained
+`hooks-config::validate_user_identity` rejects empty passwords after the ACK.
+The helper also incorrectly expected that empty value. Production validation
+was not changed. The managed probe now embeds
+`tests/PublicNativeReturn/native-interop.toml`, and the native helper checks its
+explicit nonempty synthetic password. No credential is reused from an account,
+and the configuration is delivered through the existing pipe.
+
+Actual focused Linux regression
+`cargo test -p hooks-config public_return_interop_fixture_uses_retained_configuration_contract --lib --locked`
+passed **1/1, zero ignored**. It parses those exact shared bytes through the
+retained production parser and also confirms that the original empty-password
+variant remains rejected. This fixes a known precondition; actual Windows IPC
+and cross-language execution are still required and are not inferred from it.

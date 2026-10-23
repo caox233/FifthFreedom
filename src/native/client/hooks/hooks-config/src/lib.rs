@@ -650,6 +650,22 @@ mod tests {
     use super::*;
 
     #[test]
+    fn public_return_interop_fixture_uses_retained_configuration_contract() {
+        // The managed test embeds these exact bytes before delivering the
+        // original config pipe. Exercise the real parser, not a test redecoder.
+        let content = include_str!("../../../../../../tests/PublicNativeReturn/native-interop.toml");
+        let cfg = parse_scbl_config(content).unwrap();
+        assert_eq!(cfg.user.password, "synthetic-password");
+        assert_eq!(cfg.user.username, "synthetic-client");
+        assert_eq!(cfg.user.account_id, "synthetic-account");
+        assert_eq!(cfg.gameplay_mode, GameplayMode::Mod);
+        assert_eq!(cfg.networking.ip_address, Some(std::net::Ipv4Addr::new(10, 66, 0, 10)));
+        // The original empty-password probe would be rejected after ACK;
+        // preserve that production requirement instead of weakening it.
+        assert!(parse_scbl_config(&content.replace("synthetic-password", "")).is_err());
+    }
+
+    #[test]
     pub fn test_default_config() {
         let cfg: Config = parse_scbl_config(TEST_CONFIG).unwrap();
         assert_eq!(cfg.gameplay_mode, GameplayMode::Official);
