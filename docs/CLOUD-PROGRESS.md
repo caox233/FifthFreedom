@@ -1135,3 +1135,79 @@ The first Windows read-channel job is tracked in run39944703650; source tests
 and cross-compilation do not substitute for its actual execution. This newer
 source proof does not change the exact older source bound by DevDocs3872f3f or
 environment draft18.
+
+## Actual owned-read and independent build results; later transport failure
+
+The [4b49 Windows owned-read run](evidence/hosted-owned-read-4b49da7.json) passed
+19 managed,8 Rust and4 cross-language cases, with zero skips, plus all17 retained
+process-lifecycle cases. Official ZIPs, full receipts and21 exact branch/merge
+inputs were independently verified. NIC observations are synthetic; this does
+not compile or execute the complete EasyTier Instance hook or driver. The later
+12-patch full-core compilation is a separate job120393179926 in run39947362637.
+
+The [82db no-Packet build](evidence/hosted-windows-no-packet-82dbda3.json) passed
+full Windows Release core/CLI compilation. Both runner static normal/delay import
+tables exclude Packet.dll; the exact750-file source,11 patches and selected
+dependency graph were independently verified. Its official ZIP SHA256 is
+68137e1d2d366007a72d7317384dcbe92b643ec7f87d39546a20f245ee2dedc4.
+The original recipes and earlier Packet-dependent output remain unchanged.
+No binary was downloaded or run, and this source does not include owner IPC.
+
+The [432 authenticated Data challenge build](evidence/hosted-data-challenge-build-4322658.json)
+passed all59 contracts with zero ignored tests and a locked GNU Release build.
+The same workflow's retained35 and44 builders also passed their exact contracts
+and locked builds. Full source inventories and all three official ZIPs were
+independently verified. The59 ZIP SHA256 is
+40637f8e72d1e46f590a794246fcf085bb33f482079726108c3e9c154ef9831a.
+These are source/build proofs, without runtime execution, map-membership
+authority, route enforcement or production admission.
+
+The [4d source retry](evidence/hosted-source-retry-4d28bb5.json) passed Linux536
+with two skips and Windows440 with98 platform skips, zero failures/errors.
+The two original Windows failures were test expectations comparing an8.3 alias
+against the production canonical path. The reviewed fix changed only expected
+canonical identities and exercised a real parent alias; production path/hash
+checks were not weakened. The original failed run remains recorded.
+
+The [432 native lifecycle](evidence/hosted-native-lifecycle-4322658.json) is the
+first actual five-case success with the later mandatory same-socket OPEN check
+before EOF/expiry/parent death. Official artifact digest, strict consumer and
+the exact merge-checkout harness were independently verified. This is still
+finite before/after evidence, not exclusive causation or ordinary Public
+admission. It predates observer-policy eba; combined-stack coverage is separate.
+
+The later [4b49 runtime matrix](evidence/hosted-owned-overlay-4b49da7.json) failed
+after eight phases: QUIC/WSS each completed all three phases, while TCP passed
+correct-pin-before and wrong-pin but failed address observation during restore.
+The worker reported OVERLAY_ADDRESS_QUERY_UNAVAILABLE; its exact role/errno
+are unknown. Worker reaping, all six namespace removals and private-stage
+cleanup are verified. Official ZIP SHA256:
+04fd93b7c4308909d08280a1955f31d3dd79bac6c2e9e43b2144e0a73c88a09f.
+The earlier05c full nine-phase result remains historical evidence, not a
+stability guarantee. New paired monitor/worker/consumer diagnostics retain
+fixed query-stage/errno-class/role/current-UP/prior-observation facts only,
+without changing pending, retry or refusal rules. Their actual rerun must supply
+new evidence; they do not identify or fix the old failure by inference.
+
+Fresh detached ebd008bfcd31d99e1412339125ea8fe86112fee8 passed550 source checks
+with two existing Windows skips and unchanged tracked files. Report SHA256:
+730db8f624e58dcde0ab1bd1c27cd90d694b959a994f1c452f2e62774e91a4de.
+Its canonical patch applies and reverses exactly1312→1672→1312, clean; SHA256:
+1afcaa6a0fe650b7e6ac2f1f9eec1059ec6e464a96f6d523678c1841b7bc70f3.
+Original private evidence remains unchanged. The earlier reviewed source6954
+was mirrored by pushed DevDocsb809b4a:194 verified files,192 exact mirrors and
+54 checked immutable links. Environment draft19 saved/read back these exact
+revisions after30688 directories/two projects/26 classified dependency Git roots
+were inventoried without errors. All other configuration fields and depth were
+preserved. It still requires publication; no Goal/scheduler/publish tool or
+fresh-restoration proof is available.
+
+Before an actual owned-core Windows run, explicit inert configuration must
+prevent default TCP/UDP/IPv6 STUN and other discovery, and authentic Wintun
+dependency files must remain pinned until the exact job drains. Those are
+implementation prerequisites in progress. The [game UDP audit](tasks/game-udp-confinement.md)
+also records why six existing socket hooks or shared-path WFP AppID filters do
+not establish whole-process confinement. Ordinary Public admission, withheld
+resource/retail/Capture/ASI closure and live acceptance remain open. All six
+goals and accepted gameplay results are preserved; no game, capture, deployment
+or formal Release was started.
