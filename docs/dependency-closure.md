@@ -91,6 +91,41 @@ reported, not independently verified here.** No rebuild, source/binary matching
 or capture execution is claimed. Receive the reviewed source and build
 instructions, verify the reported digest, then test rebuilding separately.
 
+### Repeatable source-receipt check
+
+On 2026-10-23, `git ls-remote --heads origin` still listed only `main`
+(`fc8ef510b51be83c31f9f8233997f758b0477acc`) and `codex/cloud-integration`
+(`814c5c1ae930afc9887c5a6b08ec4a95e3c74597`). No supplemental source branch was
+available. This is a remote-ref observation, not evidence that the source was
+lost or that no local original exists.
+
+`scripts/capture_helper_receipt.py` now performs a read-only identity check:
+
+```sh
+python3 -B scripts/capture_helper_receipt.py
+# After the reviewed single-file source is received, supply its explicit path:
+python3 -B scripts/capture_helper_receipt.py --source /path/to/received/source.cpp
+python3 -B -m unittest discover -s tests/build -p test_capture_helper_receipt.py -v
+```
+
+The actual first command exited **2**, `blocked_source_not_supplied`; the existing
+binary's SHA256, size, PE32 x86 executable header and independent manifest pin all
+passed. The focused regression suite passed **7/7** on Linux. It covers replaced
+binary/manifest pairs, absent and mismatching source, symlink/non-file/oversize
+inputs, malformed or non-x86 PE headers, and the boundary between input identity
+and a verified rebuild. The normal source-test discovery includes this suite;
+the missing source itself is not recategorized as a successful rebuild.
+
+The tool never executes/copies the helper, searches private directories, includes
+source contents or the supplied absolute source path in its JSON, or changes
+asset pins. It exits **1** for an identity failure and **0** only when the explicitly
+supplied source matches the reported digest and the retained binary/manifest are
+still intact. Even that successful input check reports
+`rebuilt_binary_verified=false`, `source_binary_equivalence_verified=false` and
+`publication_approved=false`. Source review, the actual build recipe, a recorded
+MSVC x86 build and any binary comparison remain separate evidence. No guessed
+compiler/linker command has been introduced before examining the received source.
+
 ## Remaining closure gates
 
 - Preserve the frozen FusionFix archive while obtaining its exact source/build

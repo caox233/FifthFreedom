@@ -36,6 +36,13 @@ but that source has not arrived and its digest has not been independently checke
 in the cloud. Local migration builds used the retained inputs and are distinct
 from a clean public checkout build.
 
+The repeatable read-only `scripts/capture_helper_receipt.py` check verifies the
+retained binary's hash, size, x86 PE header and independent manifest pin, then
+checks an explicitly supplied source against the reported digest. Its current
+result is `blocked_source_not_supplied` (exit 2). It does not execute a capture,
+copy inputs, change the pin, authorize publication or establish source/binary
+equivalence; those boundaries remain visible even after source identity matches.
+
 Legacy live deployment host defaults in the SCBL3 donor are replaced by inert
 `.invalid` examples. Explicit deployment configuration belongs to cloud
 integration; no automatic connection to a previous operator's service is intended.
