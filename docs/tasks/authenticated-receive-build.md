@@ -1,7 +1,9 @@
 # Authenticated receive: independent Linux candidate build
 
-Status: **ready-for-agent** — clean-source preparation and orchestration checks
-passed locally; the new hosted 44-contract/full Release build has not run yet.
+Status: **ready-for-agent** — the independent hosted authenticated-receive job
+passed all 44 contracts and compiled core/CLI Release outputs. The separate old
+guard3 35-contract compatibility job was still running when this receipt was
+recorded; no whole-workflow success is inferred.
 Ordinary Public startup remains closed. This continues the owned transport
 prerequisite within the full migration, without changing the currently validated
 Linux guard3 or Windows source/runtime identities.
@@ -33,7 +35,7 @@ compilation. No alternative downloader or fallback to the old source is added.
 | Unchanged Cargo.lock | `8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9` |
 | Restored guard3 source tree | `60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181` |
 
-CI must execute these actual production-linked Rust filters with zero failures
+CI executed these actual production-linked Rust filters with zero failures
 and zero ignored tests; partial, duplicate or absent success summaries fail the
 build. The seven new Python orchestration/recipe tests use inert compiler-output
 fixtures and do **not** count as the Rust checks:
@@ -63,9 +65,25 @@ matched the already tested source from the prior patch's actual 15+29 execution.
 On the second fresh tree, reversing only the two new patches restored every
 original guard3 file; reapplying them restored the new inventory. The new seven
 orchestration tests, six existing build tests, eleven preparation tests and
-workflow actionlint passed. These are source/orchestration results, not a new
-full compiler or hosted run. The preserved local preparation receipt is under
+workflow actionlint passed. These local results remain source/orchestration evidence; the separate hosted
+compiler evidence is recorded below. The preserved local preparation receipt is under
 `.local/evidence/cloud/authenticated-receive-build/local-preparation.json`.
+
+## First actual hosted authenticated-receive result
+
+[Run 39936896405](https://github.com/caox233/FifthFreedom/actions/runs/39936896405),
+job `120358530925`, completed successfully. Its
+[verified receipt](../evidence/hosted-authenticated-receive-build-05c127a.json)
+binds branch head `05c127a544ca8ea70d25f07f3101244b55c43842` separately from the
+actual PR merge checkout `d7d819317a4e3ff72efa53400ce258c4154eb783`.
+The official artifact `12493694336` is 40,075 bytes with ZIP SHA-256
+`09e287ffda1ac7b0f63073c02fe47dc4243a7a71c2180be786947225e31f230c`.
+Its exact three JSON members, full 699-file inventory, recipe/patch/lock identities,
+seven exact test counts and successful Release stage were checked. No executable
+was downloaded or independently rehashed here; the core/CLI sizes and hashes in
+the receipt are the runner's static ELF/build observations. Neither runtime was
+started or uploaded. The active challenge described below is a later source
+candidate and is absent from this successful recipe.
 
 ## Next bounded active-challenge path (read-only finding; not implemented)
 

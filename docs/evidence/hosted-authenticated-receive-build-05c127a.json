@@ -1,0 +1,175 @@
+{
+  "artifact_verification": {
+    "exact_three_json_members": true,
+    "full_699_file_source_inventory_matches_reviewed_preparation": true,
+    "members": {
+      "easytier-authenticated-receive-build-only-run.json": {
+        "bytes": 359,
+        "sha256": "d31d42330271ee77ad1e31977021726ab3b84c672821a16548c84784cad33f40"
+      },
+      "easytier-authenticated-receive-build-only/receipt.json": {
+        "bytes": 3639,
+        "sha256": "95e00a7812eb9f46ba92ae199c834d4aec1e33f0e1f53c1b5c92a513a6a0283b"
+      },
+      "easytier-authenticated-receive-build-only/source-receipt.json": {
+        "bytes": 140288,
+        "sha256": "87941f770a2a9b23a77234bceec2402b3d99bf02586eccd68636b86e68d67744"
+      }
+    },
+    "zip_matches_official_digest_and_size": true
+  },
+  "boundaries": {
+    "active_nonce_challenge_in_this_recipe": false,
+    "actual_hosted_contracts_passed": 44,
+    "actual_locked_release_compilation": true,
+    "core_cli_executed": false,
+    "dependency_distribution_closure_verified": false,
+    "downloaded_or_independently_rehashed_executables": false,
+    "driver_tun_game_started": false,
+    "failed": 0,
+    "ignored": 0,
+    "public_startup_allowed": false,
+    "runner_elf_checks_and_hashes_only": true,
+    "runtime_binary_uploaded": false
+  },
+  "github": {
+    "branch_head": "05c127a544ca8ea70d25f07f3101244b55c43842",
+    "default_guard3_compatibility_job_pending_at_recording": true,
+    "job_conclusion": "success",
+    "job_id": 120358530925,
+    "run_id": 39936896405,
+    "tested_merge_commit": "d7d819317a4e3ff72efa53400ce258c4154eb783",
+    "tested_merge_parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "05c127a544ca8ea70d25f07f3101244b55c43842"
+    ],
+    "url": "https://github.com/caox233/FifthFreedom/actions/runs/39936896405",
+    "workflow_overall_conclusion_not_inferred": true
+  },
+  "official_artifact": {
+    "digest": "sha256:09e287ffda1ac7b0f63073c02fe47dc4243a7a71c2180be786947225e31f230c",
+    "id": 12493694336,
+    "name": "easytier-authenticated-receive-build-only-receipts-d7d819317a4e3ff72efa53400ce258c4154eb783",
+    "size_in_bytes": 40075
+  },
+  "recipe": {
+    "path": "scripts/easytier-authenticated-receive-source.lock.json",
+    "sha256": "4ee0affd0efe9fd8f9da394ef616787506870bcbeeff65873b771390e1385a2d"
+  },
+  "schema": 1,
+  "scope": "independent authenticated-receive Linux source contracts and static Release build; not runtime admission",
+  "verified_build_receipt": {
+    "admission": {
+      "readiness_adapter_version": null,
+      "runtime_admission_ready": false,
+      "runtime_publication_approved": false,
+      "security_profile_id": null
+    },
+    "build_inputs": {
+      "bins": [
+        "easytier-core",
+        "easytier-cli"
+      ],
+      "cargo_features": "default",
+      "cargo_incremental": false,
+      "crypto_backend": "ring; wireguard enabled; openssl-crypto/aes-gcm absent",
+      "official_musl_jemalloc_build_reproduction": false,
+      "profile": "release",
+      "rust_toolchain": "1.95.0",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "built_executables": {
+      "easytier-cli": {
+        "bytes": 12261880,
+        "sha256": "79e2c5fd4d93a1b161e243b05174189d80e871a67982f646f119fc14c015e95c"
+      },
+      "easytier-core": {
+        "bytes": 28594152,
+        "sha256": "d4299543b7297ac32c0951109d8c45c283eaf44e88aa481ee5e5c0537cd435de"
+      }
+    },
+    "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+    "checkout_commit": "d7d819317a4e3ff72efa53400ce258c4154eb783",
+    "dependency_source_closure_verified": false,
+    "official_binary_reproduced": false,
+    "patch_manifest_sha256": "ef934c74ddadd714f681b1c5406b40272724b9940a070f7a6f1229111cfbafc1",
+    "public_startup_allowed": false,
+    "run_attempt": "1",
+    "run_id": "39936896405",
+    "runs": [
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "fc9f7d9d823a42cfff098ac5561b5bb010c16fd5575427dfdfde601cbf7ee6b9",
+        "passed": 15,
+        "stage": "fifth_freedom_receive_"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "4136783aca55f4ce4aefc626906951d4d7a8e07239b6853afceddba53e2afd7b",
+        "passed": 4,
+        "stage": "fifth_freedom_secure_profile_contract"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "7447e9b83c07838b8a5799564b9175815f945c3af5919ad09b666acdf580a6c0",
+        "passed": 10,
+        "stage": "fifth_freedom_ingress_contract"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "62f4490a85dbc1d66926c524196a856fdec95f6dea9a4dfe49577925c6c30c75",
+        "passed": 9,
+        "stage": "peers::secure_datagram::tests"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "7bbad19834571f30d52cfa1283ae979d494279d8d8e63057ba703fc524b648cf",
+        "passed": 2,
+        "stage": "peers::peer_session::tests"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "84d9360b91e41b1c491431df7b240bc12bf72ae98a3236040d0a33ac7fce3bd6",
+        "passed": 3,
+        "stage": "ff_explicit_pin_contract"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "440e3e619365a267efc6f2a7a3490f0bed79daaa87ccbd2c16ca7497a23f30d1",
+        "passed": 1,
+        "stage": "peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip"
+      },
+      {
+        "exit_code": 0,
+        "log_sha256": "0c1c23afed9e51a1af798d864c80f1a440ec0f74dd27f371414b442af0495fe6",
+        "stage": "release-build"
+      }
+    ],
+    "runtime_binary_uploaded": false,
+    "runtime_executed": false,
+    "schema": 1,
+    "source_archive_sha256": "fe41b78a040f77f7fb9c87028b5dca79bf71c582036d1f84f355e6b79935ffd3",
+    "source_tree_sha256": "b0a7d3cf802d3de1f3741943ccd48db02cf883fe68899e9cd7f636627ec74e0f",
+    "status": "built_and_contracts_verified_not_admitted",
+    "upstream": {
+      "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "repository": "https://github.com/EasyTier/EasyTier",
+      "source_date_epoch": 1778588776,
+      "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+    }
+  }
+}
