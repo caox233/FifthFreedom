@@ -91,7 +91,7 @@ mod lan_source_tests {
 }
 
 #[derive(Clone)]
-struct AuthTokenConfig {
+pub(crate) struct AuthTokenConfig {
     release: ReleaseIdentity,
     key: hmacsha256::Key,
     ttl_seconds: i64,
@@ -109,6 +109,9 @@ struct AuthTokenClaims {
     auth_version: i64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     game_run: Option<GameRunClaim>,
+    /// Only the server's admitted native login grants this run-bound authority.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    observer_admitted_run: Option<String>,
 }
 
 
@@ -125,6 +128,13 @@ impl GameRunClaim {
         matches!(ClientContract::parse(&self.product),Some(ClientContract::Game(_)))
             && valid_game_instance(&self.instance)
     }
+}
+
+fn observer_grant_for_login(requested: bool, game_run: Option<&GameRunClaim>, allowed: bool) -> Result<Option<String>, Status> {
+    crate::observer_policy::admit(requested.then_some("1"), game_run.is_some(), allowed)?;
+    if !requested { return Ok(None); }
+    let run = game_run.filter(|run| run.valid()).ok_or_else(|| Status::invalid_argument("OB requires a valid native run"))?;
+    Ok(Some(run.instance.clone()))
 }
 
 /// Validate declarations before credentials, account writes, run mutations or tokens.
@@ -198,7 +208,7 @@ mod game_mode_identity_tests {
     }
     fn config()->AuthTokenConfig {AuthTokenConfig{release:test_release_identity(),key:hmacsha256::Key([0x31;32]),ttl_seconds:DEFAULT_AUTH_TOKEN_TTL_SECONDS}}
     fn claims(game_run:Option<GameRunClaim>)->AuthTokenClaims {
-        AuthTokenClaims{release:Some(test_release_identity()),user_id:42,username:"fixture".into(),source_ip:"127.0.0.1".into(),issued_at:1700000000,expires_at:1700086400,auth_version:1,game_run}
+        AuthTokenClaims{release:Some(test_release_identity()),user_id:42,username:"fixture".into(),source_ip:"127.0.0.1".into(),issued_at:1700000000,expires_at:1700086400,auth_version:1,game_run,observer_admitted_run:None}
     }
     #[test] fn login_contract_distinguishes_account_official_and_mod() {
         assert_eq!(game_run_for_login(&request(ACCOUNT_PRODUCT,None)).unwrap(),None);
@@ -259,9 +269,13 @@ enum AuthTokenError {
 }
 
 impl AuthTokenConfig {
-    fn from_env(release: ReleaseIdentity) -> Result<Self, String> {
-        // A fresh independent signing key for this server process. Restart requires login.
-        let key = hmacsha256::gen_key();
+    pub(crate) fn from_startup(release: ReleaseIdentity, key_file: Option<&std::path::Path>) -> Result<Self, String> {
+        // Default LAN behavior remains a fresh independent key per server start.
+        // Sharing is an explicit Linux deployment input, never an environment key.
+        let key = match key_file {
+            Some(path) => crate::auth_key_file::load(path).map_err(|error| error.to_string())?,
+            None => hmacsha256::gen_key(),
+        };
         let ttl_seconds = match std::env::var("SCBL_LAN_AUTH_TOKEN_TTL_SECONDS") {
             Ok(value) => value
                 .parse::<i64>()
@@ -367,6 +381,10 @@ fn verify_auth_token(config: &AuthTokenConfig, token: &str, source_ip: IpAddr, n
     if claims.game_run.as_ref().is_some_and(|run| !run.valid()) {
         return Err(AuthTokenError::Invalid);
     }
+    if claims.observer_admitted_run.as_ref().is_some_and(|instance|
+        !claims.game_run.as_ref().is_some_and(|run| run.valid() && &run.instance == instance)) {
+        return Err(AuthTokenError::Invalid);
+    }
     if claims.source_ip != source_ip.to_string() {
         return Err(AuthTokenError::WrongSource);
     }
@@ -417,6 +435,7 @@ mod auth_token_tests {
             expires_at: NOW + DEFAULT_AUTH_TOKEN_TTL_SECONDS,
             auth_version: 3,
             game_run: None,
+            observer_admitted_run: None,
         }
     }
 
@@ -1346,9 +1365,7 @@ impl Users for MyUsers {
         let expires_at = issued_at
             .checked_add(self.token_config.ttl_seconds)
             .ok_or_else(|| Status::internal("Token expiry is out of range"))?;
-        let observer_instance = if observer_requested {
-            Some(game_run.as_ref().ok_or_else(|| Status::invalid_argument("OB requires a native run"))?.instance.clone())
-        } else { None };
+        let observer_instance = observer_grant_for_login(observer_requested, game_run.as_ref(), crate::observer_policy::allowed())?;
         let token = issue_auth_token(
             &self.token_config,
             &AuthTokenClaims {
@@ -1360,6 +1377,7 @@ impl Users for MyUsers {
                 auth_version: identity.auth_version,
                 release: Some(release),
                 game_run,
+                observer_admitted_run: observer_instance.clone(),
             },
         )?;
 
@@ -2019,9 +2037,8 @@ pub async fn start_server(
     server_addr: SocketAddr,
     debug_config: Arc<DebugConfig>,
     enable_admin_services: bool,
-    verified_release: ReleaseIdentity,
+    token_config: AuthTokenConfig,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let token_config = AuthTokenConfig::from_env(verified_release)?;
     let overlay_network = LanClientNetwork::from_env()?;
     let uplay_game_sessions = Arc::new(RwLock::new(UplayGameSessionRegistry::default()));
     info!(logger, "Listening on {server_addr}");
@@ -2304,7 +2321,7 @@ mod lan_follow_readiness_tests {
         let now=unix_time_seconds().unwrap();
         let config=AuthTokenConfig{release:test_release_identity(),key:hmacsha256::Key([0x48;32]),ttl_seconds:86400};
         let claims=AuthTokenClaims{release:Some(test_release_identity()),user_id:user,username:format!("synthetic-user-{user}"),source_ip:"127.0.0.1".into(),issued_at:now,expires_at:now+86400,auth_version:1,
-            game_run:Some(GameRunClaim{product:"scbl-lan/2/game/official".into(),instance:format!("{user:032x}")})};
+            game_run:Some(GameRunClaim{product:"scbl-lan/2/game/official".into(),instance:format!("{user:032x}")}),observer_admitted_run:None};
         let token=issue_auth_token(&config,&claims).unwrap();
         let verified=verify_auth_token(&config,&token,"127.0.0.1".parse().unwrap(),now).unwrap();
         let mut r=Request::new(value);
@@ -2513,7 +2530,7 @@ pub(crate) fn maintenance_api_invitation_checks(storage:Arc<Storage>,host:u32,pe
         let identity=storage.find_auth_identity_by_user_id_async(user).await.unwrap().unwrap();
         let now=unix_time_seconds().unwrap();
         let claims=AuthTokenClaims{release:Some(test_release_identity()),user_id:user,username:identity.username,source_ip:"127.0.0.1".into(),issued_at:now,expires_at:now+86400,auth_version:identity.auth_version,
-            game_run:mode.map(|m|GameRunClaim{product:if m==1 {"scbl-lan/2/game/official".into()} else {"scbl-lan/2/game/mod".into()},instance:format!("{user:032x}")})};
+            game_run:mode.map(|m|GameRunClaim{product:if m==1 {"scbl-lan/2/game/official".into()} else {"scbl-lan/2/game/mod".into()},instance:format!("{user:032x}")}),observer_admitted_run:None};
         let token=issue_auth_token(config,&claims).unwrap();
         let mut request=Request::new(payload);
         request.metadata_mut().insert("authorization",token.parse().unwrap());
@@ -2622,7 +2639,7 @@ mod native_bridge_fixture_tests {
     const FIXTURE_RELEASE: &str = "native-bridge-synthetic";
     const FIXTURE_COMPAT: &str = "native-bridge-compat";
 
-    fn config(key_byte: u8) -> AuthTokenConfig {
+    pub(super) fn config(key_byte: u8) -> AuthTokenConfig {
         AuthTokenConfig {
             release: ReleaseIdentity::new(1, FIXTURE_RELEASE, FIXTURE_COMPAT, &"a".repeat(64)).unwrap(),
             // Explicitly synthetic fixture epochs; production still generates a fresh key.
@@ -2631,7 +2648,7 @@ mod native_bridge_fixture_tests {
         }
     }
 
-    fn claims() -> AuthTokenClaims {
+    pub(super) fn claims() -> AuthTokenClaims {
         let role = Some(users::ReleaseComponent {
             release_id: FIXTURE_RELEASE.into(), compat_id: FIXTURE_COMPAT.into(),
         });
@@ -2649,10 +2666,11 @@ mod native_bridge_fixture_tests {
                 product: server_api::gameplay_contract::GameplayMode::Mod.product().into(),
                 instance: FIXTURE_INSTANCE.into(),
             }),
+            observer_admitted_run: None,
         }
     }
 
-    fn fixture_document() -> serde_json::Value {
+    pub(super) fn fixture_document() -> serde_json::Value {
         let claims = claims();
         // Call the real current producer: no duplicate fixture signing implementation.
         let token = issue_auth_token(&config(0x71), &claims).unwrap();
@@ -2703,5 +2721,122 @@ mod native_bridge_fixture_tests {
         assert_eq!(verify_auth_token(&current, &current_token, source, FIXTURE_NOW), Ok(claims));
         assert_eq!(verify_auth_token(&current, &previous_token, source, FIXTURE_NOW), Err(AuthTokenError::Invalid));
         assert_eq!(verify_auth_token(&previous, &current_token, source, FIXTURE_NOW), Err(AuthTokenError::Invalid));
+    }
+}
+
+#[cfg(test)]
+mod native_observer_fixture_tests {
+    use super::*;
+    use std::io::Write;
+
+    fn admitted_claims() -> AuthTokenClaims {
+        let mut claims = native_bridge_fixture_tests::claims();
+        claims.observer_admitted_run = observer_grant_for_login(true, claims.game_run.as_ref(), true).unwrap();
+        claims
+    }
+
+    fn fixture_document() -> serde_json::Value {
+        let claims = admitted_claims();
+        let mut document = native_bridge_fixture_tests::fixture_document();
+        document["purpose"] = "Synthetic native observer grant producer / Python bridge fixture; never deploy these keys or identities".into();
+        document["producer"] = "src/native/server/dedicated-server/src/api.rs::issue_auth_token after release_for_login and observer_grant_for_login".into();
+        document["claims"] = serde_json::to_value(&claims).unwrap();
+        document["token"] = issue_auth_token(&native_bridge_fixture_tests::config(0x71), &claims).unwrap().into();
+        document["rotated_token"] = issue_auth_token(&native_bridge_fixture_tests::config(0x72), &claims).unwrap().into();
+        document
+    }
+
+    #[test]
+    fn current_native_observer_producer_matches_fixture_bytes() {
+        sodiumoxide::init().unwrap();
+        let rendered = format!("{}\n", serde_json::to_string_pretty(&fixture_document()).unwrap());
+        if let Some(path) = std::env::var_os("SCBL_SYNTHETIC_OBSERVER_FIXTURE_OUT") {
+            std::fs::OpenOptions::new().write(true).create_new(true).open(path).unwrap()
+                .write_all(rendered.as_bytes()).unwrap();
+        }
+        let expected = include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"),
+            "/../../../../tests/server/fixtures/native_observer_token_v1.json"));
+        assert!(rendered.as_bytes() == expected,
+            "native observer fixture mismatch; regenerate a new synthetic receipt and review the change");
+    }
+
+    #[test]
+    fn native_grant_requires_requested_valid_game_and_current_host_admission() {
+        let claims = native_bridge_fixture_tests::claims();
+        let run = claims.game_run.as_ref();
+        assert_eq!(observer_grant_for_login(false, run, false).unwrap(), None);
+        assert_eq!(observer_grant_for_login(false, None, true).unwrap(), None);
+        assert_eq!(observer_grant_for_login(true, run, false).unwrap_err().code(), tonic::Code::PermissionDenied);
+        assert_eq!(observer_grant_for_login(true, None, true).unwrap_err().code(), tonic::Code::InvalidArgument);
+        let invalid_run = GameRunClaim { product: "scbl-lan/2/game/mod".into(), instance: "invalid".into() };
+        assert!(observer_grant_for_login(true, Some(&invalid_run), true).is_err());
+        assert_eq!(observer_grant_for_login(true, run, true).unwrap(), run.map(|run| run.instance.clone()));
+    }
+
+    #[test]
+    fn signed_grant_is_bound_to_game_run_and_cannot_be_transplanted() {
+        sodiumoxide::init().unwrap();
+        let config = native_bridge_fixture_tests::config(0x71);
+        let claims = admitted_claims();
+        let source = claims.source_ip.parse().unwrap();
+        let token = issue_auth_token(&config, &claims).unwrap();
+        assert_eq!(verify_auth_token(&config, &token, source, claims.issued_at), Ok(claims.clone()));
+        let mut invalid = claims.clone();
+        invalid.game_run = None;
+        let token = issue_auth_token(&config, &invalid).unwrap();
+        assert_eq!(verify_auth_token(&config, &token, source, claims.issued_at), Err(AuthTokenError::Invalid));
+        invalid = claims.clone();
+        invalid.observer_admitted_run = Some("abcdef0123456789abcdef0123456789".into());
+        let token = issue_auth_token(&config, &invalid).unwrap();
+        assert_eq!(verify_auth_token(&config, &token, source, claims.issued_at), Err(AuthTokenError::Invalid));
+        let unsigned = native_bridge_fixture_tests::claims();
+        let token = issue_auth_token(&config, &unsigned).unwrap();
+        let parts: Vec<_> = token.split('.').collect();
+        let forged_payload = encode_base64url(&serde_json::to_vec(&claims).unwrap());
+        let forged = format!("{}.{}.{}", parts[0], forged_payload, parts[2]);
+        assert_eq!(verify_auth_token(&config, &forged, source, claims.issued_at), Err(AuthTokenError::Invalid));
+    }
+
+    #[test]
+    fn default_startup_retains_ephemeral_lan_keys() {
+        sodiumoxide::init().unwrap();
+        let release = native_bridge_fixture_tests::config(0x71).release;
+        let previous = AuthTokenConfig::from_startup(release.clone(), None).unwrap();
+        let current = AuthTokenConfig::from_startup(release, None).unwrap();
+        assert!(previous.key.0 != current.key.0);
+        let claims = admitted_claims();
+        let token = issue_auth_token(&previous, &claims).unwrap();
+        assert_eq!(verify_auth_token(&current, &token, claims.source_ip.parse().unwrap(), claims.issued_at), Err(AuthTokenError::Invalid));
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn explicit_file_startup_shares_tokens_until_both_consumers_rotate() {
+        use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+        sodiumoxide::init().unwrap();
+        let root = std::env::temp_dir().join(format!("fifth-freedom-synthetic-startup-{}", std::process::id()));
+        std::fs::create_dir(&root).unwrap();
+        std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700)).unwrap();
+        let path = root.join("key");
+        let mut file = std::fs::OpenOptions::new().write(true).create_new(true).mode(0o600).open(&path).unwrap();
+        file.write_all(&[0x71; 32]).unwrap();
+        drop(file);
+        let release = native_bridge_fixture_tests::config(0x71).release;
+        let first = AuthTokenConfig::from_startup(release.clone(), Some(&path)).unwrap();
+        let second = AuthTokenConfig::from_startup(release.clone(), Some(&path)).unwrap();
+        let claims = admitted_claims();
+        let source = claims.source_ip.parse().unwrap();
+        let token = issue_auth_token(&first, &claims).unwrap();
+        assert_eq!(verify_auth_token(&second, &token, source, claims.issued_at), Ok(claims.clone()));
+        let next_path = root.join("next");
+        let mut next_file = std::fs::OpenOptions::new().write(true).create_new(true).mode(0o600).open(&next_path).unwrap();
+        next_file.write_all(&[0x72; 32]).unwrap();
+        drop(next_file);
+        std::fs::rename(&next_path, &path).unwrap();
+        let rotated = AuthTokenConfig::from_startup(release, Some(&path)).unwrap();
+        assert_eq!(verify_auth_token(&rotated, &token, source, claims.issued_at), Err(AuthTokenError::Invalid));
+        // Replacing the file never silently hot-reloads either running consumer.
+        assert_eq!(verify_auth_token(&second, &token, source, claims.issued_at), Ok(claims));
+        std::fs::remove_dir_all(root).unwrap();
     }
 }

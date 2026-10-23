@@ -496,6 +496,7 @@ dependencies = [
  "diff",
  "eyre",
  "hmac",
+ "libc",
  "md-5",
  "num_enum",
  "quazal",

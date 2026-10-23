@@ -46,6 +46,9 @@ fn login_required<T>(ci: &ClientInfo<T>) -> quazal::rmc::Result<u32> {
 }
 
 mod api;
+mod auth_key_file;
+#[cfg(target_os = "linux")]
+mod instance_lock;
 mod challenge;
 mod clan;
 mod config;
@@ -251,6 +254,9 @@ struct Args {
     /// deployment profile: lan (default) or public (not integrated; fails closed)
     #[argh(option, default = "DeploymentProfile::Lan")]
     deployment_profile: DeploymentProfile,
+    /// optional absolute private 32-byte key file for trusted Linux control-plane sharing
+    #[argh(option)]
+    auth_key_file: Option<PathBuf>,
     /// path to config file (default: service.toml)
     #[argh(option, short = 'c', long = "config")]
     config_path: Option<PathBuf>,
@@ -298,9 +304,14 @@ fn main() -> color_eyre::Result<()> {
     // Fail closed before data creation, database mutation, listeners or readiness.
     let verified_release = server_api::release_catalog::verify_server_package(&std::env::current_exe()?)?;
     sodiumoxide::init().map_err(|_| eyre::eyre!("crypto initialization failed"))?;
+    // Validate the explicit key input and TTL before data mutation or listeners.
+    let token_config = api::AuthTokenConfig::from_startup(verified_release.clone(), args.auth_key_file.as_deref())
+        .map_err(|reason| eyre::eyre!(reason))?;
     let root = startup_plan.data_root(args.data_dir.clone(), &std::env::current_exe()?)?;
     std::fs::create_dir_all(&root)?;
     std::env::set_current_dir(std::fs::canonicalize(&root)?)?;
+    #[cfg(target_os = "linux")]
+    let _instance_lock = instance_lock::acquire(Path::new(".")).map_err(|reason| eyre::eyre!(reason))?;
     #[cfg(target_os = "windows")]
     let _instance_lock = {
         use std::os::windows::fs::OpenOptionsExt;
@@ -378,7 +389,7 @@ fn main() -> color_eyre::Result<()> {
         let logger = logger.new(o!("service" => "api"));
         let runtime = tokio::runtime::Runtime::new().map_err(|error| format!("API runtime creation failed: {error}"))?;
         runtime
-            .block_on(api::start_server(logger, storage, config.api_server, Arc::new(config.debug), false, verified_release))
+            .block_on(api::start_server(logger, storage, config.api_server, Arc::new(config.debug), false, token_config))
             .map_err(|error| format!("API server failed: {error:?}"))
     })?);
 
