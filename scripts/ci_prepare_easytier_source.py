@@ -145,6 +145,23 @@ def prepare(archive, destination, lock, repository=ROOT):
     for row in [*lock["required_notices"], *lock["modified_files"]]:
         if sha(files[row["path"]]["data"]) != row.get("original_sha256", row.get("sha256")):
             raise PreparationError("SOURCE_REQUIRED_BASE_MISMATCH")
+    # New source files require an explicit reviewed identity. Existing recipes
+    # have no additions; never infer permitted output from the patch itself.
+    additions = {}
+    reserved = ({row["path"] for row in lock["modified_files"]}
+                | {row["path"] for row in lock["omitted_files"]}
+                | {row["path"] for row in lock["materialized_links"]}
+                | {"FIFTH-FREEDOM-SOURCE-RECEIPT.json"})
+    for row in lock.get("added_files", []):
+        if (set(row) != {"path", "bytes", "sha256", "mode"}
+                or not safe_name(row["path"]) or row["path"] in files
+                or row["path"] in reserved or row["path"] in additions
+                or type(row["bytes"]) is not int or not 0 < row["bytes"] <= MAX_CONTENT
+                or type(row["mode"]) is not int or row["mode"] not in (0o644, 0o755)
+                or not isinstance(row["sha256"], str) or len(row["sha256"]) != 64
+                or any(c not in "0123456789abcdef" for c in row["sha256"])):
+            raise PreparationError("SOURCE_ADDITION_INVALID")
+        additions[row["path"]] = {key: row[key] for key in ("bytes", "sha256", "mode")}
     destination.mkdir(parents=True, exist_ok=False)
     for name, item in files.items():
         path = destination / name
@@ -171,6 +188,7 @@ def prepare(archive, destination, lock, repository=ROOT):
     for row in lock["modified_files"]:
         expected[row["path"]] = {**expected[row["path"]], "sha256": row["patched_sha256"],
                                  "bytes": actual[row["path"]]["bytes"]}
+    expected.update(additions)
     if actual != expected:
         raise PreparationError("SOURCE_PATCH_SCOPE_OR_DIGEST_MISMATCH")
     receipt = {"schema": 1, "kind": "distinct-patched-linux-source", "upstream": lock["upstream"],

@@ -181,6 +181,62 @@ class CleanSourcePreparationTests(unittest.TestCase):
             self.run_prepare()
         self.assertEqual(sentinel.read_bytes(), b"original evidence")
 
+    def add_source_patch(self):
+        data = b"pub fn challenge() {}\n"
+        addition = (b"diff --git a/easytier/challenge.rs b/easytier/challenge.rs\n"
+                    b"new file mode 100644\n--- /dev/null\n+++ b/easytier/challenge.rs\n"
+                    b"@@ -0,0 +1 @@\n+" + data)
+        (self.root / "addition.patch").write_bytes(addition)
+        self.lock["patches"].append({"path": "addition.patch", **self.row(addition)})
+        self.lock["added_files"] = [{"path": "easytier/challenge.rs", "mode": 0o644, **self.row(data)}]
+        return data
+
+    def test_declared_added_source_is_actually_created_by_reviewed_patch(self):
+        data = self.add_source_patch()
+        receipt = self.run_prepare()
+        self.assertEqual((self.output / "easytier/challenge.rs").read_bytes(), data)
+        self.assertEqual(receipt["source_files"]["easytier/challenge.rs"], {"mode": 0o644, **self.row(data)})
+        self.assertEqual(receipt["source_tree_sha256"], prepare.sha(prepare.encoded(receipt["source_files"])))
+
+    def test_added_paths_cannot_replace_existing_omitted_materialized_or_reserved_files(self):
+        self.add_source_patch()
+        good = copy.deepcopy(self.lock["added_files"][0])
+        for path in ("Cargo.lock", "easytier/secure.rs", "easytier/third_party/Packet.dll",
+                     "easytier/LICENSE", "easytier/assets", "easytier/assets/readme.txt",
+                     "FIFTH-FREEDOM-SOURCE-RECEIPT.json", "../outside", "/absolute",
+                     "a/.git/config", "a\\outside", "a/./inside"):
+            self.lock["added_files"] = [{**good, "path": path}]
+            with self.subTest(path=path), self.assertRaisesRegex(prepare.PreparationError, "ADDITION_INVALID"):
+                self.run_prepare()
+            self.assertFalse(self.output.exists())
+        self.lock["added_files"] = [good, good]
+        with self.assertRaisesRegex(prepare.PreparationError, "ADDITION_INVALID"):
+            self.run_prepare()
+        self.assertFalse(self.output.exists())
+
+    def test_addition_manifest_invalid_modes_sizes_or_hashes_fail_before_output(self):
+        self.add_source_patch()
+        good = copy.deepcopy(self.lock["added_files"][0])
+        for key, value in (("mode", 0o777), ("mode", 0o4644), ("mode", True),
+                           ("bytes", 0), ("bytes", prepare.MAX_CONTENT + 1),
+                           ("bytes", True), ("sha256", "A" * 64), ("sha256", "bad")):
+            self.lock["added_files"] = [{**good, key: value}]
+            with self.subTest(key=key, value=value), self.assertRaisesRegex(prepare.PreparationError, "ADDITION_INVALID"):
+                self.run_prepare()
+            self.assertFalse(self.output.exists())
+
+    def test_real_added_patch_requires_exact_declared_hash_size_mode_and_no_extra_file(self):
+        self.add_source_patch()
+        good = copy.deepcopy(self.lock["added_files"][0])
+        variants = [[], [{**good, "sha256": "0" * 64}], [{**good, "bytes": good["bytes"] + 1}],
+                    [{**good, "mode": 0o755}], [good, {**good, "path": "missing.rs"}]]
+        for index, additions in enumerate(variants):
+            self.output = self.root / ("rejected-" + str(index))
+            self.lock["added_files"] = additions
+            with self.subTest(index=index), self.assertRaisesRegex(prepare.PreparationError, "PATCH_SCOPE_OR_DIGEST_MISMATCH"):
+                self.run_prepare()
+            self.assertFalse((self.output / "FIFTH-FREEDOM-SOURCE-RECEIPT.json").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
