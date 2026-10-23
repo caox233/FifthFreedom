@@ -20,7 +20,8 @@ sys.path.insert(0, str(ROOT / "src/public"))
 try:
     from fifth_freedom_control.owned_process import LifecycleError, OwnedChild, VerifiedExecutable
     from fifth_freedom_control.overlay_supervisor import (ChildSpec, KernelTunMonitor, LifecycleLimits,
-        OverlayObservation, OwnedSupervisor, RuntimeCandidateIdentity, State, create_public_supervisor)
+        OverlayObservation, OwnedSupervisor, RuntimeCandidateIdentity, State, create_public_supervisor,
+        kernel_query_failure, valid_kernel_query_failure)
 finally:
     sys.path.pop(0)
 
@@ -353,8 +354,10 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
         # Only discovery is injected. The actual read-only kernel ioctl sees
         # the nonexistent interface and fails; no interface is created.
         with patch("socket.if_nametoindex", return_value=123):
-            with self.assertRaisesRegex(LifecycleError, "^OVERLAY_LINK_QUERY_UNAVAILABLE$"):
+            with self.assertRaisesRegex(LifecycleError, "^OVERLAY_LINK_QUERY_UNAVAILABLE$") as failed:
                 await monitor.observe(child)
+            self.assertEqual(kernel_query_failure(failed.exception), dict(query_stage="link_flags",
+                errno_class="ENODEV", previously_observed=False, link_up=None))
         self.assertIsNone(monitor._index)
         self.assertTrue(child.image_matches())
         self.assertEqual(len(os.listdir("/proc/self/fd")), descriptors)
@@ -421,6 +424,11 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
                 with self.assertRaises(LifecycleError) as raised:
                     await monitor.observe(child)
                 self.assertEqual(str(raised.exception), "OVERLAY_" + stage + "_UNAVAILABLE")
+                diagnostic_stage = {"NAMESPACE_OBSERVATION": "namespace",
+                                    "ADDRESS_QUERY": "ipv4_address"}.get(stage, stage.lower())
+                self.assertEqual(kernel_query_failure(raised.exception), dict(query_stage=diagnostic_stage,
+                    errno_class="ENOENT" if stage == "FDINFO_ENTRY" else "EACCES",
+                    previously_observed=False, link_up=None if stage == "NAMESPACE_OBSERVATION" else True))
             self.assertIsNone(monitor._index)
             self.assertTrue(child.image_matches())
             self.assertEqual(len(os.listdir("/proc/self/fd")), descriptors)
@@ -492,6 +500,97 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
                     await monitor.observe(child)
             self.assertIsNone(monitor._index)
             self.assertTrue(child.image_matches())
+
+    async def test_kernel_query_diagnostic_tracks_real_ioctls_without_stale_flags(self):
+        import errno
+        import fcntl
+        import struct
+        monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        await monitor.prepare()
+        child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
+        self.addAsyncCleanup(child.stop)
+        original_ioctl = fcntl.ioctl
+        descriptors = len(os.listdir("/proc/self/fd"))
+        target = struct.pack("256s", b"lo:ffdiag")
+        def actual_ioctl(fd, operation, _argument):
+            return original_ioctl(fd, operation, target)
+        with patch("socket.if_nametoindex", return_value=123), \
+                patch.object(fcntl, "ioctl", side_effect=actual_ioctl):
+            # Both ioctl results are real, read-only kernel observations; only
+            # discovery/lookup target and the prior committed index are injected.
+            self.assertIsNone(await monitor.observe(child))
+            self.assertIsNone(monitor._index)
+            monitor._index = 123
+            with self.assertRaises(LifecycleError) as failed:
+                await monitor.observe(child)
+            self.assertEqual(str(failed.exception), "OVERLAY_ADDRESS_QUERY_UNAVAILABLE")
+            details = kernel_query_failure(failed.exception)
+            self.assertEqual(details, dict(query_stage="ipv4_address", errno_class="EADDRNOTAVAIL",
+                previously_observed=True, link_up=True))
+            details["link_up"] = False
+            self.assertTrue(kernel_query_failure(failed.exception)["link_up"])
+            from dataclasses import FrozenInstanceError
+            with self.assertRaises(FrozenInstanceError):
+                failed.exception._kernel_query_failure.link_up = False
+            class ForeignError(LifecycleError):
+                pass
+            foreign = ForeignError(*failed.exception.args)
+            foreign._kernel_query_failure = failed.exception._kernel_query_failure
+            self.assertIsNone(kernel_query_failure(foreign))
+            # A later call fails earlier, before flags are read. It must not
+            # reuse the preceding call's UP flag or address-query classification.
+            target = struct.pack("256s", b"ffsynabsent09")
+            with self.assertRaises(LifecycleError) as earlier:
+                await monitor.observe(child)
+            self.assertEqual(str(earlier.exception), "OVERLAY_LINK_QUERY_UNAVAILABLE")
+            self.assertEqual(kernel_query_failure(earlier.exception), dict(query_stage="link_flags",
+                errno_class="ENODEV", previously_observed=True, link_up=None))
+            self.assertEqual(monitor._index, 123)
+        self.assertTrue(child.image_matches())
+        self.assertEqual(len(os.listdir("/proc/self/fd")), descriptors)
+
+    async def test_kernel_query_errno_classes_preserve_pending_and_rejection(self):
+        import errno
+        import fcntl
+        import struct
+        monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        await monitor.prepare()
+        child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
+        self.addAsyncCleanup(child.stop)
+        names = ("EADDRNOTAVAIL", "ENODEV", "ENXIO", "EACCES", "EPERM", "EIO",
+                 "EINTR", "EINVAL", "EBADF", "ENOENT", "ENOBUFS", "ENOMEM")
+        cases = [(getattr(errno, name), name) for name in names]
+        cases += [(None, "OTHER"), (31337, "OTHER"), (True, "OTHER")]
+        descriptors = len(os.listdir("/proc/self/fd"))
+        for number, expected in cases:
+            failure = OSError("PRIVATE ADDRESS ERROR SENTINEL")
+            failure.errno = number
+            for observed in (False, True):
+                for up in (False, True):
+                    monitor._index = 123 if observed else None
+                    def ioctl(_fd, operation, _argument):
+                        if operation == 0x8915:
+                            raise failure
+                        self.assertEqual(operation, 0x8913)
+                        value = bytearray(256)
+                        struct.pack_into("H", value, 16, int(up))
+                        return bytes(value)
+                    with self.subTest(errno=expected, observed=observed, up=up), \
+                            patch("socket.if_nametoindex", return_value=123), \
+                            patch.object(fcntl, "ioctl", side_effect=ioctl):
+                        if not observed and up and number == errno.EADDRNOTAVAIL:
+                            self.assertIsNone(await monitor.observe(child))
+                        else:
+                            with self.assertRaises(LifecycleError) as failed:
+                                await monitor.observe(child)
+                            self.assertEqual(str(failed.exception), "OVERLAY_ADDRESS_QUERY_UNAVAILABLE")
+                            details = kernel_query_failure(failed.exception)
+                            self.assertEqual(details, dict(query_stage="ipv4_address", errno_class=expected,
+                                previously_observed=observed, link_up=up))
+                            self.assertNotIn("PRIVATE", json.dumps(details))
+                        self.assertEqual(monitor._index, 123 if observed else None)
+        self.assertTrue(child.image_matches())
+        self.assertEqual(len(os.listdir("/proc/self/fd")), descriptors)
 
     async def test_pidfd_failure_withholds_release_and_reaps_bootstrap(self):
         marker = self.directory / "must-not-run"
@@ -610,6 +709,38 @@ asyncio.run(main())
             if writer:
                 writer.close()
                 await writer.wait_closed()
+
+
+class KernelQueryDiagnosticContractTests(unittest.TestCase):
+    def test_kernel_query_metadata_rejects_unknown_inconsistent_and_external_values(self):
+        code = "OVERLAY_ADDRESS_QUERY_UNAVAILABLE"
+        value = dict(query_stage="ipv4_address", errno_class="EADDRNOTAVAIL",
+            previously_observed=True, link_up=True)
+        self.assertTrue(valid_kernel_query_failure(value, code))
+        changes = (dict(query_stage="PRIVATE"), dict(errno_class="OTHER PRIVATE"),
+            dict(errno_class=99), dict(previously_observed=1), dict(link_up=1),
+            dict(link_up=None), dict(previously_observed=False), dict(extra="PRIVATE"))
+        for change in changes:
+            with self.subTest(change=change):
+                self.assertFalse(valid_kernel_query_failure(value | change, code))
+        self.assertFalse(valid_kernel_query_failure(value, "OVERLAY_LINK_QUERY_UNAVAILABLE"))
+        self.assertFalse(valid_kernel_query_failure(None, code))
+        self.assertFalse(valid_kernel_query_failure({key: item for key, item in value.items()
+            if key != "link_up"}, code))
+        for stage, other_code in (("namespace", "OVERLAY_NAMESPACE_OBSERVATION_UNAVAILABLE"),
+                ("link_flags", "OVERLAY_LINK_QUERY_UNAVAILABLE")):
+            earlier = value | dict(query_stage=stage, link_up=None)
+            self.assertTrue(valid_kernel_query_failure(earlier, other_code))
+            self.assertFalse(valid_kernel_query_failure(earlier | dict(link_up=True), other_code))
+        later = value | dict(query_stage="fdinfo_read", errno_class="EIO")
+        self.assertTrue(valid_kernel_query_failure(later, "OVERLAY_FDINFO_READ_UNAVAILABLE"))
+        self.assertFalse(valid_kernel_query_failure(later | dict(link_up=False),
+            "OVERLAY_FDINFO_READ_UNAVAILABLE"))
+        error = LifecycleError(code)
+        error._kernel_query_failure = value
+        self.assertIsNone(kernel_query_failure(error))
+        self.assertIsNone(kernel_query_failure(LifecycleError("PRIVATE", "PRIVATE")))
+        self.assertIsNone(kernel_query_failure(LifecycleError(value)))
 
 
 if __name__ == "__main__":

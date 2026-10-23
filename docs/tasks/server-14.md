@@ -201,3 +201,37 @@ run's receipt already records `correct-pin-before` TCP, fixed UDP and ephemeral
 UDP echoes; a later observation failed in the address-query stage, and both
 namespaces plus private state were cleaned. Its successful phase and later
 failure remain intact. A new hosted matrix must establish the complete result.
+
+## Kernel query failure details
+
+The later independent run [39944703157](https://github.com/caox233/FifthFreedom/actions/runs/39944703157),
+job 120384530669, already included the initial-address correction. Its actual
+checkout was `b46c8fe56e1b160cbe7d1098843c7ac66eeb9249`. QUIC and WSS each completed
+all three phases; TCP completed correct-pin-before and wrong-pin, then failed
+at `observe / OVERLAY_ADDRESS_QUERY_UNAVAILABLE` before the restored phase was
+confirmed. The worker reported cleanup complete, all six namespaces were removed
+and private staging was removed. The receipt does not identify the worker role,
+errno or whether that monitor had previously succeeded. The initiator is
+recreated during restoration while the responder persists; neither can be
+selected as the cause from that record. Earlier 05c success remains evidence
+for its own run, not a repeatability guarantee.
+
+The monitor now attaches immutable, bounded diagnostic metadata to the original
+`LifecycleError`, retaining its exact type and fixed code. An exact-type extractor
+returns only the syscall stage, one of twelve named errno classes or `OTHER`, a
+boolean stating whether an index was committed before this call, and the UP flag
+from this call's successful flags query (otherwise null). There are no addresses,
+paths, numeric errno, exception text or raw kernel output. The worker can combine
+this with its validated recipe role in an optional strictly checked failure
+object. Historical frames remain valid. These fields are not readiness evidence.
+
+The initial UP/`EADDRNOTAVAIL` pending condition and every subsequent rejection
+are unchanged. Real read-only ioctl controls retain the old missing-diagnostic
+failure, then verify the new address classification and a subsequent earlier
+flags failure without stale metadata. Additional tests cover all nine stages,
+finite/unknown errno classes, strict field/type validation and the original
+pending boundary. The local suites pass 23 lifecycle, 19 owned-overlay and 27
+combined-stack tests, with zero skips. They do not reproduce the unspecified
+4b49 errno or identify its cause. The next actual hosted failure must supply the
+new details before any broader runtime change is justified. Evidence remains in
+`.local/evidence/cloud/kernel-query-details/`.

@@ -300,6 +300,58 @@ class OwnedSupervisor:
             await asyncio.shield(self._runner)
 
 
+_KERNEL_QUERY_CODES = {
+    "namespace": "OVERLAY_NAMESPACE_OBSERVATION_UNAVAILABLE",
+    "link_flags": "OVERLAY_LINK_QUERY_UNAVAILABLE",
+    "ipv4_address": "OVERLAY_ADDRESS_QUERY_UNAVAILABLE",
+    "fdinfo_directory": "OVERLAY_FDINFO_DIRECTORY_UNAVAILABLE",
+    "fdinfo_list": "OVERLAY_FDINFO_LIST_UNAVAILABLE",
+    "fdinfo_entry": "OVERLAY_FDINFO_ENTRY_UNAVAILABLE",
+    "fdinfo_read": "OVERLAY_FDINFO_READ_UNAVAILABLE",
+    "tun_descriptor": "OVERLAY_TUN_DESCRIPTOR_UNAVAILABLE",
+    "interface_recheck": "OVERLAY_INTERFACE_RECHECK_UNAVAILABLE",
+}
+_KERNEL_ERRNO_NAMES = ("EADDRNOTAVAIL", "ENODEV", "ENXIO", "EACCES", "EPERM", "EIO",
+                       "EINTR", "EINVAL", "EBADF", "ENOENT", "ENOBUFS", "ENOMEM")
+_KERNEL_ERRNO_CLASSES = frozenset((*_KERNEL_ERRNO_NAMES, "OTHER"))
+
+
+@dataclass(frozen=True, slots=True)
+class _KernelQueryFailure:
+    code: str
+    query_stage: str
+    errno_class: str
+    previously_observed: bool
+    link_up: bool | None
+
+
+def valid_kernel_query_failure(value, code):
+    """Strict nonsecret diagnostics, never an observation/admission proof."""
+    return (type(value) is dict
+        and set(value) == {"query_stage", "errno_class", "previously_observed", "link_up"}
+        and type(value["query_stage"]) is str
+        and type(code) is str and _KERNEL_QUERY_CODES.get(value["query_stage"]) == code
+        and type(value["errno_class"]) is str and value["errno_class"] in _KERNEL_ERRNO_CLASSES
+        and type(value["previously_observed"]) is bool
+        and (value["link_up"] is None if value["query_stage"] in ("namespace", "link_flags")
+             else type(value["link_up"]) is bool if value["query_stage"] == "ipv4_address"
+             else value["link_up"] is True)
+        and not (value["query_stage"] == "ipv4_address" and value["errno_class"] == "EADDRNOTAVAIL"
+                 and value["previously_observed"] is False and value["link_up"] is True))
+
+
+def kernel_query_failure(error):
+    """Extract only metadata attached to this exact failed monitor invocation."""
+    if type(error) is not LifecycleError or len(error.args) != 1 or type(error.args[0]) is not str:
+        return None
+    details = getattr(error, "_kernel_query_failure", None)
+    if type(details) is not _KernelQueryFailure or details.code != error.args[0]:
+        return None
+    value = dict(query_stage=details.query_stage, errno_class=details.errno_class,
+                 previously_observed=details.previously_observed, link_up=details.link_up)
+    return value if valid_kernel_query_failure(value, details.code) else None
+
+
 class KernelTunMonitor:
     """Local Linux ownership observations, NOT encryption or peer admission.
 
@@ -341,6 +393,7 @@ class KernelTunMonitor:
 
     async def observe(self, child):
         import fcntl  # Linux only; importing the package stays safe on Windows.
+        previously_observed, link_up = self._index is not None, None
         if self._namespace is None or not child.image_matches():
             raise LifecycleError("OVERLAY_OWNERSHIP_LOST")
         # Keep syscall failures fail-closed, but identify the fixed observation
@@ -364,6 +417,7 @@ class KernelTunMonitor:
             unavailable = "OVERLAY_LINK_QUERY_UNAVAILABLE"
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as probe:
                 flags = struct.unpack_from("H", fcntl.ioctl(probe.fileno(), 0x8913, request), 16)[0]
+                link_up = bool(flags & 1)
                 unavailable = "OVERLAY_ADDRESS_QUERY_UNAVAILABLE"
                 try:
                     address = socket.inet_ntoa(fcntl.ioctl(probe.fileno(), 0x8915, request)[20:24])
@@ -411,5 +465,14 @@ class KernelTunMonitor:
                 raise LifecycleError("OVERLAY_OWNERSHIP_LOST")
             self._index = index
             return OverlayObservation(*self._namespace, index, self.address)
-        except OSError:
-            raise LifecycleError(unavailable) from None
+        except OSError as error:
+            # Preserve the original fixed failure and fail-closed behavior.
+            # Never retain exception text, paths, addresses, numeric errno or
+            # metadata from an earlier call, including an earlier success.
+            errno_class = next((name for name in _KERNEL_ERRNO_NAMES
+                if type(error.errno) is int and error.errno == getattr(errno, name, None)), "OTHER")
+            stage = next(name for name, code in _KERNEL_QUERY_CODES.items() if code == unavailable)
+            failure = LifecycleError(unavailable)
+            failure._kernel_query_failure = _KernelQueryFailure(
+                unavailable, stage, errno_class, previously_observed, link_up)
+            raise failure from None
