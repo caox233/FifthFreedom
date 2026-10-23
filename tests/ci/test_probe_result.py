@@ -248,6 +248,17 @@ class ProbeResultTests(unittest.TestCase):
             self.error_log.write_text(text)
             self.assertNotIn("missing_modules=", self.inspect("native", {}, 1)[1])
 
+    def test_native_worker_wrapping_and_namespace_command_codes_stay_fixed(self):
+        for code in ("WORKER_WITHHELD_ADMISSION_WROTE_STATE", "WORKER_PUBLIC_OWNER_LEASE_INVALID",
+                     "COMMAND_FAILED", "COMMAND_START_FAILED", "COMMAND_TIMEOUT", "COMMAND_OUTPUT_TOO_LARGE"):
+            self.error_log.write_text(code + "\n")
+            self.assertIn("fixed_codes=" + code + ";", self.inspect("native", {}, 1)[1])
+        for value in ("WORKER_PRIVATE_UNKNOWN", "WORKER_WITHHELD_ADMISSION_WROTE_STATE_PRIVATE_SUFFIX",
+                      "COMMAND_FAILED_PRIVATE_SUFFIX"):
+            self.error_log.write_text(value + "\n")
+            output = self.inspect("native", {}, 1)[1]
+            self.assertIn("fixed_codes=UNCLASSIFIED_PROBE_FAILURE;", output)
+
     def test_containment_preflight_has_distinct_no_runtime_scope_and_complete_cleanup(self):
         value = {"schema": overlay_producer.CONTAINMENT_SCHEMA, "status": "containment_preflight_verified",
             "input_identity": "synthetic_profile_only_no_executable", "precondition_failures": [],
