@@ -1,0 +1,506 @@
+diff --git a/easytier/src/peers/peer_conn.rs b/easytier/src/peers/peer_conn.rs
+--- a/easytier/src/peers/peer_conn.rs
++++ b/easytier/src/peers/peer_conn.rs
+@@ -60,6 +60,10 @@
+     use_global_var,
+ };
+ 
++#[path = "peer_conn_data_challenge.rs"]
++mod data_challenge;
++pub use data_challenge::{DataChallenge, DataChallengeResponse, DataChallengeEndpoints, DataChallengeError};
++
+ pub type PeerConnId = uuid::Uuid;
+ 
+ const MAGIC: u32 = 0xd1e1a5e1;
+@@ -107,10 +111,11 @@
+     session: Option<Arc<PeerSession>>,
+     installation: Option<u64>,
+     received: Option<AuthenticatedDataReceived>,
++    challenge: Option<data_challenge::PendingChallenge>,
+ }
+ impl Default for SessionFilterState {
+     fn default() -> Self {
+-        Self { session: None, installation: Some(0), received: None }
++        Self { session: None, installation: Some(0), received: None, challenge: None }
+     }
+ }
+ 
+@@ -183,6 +188,7 @@
+         let mut state = self.session.lock().unwrap();
+         state.installation = state.installation.and_then(|value| value.checked_add(1));
+         state.received = None;
++        state.challenge = None;
+         state.session = Some(session);
+     }
+ 
+@@ -308,6 +314,7 @@
+         let generation = session.session_generation();
+         let revision = session.receive_observation_revision();
+         let is_local_data = hdr.packet_type == PacketType::Data as u8 && hdr.is_encrypted();
++        let compressed = hdr.is_compressed();
+         if let Err(e) = session.decrypt_payload(from_peer_id, my_peer_id, &mut data) {
+             if !session.is_valid() {
+                 // Session auto-invalidated after too many consecutive failures.
+@@ -333,6 +340,7 @@
+                 guard.received = Some(AuthenticatedDataReceived {
+                     at: std::time::Instant::now(), generation, revision,
+                 });
++                data_challenge::accept(&mut guard, data.payload(), compressed, from_peer_id, my_peer_id);
+             }
+         }
+         Some(Ok(data))
+diff --git a/easytier/src/peers/peer_conn_data_challenge.rs b/easytier/src/peers/peer_conn_data_challenge.rs
+new file mode 100644
+--- /dev/null
++++ b/easytier/src/peers/peer_conn_data_challenge.rs
+@@ -0,0 +1,450 @@
++//! One-use Data/UDP response correlation. This is not runtime admission or a lease.
++use super::*;
++use pnet::packet::{
++    Packet,
++    ip::IpNextHeaderProtocols,
++    ipv4::{Ipv4Packet, MutableIpv4Packet},
++    udp::{MutableUdpPacket, UdpPacket},
++};
++use rand::RngCore;
++use std::{net::Ipv4Addr, time::Instant};
++
++const MAGIC: &[u8] = b"FF-DATA-CHALLENGE-V1\0";
++const NONCE_LEN: usize = 32;
++const PAYLOAD_LEN: usize = MAGIC.len() + NONCE_LEN;
++const DATAGRAM_LEN: usize = 20 + 8 + PAYLOAD_LEN;
++const MIN_TIMEOUT: Duration = Duration::from_millis(10);
++const MAX_TIMEOUT: Duration = Duration::from_secs(3);
++
++/// Packet endpoints, not proof of ownership of an adapter or UDP service.
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub struct DataChallengeEndpoints {
++    pub local_ipv4: Ipv4Addr,
++    pub remote_ipv4: Ipv4Addr,
++    pub local_port: u16,
++    pub remote_port: u16,
++}
++impl DataChallengeEndpoints {
++    fn valid(self) -> bool {
++        let unicast = |ip: Ipv4Addr| {
++            let first = ip.octets()[0];
++            first != 0 && first != 127 && first < 224
++        };
++        unicast(self.local_ipv4)
++            && unicast(self.remote_ipv4)
++            && self.local_ipv4 != self.remote_ipv4
++            && self.local_port != 0
++            && self.remote_port != 0
++    }
++    fn reverse(self) -> Self {
++        Self {
++            local_ipv4: self.remote_ipv4,
++            remote_ipv4: self.local_ipv4,
++            local_port: self.remote_port,
++            remote_port: self.local_port,
++        }
++    }
++}
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum DataChallengeError {
++    InvalidInput,
++    Unavailable,
++    Busy,
++    SendFailed,
++    TimedOut,
++}
++
++pub(super) struct PendingChallenge {
++    nonce: [u8; NONCE_LEN],
++    endpoints: DataChallengeEndpoints,
++    installation: u64,
++    generation: u32,
++    revision: u64,
++    started: Instant,
++    deadline: Instant,
++    completed: Option<AuthenticatedDataReceived>,
++    close: Weak<PeerConnCloseNotify>,
++    peer_id: Weak<AtomicCell<Option<PeerId>>>,
++    my_peer_id: Weak<AtomicCell<PeerId>>,
++    expected_peer: PeerId,
++    expected_local: PeerId,
++}
++impl PendingChallenge {
++    fn current(&self, state: &SessionFilterState, session: &Arc<PeerSession>) -> bool {
++        Instant::now() < self.deadline
++            && self
++                .peer_id
++                .upgrade()
++                .is_some_and(|id| id.load() == Some(self.expected_peer))
++            && self
++                .my_peer_id
++                .upgrade()
++                .is_some_and(|id| id.load() == self.expected_local)
++            && state.installation == Some(self.installation)
++            && session.is_valid()
++            && session.session_generation() == self.generation
++            && session.receive_observation_revision() == Some(self.revision)
++            && self.close.upgrade().is_some_and(|close| !close.is_closed())
++    }
++}
++
++/// No public constructor, Clone, Debug, serde or caller-supplied nonce.
++/// Dropping an attempt releases only its own slot, including send cancellation.
++pub struct DataChallenge {
++    filter: Weak<std::sync::Mutex<SessionFilterState>>,
++    session: Weak<PeerSession>,
++    close: Weak<PeerConnCloseNotify>,
++    conn_id: PeerConnId,
++    nonce: [u8; NONCE_LEN],
++    deadline: Instant,
++    consumed: bool,
++}
++
++/// A matching authenticated packet, bounded by the original challenge deadline.
++/// This is neither remote application identity nor ownership of a TUN/adapter.
++pub struct DataChallengeResponse {
++    observation: AuthenticatedDataObservation,
++    deadline: Instant,
++    round_trip: Duration,
++    peer_id: Weak<AtomicCell<Option<PeerId>>>,
++    my_peer_id: Weak<AtomicCell<PeerId>>,
++    expected_peer: PeerId,
++    expected_local: PeerId,
++}
++impl DataChallengeResponse {
++    pub fn connection_id(&self) -> PeerConnId {
++        self.observation.connection_id()
++    }
++    pub fn round_trip_if_current(&self) -> Option<Duration> {
++        if Instant::now() >= self.deadline
++            || self.peer_id.upgrade()?.load() != Some(self.expected_peer)
++            || self.my_peer_id.upgrade()?.load() != self.expected_local
++        {
++            return None;
++        }
++        self.observation.received_ago()?;
++        Some(self.round_trip)
++    }
++}
++impl DataChallenge {
++    fn current(&self) -> bool {
++        if self.consumed {
++            return false;
++        }
++        let Some(filter) = self.filter.upgrade() else {
++            return false;
++        };
++        let Ok(state) = filter.lock() else {
++            return false;
++        };
++        let Some(session) = self.session.upgrade() else {
++            return false;
++        };
++        let Some(current) = state.session.as_ref() else {
++            return false;
++        };
++        Arc::ptr_eq(current, &session)
++            && state
++                .challenge
++                .as_ref()
++                .is_some_and(|slot| slot.nonce == self.nonce && slot.current(&state, &session))
++    }
++
++    pub fn take_response(&mut self) -> Option<DataChallengeResponse> {
++        if self.consumed {
++            return None;
++        }
++        let filter = self.filter.upgrade()?;
++        let mut state = filter.lock().ok()?;
++        let session = self.session.upgrade()?;
++        if !Arc::ptr_eq(state.session.as_ref()?, &session) {
++            return None;
++        }
++        let slot = state.challenge.as_ref()?;
++        if slot.nonce != self.nonce || !slot.current(&state, &session) {
++            return None;
++        }
++        let received = slot.completed?;
++        let observation = AuthenticatedDataObservation {
++            filter: self.filter.clone(),
++            session: self.session.clone(),
++            close: self.close.clone(),
++            conn_id: self.conn_id,
++            installation: slot.installation,
++            received,
++        };
++        let round_trip = received.at.checked_duration_since(slot.started)?;
++        // Consume before releasing the lock. A duplicate Data packet cannot
++        // refresh this proof; a later attempt has a different random nonce.
++        let result = DataChallengeResponse {
++            observation,
++            deadline: self.deadline,
++            round_trip,
++            peer_id: slot.peer_id.clone(),
++            my_peer_id: slot.my_peer_id.clone(),
++            expected_peer: slot.expected_peer,
++            expected_local: slot.expected_local,
++        };
++        state.challenge = None;
++        self.consumed = true;
++        drop(state);
++        result.round_trip_if_current()?;
++        Some(result)
++    }
++}
++impl Drop for DataChallenge {
++    fn drop(&mut self) {
++        if let Some(filter) = self.filter.upgrade() {
++            if let Ok(mut state) = filter.lock() {
++                if state
++                    .challenge
++                    .as_ref()
++                    .is_some_and(|slot| slot.nonce == self.nonce)
++                {
++                    state.challenge = None;
++                }
++            }
++        }
++    }
++}
++
++fn packet(endpoints: DataChallengeEndpoints, nonce: &[u8; NONCE_LEN]) -> Vec<u8> {
++    let mut bytes = vec![0u8; DATAGRAM_LEN];
++    {
++        let mut ip = MutableIpv4Packet::new(&mut bytes).unwrap();
++        ip.set_version(4);
++        ip.set_header_length(5);
++        ip.set_total_length(DATAGRAM_LEN as u16);
++        ip.set_ttl(64);
++        ip.set_next_level_protocol(IpNextHeaderProtocols::Udp);
++        ip.set_source(endpoints.local_ipv4);
++        ip.set_destination(endpoints.remote_ipv4);
++        ip.set_checksum(pnet::packet::ipv4::checksum(&ip.to_immutable()));
++    }
++    let mut udp = MutableUdpPacket::new(&mut bytes[20..]).unwrap();
++    udp.set_source(endpoints.local_port);
++    udp.set_destination(endpoints.remote_port);
++    udp.set_length((8 + PAYLOAD_LEN) as u16);
++    let mut payload = [0u8; PAYLOAD_LEN];
++    payload[..MAGIC.len()].copy_from_slice(MAGIC);
++    payload[MAGIC.len()..].copy_from_slice(nonce);
++    udp.set_payload(&payload);
++    let checksum = pnet::packet::udp::ipv4_checksum(
++        &udp.to_immutable(),
++        &endpoints.local_ipv4,
++        &endpoints.remote_ipv4,
++    );
++    udp.set_checksum(if checksum == 0 { 0xffff } else { checksum });
++    bytes
++}
++
++fn matches_response(
++    bytes: &[u8],
++    endpoints: DataChallengeEndpoints,
++    nonce: &[u8; NONCE_LEN],
++) -> bool {
++    if bytes.len() != DATAGRAM_LEN {
++        return false;
++    }
++    let Some(ip) = Ipv4Packet::new(bytes) else {
++        return false;
++    };
++    let expected = endpoints.reverse();
++    if ip.get_version() != 4
++        || ip.get_header_length() != 5
++        || ip.get_total_length() as usize != bytes.len()
++        || ip.get_fragment_offset() != 0
++        || ip.get_flags() & 0b101 != 0
++        || ip.get_next_level_protocol() != IpNextHeaderProtocols::Udp
++        || ip.get_source() != expected.local_ipv4
++        || ip.get_destination() != expected.remote_ipv4
++        || ip.get_checksum() != pnet::packet::ipv4::checksum(&ip)
++    {
++        return false;
++    }
++    let Some(udp) = UdpPacket::new(ip.payload()) else {
++        return false;
++    };
++    let checksum =
++        pnet::packet::udp::ipv4_checksum(&udp, &expected.local_ipv4, &expected.remote_ipv4);
++    udp.get_source() == expected.local_port
++        && udp.get_destination() == expected.remote_port
++        && udp.get_length() as usize == 8 + PAYLOAD_LEN
++        && udp.get_checksum() != 0
++        && udp.get_checksum() == (if checksum == 0 { 0xffff } else { checksum })
++        && udp.payload().len() == PAYLOAD_LEN
++        && udp.payload()[..MAGIC.len()] == *MAGIC
++        && udp.payload()[MAGIC.len()..] == *nonce
++}
++
++fn reserve(
++    filter: &PeerSessionTunnelFilter,
++    close: &Arc<PeerConnCloseNotify>,
++    expected_session: &Arc<PeerSession>,
++    endpoints: DataChallengeEndpoints,
++    timeout: Duration,
++) -> Result<(DataChallenge, Vec<u8>), DataChallengeError> {
++    if !endpoints.valid() || !(MIN_TIMEOUT..=MAX_TIMEOUT).contains(&timeout) {
++        return Err(DataChallengeError::InvalidInput);
++    }
++    if !filter.enabled || close.is_closed() {
++        return Err(DataChallengeError::Unavailable);
++    }
++    let mut nonce = [0u8; NONCE_LEN];
++    rand::rngs::OsRng
++        .try_fill_bytes(&mut nonce)
++        .map_err(|_| DataChallengeError::Unavailable)?;
++    if nonce == [0; NONCE_LEN] {
++        return Err(DataChallengeError::Unavailable);
++    }
++    let expected_peer = filter
++        .peer_id
++        .load()
++        .filter(|id| *id != 0)
++        .ok_or(DataChallengeError::Unavailable)?;
++    let expected_local = filter.my_peer_id.load();
++    if expected_local == 0 || expected_local == expected_peer {
++        return Err(DataChallengeError::Unavailable);
++    }
++    let mut state = filter
++        .session
++        .lock()
++        .map_err(|_| DataChallengeError::Unavailable)?;
++    let session = state
++        .session
++        .as_ref()
++        .ok_or(DataChallengeError::Unavailable)?;
++    if !Arc::ptr_eq(session, expected_session) || !session.is_valid() || close.is_closed() {
++        return Err(DataChallengeError::Unavailable);
++    }
++    let installation = state.installation.ok_or(DataChallengeError::Unavailable)?;
++    let generation = session.session_generation();
++    let revision = session
++        .receive_observation_revision()
++        .ok_or(DataChallengeError::Unavailable)?;
++    if state
++        .challenge
++        .as_ref()
++        .is_some_and(|slot| slot.current(&state, session))
++    {
++        return Err(DataChallengeError::Busy);
++    }
++    let started = Instant::now();
++    let deadline = started + timeout;
++    let ticket = DataChallenge {
++        filter: Arc::downgrade(&filter.session),
++        session: Arc::downgrade(session),
++        close: Arc::downgrade(close),
++        conn_id: close.get_conn_id(),
++        nonce,
++        deadline,
++        consumed: false,
++    };
++    state.challenge = Some(PendingChallenge {
++        nonce,
++        endpoints,
++        installation,
++        generation,
++        revision,
++        started,
++        deadline,
++        completed: None,
++        close: Arc::downgrade(close),
++        peer_id: Arc::downgrade(&filter.peer_id),
++        my_peer_id: Arc::downgrade(&filter.my_peer_id),
++        expected_peer,
++        expected_local,
++    });
++    Ok((ticket, packet(endpoints, &nonce)))
++}
++
++/// Called only inside the successful, current-session AEAD/replay receive path.
++pub(super) fn accept(
++    state: &mut SessionFilterState,
++    payload: &[u8],
++    compressed: bool,
++    from: PeerId,
++    to: PeerId,
++) {
++    if compressed {
++        return;
++    }
++    let Some(session) = state.session.as_ref() else {
++        return;
++    };
++    let Some(received) = state.received else {
++        return;
++    };
++    let Some(slot) = state.challenge.as_ref() else {
++        return;
++    };
++    if from != slot.expected_peer
++        || to != slot.expected_local
++        || slot.completed.is_some()
++        || !slot.current(state, session)
++        || received.generation != slot.generation
++        || received.revision != slot.revision
++        || !matches_response(payload, slot.endpoints, &slot.nonce)
++    {
++        return;
++    }
++    state.challenge.as_mut().unwrap().completed = Some(received);
++}
++
++// The production send future shares this exact cancellation/deadline boundary.
++// Dropping the future drops its owned ticket; no guard/lock crosses the await.
++async fn finish_send<F>(ticket: DataChallenge, send: F) -> Result<DataChallenge, DataChallengeError>
++where
++    F: std::future::Future<Output = Result<(), Error>>,
++{
++    let remaining = ticket.deadline.saturating_duration_since(Instant::now());
++    match tokio::time::timeout(remaining, send).await {
++        Ok(Ok(())) => (),
++        Ok(Err(_)) => return Err(DataChallengeError::SendFailed),
++        Err(_) => return Err(DataChallengeError::TimedOut),
++    }
++    if !ticket.current() {
++        return Err(DataChallengeError::Unavailable);
++    }
++    Ok(ticket)
++}
++
++impl PeerConn {
++    /// Sends one valid IPv4/UDP Data packet through this exact Noise connection.
++    /// Caller must separately own/authorize both endpoints and an echo responder.
++    /// This bypasses local NIC injection and therefore proves no local TUN path.
++    pub async fn send_data_challenge(
++        &self,
++        expected_peer: PeerId,
++        expected_static_key: [u8; 32],
++        endpoints: DataChallengeEndpoints,
++        timeout: Duration,
++    ) -> Result<DataChallenge, DataChallengeError> {
++        let noise = self
++            .noise_handshake_result
++            .as_ref()
++            .ok_or(DataChallengeError::Unavailable)?;
++        if expected_peer == 0
++            || noise.peer_id != expected_peer
++            || noise.secure_auth_level != SecureAuthLevel::NetworkSecretConfirmed
++            || noise.remote_static_pubkey.as_slice() != expected_static_key
++            || self.session_filter.peer_id.load() != Some(expected_peer)
++        {
++            return Err(DataChallengeError::Unavailable);
++        }
++        let (ticket, payload) = reserve(
++            &self.session_filter,
++            &self.close_event_notifier,
++            &noise.session,
++            endpoints,
++            timeout,
++        )?;
++        if !ticket.current() {
++            return Err(DataChallengeError::Unavailable);
++        }
++        let mut request = ZCPacket::new_with_payload(&payload);
++        request.fill_peer_manager_hdr(self.my_peer_id, expected_peer, PacketType::Data as u8);
++        finish_send(ticket, self.send_msg(request)).await
++    }
++}

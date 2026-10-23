@@ -1,17 +1,41 @@
 # 一键构建（Windows x64）
 
-## GitHub Actions 在线编译与发布
+## GitHub Actions 开发候选构建
 
-1.1 的程序版本为 `1.1.0`，对应标签 `v1.1.0`。本地 `build.cmd` 不上传产物。使用 Actions 时，仅编译应取消 `publish`；启用 `publish` 或推送 `v*` 标签会进入发布流程。
+后续常规构建使用 GitHub 托管的 Windows/Linux runner，用户电脑无需作为自托管 runner
+保持开机。Windows 编译 WPF、x86 DLL 和 LAN 服务端；Linux 编译并测试服务端。
+PR 和手动任务的候选检查只保存构建日志、校验和与 artifact，
+不自动创建正式 Release、部署生产或启动游戏。实际 job 和命令见
+[`tasks/ci-01.md`](tasks/ci-01.md)；配置存在不等于本轮执行成功。
 
-云端使用 GitHub 托管的 Windows 2022、固定 Rust nightly、.NET SDK 和带 SHA256 校验的 protoc，复用下述本地构建入口。只有完整构建、回归、包校验和启动器隔离检查通过后，独立发布任务才获得仓库写权限，并上传本轮生成的程序包、校验文件及构建来源记录。上传后重新下载核对，再公开 Release；不会覆盖同名已发布版本。无需上传个人 token、本机配置或本地编译包。
+**公开 checkout 的完整包目前被资源隐私门禁阻塞。**
+`docs/ASSET-PUBLICATION.json` 中 12 个 SAV/META 输入仍留在本地，不能上传、伪造或
+修改预期哈希来换取成功状态。组件编译与纯逻辑测试可以独立执行；缺默认存档的启动器
+只能标为编译产物，不能标为完整可交付包。完整资源检查继续独立失败并保留记录。
 
-失败时不会发布，原始构建日志保留在对应 Actions 运行的 `build-diagnostics` 产物中。后续版本先更新源码版本／发布身份和 `docs/RELEASE-NOTES.md`，再创建新标签。
+迁移初始 GitHub source-checks 运行
+[`39855999361`](https://github.com/caox233/FifthFreedom/actions/runs/39855999361)
+因这些缺失输入失败。云端在交接提交 `fc8ef510b51be83c31f9f8233997f758b0477acc`
+独立复现了 37 项测试、16 个资源子检查错误、2 项 Windows 跳过；这不是完整构建通过。
+
+源码开发可先在独立 Python 虚拟环境内执行：
+
+```sh
+python -m pip install --only-binary=:all: -r scripts/requirements-profile.txt
+python -B scripts/check_migration.py --require-fifth-freedom
+python -B scripts/ci_checks.py source
+python -B scripts/ci_checks.py package-inputs
+```
+
+配方密钥验证固定使用 `cryptography==50.0.0`，缺少依赖不会被当成测试通过。
+最后一条仍是明确会失败的完整输入门禁；不能用前面的源码检查替代它。
+新增 Windows IPC、真实服务生命周期和隔离加密网络检查的命令及平台要求见
+`tasks/ci-01.md`，完整测试集合与托管结果按提交记录在 `CLOUD-PROGRESS.md`。
 
 ## 最短流程
 
-1. 下载源码 ZIP 后完整解压，或 Git clone。建议使用短路径，例如 `C:\src\SCBL-LAN`。
-2. 首次安装下面的编译工具。所需构建资源已随仓库提供，无需额外资源包；首次代码依赖恢复需要联网。
+1. 下载源码 ZIP 后完整解压，或 Git clone。建议使用短路径，例如 `C:\src\FifthFreedom`。
+2. 首次安装下面的编译工具。先检查资源隐私门禁；目前公开源码缺少获准公开前必须保留在本地的存档输入，完整包不能只凭公开 checkout 构建。首次代码依赖恢复需要联网。
 3. 双击仓库根目录 **`build.cmd`**。无需管理员，也无需打开 Visual Studio。
 4. 等待 `BUILD_SUCCESS`，按输出路径取得完整 ZIP。运行时文件在 `artifacts/program`；最新结果在 `artifacts/BUILD-RESULT.json`。
 
@@ -32,16 +56,16 @@
 
 ## 随源码提供的资源
 
-`scripts/local-assets.json` 精确列出 20 项输入及大小、SHA256，包括图标、背景、音乐、FusionFix、采集工具、原始加载器、默认存档模板和 DirectX 头文件。这些文件随仓库提供，完整 clone 或源码 ZIP 中应当齐全。
+`scripts/local-assets.json` 精确列出 20 项 LAN 构建输入及大小、SHA256，包括图标、背景、音乐、FusionFix、采集工具、原始加载器、默认存档模板和 DirectX 头文件。其中 SAV/META 因隐私审查尚未公开；donor 另有受同一门禁约束的存档，总计 12 项列于 `docs/ASSET-PUBLICATION.json`。重新 clone 不会补齐这些保留输入。
 
-正常构建不需要 `build-assets.zip`。不要只下载代码文本而遗漏二进制资源；校验失败应先重新取得完整源码。现有第三方声明继续保留，各资源的原有使用条件仍然适用。
+拥有本地保留输入的维护者可继续使用原有严格校验入口。公开完整包须等待匹配输入通过隐私审查，或完成另行审查且可复现的默认数据替换。现有第三方声明继续保留；用户的再分发授权声明不等于独立许可核实。采集工具源码和 FusionFix notices 的依赖闭包仍未完成，见 `ASSET-PROVENANCE.md`。
 
 以下仅为资源损坏或手工维护时的可选修复方式，不是普通开发者的前置操作：
 
 - 将匹配的 **`build-assets.zip` 放在源码根目录**，双击 `build.cmd` 时自动校验并导入。ZIP 内使用清单中的相对路径，例如 `src/launcher/src/logo.ico`，不要再套一层顶级目录。
 - 使用已有资源目录或 ZIP：`build.cmd --asset-dir "C:\local-build-assets"`，或 `build.cmd --asset-dir "C:\local-build-assets.zip"`。
 
-导入只处理清单内文件；完整校验通过后才写入，已有不匹配文件会报错而非覆盖，不会提取 ZIP 内的其他内容。用于修复的额外资源目录与 ZIP 仍被 Git 忽略；真正参与构建的 20 个文件按原路径跟踪。
+导入只处理清单内文件；完整校验通过后才写入，已有不匹配文件会报错而非覆盖，不会提取 ZIP 内的其他内容。用于修复的额外资源目录与 ZIP 仍被 Git 忽略；受隐私门禁约束的存档路径也继续忽略，不得由 CI 打包上传。
 
 默认存档快照日期为 2026-10-15。MOD 模板使用该次用户选择的最新本地配置，包含 `.sav`、`.meta` 和前三套配置所需的 `.scbl-loadouts`，不能只替换 `.sav`。构建会重新生成匹配玩法 DLL 的模板清单。模板不会在正常启动时自动覆盖玩家存档。
 

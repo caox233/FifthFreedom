@@ -37,10 +37,14 @@ sodiumoxide = { workspace = true }
 sqlx = { workspace = true, features = ["runtime-tokio", "sqlite"] }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread"] }
+tokio-stream = "0.1"
 toml = { workspace = true }
 tonic = { workspace = true }
 tonic-async-interceptor = { workspace = true }
 tonic-reflection = { workspace = true }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+libc = "0.2"
 
 [target.'cfg(target_os = "windows")'.build-dependencies.winres]
 workspace = true
@@ -50,7 +54,7 @@ workspace = true
 diff = { workspace = true }
 
 [package.metadata.winres]
-ProductName = "5th Echelon Server"
-FileDescription = "https://github.com/unixoide/5th-echelon"
-OriginalFilename = "dedicated_server.exe"
+ProductName = "Fifth Freedom"
+FileDescription = "Fifth Freedom LAN server"
+OriginalFilename = "FifthFreedom.Server.exe"
 InternalName = "dedicated_server"

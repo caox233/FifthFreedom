@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official completed native job/check metadata and digest of privately retained official job log; no native success artifact exists",
+  "run_id": 39932526946,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39932526946",
+  "source_head": "528668e22e9b768bf004e1e1788eb6e65cd6190f",
+  "run_attempt": 1,
+  "checkout_commit": null,
+  "checkout_identity_limit": "No new artifact-content download was needed for this fixed-reason follow-up; artifact-name revisions are not treated as verified checkout identity",
+  "job": {
+    "id": 120355233722,
+    "name": "Same-run native owned lifecycle in synthetic namespaces",
+    "status": "completed",
+    "conclusion": "failure",
+    "started_at": "2026-10-23T09:59:52Z",
+    "completed_at": "2026-10-23T10:00:33Z"
+  },
+  "steps": [
+    {
+      "number": 1,
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 2,
+      "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 3,
+      "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 4,
+      "name": "Download only this workflow's exact verified component candidate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 5,
+      "name": "Install signed native runtime and owned namespace tools",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 6,
+      "name": "Require withheld denied EOF expiry and parent-death contracts",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "number": 7,
+      "name": "Preserve only the sanitized native lifecycle receipt",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 13,
+      "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 14,
+      "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 15,
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "fixed_failure": {
+    "code": "WORKER_NATIVE_LISTENER_OWNERSHIP_INVALID",
+    "origin": "Native worker exact-child kernel socket ownership check",
+    "underlying_mismatch_verified": false,
+    "mismatch_detail": "The published code does not identify which expected port, socket state, inode membership, or matching row count failed",
+    "raw_private_worker_stderr_downloaded": false
+  },
+  "artifact": {
+    "native_success_receipt_present": false,
+    "upload_step_conclusion": "success",
+    "upload_warning": "No files were found with the provided path; no native lifecycle artifacts were uploaded"
+  },
+  "official_job_log": {
+    "bytes": 24546,
+    "sha256": "818205f102ce4f3243f0ff5d53b24ab23c8ea4fede1727f9ad307ced1444d8d8",
+    "storage": "Ignored private cloud evidence; raw log not published"
+  },
+  "interpretation_limits": [
+    "This is the first published native ownership reason; historical generic failures are not retroactively assigned this cause.",
+    "Setup, same-run artifact download and runtime dependency installation succeeded before the contract step failed.",
+    "The five lifecycle contracts were not all certified; no successful listener-ownership or native lifecycle claim is made.",
+    "Windows component and same-run static verification successes remain separate from this runtime failure.",
+    "The owned-overlay/native composition job was still running when this job-specific record was captured.",
+    "Both retained-input gates remain strict; no complete-client, production-provider, game, deployment or release readiness is implied."
+  ]
+}

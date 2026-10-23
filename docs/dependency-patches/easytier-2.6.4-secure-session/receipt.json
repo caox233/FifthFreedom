@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "scope": "local synthetic production PeerSession API contract; no network runtime",
+  "upstream": {
+    "repository": "https://github.com/EasyTier/EasyTier",
+    "tag": "v2.6.4",
+    "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+    "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9"
+  },
+  "source_files": [
+    {
+      "path": "easytier/src/peers/peer_session.rs",
+      "original_sha256": "b511a31db4d712c270be0f9ff3920e23aa7dc2345554db7da0df24af2d82d2a3",
+      "patched_sha256": "fd673e334c65c0cc1c4edd7654b02d37e180b9f71466f45eed4ac5f411e0024d"
+    },
+    {
+      "path": "easytier/src/peers/secure_datagram.rs",
+      "original_sha256": "ff1e5685bdd830386b153a57cb0e8eeb322c665e681e12ec6de3c1c46cd9dba5",
+      "patched_sha256": "74e372bff9c0578b07f8e08da5b56b3b8de7939976beb6017dd90357c12e8324"
+    }
+  ],
+  "patches": [
+    {
+      "path": "contract-tests.patch",
+      "sha256": "5673d6b3f24dd44a263b7863a491ec0c482b61feadd77cfc2534973d3d8d31c4"
+    },
+    {
+      "path": "require-encrypted-flag.patch",
+      "sha256": "06a16ca43e035eb1380c99ace8f19a8495bbd09b6413f0fe800752896aa3d2b3"
+    }
+  ],
+  "toolchain": {
+    "rustc": "1.95.0 (59807616e 2026-04-14)",
+    "target": "x86_64-unknown-linux-gnu",
+    "cargo_features": [
+      "default",
+      "faketcp",
+      "kcp",
+      "magic-dns",
+      "quic",
+      "smoltcp",
+      "socks5",
+      "tun",
+      "websocket",
+      "wireguard",
+      "zstd"
+    ],
+    "test_algorithm": "aes-256-gcm",
+    "selected_backend": "ring (wireguard feature; openssl-crypto and aes-gcm features absent)",
+    "official_linux_musl_jemalloc_build_reproduced": false,
+    "build_adjustments": {
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_ENCODED_RUSTFLAGS": "",
+      "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include",
+      "protoc_version": "35.1"
+    },
+    "build_adjustments_reason": "Use existing GCC builtin headers for bindgen and system GNU linker because Clang resource headers/mold are absent; upstream source/features/lock unchanged."
+  },
+  "runs": [
+    {
+      "log": "compile-initial-missing-stddef.log",
+      "log_sha256": "ef900910116ad85ec3704e9872acda80f0e1c4d855ad38828a8b470cac078690",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "fifth_freedom_secure_profile_contract",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "passed": null,
+      "failed": null,
+      "filtered_out": null,
+      "summary": [],
+      "note": "Build failed in kcp-sys bindgen: stddef.h absent; no tests executed."
+    },
+    {
+      "log": "before-tests.log",
+      "log_sha256": "72f7156d4f5026beaa913c2c107169cf7acf0e0b97b7f4429b38b08412e1581a",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "fifth_freedom_secure_profile_contract",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "passed": 3,
+      "failed": 1,
+      "filtered_out": 1197,
+      "summary": [
+        "test peers::peer_session::fifth_freedom_secure_profile_contract::valid_encrypted_data_round_trips ... ok",
+        "test peers::peer_session::fifth_freedom_secure_profile_contract::authenticated_frame_replay_is_rejected ... ok",
+        "test peers::peer_session::fifth_freedom_secure_profile_contract::tampered_tag_is_rejected_without_consuming_sequence ... ok",
+        "test peers::peer_session::fifth_freedom_secure_profile_contract::cleared_encrypted_flag_is_rejected_without_consuming_sequence ... FAILED",
+        "test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 1197 filtered out; finished in 0.00s"
+      ],
+      "note": null
+    },
+    {
+      "log": "after-tests.log",
+      "log_sha256": "5d0a54acc3f1498aeb35b85e6570485d0553300a943430666529aa79196e20a9",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "fifth_freedom_secure_profile_contract",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": 4,
+      "failed": 0,
+      "filtered_out": 1197,
+      "summary": [
+        "test peers::peer_session::fifth_freedom_secure_profile_contract::valid_encrypted_data_round_trips ... ok",
+        "test peers::peer_session::fifth_freedom_secure_profile_contract::authenticated_frame_replay_is_rejected ... ok",
+        "test peers::peer_session::fifth_freedom_secure_profile_contract::cleared_encrypted_flag_is_rejected_without_consuming_sequence ... ok",
+        "test peers::peer_session::fifth_freedom_secure_profile_contract::tampered_tag_is_rejected_without_consuming_sequence ... ok",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1197 filtered out; finished in 0.00s"
+      ],
+      "note": null
+    },
+    {
+      "log": "existing-datagram-tests.log",
+      "log_sha256": "44e96b5b0d459bfffcdb5603755521f45e11807c226f0be84b2814ba786532bd",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "peers::secure_datagram::tests",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": 9,
+      "failed": 0,
+      "filtered_out": 1192,
+      "summary": [
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 1192 filtered out; finished in 0.00s"
+      ],
+      "note": null
+    },
+    {
+      "log": "existing-peer-tests.log",
+      "log_sha256": "cdadf6d45db5e012b6c4302b3e5524f46ff8fb4071dca152aa3e40621b56eee0",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "peers::peer_session::tests",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": 2,
+      "failed": 0,
+      "filtered_out": 1199,
+      "summary": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1199 filtered out; finished in 0.00s"
+      ],
+      "note": null
+    }
+  ],
+  "patch_integrity": {
+    "apply_check_passed": true,
+    "patched_files_match_tested_checkout": true,
+    "reverse_check_passed": true,
+    "reversed_files_match_original_git_blobs": true
+  },
+  "boundaries": {
+    "synthetic_sessions_only": true,
+    "noise_handshake_exploit_demonstrated": false,
+    "runtime_started": false,
+    "tun_or_network_namespaces_created": false,
+    "official_archive_or_binary_digest_changed": false,
+    "public_runtime_gate_advanced": false,
+    "patched_binary_distributed": false,
+    "upstream_issue_or_pr_created": false
+  },
+  "remaining_contracts": [
+    "PeerSessionTunnelFilter sender-ID/pass-through ingress paths and the exact direct-peer profile need production-linked negative tests.",
+    "Production owned overlay lifecycle/readiness/accepted-connection revocation remains a separate prerequisite.",
+    "Any rebuilt runtime candidate requires its own distinct executable identity and source/notices; the official artifact lock continues to identify original bytes."
+  ]
+}

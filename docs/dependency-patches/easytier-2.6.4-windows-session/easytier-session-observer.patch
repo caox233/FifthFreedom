@@ -1,0 +1,160 @@
+--- a/easytier/Cargo.toml
++++ b/easytier/Cargo.toml
+@@ -348,6 +348,8 @@
+ 
+ 
+ [features]
++# Explicit disposable Windows development mode; no Public admission is implied.
++ff-windows-session-observer = ["tun"]
+ default = [
+     "wireguard",
+     "websocket",
+--- a/easytier/src/instance/virtual_nic.rs
++++ b/easytier/src/instance/virtual_nic.rs
+@@ -40,7 +40,7 @@
+ use tun::{AbstractDevice, AsyncDevice, Configuration, Layer};
+ use zerocopy::{NativeEndian, NetworkEndian};
+ 
+-#[cfg(target_os = "windows")]
++#[cfg(all(target_os = "windows", not(feature = "ff-windows-session-observer")))]
+ use crate::common::ifcfg::RegistryManager;
+ 
+ pin_project! {
+@@ -243,12 +243,14 @@
+     global_ctx: ArcGlobalCtx,
+ 
+     ifname: Option<String>,
++    #[cfg(all(target_os = "windows", feature = "ff-windows-session-observer"))]
++    session_observer: Option<tun::platform::windows::SessionIdentityObserver>,
+     ifcfg: Box<dyn IfConfiguerTrait + Send + Sync + 'static>,
+ }
+ 
+ impl Drop for VirtualNic {
+     fn drop(&mut self) {
+-        #[cfg(target_os = "windows")]
++        #[cfg(all(target_os = "windows", not(feature = "ff-windows-session-observer")))]
+         {
+             if let Some(ref ifname) = self.ifname {
+                 // Try to clean up firewall rules, but don't panic in destructor
+@@ -269,6 +271,8 @@
+         Self {
+             global_ctx,
+             ifname: None,
++            #[cfg(all(target_os = "windows", feature = "ff-windows-session-observer"))]
++            session_observer: None,
+             ifcfg: Box::new(IfConfiger {}),
+         }
+     }
+@@ -528,21 +532,39 @@
+         {
+             let dev_name = self.global_ctx.get_flags().dev_name;
+ 
+-            match crate::arch::windows::add_self_to_firewall_allowlist() {
+-                Ok(_) => tracing::info!("add_self_to_firewall_allowlist successful!"),
+-                Err(error) => {
+-                    log::warn!(%error, "Failed to add Easytier to firewall allowlist, Subnet proxy and KCP proxy may not work properly.");
+-                    log::warn!(
+-                        "You can add firewall rules manually, or use --use-smoltcp to run with user-space TCP/IP stack."
+-                    );
+-                }
+-            }
+-
+-            match RegistryManager::reg_delete_obsoleted_items(&dev_name) {
+-                Ok(_) => tracing::trace!("delete successful!"),
+-                Err(e) => tracing::error!("An error occurred: {}", e),
+-            }
+-
++            #[cfg(not(feature = "ff-windows-session-observer"))]
++            {
++                match crate::arch::windows::add_self_to_firewall_allowlist() {
++                    Ok(_) => tracing::info!("add_self_to_firewall_allowlist successful!"),
++                    Err(error) => {
++                        log::warn!(%error, "Failed to add Easytier to firewall allowlist, Subnet proxy and KCP proxy may not work properly.");
++                        log::warn!(
++                            "You can add firewall rules manually, or use --use-smoltcp to run with user-space TCP/IP stack."
++                        );
++                    }
++                }
++
++                match RegistryManager::reg_delete_obsoleted_items(&dev_name) {
++                    Ok(_) => tracing::trace!("delete successful!"),
++                    Err(e) => tracing::error!("An error occurred: {}", e),
++                }
++
++            }
++
++            #[cfg(feature = "ff-windows-session-observer")]
++            {
++                let invalid = || io::Error::new(io::ErrorKind::InvalidInput, "FF_WINDOWS_SESSION_CONFIG");
++                let guid = dev_name.strip_prefix("ff-")
++                    .and_then(|value| u128::from_str_radix(value, 16).ok()).ok_or_else(invalid)?;
++                // The backend also enforces the exact lowercase name and nonzero GUID.
++                let dll = std::env::current_exe()?.parent().ok_or_else(invalid)?.join("wintun.dll");
++                config.tun_name(&dev_name);
++                config.platform_config(|platform| {
++                    platform.request_new_session(guid);
++                    platform.wintun_file(dll);
++                });
++            }
++            #[cfg(not(feature = "ff-windows-session-observer"))]
+             if !dev_name.is_empty() {
+                 config.tun_name(&dev_name);
+             } else {
+@@ -621,6 +643,13 @@
+ 
+     pub async fn create_dev(&mut self) -> Result<Box<dyn Tunnel>, Error> {
+         let dev = self.create_tun().await?;
++        #[cfg(all(target_os = "windows", feature = "ff-windows-session-observer"))]
++        {
++            let observer = dev.session_identity_observer().ok_or_else(||
++                io::Error::new(io::ErrorKind::NotConnected, "FF_WINDOWS_SESSION_UNAVAILABLE"))?;
++            observer.identity()?;
++            self.session_observer = Some(observer);
++        }
+ 
+         #[cfg(not(target_os = "freebsd"))]
+         let ifname = dev.tun_name()?;
+@@ -642,7 +671,7 @@
+             }
+         }
+ 
+-        #[cfg(target_os = "windows")]
++        #[cfg(all(target_os = "windows", not(feature = "ff-windows-session-observer")))]
+         {
+             if let Ok(guid) = RegistryManager::find_interface_guid(&ifname) {
+                 if let Err(e) = RegistryManager::disable_dynamic_updates(&guid) {
+@@ -692,7 +721,7 @@
+ 
+         self.ifname = Some(ifname.to_owned());
+ 
+-        #[cfg(target_os = "windows")]
++        #[cfg(all(target_os = "windows", not(feature = "ff-windows-session-observer")))]
+         {
+             // Add firewall rules for virtual NIC interface to allow all traffic
+             match crate::arch::windows::add_interface_to_firewall_allowlist(&ifname) {
+@@ -833,6 +862,16 @@
+     pub async fn ifname(&self) -> Option<String> {
+         let nic = self.nic.lock().await;
+         nic.ifname.as_ref().map(|s| s.to_owned())
++    }
++
++    /// Read-only local evidence; does not authorize Public or attest a secure peer.
++    #[cfg(all(target_os = "windows", feature = "ff-windows-session-observer"))]
++    pub async fn observe_windows_session(&self, source: Ipv4Addr)
++        -> Result<tun::platform::windows::SessionIdentity, Error> {
++        let nic = self.nic.lock().await;
++        let observer = nic.session_observer.as_ref().ok_or_else(||
++            io::Error::new(io::ErrorKind::NotConnected, "FF_WINDOWS_SESSION_UNAVAILABLE"))?;
++        Ok(observer.observe_ipv4(source)?)
+     }
+ 
+     pub async fn assign_ipv4_to_tun_device(&self, ipv4_addr: cidr::Ipv4Inet) -> Result<(), Error> {
+@@ -1342,7 +1381,7 @@
+             let mut nic = self.nic.lock().await;
+             match nic.create_dev().await {
+                 Ok(ret) => {
+-                    #[cfg(target_os = "windows")]
++                    #[cfg(all(target_os = "windows", not(feature = "ff-windows-session-observer")))]
+                     {
+                         let dev_name = self.global_ctx.get_flags().dev_name;
+                         let _ = RegistryManager::reg_change_catrgory_in_profile(&dev_name);

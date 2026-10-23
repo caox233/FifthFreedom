@@ -1,0 +1,40 @@
+# Candidate template only. Provision/review inputs before installing/enabling.
+# Native issuer and this reader use the same dedicated service uid and key bytes.
+[Unit]
+Description=Fifth Freedom read-only HTTPS control plane
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=fifth-freedom
+Group=fifth-freedom
+UMask=0077
+LoadCredential=issuer.key:/etc/fifth-freedom-secrets/issuer.key
+LoadCredential=certificate.pem:/etc/fifth-freedom-secrets/certificate.pem
+LoadCredential=tls.key:/etc/fifth-freedom-secrets/tls.key
+ExecStartPre=/usr/bin/python3 -I /opt/fifth-freedom-control/FifthFreedom-Control.pyz --config /etc/fifth-freedom-control/control.json --check-config
+ExecStart=/usr/bin/python3 -I /opt/fifth-freedom-control/FifthFreedom-Control.pyz --config /etc/fifth-freedom-control/control.json
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=15
+TimeoutStopSec=15
+KillMode=control-group
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_INET AF_UNIX
+CapabilityBoundingSet=
+ReadOnlyPaths=/var/lib/fifth-freedom/native
+
+[Install]
+WantedBy=multi-user.target

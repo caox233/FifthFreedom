@@ -18,6 +18,7 @@ public partial class MainWindow
     private bool _presencePending, _toolsOperation;
     private Task _presenceTask = Task.CompletedTask;
     private string _recoveryServer = "", _recoveryUser = "", _recoveryBind = "";
+    private CredentialIdentity? _recoveryCredentialIdentity;
     private string _toolsPage = "home";
     private readonly ObserverSession _observerSession = new();
     private void ObserverMode_Changed(object sender, RoutedEventArgs e)
@@ -125,7 +126,7 @@ public partial class MainWindow
         try
         {
             _recoveryServer = txtServer.Text.Trim(); _recoveryUser = txtUsername.Text.Trim(); _recoveryBind = _settings.BindOverride;
-            _ = CredentialStore.Scope(_recoveryServer, _recoveryUser);
+            _recoveryCredentialIdentity = CurrentCredentialIdentity(_recoveryServer, _recoveryUser);
             ClearRecoveryFields(); txtRecoveryScope.Text = _recoveryServer + "  /  " + _recoveryUser;
             ShowTools("recovery"); recoveryCode.Focus();
         }
@@ -143,10 +144,15 @@ public partial class MainWindow
     {
         if (_toolsOperation || App.PreviewMode) return;
         string server = _recoveryServer, user = _recoveryUser, bind = _recoveryBind;
+        var recoveryIdentity = _recoveryCredentialIdentity;
         string password = recoveryPassword.Password, code = recoveryCode.Password, confirmation = recoveryConfirm.Password;
         SetToolsOperation(true);
         try
         {
+            // Public recovery has no integrated protected transport yet. Never
+            // pass its credentials through the retained LAN-only recovery path.
+            if (recoveryIdentity is null || recoveryIdentity.Environment != NetworkEnvironmentKind.Lan
+                || !recoveryIdentity.Equals(CurrentCredentialIdentity(server, user))) throw new ArgumentException("RECOVERY_ENVIRONMENT_UNAVAILABLE");
             var result = await _passwordRecovery.ResetAsync(server, bind, user, code, password, confirmation, _toolsCts.Token);
             if (!result.Success)
             {
@@ -163,14 +169,14 @@ public partial class MainWindow
             bool stored = true;
             try
             {
-                _credentialStore.Remove(server, user);
-                if (chkRememberPassword.IsChecked == true) _credentialStore.Save(server, user, password);
+                _credentialStore.Delete(recoveryIdentity);
+                if (chkRememberPassword.IsChecked == true) _credentialStore.Save(recoveryIdentity, password);
             }
             catch { stored = false; }
-            if (CanUseCapturedPassword(CredentialStore.Scope(server, user), txtServer.Text, txtUsername.Text))
+            if (CanUseCapturedPassword(recoveryIdentity.ScopeValue, txtServer.Text, txtUsername.Text))
             {
                 _restoringPassword = true;
-                try { txtPassword.Password = password; _autoPasswordScope = CredentialStore.Scope(server, user); }
+                try { txtPassword.Password = password; _autoPasswordScope = recoveryIdentity.ScopeValue; }
                 finally { _restoringPassword = false; }
             }
             await ShowInfoDialogAsync(L("密码已重置", "Password reset"), L("新恢复码已显示在设置页，请立即复制保存。关闭页面后不会保留。", "Save the new recovery code shown in Settings. It is cleared when the page closes.") + (stored ? "" : L("\n本机密码保存失败，请下次手动输入新密码。", "\nLocal password storage failed; enter the new password manually next time.")));

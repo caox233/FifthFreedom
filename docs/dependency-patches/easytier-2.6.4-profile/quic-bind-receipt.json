@@ -1,0 +1,276 @@
+{
+  "schema": 1,
+  "kind": "pinned-quic-bind-observation-correction",
+  "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+  "cargo_lock": {
+    "bytes": 297226,
+    "sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9"
+  },
+  "original_producer_sources": [
+    {
+      "path": "easytier/src/tunnel/quic.rs",
+      "git_blob": "c4304daeff97aeb43b61901fc2af69010fec540c",
+      "bytes": 25328,
+      "sha256": "a1b281d099aecac57047de11dea5526119daecd34456a32a6d945b5338a7c03e"
+    },
+    {
+      "path": "easytier/src/tunnel/mod.rs",
+      "git_blob": "06629b6cb6ba564c85852b76cb1938cdb425a500",
+      "bytes": 11498,
+      "sha256": "dd6d946131eab80bfa32634a03613f444fbbad1217682666b384039680639797"
+    },
+    {
+      "path": "easytier/src/proto/common.proto",
+      "git_blob": "308796e8984b624d53f1aee8376084d7012e2eb0",
+      "bytes": 5620,
+      "sha256": "a54499dc4cfc8fa6f62c53795b7f0ec743e77095fe0a3637f731a1c886b21f44"
+    },
+    {
+      "path": "easytier/src/easytier-cli.rs",
+      "git_blob": "462e8cdbf4b0cd990e78d471e7df250714b9e13f",
+      "bytes": 110702,
+      "sha256": "bd65bb28dca733f90fd39c55f96aa5f30b1fcfa15490872b7f3e827299511d1c"
+    },
+    {
+      "path": "easytier/build.rs",
+      "git_blob": "6b2ea81f8f10e2688ddd4107233114684c47cf61",
+      "bytes": 7638,
+      "sha256": "3cbf6ed70bf1aba93256b0d32caa3418806afb6c81fbc573c7ddd098a20edd35"
+    },
+    {
+      "path": "easytier/src/proto/api.rs",
+      "git_blob": "d3b81be6158ec5c3cf19bc0198d34f3fb87f5ecd",
+      "bytes": 12322,
+      "sha256": "5e3aabef7571edf958f3c3c79998deff3471e6cc91166a613a1599f92526d4ab"
+    },
+    {
+      "path": "easytier/src/peers/rpc_service.rs",
+      "git_blob": "941d03f40946eaee3c24ca4d3401fd0f97fb5682",
+      "bytes": 9854,
+      "sha256": "0f94ca69982f37bd0e4501979409db9a555d6776684f2389c526eb8294fb75c9"
+    },
+    {
+      "path": "easytier/src/proto/api_instance.proto",
+      "git_blob": "12fe18f670b0ce9ccbb2874360a45eb47087d721",
+      "bytes": 10061,
+      "sha256": "002a0fdd6d7be6ed88cc159b35bff089163ec755a021e6bf0f27561f040d9f50"
+    },
+    {
+      "path": "easytier/src/proto/common.rs",
+      "git_blob": "067560ce923ab4101ea13ec9f9cde3e10ab07b87",
+      "bytes": 20016,
+      "sha256": "1a68ecbd2dd0248b9e655cd4ab590dbbcb9e5f1700e4cd7f952f276f8735274a"
+    }
+  ],
+  "reviewed_project_sources": [
+    {
+      "path": "src/public/fifth_freedom_control/easytier_profile.py",
+      "bytes": 19248,
+      "sha256": "54c39731789455daf19ee377202c66989ad968040524bc0ff276c390b21771e6"
+    },
+    {
+      "path": "scripts/easytier_probe_worker.py",
+      "bytes": 22413,
+      "sha256": "2ec52aa3f84a81d2273f41526e7dec0b8378f695e5fa0daa6a4089e2a267d8a4"
+    },
+    {
+      "path": "scripts/ci_easytier_probe.py",
+      "bytes": 45820,
+      "sha256": "fe3ef46f211c777d566ac6ca68315e58839560d07ecff7c2c40d6ecc7bd22d78"
+    },
+    {
+      "path": "tests/server/test_easytier_profile.py",
+      "bytes": 15392,
+      "sha256": "a492f99b21199c000630aeea4229364bc12dd08198789761fcc1ebabbb09d723"
+    },
+    {
+      "path": "tests/ci/test_ci_easytier_probe.py",
+      "bytes": 35237,
+      "sha256": "ae4380004d7bf7aab0103fbb3eb7fb4e5995830b2eb9910e4d2e9c43e26947da"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-profile/quic-bind-serde-check.rs",
+      "bytes": 2319,
+      "sha256": "7508806748bb4b1c4e1504dadb525a9b35aa90ee48c935a0b5ecd52ed951169e"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-profile/quic-bind-serde-fixture.json",
+      "bytes": 9665,
+      "sha256": "02dc0d1c3af5675a131d45deb5f91c305d3e405c02bb3f9ab22c475498dc466b"
+    },
+    {
+      "path": "docs/tasks/server-12.md",
+      "bytes": 13102,
+      "sha256": "203027092631b9d3550d5b75e42adec3df9a3c8f71405717b3e78ec426737acc"
+    },
+    {
+      "path": "docs/tasks/server-13.md",
+      "bytes": 18451,
+      "sha256": "64996dee1d5b74719b3c73d26dfc42fb9e3fe3c39c5a76a5a77fbb2280b0e9e7"
+    }
+  ],
+  "checks": [
+    {
+      "command": "python -B -m unittest discover -s tests/server -p test_easytier_profile.py -v",
+      "exit_code": 1,
+      "passed": 9,
+      "errors": 1,
+      "skipped": 0,
+      "logs": [
+        {
+          "path": ".local/evidence/cloud/server13-readiness/profile-before.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".local/evidence/cloud/server13-readiness/profile-before.stderr",
+          "bytes": 2843,
+          "sha256": "6448eb009d9b1e672713e374597a4a2b4c92446ef1c3b0383fadcb075aea8a88"
+        }
+      ]
+    },
+    {
+      "command": "python -B -m unittest discover -s tests/server -p test_easytier_profile.py -v",
+      "exit_code": 0,
+      "passed": 10,
+      "errors": 0,
+      "skipped": 0,
+      "logs": [
+        {
+          "path": ".local/evidence/cloud/server13-readiness/profile-after.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".local/evidence/cloud/server13-readiness/profile-after.stderr",
+          "bytes": 1747,
+          "sha256": "fa9ed7e3b529374068797717a7fe055ed3aea1b7780d5d7d90e90e16b9aae99d"
+        }
+      ]
+    },
+    {
+      "command": "python -B -m unittest discover -s tests/server -p test_easytier_profile.py -v",
+      "exit_code": 0,
+      "passed": 12,
+      "errors": 0,
+      "skipped": 0,
+      "logs": [
+        {
+          "path": ".local/evidence/cloud/server13-readiness/profile-final.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".local/evidence/cloud/server13-readiness/profile-final.stderr",
+          "bytes": 2083,
+          "sha256": "af3890605c9d96849382527f15fb1f6a2fdbf336215f4113035215527b5258f0"
+        }
+      ]
+    },
+    {
+      "command": "python -B -m unittest discover -s tests/ci -p test_ci_easytier_probe.py -v",
+      "exit_code": 0,
+      "passed": 27,
+      "errors": 0,
+      "skipped": 0,
+      "logs": [
+        {
+          "path": ".local/evidence/cloud/server13-readiness/probe.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".local/evidence/cloud/server13-readiness/probe.stderr",
+          "bytes": 5086,
+          "sha256": "37d288e84d0018ca4a52bbd2975d8b0584ca93ee7572bd54c088ade5639aa413"
+        }
+      ]
+    },
+    {
+      "command": "python -B -m unittest discover -s tests/server -p test_owned_overlay.py -v",
+      "exit_code": 0,
+      "passed": 18,
+      "errors": 0,
+      "skipped": 0,
+      "logs": [
+        {
+          "path": ".local/evidence/cloud/server13-readiness/monitor.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".local/evidence/cloud/server13-readiness/monitor.stderr",
+          "bytes": 3607,
+          "sha256": "496ed569ab569e3086ead883aa3a2a08c6c295c8f3dd754e2826bbf707e4b699"
+        }
+      ]
+    },
+    {
+      "command": "python -B -m unittest discover -s tests/ci -p test_owned_stack.py -v",
+      "exit_code": 0,
+      "passed": 20,
+      "errors": 0,
+      "skipped": 0,
+      "logs": [
+        {
+          "path": ".local/evidence/cloud/server13-readiness/stack.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".local/evidence/cloud/server13-readiness/stack.stderr",
+          "bytes": 3567,
+          "sha256": "aad7b708eb0b57519b153b69f5de853baa107eebed833c2a78897085539ee717"
+        }
+      ]
+    },
+    {
+      "command": "cargo +1.95.0 run --locked --offline -p easytier --example ff_quic_bind_serde --manifest-path .local/dependencies/easytier-8428a89/Cargo.toml",
+      "exit_code": 0,
+      "passed": 3,
+      "errors": 0,
+      "skipped": 0,
+      "logs": [
+        {
+          "path": ".local/evidence/cloud/server13-readiness/serde.stdout",
+          "bytes": 9665,
+          "sha256": "02dc0d1c3af5675a131d45deb5f91c305d3e405c02bb3f9ab22c475498dc466b"
+        },
+        {
+          "path": ".local/evidence/cloud/server13-readiness/serde.stderr",
+          "bytes": 254,
+          "sha256": "069c9b4441ca4afd4a71bf8ec5b7fad3430c34c1defd322b18bad5116b3be03d"
+        }
+      ]
+    }
+  ],
+  "selected_toolchain": "Rust 1.95.0 GNU/default features; existing explicit local toolchain settings from secure-session receipt",
+  "fixture_scope": "Synthetic public RFC 7748 key vectors and SocketAddr strings through production PeerConnInfo/PeerInfo/Route, list_peer_route_pair, build_url_from_socket_addr and generated serde; no socket/core/RPC instantiated",
+  "upstream_production_sources_changed": false,
+  "official_binary_pins_changed": false,
+  "candidate_build_inputs_changed": false,
+  "core_started": false,
+  "tun_created": false,
+  "rpc_queried": false,
+  "network_tested": false,
+  "production_admission": false,
+  "previous_hosted_run": {
+    "run_id": 39919260513,
+    "job_id": 120300259865,
+    "commit": "6c11c8b85633ea5e2977ea0131c86ee01b316bbb",
+    "result": "failure",
+    "code": "OVERLAY_READY_TIMEOUT",
+    "transport": "quic",
+    "completed_transfer_phases": 0,
+    "cleanup_errors": [],
+    "namespaces_created": 2,
+    "namespaces_removed": 2,
+    "private_stage_removed": true,
+    "original_tun_and_query_state": "not_recorded",
+    "root_cause_confirmed": false,
+    "artifact_id": 12487256914,
+    "artifact_zip_sha256": "b1c3b1c47f2b6a37df1ef6bc7581df22ae6c87b92f203dbe8ba96269cdce485a",
+    "downloaded_receipt_path": ".local/cloud-receipts/normal-api-log-retry-20261023/6c-overlay-receipt.json",
+    "downloaded_receipt_sha256": "6b35dc0e55494d71241ccdbac729aa7c89da98cfb26b47d9ae822bc2bd1b7c6d"
+  }
+}

@@ -1,0 +1,12 @@
+[package]
+name = "ff-windows-owned-read-contract"
+version = "0.1.0"
+edition = "2021"
+publish = false
+[workspace]
+[dependencies]
+tokio = { version = "=1.52.1", features = ["macros", "rt-multi-thread", "io-util", "net", "sync", "time", "test-util"] }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.149"
+uuid = "=1.17.0"
+sha2 = "=0.10.9"

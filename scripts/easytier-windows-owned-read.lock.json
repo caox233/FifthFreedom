@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "kind": "independent-windows-owned-read-build-only",
+  "base_recipe": {
+    "path": "scripts/easytier-windows-no-packet.lock.json",
+    "bytes": 4985,
+    "sha256": "62b7f94326abd38aa3447534c6a1b89269e5b048d33e9236a490e0c169414ae5"
+  },
+  "read_recipe": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-owned-read/receipt.json",
+    "bytes": 3011,
+    "sha256": "2f23207d3f580e4e1efd64034c07ab92f19ae46aa9746bca1916b63c41801aaf"
+  },
+  "base_prepared": {
+    "source_tree_sha256": "da75d381f7ddde2997777205529d3dde074dd6eaa2e05c87a974863bfa63e155",
+    "patch_manifest_sha256": "9f698410a6a004f34136712096871b841d74e5ce32d9e0c209ebccde86e6f82c",
+    "cargo_lock_patched_sha256": "37c7e066bef9d801b7b67942a18bd7365485e613c18d14f366aed178bb38a696"
+  },
+  "build": {
+    "rust_toolchain": "1.95.0",
+    "target": "x86_64-pc-windows-msvc",
+    "profile": "release",
+    "features": [
+      "ff-windows-session-observer",
+      "kcp",
+      "magic-dns",
+      "quic",
+      "smoltcp",
+      "socks5",
+      "tun",
+      "websocket",
+      "wireguard",
+      "zstd"
+    ],
+    "bins": [
+      "easytier-core.exe",
+      "easytier-cli.exe"
+    ],
+    "win7_compatibility": false,
+    "execute_binaries": false,
+    "upload_binaries": false,
+    "no_default_features": true
+  },
+  "admission": {
+    "public_startup_allowed": false,
+    "core_runtime_verified": false,
+    "dependency_license_closure_verified": false
+  },
+  "expected_prepared": {
+    "source_tree_sha256": "980bb96687a83f7da040d8aa4c4f7134c1c07183637510f2f39a805eaa08a294",
+    "patch_manifest_sha256": "319a05bc889df82bf4d374304cbbb6bd0c163ac9996d0e55ecee058dfd647810",
+    "cargo_lock_patched_sha256": "37c7e066bef9d801b7b67942a18bd7365485e613c18d14f366aed178bb38a696"
+  }
+}

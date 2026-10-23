@@ -1,0 +1,260 @@
+{
+  "schema": 1,
+  "kind": "independent-windows-no-packet-source-contract-evidence",
+  "upstream": {
+    "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+    "repository": "https://github.com/EasyTier/EasyTier",
+    "source_date_epoch": 1778588776,
+    "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+  },
+  "tun_upstream": {
+    "commit": "12378839e7985283df0e4fb536b7137230356db5",
+    "repository": "https://github.com/EasyTier/rust-tun",
+    "tree": "b2d6df5fedf4641ff4c699e731901fd998ec75f8"
+  },
+  "base_recipe": {
+    "path": "scripts/easytier-windows-source.lock.json",
+    "bytes": 3126,
+    "sha256": "dd193ffbdafe7c816545c88fb23e74e850e6ff5755e6c66168eea2d87e98c129"
+  },
+  "base_prepared": {
+    "source_tree_sha256": "efb765a226be8ad35826c71868b105f09d5d6971b9d58580754389efec058fcd",
+    "patch_manifest_sha256": "8123326e2c84d5909cab0a14d7c8f6539d73dea59a4e7ad5485f8ae361f68476",
+    "cargo_lock_patched_sha256": "93933b3d72622fb04692d11defdf1ebc5ed979c5feedefceb74114bd2db6b6fc",
+    "cargo_override_sha256": "d2eff4d03f1efa57a6a0e0b37af6dd7841fd0b5a2a77d7a02e3bdd437eafc830"
+  },
+  "derived_prepared": {
+    "source_tree_sha256": "da75d381f7ddde2997777205529d3dde074dd6eaa2e05c87a974863bfa63e155",
+    "patch_manifest_sha256": "9f698410a6a004f34136712096871b841d74e5ce32d9e0c209ebccde86e6f82c",
+    "cargo_lock_patched_sha256": "37c7e066bef9d801b7b67942a18bd7365485e613c18d14f366aed178bb38a696"
+  },
+  "source_files": [
+    {
+      "path": "scripts/ci_easytier_windows_no_packet.py",
+      "bytes": 15421,
+      "sha256": "e6ebda57cee893e0f9cb85c2927b6ffee014cfe026ddf24bb6cd5c2b0fcaa1c5"
+    },
+    {
+      "path": "scripts/easytier-windows-no-packet.lock.json",
+      "bytes": 4985,
+      "sha256": "62b7f94326abd38aa3447534c6a1b89269e5b048d33e9236a490e0c169414ae5"
+    },
+    {
+      "path": "tests/ci/test_ci_easytier_windows_no_packet.py",
+      "bytes": 6093,
+      "sha256": "a29e375453625fab660f274a592b07d4fb09404c6e93bbbf14b6072919a7b6d5"
+    },
+    {
+      "path": ".github/workflows/easytier-windows-build-only.yml",
+      "bytes": 4726,
+      "sha256": "111f07e60989199fedcbbc0755120da5f43637dba95dd661404b683677c9bdef"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-windows-no-packet/no-packet.patch",
+      "bytes": 7771,
+      "sha256": "28c87a392917b01202ebba4b4a74004787ec6d98b1591b83c8502868d9d71469"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-windows-no-packet/source/windows_interfaces.rs",
+      "bytes": 1785,
+      "sha256": "c6986d726cd98339379f11298b2e63a2802c8a3bbc26b4ca9ad5cff072be5fb1"
+    },
+    {
+      "path": "tests/native/windows-no-packet/Cargo.toml",
+      "bytes": 361,
+      "sha256": "5d176000561dd6e3a20e0ac1219fc826581905c748a5f1121617f7a6778cdd20"
+    },
+    {
+      "path": "tests/native/windows-no-packet/Cargo.lock",
+      "bytes": 9124,
+      "sha256": "2fc00d039762e449e5e644313efca70d070b0a3b29084c929c5039d1b9d0c145"
+    },
+    {
+      "path": "tests/native/windows-no-packet/src/lib.rs",
+      "bytes": 4545,
+      "sha256": "4f6fc57f29c7ffefe49260c4a3b00b821181dcda7bc0a0b6d9514373eb6a64b1"
+    }
+  ],
+  "original_paired_source_unchanged": true,
+  "prepared_file_count": 750,
+  "selected_graph": {
+    "baseline": {
+      "accepted": false,
+      "code": "NO_PACKET_CAPTURE_DEPENDENCY"
+    },
+    "after_contexts": 489,
+    "after_nodes_sha256": "9936bf8b4a9f1f9b50319d3a00fe424c19158df8a8e5dd1bced6208e7d54c427",
+    "capture_dependencies": [],
+    "metadata_unmodified_workspace_union": true,
+    "actual_output_path": ".local/evidence/cloud/windows-no-packet/final-reproduced/final-selected.stdout",
+    "paired_metadata_resolution": {
+      "tun_version": "1.1.1",
+      "tun_source": "verified-local-paired-tree",
+      "caller_features": [
+        "default",
+        "faketcp",
+        "ff-windows-session-observer",
+        "kcp",
+        "magic-dns",
+        "quic",
+        "smoltcp",
+        "socks5",
+        "tun",
+        "websocket",
+        "wireguard",
+        "zstd"
+      ],
+      "tun_features": [
+        "async",
+        "default",
+        "futures-core",
+        "tokio",
+        "tokio-util",
+        "wintun-dns"
+      ]
+    }
+  },
+  "runs": [
+    {
+      "name": "initial-linked-codec",
+      "exit_code": 101,
+      "rust_code": "E0277",
+      "meaning": "missing pnet_base/std; no tests executed"
+    },
+    {
+      "name": "corrected-linked-production-contracts",
+      "exit_code": 0,
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "host": "Linux"
+    },
+    {
+      "name": "windows-target-contract-compile-check",
+      "exit_code": 0,
+      "target": "x86_64-pc-windows-msvc",
+      "full_core_build": false,
+      "windows_execution": false
+    },
+    {
+      "name": "source-graph-static-import-gates",
+      "exit_code": 0,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "workflow-actionlint",
+      "exit_code": 0
+    }
+  ],
+  "raw_local_logs": [
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/contract-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/contract-before.stderr",
+      "bytes": 2344,
+      "sha256": "53d8fcb01ed458fdbac7c9dafe4d03b2d49d8fb794d92660024e545b229a54ae"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/contract-after.stdout",
+      "bytes": 712,
+      "sha256": "2cae7390e05099f68cdcba8eedd8be59bb256f959213d11878274bd477656a3c"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/contract-after.stderr",
+      "bytes": 492,
+      "sha256": "043d6f72bc839576b4b448f7babce3e42b28cbee300810ecf45e9d0119935703"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/windows-cross-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/windows-cross-check.stderr",
+      "bytes": 1187,
+      "sha256": "8a9b6fc097165dde8c339f283b3ca344adea56fa0083f99d71f9645a091cc456"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/python-tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/python-tests.stderr",
+      "bytes": 1688,
+      "sha256": "d5d561991331a96dabacfe809582f955d54f3a5e6ead53c36b781e1c44e28c1f"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/baseline-selected.txt",
+      "bytes": 75908,
+      "sha256": "7bdc75e556629b0066ba45447a02a73c64e00089da48c50f1a509ab0e08ab6c1"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/baseline-selected.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/paired/selected-deduplicated.txt",
+      "bytes": 74981,
+      "sha256": "c444ca4552da2ac805edc6f54405d938c10c90bc669c2751c06c0efe3b3838f8"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/paired/selected-deduplicated.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/actionlint.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/actionlint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/final-reproduced/final-selected.stdout",
+      "bytes": 75011,
+      "sha256": "8dff9847b907c91ccc51dd441115a8abb7c0ad5549c9e2add0e965b6e0fc5e60"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/final-reproduced/final-selected.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/final-reproduced/final-metadata.stdout",
+      "bytes": 4422750,
+      "sha256": "84936d43d86b70ed27241ee0db353fee15f59182aa471973ff8c1e3da8b9003f"
+    },
+    {
+      "path": ".local/evidence/cloud/windows-no-packet/final-reproduced/final-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "runtime_executed": false,
+  "driver_loaded": false,
+  "full_windows_core_built": false,
+  "actual_new_binary_imports_verified": false,
+  "runtime_binary_published": false,
+  "public_admission": false,
+  "dependency_license_closure_verified": false,
+  "local_prepared_receipt": {
+    "path": ".local/evidence/cloud/windows-no-packet/final-reproduced/source-receipt.json",
+    "bytes": 132823,
+    "sha256": "2c0107040bad0e5374da9125fc4243f806916b318371ff74a4200c222a269f39"
+  },
+  "linked_test_executable": {
+    "path": ".local/evidence/cloud/windows-no-packet/contract-target/debug/deps/ff_windows_no_packet_contract-30d0d4f7617c8c07",
+    "bytes": 9821600,
+    "sha256": "a7c9715782a313221f32e9409540c44757f5ad1d051906e43bf9cdbb6b16ce58"
+  }
+}

@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "scope": "secure Data ingress at production PeerSessionTunnelFilter; no network runtime",
+  "upstream": {
+    "repository": "https://github.com/EasyTier/EasyTier",
+    "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+    "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9"
+  },
+  "baseline": {
+    "prior_production_patch": "../easytier-2.6.4-secure-session/require-encrypted-flag.patch",
+    "prior_production_patch_sha256": "06a16ca43e035eb1380c99ace8f19a8495bbd09b6413f0fe800752896aa3d2b3",
+    "prior_test_patch_sha256": "5673d6b3f24dd44a263b7863a491ec0c482b61feadd77cfc2534973d3d8d31c4",
+    "filter_production_original_until_before_test": true
+  },
+  "source_file": {
+    "path": "easytier/src/peers/peer_conn.rs",
+    "original_sha256": "ac70462079f7f07edc6e024b5a0e833ec7411848c51d1d07dda5b4ce4616bc69",
+    "test_only_before_sha256": "ee9b5d599285e535760b67814a83271957f2c349cb2bee0a37561776c9b0284b",
+    "guard_only_sha256": "14cccbd71f767677cf884fd1bdb434914c4daba57db9cf3ddbda6410c352af56",
+    "guard_and_tests_after_sha256": "f3c1dd756e01975263d0cf5be5d7f3e6847bd6200616c7519f84dafd360304d0"
+  },
+  "patches": [
+    {
+      "path": "ingress-contract-tests.patch",
+      "bytes": 5365,
+      "sha256": "13a8719f4ff0679c3a0dcc56d1f61717f8659fcbf2337032656fd66889e072d9"
+    },
+    {
+      "path": "require-encrypted-data-ingress.patch",
+      "bytes": 637,
+      "sha256": "676e9b9dbeaad45cab7e7b85f245091c5e0d2a683f1436e4a1955f2b6e4245a3"
+    }
+  ],
+  "toolchain": {
+    "rustc": "1.95.0 (59807616e 2026-04-14)",
+    "target": "x86_64-unknown-linux-gnu",
+    "features": "unchanged upstream default; ring via wireguard; no openssl-crypto or aes-gcm feature",
+    "algorithm": "aes-256-gcm",
+    "build_environment": "same explicitly documented build adjustments as prior secure-session receipt"
+  },
+  "runs": [
+    {
+      "log": "before-tests.log",
+      "log_sha256": "9d773e198d03427243a78c1f7b9ebb10938a18921b83f5a774ea42f5791bfa1a",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "fifth_freedom_ingress_contract",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "passed": 6,
+      "failed": 4,
+      "summary": [
+        "test peers::peer_conn::fifth_freedom_ingress_contract::disabled_secure_filter_preserves_legacy_plaintext ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::encrypted_relay_frame_is_preserved_for_downstream_session_validation ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::matching_tampered_tag_drops_without_consuming_valid_sequence ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::secure_plaintext_matching_sender_is_dropped ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::matching_encrypted_data_decrypts_and_replay_drops ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::secure_plaintext_without_peer_is_dropped ... FAILED",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::secure_plaintext_mismatched_sender_is_dropped ... FAILED",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::secure_plaintext_zero_sender_is_dropped ... FAILED",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::unencrypted_handshake_and_ping_pong_controls_remain_compatible ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::secure_plaintext_without_session_is_dropped ... FAILED",
+        "test result: FAILED. 6 passed; 4 failed; 0 ignored; 0 measured; 1201 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "log": "after-tests.log",
+      "log_sha256": "bcd4df7d2d9ea20a199aff11f099289cd828a5ab285d1bdaf04858af52269598",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "fifth_freedom_ingress_contract",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": 10,
+      "failed": 0,
+      "summary": [
+        "test peers::peer_conn::fifth_freedom_ingress_contract::disabled_secure_filter_preserves_legacy_plaintext ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::matching_encrypted_data_decrypts_and_replay_drops ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::secure_plaintext_matching_sender_is_dropped ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::matching_tampered_tag_drops_without_consuming_valid_sequence ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::encrypted_relay_frame_is_preserved_for_downstream_session_validation ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::secure_plaintext_without_peer_is_dropped ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::secure_plaintext_mismatched_sender_is_dropped ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::secure_plaintext_without_session_is_dropped ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::secure_plaintext_zero_sender_is_dropped ... ok",
+        "test peers::peer_conn::fifth_freedom_ingress_contract::unencrypted_handshake_and_ping_pong_controls_remain_compatible ... ok",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1201 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "log": "prior-contract-tests.log",
+      "log_sha256": "b43f8d68568ceebb488910f0962ebb7fa53023533b74f1d6f3d2004d9d443284",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "fifth_freedom_secure_profile_contract",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": 4,
+      "failed": 0,
+      "summary": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1207 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "log": "existing-datagram-tests.log",
+      "log_sha256": "a72489cfdfe1079b034ab1efb3ff1b81d21721f872abd82720f1c5903ff4df61",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "peers::secure_datagram::tests",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": 9,
+      "failed": 0,
+      "summary": [
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 1202 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "log": "existing-peer-tests.log",
+      "log_sha256": "b433861ca48f8011c7491358eb769935d92059995d3786189b7692249b60c30c",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "peers::peer_session::tests",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": 2,
+      "failed": 0,
+      "summary": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1209 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "log": "existing-ring-handshake-roundtrip.log",
+      "log_sha256": "9b76ad210e7d3fde3bae0dc292344236c5c66f6445cb5fb528cbb95814df11ec",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "-p",
+        "easytier",
+        "--lib",
+        "peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": 1,
+      "failed": 0,
+      "summary": [
+        "test peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip ... ok",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1210 filtered out; finished in 0.01s"
+      ]
+    }
+  ],
+  "patch_integrity": {
+    "originals_match_upstream_git_blobs": true,
+    "apply_checks_passed": true,
+    "applied_all_four_patches_match_tested_checkout": true,
+    "reverse_checks_restore_all_originals": true,
+    "production_only_two_guard_patches_match_guard_only_source": true
+  },
+  "boundaries": {
+    "synthetic_filter_and_session_tests": true,
+    "existing_in_memory_noise_roundtrip_test": true,
+    "core_or_cli_runtime_started": false,
+    "network_socket_or_tun_opened": false,
+    "noise_network_exploit_demonstrated": false,
+    "relay_end_to_end_authentication_tested_by_new_filter_test": false,
+    "official_binary_lock_changed": false,
+    "runtime_binary_distributed": false,
+    "public_gate_advanced": false
+  },
+  "interpretation": "The filter now rejects unencrypted Data before from=0/mismatch/no-peer/no-session pass-through. Encrypted relay frames are retained for downstream PeerSession validation. Existing disable_relay_data is a forwarding policy, not strict direct ingress. No new config flag or global relay prohibition was introduced."
+}

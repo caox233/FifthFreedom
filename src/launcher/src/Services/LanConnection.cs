@@ -7,23 +7,6 @@ using SplinterCellCNLauncher.Network;
 
 namespace ScblLan;
 
-public sealed record ServerAddress(string Host, int Port)
-{
-    public static ServerAddress Parse(string text)
-    {
-        text = text.Trim();
-        if (text.Length == 0) throw new ArgumentException("请填写服务器 IPv4 或域名。");
-        if (!text.Contains("://")) text = "http://" + text;
-        if (!Uri.TryCreate(text, UriKind.Absolute, out var u) || u.Scheme != "http" || u.UserInfo.Length > 0
-            || u.AbsolutePath != "/" || u.Query.Length > 0 || u.Fragment.Length > 0 || u.HostNameType == UriHostNameType.IPv6)
-            throw new ArgumentException("请输入 IPv4 或域名，可附加 API 端口；首版使用可信 LAN 上的直连 HTTP。");
-        bool explicitPort = text[(text.IndexOf("://", StringComparison.Ordinal) + 3)..].TrimEnd('/').Contains(':');
-        int port = explicitPort ? u.Port : 50051;
-        if (port < 1) throw new ArgumentException("端口必须在 1–65535 范围内。");
-        return new(u.Host, port);
-    }
-}
-
 public sealed class LanConnection : IDisposable
 {
     // Retained wire authentication identifier for existing LAN accounts; gameplay mode is a separate field.
@@ -35,6 +18,8 @@ public sealed class LanConnection : IDisposable
     public Users.UsersClient Api { get; }
     private readonly GrpcChannel channel;
     private readonly HttpClient http;
+    private SplinterCellCNLauncher.Services.ApiTransportObservation? apiTransport;
+    internal SplinterCellCNLauncher.Services.ApiTransportObservation? ObservedApiTransport => Volatile.Read(ref apiTransport);
     private LanConnection(IPAddress server, IPAddress local, int port)
     {
         ServerIp = server; LocalIp = local; Port = port;
@@ -46,6 +31,11 @@ public sealed class LanConnection : IDisposable
             {
                 socket.Bind(new IPEndPoint(LocalIp, 0));
                 await socket.ConnectAsync(ServerIp, context.DnsEndPoint.Port, ct);
+                // Capture kernel endpoints only for an actual API HTTP/2
+                // connection. This remains historical after connection disposal;
+                // it never becomes Public overlay or interface admission.
+                if (context.DnsEndPoint.Port == Port && context.InitialRequestMessage.Version.Major >= 2)
+                    Volatile.Write(ref apiTransport, SplinterCellCNLauncher.Services.ApiTransportObservation.TryCapture(socket));
                 return new NetworkStream(socket, ownsSocket: true);
             }
             catch { socket.Dispose(); throw; }

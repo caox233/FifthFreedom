@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "scope": "Read-only current typed Windows NIC snapshot; no Public lease or runtime activation",
+  "base_paired_source_tree_sha256": "0e01b494704e7a4f3afb67d7c54b446149fda7317938623d36164d0d53c0d1eb",
+  "base_windows_session_recipe": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-session/receipt.json",
+    "sha256": "ead3eb585a46be4346becf5d89f9a5cce5b58c385e32d31b0cc05276f98f5307"
+  },
+  "patch": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-session-read/session-read.patch",
+    "bytes": 3817,
+    "sha256": "018e17c1d5274d917699264c1930552ef47afcb21aa7277529bfc18a337ce40f"
+  },
+  "files": [
+    {
+      "path": "easytier/src/instance/instance.rs",
+      "original_sha256": "1dcbda42adb89b109f7d91a93b40b35b1e91fea2024285f6a6bb7c14a43a09f5",
+      "patched_sha256": "75aea5e54b6548dd67de5c403bae8f28be97953e81e4cf749fed5df03268c3ba"
+    },
+    {
+      "path": "easytier/src/instance/mod.rs",
+      "original_sha256": "82dddc16c95a87b6f47b71f97f9f0c24a2924b6fc581c01c4f0feac53e5a0335",
+      "patched_sha256": "6fa8ec49c692dd7c6d04486678e53d66a9a68ab687b624da4e3d7ea28db0099a"
+    },
+    {
+      "path": "easytier/src/instance/windows_session_read.rs",
+      "original_sha256": null,
+      "patched_sha256": "1fe55bb741e4bfa123d42bebc06d8a8ee6359abfd5879efe1ab4751d02209b13"
+    }
+  ],
+  "linked_module": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-session-read/source/windows_session_read.rs",
+    "production_path": "easytier/src/instance/windows_session_read.rs",
+    "sha256": "1fe55bb741e4bfa123d42bebc06d8a8ee6359abfd5879efe1ab4751d02209b13",
+    "bytes": 1711
+  },
+  "public_admission": false,
+  "runtime_executed": false,
+  "contract_tests": {
+    "manifest": "tests/native/windows-session-read/Cargo.toml",
+    "expected_passed": 8,
+    "files": [
+      {
+        "path": "tests/native/windows-session-read/Cargo.toml",
+        "bytes": 235,
+        "sha256": "0caf6a7fd6e558cea5805932f0ff1275128cb1a33fad8109b757b98c6b75e92b"
+      },
+      {
+        "path": "tests/native/windows-session-read/Cargo.lock",
+        "bytes": 1809,
+        "sha256": "99d71a58360cb9106e70bd39bf490bade5687ffb990b504c86571ca5ace7ccb6"
+      },
+      {
+        "path": "tests/native/windows-session-read/src/lib.rs",
+        "bytes": 7157,
+        "sha256": "f5508ef86d77a04d951f8241ae1984a69d72ee01c12a37ace9b5c32bbeb4e5c3"
+      }
+    ]
+  }
+}

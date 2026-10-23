@@ -8,10 +8,30 @@ public partial class MainWindow
     private readonly CredentialStore _credentialStore=new();
     private bool _restoringPassword;
     private string? _autoPasswordScope;
-    private static bool CanUseCapturedPassword(string? scope,string server,string username)
+    private CredentialEnvironmentContext _credentialEnvironment = CredentialEnvironmentContext.Lan;
+    private CredentialIdentity CurrentCredentialIdentity(string server, string username)
+        => _credentialEnvironment.CreateIdentity(server, username);
+    private bool CanUseCapturedPassword(string? scope,string server,string username, CredentialEnvironmentContext? capturedEnvironment = null)
     {
-        if(scope==null)return true; // Explicit manual input, not a stored credential.
-        try{return scope==CredentialStore.Scope(server,username);}catch(ArgumentException){return false;}
+        if (capturedEnvironment is not null && !capturedEnvironment.Equals(_credentialEnvironment)) return false;
+        if(scope==null)return true; // Manual input is usable only in its captured environment.
+        try{return scope==CurrentCredentialIdentity(server,username).ScopeValue;}catch(ArgumentException){return false;}
+    }
+    // This changes credential ownership only. Public networking/UI remains
+    // disabled until its separate adapter and trust gates are implemented.
+    private void SetCredentialEnvironment(CredentialEnvironmentContext environment)
+    {
+        ArgumentNullException.ThrowIfNull(environment);
+        Dispatcher.VerifyAccess();
+        if (_credentialEnvironment.Equals(environment)) return;
+        if (_isBusy || _isGameRunning || _isGameStarting || _toolsOperation || _closingBackgroundTasks || _gameLaunchService.SessionId.HasValue)
+            throw new InvalidOperationException("CREDENTIAL_ENVIRONMENT_BUSY");
+        txtPassword.Password = "";
+        _autoPasswordScope = null;
+        ClearRecoveryFields();
+        _recoveryServer = _recoveryUser = _recoveryBind = "";
+        _recoveryCredentialIdentity = null;
+        _credentialEnvironment = environment;
     }
     private void PasswordBox_PasswordChanged(object sender,RoutedEventArgs e)
     {
@@ -22,7 +42,7 @@ public partial class MainWindow
     {
         if(_autoPasswordScope==null || txtPassword==null)return;
         string? scope=null;
-        try{scope=CredentialStore.Scope(txtServer.Text,txtUsername.Text);}catch(ArgumentException){}
+        try{scope=CurrentCredentialIdentity(txtServer.Text,txtUsername.Text).ScopeValue;}catch(ArgumentException){}
         if(_autoPasswordScope!=scope){txtPassword.Password="";_autoPasswordScope=null;}
     }
     private void RestoreRememberedPassword()
@@ -31,9 +51,9 @@ public partial class MainWindow
         ClearAutofillForChangedIdentity();
         if(chkRememberPassword.IsChecked!=true || txtPassword.Password.Length!=0)return;
         try {
-            string scope=CredentialStore.Scope(txtServer.Text,txtUsername.Text);
-            string? password=_credentialStore.Load(txtServer.Text,txtUsername.Text);
-            if(password==null)return;
+            var identity = CurrentCredentialIdentity(txtServer.Text,txtUsername.Text);
+            if (!_credentialStore.TryLoad(identity, out string? password)) return;
+            string scope = identity.ScopeValue;
             _restoringPassword=true;
             try{txtPassword.Password=password;_autoPasswordScope=scope;}
             finally{_restoringPassword=false;}
@@ -49,13 +69,15 @@ public partial class MainWindow
             else RestoreRememberedPassword();
         } catch {await ShowInfoDialogAsync(L("记住密码","Remember Password"),L("无法保存偏好或清理已保存密码，请检查启动器目录写权限。","Could not save the preference or clear saved passwords. Check folder write permission."));}
     }
-    private async Task RememberSuccessfulLoginAsync(string server,string username,string password)
+    private async Task RememberSuccessfulLoginAsync(string server,string username,string password, CredentialEnvironmentContext authenticatedEnvironment)
     {
         if(chkRememberPassword.IsChecked!=true)return;
         bool credentialSaved=false;
         try
         {
-            _credentialStore.Save(server,username,password);
+            // Persist to the namespace captured for this authentication, never
+            // to a different context selected while asynchronous work completed.
+            _credentialStore.Save(authenticatedEnvironment.CreateIdentity(server,username),password);
             credentialSaved=true;
             SaveSettingsFromUi();
         }

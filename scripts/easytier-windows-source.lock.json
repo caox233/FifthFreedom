@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "kind": "paired-modern-windows-easytier-build-only",
+  "linux_recipe": {
+    "path": "scripts/easytier-source.lock.json",
+    "sha256": "c9135af75df006062141b9ecb209887d46a9b374ed0b3d52924c15220448ebeb"
+  },
+  "session_recipe": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-session/receipt.json",
+    "sha256": "ead3eb585a46be4346becf5d89f9a5cce5b58c385e32d31b0cc05276f98f5307"
+  },
+  "tun": {
+    "upstream": {
+      "repository": "https://github.com/EasyTier/rust-tun",
+      "commit": "12378839e7985283df0e4fb536b7137230356db5",
+      "tree": "b2d6df5fedf4641ff4c699e731901fd998ec75f8"
+    },
+    "archive": {
+      "bytes": 225280,
+      "sha256": "a09620fb120b1f55d6d3151629e3a859f39e4278b31331f2c41970d006499d03"
+    },
+    "materialized_links": [],
+    "omitted_files": []
+  },
+  "link_input": {
+    "path": "easytier/third_party/x86_64/Packet.lib",
+    "bytes": 8290,
+    "sha256": "5be8eb0ef57344cedc940fd81edbf7fc98680ba0c8337b577e7fdc448408130b",
+    "reason": "non-Linux prebuilt input excluded; original retained separately"
+  },
+  "modern_build_patch": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-session/modern-windows-build.patch",
+    "bytes": 723,
+    "sha256": "f46dd1b4b4cec5347cf61be817486625843848072ce3f362fcd010b4bec28c43",
+    "source_path": "easytier/build.rs",
+    "original_sha256": "3cbf6ed70bf1aba93256b0d32caa3418806afb6c81fbc573c7ddd098a20edd35",
+    "patched_sha256": "754bbf024dfef62aff6a36a40f4b8de3cf8f5255da3a36cabf24ca9af9ba2dc3"
+  },
+  "build": {
+    "rust_toolchain": "1.95.0",
+    "target": "x86_64-pc-windows-msvc",
+    "profile": "release",
+    "features": [
+      "default",
+      "ff-windows-session-observer"
+    ],
+    "bins": [
+      "easytier-core.exe",
+      "easytier-cli.exe"
+    ],
+    "win7_compatibility": false,
+    "execute_binaries": false,
+    "upload_binaries": false
+  },
+  "admission": {
+    "public_startup_allowed": false,
+    "driver_runtime_verified": false,
+    "dependency_license_closure_verified": false
+  },
+  "expected_prepared": {
+    "source_tree_sha256": "efb765a226be8ad35826c71868b105f09d5d6971b9d58580754389efec058fcd",
+    "patch_manifest_sha256": "8123326e2c84d5909cab0a14d7c8f6539d73dea59a4e7ad5485f8ae361f68476",
+    "cargo_lock_patched_sha256": "93933b3d72622fb04692d11defdf1ebc5ed979c5feedefceb74114bd2db6b6fc",
+    "cargo_override_sha256": "d2eff4d03f1efa57a6a0e0b37af6dd7841fd0b5a2a77d7a02e3bdd437eafc830"
+  },
+  "skipped_legacy_compatibility": {
+    "repository": "https://github.com/easytier/thunk",
+    "commit": "cbbeec75a66b7b3cf0824ae890d9d06bcfb9d1f3",
+    "source_path": "thunk-rs/src/lib.rs",
+    "source_sha256": "5169a532a5e466efe660e5cf56ed0086b4df591f094c92e407b75a4742227034",
+    "reason": "Explicit modern Windows feature skips thunk() call and its curl -LOkf unverified VC-LTL5/YY-Thunks download path; default upstream behavior is preserved."
+  },
+  "session_read_recipe": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-session-read/receipt.json",
+    "bytes": 2407,
+    "sha256": "377390db0467998b8f42c40a55e4970a070481957d27e8b70407ca9ba1303ed0"
+  }
+}

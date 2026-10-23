@@ -1,0 +1,301 @@
+{
+  "additional_source_declarations": [
+    {
+      "declaration": "No Copyright 2010 Stanislav \"listener\" Golovin; file donated to the public domain",
+      "lines": [
+        1,
+        2
+      ],
+      "source_commit": "f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc",
+      "source_path": "source/xlive/xliveless.cpp"
+    },
+    {
+      "commit": "f481ecb043dc863dfef4f2f3bf3845412b776043",
+      "git_blob": "e11086e3aabc6ec27af2a773ab1f0b10ce043fa4",
+      "repository": "hrydgard/minidx9",
+      "source_path": "README.md",
+      "statement": "README defers to Microsoft DirectX SDK terms; no independent SDK redistribution terms established"
+    }
+  ],
+  "binary_executed": false,
+  "evidence_date": "2026-10-23",
+  "frozen_archive": {
+    "bytes": 1348213,
+    "donor_path": "integration/scbl3/client/ScblPublicLauncher/EmbeddedFiles/FusionFix.zip",
+    "modified": false,
+    "path": "src/launcher/src/Assets/FusionFix.zip",
+    "sha256": "b807d01b849ca7aead6c04a43eaa2924809d0741e7007b907e00da868f33a7ff"
+  },
+  "independent_permission_closure": false,
+  "loader_embedded_inputs": [
+    {
+      "bytes": 37376,
+      "git_blob": "d3b76eee5558ad39ce34158a6f403333e943715e",
+      "identity": "exact_tagged_blob_matches_embedded_bytes",
+      "independent_redistribution_terms": "not_verified",
+      "resource_path": [
+        10,
+        101,
+        1033
+      ],
+      "sha256": "4179f04a7b9134761f948fc81ae9b499fd7e97d69aac8ccd926354c1fb8df876",
+      "source_commit": "f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc",
+      "source_path": "source/resources/vorbisfile.dll",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/source/resources/vorbisfile.dll"
+    },
+    {
+      "bytes": 778752,
+      "git_blob": "ee0069669f107f1aa493c2b42f1b050c591358e5",
+      "identity": "exact_tagged_blob_matches_embedded_bytes",
+      "independent_redistribution_terms": "not_verified",
+      "resource_path": [
+        10,
+        103,
+        1033
+      ],
+      "sha256": "a3a4ca76a515801087d92ad9fc6c988bc0258691bf8f224c6ab82b941adfa1b0",
+      "source_commit": "f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc",
+      "source_path": "source/resources/wndmode.dll",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/source/resources/wndmode.dll"
+    },
+    {
+      "bytes": 215552,
+      "git_blob": "d0291a1a6eeed9254bc2f41cf096a7842883c6ea",
+      "identity": "exact_tagged_blob_matches_embedded_bytes",
+      "independent_redistribution_terms": "not_verified",
+      "resource_path": [
+        10,
+        105,
+        1033
+      ],
+      "sha256": "9a3ab8f5f346ce36e468120194d467780bb9bf0233dda511966998b6f514f823",
+      "source_commit": "f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc",
+      "source_path": "source/resources/binkw32.dll",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/source/resources/binkw32.dll"
+    }
+  ],
+  "members": {
+    "asi": {
+      "bytes": 1022976,
+      "exact_release_identity": null,
+      "path": "src/SYSTEM/scripts/SplinterCellBlacklist.FusionFix.asi",
+      "pe": {
+        "coff_timestamp": 1774184932,
+        "version_resources": [
+          {
+            "bytes": 976,
+            "fields": {
+              "CompanyName": "ThirteenAG",
+              "FileDescription": "https://thirteenag.github.io/wfp",
+              "FileVersion": "1.0.0.0",
+              "InternalName": "SplinterCellBlacklist.FusionFix",
+              "LegalCopyright": "MIT License",
+              "OriginalFilename": "SplinterCellBlacklist.FusionFix.asi",
+              "ProductName": "SplinterCellBlacklist.FusionFix",
+              "ProductVersion": "1.0.0.0",
+              "fixed_file_version": "1.2.0.0",
+              "fixed_product_version": "3.0.0.0"
+            },
+            "resource_path": [
+              16,
+              1,
+              1024
+            ],
+            "sha256": "c18226b589937d00bc1fe3d379f2abd2acfd9886fd353e67dfaec6fcd7f1d775"
+          }
+        ]
+      },
+      "sha256": "d5e63ea3ee00449ac6afcffd82a08d673a0bebc855a6d42b3b889ded9b8677c9"
+    },
+    "loader": {
+      "bytes": 2376192,
+      "exact_release_identity": "Ultimate-ASI-Loader v9.7.0 Win32",
+      "path": "src/SYSTEM/version.dll",
+      "pe": {
+        "coff_timestamp": 1768556105,
+        "version_resources": [
+          {
+            "bytes": 944,
+            "fields": {
+              "CompanyName": "ThirteenAG",
+              "FileDescription": "Ultimate ASI Loader",
+              "FileVersion": "9.7.0",
+              "GitHash": "f9f6ccf",
+              "InternalName": "Ultimate-ASI-Loader-Win32",
+              "LegalCopyright": "MIT License",
+              "OriginalFilename": "Ultimate-ASI-Loader-Win32.dll",
+              "ProductName": "Ultimate-ASI-Loader-Win32",
+              "ProductVersion": "9.7.0",
+              "fixed_file_version": "9.7.0.0",
+              "fixed_product_version": "9.7.0.0"
+            },
+            "resource_path": [
+              16,
+              1,
+              1024
+            ],
+            "sha256": "c9604416bbd1b1b07240e4a0d24b6cb8aa9341ea2a205e22cf0efcc37e980ee9"
+          }
+        ]
+      },
+      "sha256": "ad5d8d449ce305caf62cb17d8698ebf17e94f9120ee993d0dd85211dfe14f8dd"
+    }
+  },
+  "notices": [
+    {
+      "bytes": 1067,
+      "commit": "f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc",
+      "git_blob": "3f48ab3d3b25bd9023c54e7cda30242a3aa4f1ab",
+      "license": "MIT",
+      "notice_path": "docs/third-party/Ultimate-ASI-Loader-v9.7.0-MIT.txt",
+      "repository": "ThirteenAG/Ultimate-ASI-Loader",
+      "sha256": "ceca73c504e39084b0b80d2a437aea9988313d1915418d3c629c3e4a8313f5a1",
+      "source_path": "license",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/license"
+    },
+    {
+      "bytes": 1162,
+      "commit": "f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc",
+      "git_blob": "b6ff45a30fb56f0bbd9e398f4997b2d491e25ad3",
+      "license": "MIT",
+      "notice_path": "docs/third-party/Ultimate-ASI-Loader-v9.7.0-miniz-MIT.txt",
+      "repository": "ThirteenAG/Ultimate-ASI-Loader",
+      "sha256": "6f20fa7672b00e2e975c291df737cf227addf3ad32e36fef3fe0f416e4664d3d",
+      "source_path": "external/miniz/LICENSE",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/external/miniz/LICENSE"
+    },
+    {
+      "bytes": 16726,
+      "commit": "5f83e41c3a3e7c6e8284a5c1afa5a38790809461",
+      "git_blob": "14e2f777f6c395e7e04ab4aa306bbcc4b0c1120e",
+      "license": "MPL-2.0",
+      "notice_path": "docs/third-party/Ultimate-ASI-Loader-v9.7.0-MemoryModule-MPL-2.0.txt",
+      "repository": "fancycode/MemoryModule",
+      "sha256": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85",
+      "source_path": "LICENSE.txt",
+      "source_url": "https://github.com/fancycode/MemoryModule/blob/5f83e41c3a3e7c6e8284a5c1afa5a38790809461/LICENSE.txt"
+    },
+    {
+      "bytes": 1293,
+      "commit": "302b69515410ed50a732db3283d7a2862c182f9f",
+      "git_blob": "194626b5ba84cdc5640bae0e051db0d0c0e3a72d",
+      "license": "BSD-2-Clause",
+      "notice_path": "docs/third-party/Ultimate-ASI-Loader-v9.7.0-d3d8to9-BSD-2-Clause.txt",
+      "repository": "crosire/d3d8to9",
+      "sha256": "fa65d158beefa55f270ee0c69c42cf5e92cc607d14336e7d74b8524b59a08902",
+      "source_path": "LICENSE.md",
+      "source_url": "https://github.com/crosire/d3d8to9/blob/302b69515410ed50a732db3283d7a2862c182f9f/LICENSE.md"
+    },
+    {
+      "bytes": 891,
+      "commit": "f0ab75e0a5116cc72d8a298884289bbfc755db64",
+      "git_blob": "65960fbfc76655e7359799fd16027e5e5bbb6118",
+      "license": "Zlib",
+      "notice_path": "docs/third-party/Ultimate-ASI-Loader-v9.7.0-injector-zlib.txt",
+      "repository": "ThirteenAG/injector",
+      "sha256": "4c71e58a290b09e756291ed676b5931d42d8e30b49de6ec33244797297e67ae5",
+      "source_path": "LICENSE",
+      "source_url": "https://github.com/ThirteenAG/injector/blob/f0ab75e0a5116cc72d8a298884289bbfc755db64/LICENSE"
+    },
+    {
+      "bytes": 1064,
+      "commit": "f0ab75e0a5116cc72d8a298884289bbfc755db64",
+      "git_blob": "9f81dbf17de2e32d9bd85f6def2cde42f2a908af",
+      "license": "MIT",
+      "notice_path": "docs/third-party/Ultimate-ASI-Loader-v9.7.0-injector-utility-MIT.txt",
+      "repository": "ThirteenAG/injector",
+      "sha256": "7124c298a1fe76b169db561ee640101f88f573f21d1f269b34817b9538321f5f",
+      "source_path": "utility/LICENSE.txt",
+      "source_url": "https://github.com/ThirteenAG/injector/blob/f0ab75e0a5116cc72d8a298884289bbfc755db64/utility/LICENSE.txt"
+    },
+    {
+      "bytes": 4365,
+      "commit": "1e9ad1eb42db11bfcb65461f687c656612d1b555",
+      "git_blob": "74dea27229c05b53b095aa22b9ee7ee9f549e414",
+      "license": "BSD-2-Clause with HDE32/HDE64 notices",
+      "notice_path": "docs/third-party/Ultimate-ASI-Loader-v9.7.0-MinHook-BSD-2-Clause.txt",
+      "repository": "TsudaKageyu/minhook",
+      "sha256": "d5c2224982b0b95a16b098a561335fa93f3eaf4d0aa964b7843edb986df78dc8",
+      "source_path": "LICENSE.txt",
+      "source_url": "https://github.com/TsudaKageyu/minhook/blob/1e9ad1eb42db11bfcb65461f687c656612d1b555/LICENSE.txt"
+    }
+  ],
+  "official_loader_asset": {
+    "asset_id": 341394264,
+    "asset_name": "Ultimate-ASI-Loader.zip",
+    "bytes": 912116,
+    "digest_origin": "GitHub release asset API; downloaded bytes matched",
+    "independently_rebuilt": false,
+    "member_path": "dinput8.dll",
+    "member_relation": "renamed_identical_member",
+    "release_id": 277335045,
+    "release_tag": "v9.7.0",
+    "repository": "ThirteenAG/Ultimate-ASI-Loader",
+    "sha256": "768d3ad612b8bbf16189c8dddd9626bb8d26eb7626a90339703ae0adb2c71390",
+    "tag_commit": "f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc",
+    "url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases/download/v9.7.0/Ultimate-ASI-Loader.zip"
+  },
+  "owner_redistribution_assertion_recorded": true,
+  "schema": "ff-fusionfix-provenance-v1",
+  "scope": "static identity and available notices; not a build or permission approval",
+  "tagged_source_evidence": [
+    {
+      "bytes": 11260,
+      "git_blob": "3f9cf0d96ec3ad1a65fc346411f7e69b803d9ac4",
+      "sha256": "87f493ef4f25b65c6f387d485a14fce3b36eb4594aaad03d32b19ccf771b7fae",
+      "source_path": "premake5.lua",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/premake5.lua"
+    },
+    {
+      "bytes": 431,
+      "git_blob": "783ba81c109414c13229b0a7e234ef1e0d47646d",
+      "sha256": "5e16a7a9b90197b3536db27dca5bf53bc4eadd2c21de8b5a106f042fecbf0912",
+      "source_path": ".gitmodules",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/.gitmodules"
+    },
+    {
+      "bytes": 14971,
+      "git_blob": "c175558afa52f026093010a953b87ddf3d681112",
+      "sha256": "b506e3c53e739975738efa3d3df5c9eb39faa6fa074f79c7a00bc6707c51aa80",
+      "source_path": "readme.md",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/readme.md"
+    },
+    {
+      "bytes": 696,
+      "git_blob": "bf6a90f97cc1ff76142917b503cd84e36cbef86a",
+      "sha256": "99678c9e3f62654328f417bb91c14ff703ff9a30e0210fb8e01f30f147268716",
+      "source_path": "source/resources/UALx86.rc",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/source/resources/UALx86.rc"
+    },
+    {
+      "bytes": 3396,
+      "git_blob": "e734936d7d776238a67b6a340233b85e2122858a",
+      "sha256": "9f20ae9a4b4c368203fcf366356ae5af3f5806c6797f2dac7a9471aba0167bf5",
+      "source_path": "source/resources/Versioninfo.rc",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/source/resources/Versioninfo.rc"
+    },
+    {
+      "bytes": 128215,
+      "git_blob": "cd7312f484dba5398c6a4960aef5ae991a38d151",
+      "sha256": "2de44cf04de23f0b12934ced834ecbfe18b0db5ef73384cacbe61b4c7fb6a53c",
+      "source_path": "source/xlive/xliveless.cpp",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/source/xlive/xliveless.cpp"
+    },
+    {
+      "bytes": 4889,
+      "git_blob": "26e155c07b88049b826411a1cb60f69b111b6ace",
+      "sha256": "6dc4af1f3f6429616a4a0d4a363b71dd2aa3803208acb0de0fdeea48de820d9b",
+      "source_path": "external/ModuleList/ModuleList.hpp",
+      "source_url": "https://github.com/ThirteenAG/Ultimate-ASI-Loader/blob/f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc/external/ModuleList/ModuleList.hpp"
+    }
+  ],
+  "unresolved_holds": [
+    "ASI_EXACT_SOURCE_AND_BUILD_IDENTITY",
+    "EMBEDDED_BINK_BINARY_TERMS",
+    "EMBEDDED_WNDMODE_BINARY_TERMS",
+    "EMBEDDED_VORBISFILE_BINARY_TERMS",
+    "DIRECTX_SDK_EXACT_TERMS",
+    "MEMORYMODULE_CORRESPONDING_SOURCE_DISTRIBUTION_PLAN",
+    "LOADER_INDEPENDENT_REBUILD"
+  ]
+}

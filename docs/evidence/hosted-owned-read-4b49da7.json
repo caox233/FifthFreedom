@@ -1,0 +1,252 @@
+{
+  "schema": 1,
+  "scope": "actual hosted Windows x86 owned-read channel, same-invocation Rust helper and retained exact-job regression; no full EasyTier or driver execution",
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39944703650",
+  "run_id": 39944703650,
+  "head_sha": "4b49da73223b97e40ad4923325d45af1e3064684",
+  "checkout_merge_sha": "b46c8fe56e1b160cbe7d1098843c7ac66eeb9249",
+  "owned_read": {
+    "job_id": 120384385455,
+    "job_conclusion": "success",
+    "started_at": "2026-10-23T11:14:35Z",
+    "completed_at": "2026-10-23T11:16:34Z",
+    "artifact": {
+      "id": 12497234244,
+      "zip_bytes": 756,
+      "official_digest": "sha256:64628af73111b36971391ee0b5a151d2b203ad14daf0d042cfed26493d0f443d",
+      "downloaded_zip_sha256": "64628af73111b36971391ee0b5a151d2b203ad14daf0d042cfed26493d0f443d",
+      "member": "owned-core-read.json",
+      "member_bytes": 1472,
+      "member_sha256": "b683020627693018dc2e289297e44ccf05d5e67ab740ce110ca0cd1cc4d0bc00"
+    },
+    "official_job_log_sha256": "c2730aaffae061bac84c4a2e40a98e8339c7897eddf39397105b247840dce8fd",
+    "runner_receipt": {
+      "schema": 1,
+      "suite": "OwnedCoreRead",
+      "passed": true,
+      "stage": "COMPLETE",
+      "required_managed_checks": 19,
+      "required_native_checks": 8,
+      "required_interop_checks": 4,
+      "managed_passed_checks": 19,
+      "native_passed_checks": 8,
+      "interop_passed_checks": 4,
+      "required_managed_runtime": "win-x86",
+      "required_native_target": "x86_64-pc-windows-msvc",
+      "self_contained_test_apphost": true,
+      "skipped_checks": 0,
+      "images_unchanged": true,
+      "same_invocation_cargo_helper": true,
+      "easytier_executed": false,
+      "driver_exercised": false,
+      "game_executed": false,
+      "production_admission": false,
+      "runtime_binary_uploaded": false,
+      "raw_output_retained": false,
+      "apphost_identity": {
+        "bytes": 131584,
+        "sha256": "d5a0e48ef6d4b3a130b907088c546a78dcd7b2f80d2b63a37a8f1fafe526b06b"
+      },
+      "diagnostics": {
+        "compiler_codes": [],
+        "ui_checks": [],
+        "categories": [],
+        "exception_types": [],
+        "preflight_codes": [],
+        "owned_process_codes": [],
+        "managed_cases": [],
+        "tls_cases": [],
+        "return_phases": [],
+        "return_child_failures": [],
+        "return_directory_failures": [],
+        "owned_core_failures": [],
+        "native_interop_codes": [],
+        "native_failed_tests": [],
+        "final_preparation_codes": []
+      },
+      "native_failed_cases": [],
+      "helper_identity": {
+        "bytes": 1568256,
+        "sha256": "dcec0ae16d4ddeecec636fb14fb47123b30e412f4ff54d8a337edfa22551d396"
+      }
+    }
+  },
+  "retained_owner": {
+    "job_id": 120384385480,
+    "job_conclusion": "success",
+    "started_at": "2026-10-23T11:14:36Z",
+    "completed_at": "2026-10-23T11:15:50Z",
+    "artifact": {
+      "id": 12498050520,
+      "zip_bytes": 604,
+      "official_digest": "sha256:7c6d848d49772f2a08f44711f98530b728c406c5531f92218b1c9267181b44cc",
+      "downloaded_zip_sha256": "7c6d848d49772f2a08f44711f98530b728c406c5531f92218b1c9267181b44cc",
+      "member": "owned-core-process.json",
+      "member_bytes": 1108,
+      "member_sha256": "e8cc92478c776020ebaf92ec734d1622734fbeeb8981de2de01aeb22fd1e902e"
+    },
+    "official_job_log_sha256": "4eefce6302d5a3b9c5a7809c1117f0a39fc8f33736ac752156da2ed27385fcbd",
+    "runner_receipt": {
+      "schema": 1,
+      "suite": "OwnedCoreProcess",
+      "passed": true,
+      "required_checks": 17,
+      "passed_checks": 17,
+      "skipped_checks": 0,
+      "game_executed": false,
+      "native_interop_exercised": false,
+      "full_diagnostic_zip_exercised": false,
+      "services_changed": false,
+      "raw_output_retained": false,
+      "required_runtime": "win-x86",
+      "self_contained_test_apphost": true,
+      "test_apphost_sha256": "7d04c28e6644bf6052e882d6f9c2a8453095b2dbb0eeac157f48c4717c4b950f",
+      "test_apphost_bytes": 131584,
+      "easytier_executed": false,
+      "driver_exercised": false,
+      "test_apphost_unchanged": true,
+      "process_succeeded": true,
+      "diagnostics": {
+        "compiler_codes": [],
+        "ui_checks": [],
+        "categories": [],
+        "exception_types": [],
+        "preflight_codes": [],
+        "owned_process_codes": [],
+        "managed_cases": [],
+        "tls_cases": [],
+        "return_phases": [],
+        "return_child_failures": [],
+        "return_directory_failures": [],
+        "owned_core_failures": [],
+        "native_interop_codes": [],
+        "native_failed_tests": [],
+        "final_preparation_codes": []
+      }
+    }
+  },
+  "tested_source_inputs": [
+    {
+      "path": ".github/workflows/windows-loopback-prerequisite.yml",
+      "bytes": 8144,
+      "sha256": "2e448cf0e2532de02c4eb3eaee129afd15d1e35b13c417422cd43bf7f3f025a0"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-windows-owned-read/source/owned_read.rs",
+      "bytes": 5407,
+      "sha256": "c0a6c3e4678ff4b7a4f5d8d0f2e96e4dbc96a1473b246baa4cfd8b04b98f893e"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-windows-owned-read/source/owned_read_windows.rs",
+      "bytes": 8604,
+      "sha256": "0e6de880591e6148c90cf7fe6250450fd3eea8abc06f0502b5ed766a11762e56"
+    },
+    {
+      "path": "scripts/ci_owned_read.py",
+      "bytes": 9607,
+      "sha256": "d08274edcbcc74a8b62483ca0a5277b0ed653a2f934d1ddf793e8ce368702549"
+    },
+    {
+      "path": "scripts/ci_windows_loopback.py",
+      "bytes": 5394,
+      "sha256": "ee809a1f2afd1d7e07d9d96a8af1396baf566f9876e459a418b9617f862c0d13"
+    },
+    {
+      "path": "src/launcher/src/Services/OwnedCoreLaunchInputs.cs",
+      "bytes": 6060,
+      "sha256": "34acac02b7e2e2784f0b6e642c6622bd79163213865bd1736e63f565d19799c1"
+    },
+    {
+      "path": "src/launcher/src/Services/OwnedCoreProcess.cs",
+      "bytes": 12451,
+      "sha256": "9bb7812b0583e8e916eda8cd4fe0f60d049405e6a98314e2a90bc19d7f2c4e29"
+    },
+    {
+      "path": "src/launcher/src/Services/OwnedCoreReadChannel.cs",
+      "bytes": 11082,
+      "sha256": "dc21a5f3ef48bf92837475b0d98e24795552587aa3b44bf61750f9709237c084"
+    },
+    {
+      "path": "src/launcher/src/Services/OwnedCoreReadDescriptor.cs",
+      "bytes": 2345,
+      "sha256": "da49505014ed273f6aa1d5fc17047446001fc1d51d8384bc299c826dcd85d557"
+    },
+    {
+      "path": "src/launcher/src/Services/OwnedCoreReadProtocol.cs",
+      "bytes": 5657,
+      "sha256": "718ebe1190c4f54eb8493df99e9f5e6eb78e670989bc24bdfbb2319e9c915f1c"
+    },
+    {
+      "path": "src/launcher/src/Services/PublicReturnProcess.cs",
+      "bytes": 3687,
+      "sha256": "8b54082e41428c5b78f3ca92a37b1c4897ff4de25d074d789115e98a151f0479"
+    },
+    {
+      "path": "tests/OwnedCoreProcess/OwnedCoreProcess.csproj",
+      "bytes": 627,
+      "sha256": "31711593141d778e18746605c903f229ef424cc006137d41a8a3fa1274875ab3"
+    },
+    {
+      "path": "tests/OwnedCoreProcess/Program.cs",
+      "bytes": 16263,
+      "sha256": "5d597e14f709cf8e900dda3da2230cffa65b3162ae944c78e75d26b8e3961692"
+    },
+    {
+      "path": "tests/OwnedCoreRead/NativeInterop.cs",
+      "bytes": 2716,
+      "sha256": "462ba00d9c244af41344971f413674ad6f515de9008f5555ceb302207d47e032"
+    },
+    {
+      "path": "tests/OwnedCoreRead/OwnedCoreRead.csproj",
+      "bytes": 614,
+      "sha256": "e97f2be2fdfaca26cdb129f9da0639a11b1ec4577753ca9966a75bcfda8c992a"
+    },
+    {
+      "path": "tests/OwnedCoreRead/Program.cs",
+      "bytes": 13671,
+      "sha256": "a0b69fcd0e03250a7aa656e9069571610159b75c7655ac59f5ff0d9a9996f670"
+    },
+    {
+      "path": "tests/PublicNativeReturn/OwnedDirectoryCleanup.cs",
+      "bytes": 1821,
+      "sha256": "9dea85c87267939eacd0f17a7b02e7b5893389e474bfae4b1fc5ac6d0acfdf19"
+    },
+    {
+      "path": "tests/native/windows-owned-read/Cargo.lock",
+      "bytes": 10304,
+      "sha256": "ba0ac03730c7e8f19ab13037a20f2b8c5c29a8da33ccfba4f2431306265fe1b4"
+    },
+    {
+      "path": "tests/native/windows-owned-read/Cargo.toml",
+      "bytes": 363,
+      "sha256": "2e412dd3465a278657b99980756c6a5bccff3c19ef54697854d56f9149d1d17c"
+    },
+    {
+      "path": "tests/native/windows-owned-read/src/lib.rs",
+      "bytes": 5152,
+      "sha256": "dde4194bd20eaadd4eeea59b7060b9ef36322bdd45b87a513f0371b79a55c229"
+    },
+    {
+      "path": "tests/native/windows-owned-read/src/main.rs",
+      "bytes": 2065,
+      "sha256": "c645234c813d7bdaaec7faa03fd0289e0728a787d33985c8d1e98501c5c77ec1"
+    }
+  ],
+  "interpretation": {
+    "managed19_native8_interop4_zero_skips": true,
+    "retained_owned_process17_zero_skips": true,
+    "managed_x86_checked_by_actual_case": true,
+    "actual_kernel_pipe_peer_and_parent_identity": true,
+    "actual_four_second_idle_and_incomplete_prefix_deadline": true,
+    "actual_throwing_cancellation_callback_after_job_drain": true,
+    "same_invocation_helper_and_apphost_hashes_checked_before_after": true,
+    "binary_hashes_are_runner_measurements_not_downloaded_binary_rehash": true,
+    "synthetic_observations_not_real_nic": true,
+    "full_easytier_hook_compiled": false,
+    "actual_easytier_executed": false,
+    "driver_executed": false,
+    "remote_smb_tested": false,
+    "public_admission": false
+  },
+  "raw_evidence": "ignored .local/evidence/cloud/owned-core-read/hosted-4b49da7; original official API JSON, ZIP, exact member bytes and job logs retained"
+}

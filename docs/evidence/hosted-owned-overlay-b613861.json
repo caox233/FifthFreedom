@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official run/job metadata and digest-verified sanitized single-file artifact",
+  "run_id": 39929836302,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39929836302",
+  "job_id": 120335089272,
+  "source_head": "b613861343df34c9151cb7cf6b4eeec9fdf4a4f6",
+  "checkout_commit": "14d2f995bfa88338af12fd1c5630589aa3aaac88",
+  "status": "completed",
+  "conclusion": "failure",
+  "artifact": {
+    "id": 12491467375,
+    "name": "owned-easytier-development-receipt-14d2f995bfa88338af12fd1c5630589aa3aaac88",
+    "size_in_bytes": 1193,
+    "digest": "sha256:e38d93d4ad3a3395b5aeea910c9b6884a0c535c10517e8c68bde568e0941197d"
+  },
+  "verification": {
+    "zip_digest_matches_official": true,
+    "archive_members": 1,
+    "raw_runtime_logs_downloaded": false,
+    "runtime_binaries_downloaded": false
+  },
+  "sanitized_receipt": {
+    "checkout_commit": "14d2f995bfa88338af12fd1c5630589aa3aaac88",
+    "cli_identity": {
+      "bytes": 12261752,
+      "sha256": "5181606b36f642d3fa93408bb50b2f796db402e034c14b62ec9db10e403ab3b4"
+    },
+    "encryption_claim": "source contracts and bounded runtime observations are separate; no packet-capture proof",
+    "error": "TRANSPORT_MATRIX_INCOMPLETE",
+    "game_executed": false,
+    "native_owner_lease_verified": false,
+    "precondition_failures": [],
+    "private_stage_removed": true,
+    "production_admission": false,
+    "raw_runtime_output_retained": false,
+    "runtime_binary_uploaded": false,
+    "runtime_candidate": {
+      "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+      "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+      "executable_sha256": "6399b7414e900ebf4918ee7a04aa97f8bbbbe72409daf99ad5464bc76525eb5a",
+      "executable_size": 28593032,
+      "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+      "role": "easytier-core",
+      "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+      "target": "x86_64-unknown-linux-gnu",
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626"
+    },
+    "schema": "ff-easytier-isolated-development-probe-v1",
+    "socket_probe_identity": {
+      "bytes": 12833328,
+      "sha256": "291072184fb9f32b8285370df285ab87fb4a8270dc5a7233ddf00d3e8b791213"
+    },
+    "status": "failed",
+    "transports": [
+      {
+        "cleanup_errors": [],
+        "error": "WORKER_REPORTED_FAILURE",
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "phases": [],
+        "purpose": "product-transport-development-probe",
+        "status": "failed",
+        "transport": "quic",
+        "worker_failure": {
+          "cleanup_code": null,
+          "cleanup_reaped": true,
+          "code": "OVERLAY_OBSERVATION_UNAVAILABLE",
+          "event": "failed",
+          "phase": "observe",
+          "schema": "ff-easytier-worker-failure-v1"
+        }
+      }
+    ]
+  },
+  "interpretation": [
+    "The source/finite-contract/GNU/probe compilation prerequisites passed before the actual runtime step",
+    "First QUIC transport returned a worker observe failure; no matrix phase completed",
+    "The fixed error OVERLAY_OBSERVATION_UNAVAILABLE does not identify the internal observation substage or prove why it failed",
+    "The receipt confirms worker cleanup_reaped, two namespaces removed without errors, and private stage removed",
+    "No WSS/TCP, positive/wrong-pin/restoration matrix, production admission, native lease, or game pass is inferred"
+  ]
+}

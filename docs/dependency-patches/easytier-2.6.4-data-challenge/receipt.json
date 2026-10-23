@@ -1,0 +1,283 @@
+{
+  "baseline": {
+    "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+    "ordered_patches": [
+      {
+        "bytes": 3140,
+        "path": "docs/dependency-patches/easytier-2.6.4-secure-session/contract-tests.patch",
+        "role": "contract-tests",
+        "sha256": "5673d6b3f24dd44a263b7863a491ec0c482b61feadd77cfc2534973d3d8d31c4"
+      },
+      {
+        "bytes": 792,
+        "path": "docs/dependency-patches/easytier-2.6.4-secure-session/require-encrypted-flag.patch",
+        "role": "production-guard",
+        "sha256": "06a16ca43e035eb1380c99ace8f19a8495bbd09b6413f0fe800752896aa3d2b3"
+      },
+      {
+        "bytes": 5365,
+        "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/ingress-contract-tests.patch",
+        "role": "contract-tests",
+        "sha256": "13a8719f4ff0679c3a0dcc56d1f61717f8659fcbf2337032656fd66889e072d9"
+      },
+      {
+        "bytes": 637,
+        "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/require-encrypted-data-ingress.patch",
+        "role": "production-guard",
+        "sha256": "676e9b9dbeaad45cab7e7b85f245091c5e0d2a683f1436e4a1955f2b6e4245a3"
+      },
+      {
+        "bytes": 4765,
+        "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/explicit-pin-contract-tests.patch",
+        "role": "contract-tests",
+        "sha256": "9a3d13a08259acbe11352ccb084a565e04df465f42dc6d16f4a805429705b7cb"
+      },
+      {
+        "bytes": 1744,
+        "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/require-explicit-peer-pin.patch",
+        "role": "production-guard",
+        "sha256": "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328"
+      },
+      {
+        "bytes": 9663,
+        "path": "docs/dependency-patches/easytier-2.6.4-authenticated-receive/record-authenticated-data.patch",
+        "role": "production-observation",
+        "sha256": "b8a22853644bc3c1e0d38a4dfdaa31db0bfe7805daad2d4a9ba8a42dcb9d4dc6"
+      },
+      {
+        "bytes": 12359,
+        "path": "docs/dependency-patches/easytier-2.6.4-authenticated-receive/authenticated-receive-tests.patch",
+        "role": "contract-tests",
+        "sha256": "091c02ced9456a738bb6917f712a84e209828fc315166ad6bc5241fabd64ebb6"
+      }
+    ],
+    "prior_recipes_or_runtime_pins_modified": false,
+    "recipe": "scripts/easytier-authenticated-receive-source.lock.json",
+    "recipe_sha256": "4ee0affd0efe9fd8f9da394ef616787506870bcbeeff65873b771390e1385a2d",
+    "source_tree_sha256": "b0a7d3cf802d3de1f3741943ccd48db02cf883fe68899e9cd7f636627ec74e0f",
+    "upstream": {
+      "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "repository": "https://github.com/EasyTier/EasyTier",
+      "source_date_epoch": 1778588776,
+      "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+    }
+  },
+  "boundaries": {
+    "actual_in_memory_noise_and_peerconn_send_receive": true,
+    "actual_session_aead_replay_boundary": true,
+    "core_cli_or_driver_game_started": false,
+    "existing_auth44_recipe_adopts_this_patch": false,
+    "existing_sync_grace_policy_changed": false,
+    "independent_wire_checksum_sum": true,
+    "local_nic_injection_or_tun_path_proven": false,
+    "new_full_runtime_or_windows_build": false,
+    "one_response_object_per_ticket": true,
+    "production_lease_issued": false,
+    "public_startup_allowed": false,
+    "remote_new_key_epoch_acknowledged": false,
+    "remote_udp_process_owner_proven": false,
+    "response_currentness_readable_more_than_once": true,
+    "runtime_binary_published": false,
+    "send_control_negative_futures_injected": true,
+    "synthetic_remote_udp_echo": true
+  },
+  "evidence": {
+    "deliberate_nonce_mutation": {
+      "mutation": "replace exact response nonce equality with length-only comparison; deliberate test mutation, not an upstream vulnerability claim",
+      "red": {
+        "executable_sha256": "066f881c5ea5559c44ec5fd5b81f9d8460442b4c1ba99d3b943efd865a575287",
+        "exit_code": 101,
+        "failed": 2,
+        "failed_tests": [
+          "peers::peer_conn::data_challenge::fifth_freedom_data_challenge_contract::one_slot_drop_and_late_old_response_cannot_complete_replacement",
+          "peers::peer_conn::data_challenge::fifth_freedom_data_challenge_contract::wrong_nonce_tuple_and_checksums_do_not_combine_with_recent_observation"
+        ],
+        "ignored": 0,
+        "log_sha256": "c64550dcf7c5e9a3da25b2e2327bc6d5caf29aaf93bc05439684eda5afcf90d9",
+        "passed": 13
+      },
+      "restored": {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "ad1e1c42b5d7278acae8e053b9ef7fb94b754e4b7c9a10adede6e3b42f312cfb",
+        "passed": 15,
+        "restored_whole_source_tree_sha256": "d4ce70591d7336fee73883bb865874c35d8b407300f0cd65e189f3f06110ba21",
+        "uses_preserved_exact_final_source_executable": true
+      },
+      "source_sha256": "ee428f944361fdfb6fe302aa87d0dc95ecfc33e9bcf32cc1e045c5d742c3082c"
+    },
+    "excluded_attempts": {
+      "cancelled_formatter_concurrent_compile": {
+        "contract_test_red": false,
+        "log_sha256": "22a2361b3b17dcc8e9aa6f29f877c23e13f0cfc968cb4f951708176ed403b112"
+      },
+      "formatter_correction_receipt_sha256": "ba91507cd3a9a461e338ea9e3383008453f5400f693cf8b7dc45f2ccf4c121d5",
+      "initial_namespace_compile_failure": {
+        "contract_test_red": false,
+        "log_sha256": "4d6bdcce501a5c9493c8f851ce4d6cb9877717a63f280e39460d92d86e934574"
+      }
+    },
+    "final_test_executable": {
+      "bytes": 162300392,
+      "sha256": "447de7655ce435dc7a57a6c167864e53bac8b579fd72bcc92f01372a0d33a10a"
+    },
+    "new_checks": {
+      "exit_code": 0,
+      "failed": 0,
+      "filter": "fifth_freedom_data_challenge_",
+      "ignored": 0,
+      "log_sha256": "58e799e7ece2857908585e89ea4484718eda9a997b7bf194e2b4b7fa11efa59f",
+      "passed": 15
+    },
+    "retained_checks": [
+      {
+        "exact": false,
+        "exit_code": 0,
+        "failed": 0,
+        "filter": "fifth_freedom_receive_",
+        "ignored": 0,
+        "log_sha256": "d2d733ebdec3fcbb11033d40c98ee5da294a0cbb667716f3325228f64f2245be",
+        "passed": 15
+      },
+      {
+        "exact": false,
+        "exit_code": 0,
+        "failed": 0,
+        "filter": "fifth_freedom_secure_profile_contract",
+        "ignored": 0,
+        "log_sha256": "aee2840902fe13cdf8b8521542ec2fd7dfc2ac5df0925036b656617b2394b10a",
+        "passed": 4
+      },
+      {
+        "exact": false,
+        "exit_code": 0,
+        "failed": 0,
+        "filter": "fifth_freedom_ingress_contract",
+        "ignored": 0,
+        "log_sha256": "bafe091fbef59a69acbd0621c60e3063d457bc670e59a3d729236f8faf07c141",
+        "passed": 10
+      },
+      {
+        "exact": false,
+        "exit_code": 0,
+        "failed": 0,
+        "filter": "peers::secure_datagram::tests",
+        "ignored": 0,
+        "log_sha256": "10615936178b31ab1c53993dfcdce2f426d8daa04e18888bb730256e64f4b2c4",
+        "passed": 9
+      },
+      {
+        "exact": false,
+        "exit_code": 0,
+        "failed": 0,
+        "filter": "peers::peer_session::tests",
+        "ignored": 0,
+        "log_sha256": "39b27ab4f9dbfa201e771f1a6d3bf96d89667506b631fd77eaa1a2ea2c489383",
+        "passed": 2
+      },
+      {
+        "exact": false,
+        "exit_code": 0,
+        "failed": 0,
+        "filter": "ff_explicit_pin_contract",
+        "ignored": 0,
+        "log_sha256": "b42e61cf7ca35124a5177e93f4438dcc8726ea555e9502422a8e90af0cd0f808",
+        "passed": 3
+      },
+      {
+        "exact": true,
+        "exit_code": 0,
+        "failed": 0,
+        "filter": "peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip",
+        "ignored": 0,
+        "log_sha256": "d188e89872b11634b73aa4b8fb1b0c36b4698e163fd4160220d7c7aba02aea61",
+        "passed": 1
+      }
+    ]
+  },
+  "patch_integrity": {
+    "added_files": [
+      "easytier/src/peers/peer_conn_data_challenge.rs"
+    ],
+    "base_source_tree_sha256": "b0a7d3cf802d3de1f3741943ccd48db02cf883fe68899e9cd7f636627ec74e0f",
+    "changed_existing_files": [
+      "easytier/src/peers/peer_conn.rs"
+    ],
+    "commands": [
+      {
+        "exit_code": 0,
+        "patch": "correlate-authenticated-data.patch",
+        "reverse": false
+      },
+      {
+        "exit_code": 0,
+        "patch": "data-challenge-tests.patch",
+        "reverse": false
+      },
+      {
+        "exit_code": 0,
+        "patch": "data-challenge-tests.patch",
+        "reverse": true
+      },
+      {
+        "exit_code": 0,
+        "patch": "correlate-authenticated-data.patch",
+        "reverse": true
+      },
+      {
+        "exit_code": 0,
+        "patch": "correlate-authenticated-data.patch",
+        "reverse": false
+      },
+      {
+        "exit_code": 0,
+        "patch": "data-challenge-tests.patch",
+        "reverse": false
+      }
+    ],
+    "reapplied_exact_final": true,
+    "reversed_exact_base": true,
+    "schema": 1,
+    "tested_files": 700,
+    "tested_source_tree_sha256": "d4ce70591d7336fee73883bb865874c35d8b407300f0cd65e189f3f06110ba21"
+  },
+  "patches": [
+    {
+      "bytes": 17949,
+      "path": "correlate-authenticated-data.patch",
+      "role": "production-correlation",
+      "sha256": "af0b7e0c5c936622dfeba5775cec65afd2ee55b2c34de7c82de34ffc98b10eff"
+    },
+    {
+      "bytes": 19046,
+      "path": "data-challenge-tests.patch",
+      "role": "contract-tests",
+      "sha256": "f837ff381aabd283c50dc6c6ecdce68f81eaece0cc4e5f8d27f1fbc7a3af8466"
+    }
+  ],
+  "schema": 1,
+  "scope": "one-use current-session authenticated Data/UDP response correlation; no runtime ownership/admission",
+  "source_files": [
+    {
+      "baseline_sha256": "0b2d1cf719d7c61caecc967fa04326a86cd91cfb159059045d4d2c622f57b776",
+      "path": "easytier/src/peers/peer_conn.rs",
+      "production_sha256": "40835d6a3f6ebc18470b84993545ae20604c390ffb42bb320fcfa8cabf2b51af",
+      "tested_sha256": "3bb5b5c8fa0b9f8edb0f30c8b636f42a1967254c7883d97a476b3eedf4786b3e"
+    },
+    {
+      "baseline_sha256": null,
+      "path": "easytier/src/peers/peer_conn_data_challenge.rs",
+      "production_sha256": "c572ca7be7203c19cbfd0bc5156c47a630f474d059306469a20bda0ed20dd01c",
+      "tested_sha256": "dfe8a341a6ca8f629f2f78bacac2e8ff825e78c35680f7583d301ee3d7cbed36"
+    }
+  ],
+  "toolchain": {
+    "cargo_incremental": false,
+    "cargo_locked_offline": true,
+    "existing_target_reused": true,
+    "features": "unchanged default/ring",
+    "rust": "1.95.0",
+    "target": "x86_64-unknown-linux-gnu"
+  }
+}

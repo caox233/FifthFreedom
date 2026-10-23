@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Source/donor migrated and hash-checked. Local renamed four-component package built and verified; Python 37, package launcher 145, LAN 26, native API 27 passed. Historical 117 files and cumulative four-role set preserved. Privacy review: no confirmed real secrets; 12 opaque save/meta inputs held locally.",
-  "NEXT_EXECUTABLE_ACTION": "Commit and upload reviewed source/docs/resources, create development knowledge base, then existing cloud task fetches exact revision and starts UI/server integration and GitHub Windows/Linux CI. Preserve asset privacy gate.",
+  "LAST_CONFIRMED_RESULT": "The actual b67af6c candidate now has eight successful component, isolation, static-preflight and runtime jobs. Its five native lifecycle cases and both owned TCP overlay/native cases have independently verified official JSON artifacts and strict consumers. These cases predate the later pre-revocation OPEN barrier; no causal closure inference or current nonce proof is made. Both withheld-input gates remain failed and complete packaging is skipped. The separate 05c guard3 QUIC/WSS/development-TCP matrix passed all nine phases. Reviewed4b49da7 passed a fresh detached checkout:536 passed, two existing Windows skips, unchanged tracked files; its canonical patch applied/reversed exactly1312\u21921660\u21921312. The earlier533 source proof remains recorded. DevDocs3872f3f binds that source with172 exact public mirrors; official environment draft18 was saved/read back but still requires publication. Earlier actual Windows typed20+8, owned synthetic x86 process17 and diagnostic streaming12 successes retain their exact revisions and scopes. New nonce correlation, independent Windows no-Packet source and Linux observer policy are implemented and reviewed; their newer hosted and owner-IPC composition results remain separate. All six milestones remain tracked; no complete package, live game or production Public admission is claimed.",
+  "NEXT_EXECUTABLE_ACTION": "The actual-Instance Windows owner-read IPC is independently reviewed and committed atbe08a7a; follow run39944703650 for its managed19, native8 and interoperability4 Windows checks plus retained owned-process17. Follow the independent no-Packet and authenticated Data challenge59 hosted builders without replacing successful10/44/guard3 recipes. Verify the newer pre-revocation OPEN barrier and Linux observer policy in actual candidates. Connect only current Weak PeerMap/Peer/Conn ownership to a future Instance-bound challenge; keep production Public admission closed until real NIC/route/all game-UDP ownership and runtime gates are satisfied. Preserve accepted gameplay, originals and historical failures. Missing Capture/retail extraction inputs, private SAV/META, live acceptance, distribution conditions and environment publication remain explicit.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -18,32 +18,32 @@
     {
       "id": 1,
       "name": "Unify Fifth Freedom branding",
-      "status": "initial_branding_and_package_build_verified_ui_integration_pending"
+      "status": "branding_and_hosted_windows_components_no_game_ui_verified_live_acceptance_distinct"
     },
     {
       "id": 2,
       "name": "SCBL3 UI with retained LAN behavior",
-      "status": "donor_preserved_integration_pending_cloud"
+      "status": "donor_ui_retained_lan_integrated_actual_native_ipc_and_source_contracts_passed_windows_session_prerequisites_verified_full_owned_chain_pending"
     },
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "sources_preserved_integration_pending_cloud"
+      "status": "linux_isolated_overlay_full_matrix_and_native_owned_composition_verified_new_open_barrier_and_windows_owned_chain_pending_production_admission_closed"
     },
     {
       "id": 4,
       "name": "Reviewed public source and development knowledge base",
-      "status": "public_review_complete_source_push_pending_knowledge_repo_created_empty"
+      "status": "source_draft_pr1_and_source_bound_devdocs_draft_pr1_created"
     },
     {
       "id": 5,
       "name": "Cloud handoff and ongoing implementation",
-      "status": "existing_cloud_running_repo_read_verified_source_pending"
+      "status": "cloud_implementation_and_hosted_component_checks_verified_no_goal_scheduler_interface"
     },
     {
       "id": 6,
       "name": "Standalone development root and safe cleanup",
-      "status": "source_toolchains_117_historical_files_cumulative_roles_preserved_full_dependency_closure_pending"
+      "status": "originals_preserved_official_wintun_origin_and_license_obtained_capture_source_absent_saves_privacy_npcap_and_final_distribution_conditions_open"
     }
   ],
   "continuation_policy": "Code changes primarily in cloud per user. Local work finishes migration, privacy review, current builds and preservation; never auto-start game or private capture.",
@@ -81,11 +81,170 @@
     "personal_data_excluded": true
   },
   "cloud": {
-    "thread_title": "FifthFreedom云端",
+    "thread_title": "FifthFreedom\u4e91\u7aef",
     "repository": "caox233/FifthFreedom",
-    "verified": "running connected Linux x86_64; repository read succeeded",
-    "environment_display_name": "not independently exposed by status API",
-    "snapshot_publish_status": "not confirmed"
+    "verified": "running connected Linux x86_64; Git HTTPS fetch/push and official gh repository/PR APIs succeeded",
+    "environment_display_name": "FifthFreedom in official configuration draft; live status exposes environment ID but not a separate display name",
+    "snapshot_publish_status": "Official draft revision18 saved and read back with source533e77d and DevDocs3872f3f after a complete workspace inventory (29332 directories, two projects,26 classified dependency/evidence Git roots, zero errors). Normalized repository membership/revisions, depth and all other setup/network/secret/requirement fields were preserved. requires_publish is true; no publish interface is available. Saving is not publication or verified fresh restoration.",
+    "handoff_commit": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+    "development_branch": "codex/cloud-integration",
+    "knowledge_repository": "caox233/FifthFreedom-DevDocs",
+    "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
+    "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
+    "api_access": "Official GitHub API and normal redirected job-log/artifact downloads now succeed under existing unrestricted network selection. Earlier restricted/denied observations remain historical. Runtime reports network enforcement unknown; no policy bypass or token output.",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39938418762",
+    "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
+    "hosted_history": [
+      {
+        "run_id": 39858405093,
+        "commit": "0e186f0afeb2756527d0f1eabaa88e5069129d39",
+        "overall": "failure",
+        "linux_matrix": "success",
+        "windows": "source_checks_failed_compile_step_skipped",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39859917025,
+        "commit": "cb9b97d5b9edcd863453d62edf3f1573cf3597fb",
+        "overall": "cancelled_by_next_push_after_windows_failure",
+        "windows": "14_reader_fixture_errors_and_1_ci_environment_assertion",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39860535649,
+        "commit": "d0ee78e59b3d6c0691c00a224383d27dc6500ada",
+        "overall": "failure",
+        "all_component_jobs": "success",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39860607037,
+        "commit": "d0ee78e59b3d6c0691c00a224383d27dc6500ada",
+        "overall": "failure",
+        "all_component_jobs": "success",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39863077851,
+        "commit": "814c5c1ae930afc9887c5a6b08ec4a95e3c74597",
+        "overall": "failure",
+        "all_component_jobs": "success",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39895749771,
+        "commit": "f54c9358c0e8df6775c4f29ed91ea3a91e870a80",
+        "overall": "failure",
+        "all_component_jobs": "success_windows_linux_lan_donor_protected_control",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39898671437,
+        "commit": "463aa521e5cdb3345e460442bacf8050bd42aef8",
+        "overall": "failure",
+        "windows": "failed_source_public_server_candidate_suite; compile_dpapi_wpf_skipped",
+        "linux_lan_donor_control": "success",
+        "cross_platform_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39899786790,
+        "commit": "7dcecd96d27d7aa6490bab1614a64092b79671ef",
+        "overall": "failure",
+        "all_component_jobs": "success_windows_linux_lan_donor_protected_control",
+        "cross_platform_assembly": "success_real_same_run_components_native_dualidentity",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39901945731,
+        "commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
+        "overall": "failure",
+        "all_component_jobs": "success_windows_linux_lan_donor_protected_control",
+        "namespace_isolation": "success_actual_privileged_three_namespace_controls_and_cleanup",
+        "cross_platform_assembly": "success_real_same_run_components_native_dualidentity_and_static_preflight",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39905205347,
+        "commit": "4a273bf9356ccd3036f67a3e8e7ee1cfce89baeb",
+        "overall": "failure",
+        "windows": "source_tests_failed_patch_conversion",
+        "linux_control": "synthetic_executable_fixture_errors",
+        "linux_lan_donor_namespace": "success",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39906263847,
+        "commit": "8389cb6193ea2bd6383f9f262304a14e50c96712",
+        "overall": "failure",
+        "windows": "source_passed_managed_UI05_PublicSessionControl_failed_native_build_and_branding_not_reached",
+        "linux_lan_donor_control_namespace": "success",
+        "cross_platform_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39908170962,
+        "commit": "c3bac153fbe45642fb86f6eaac4efc5b069fe4c5",
+        "overall": "failure",
+        "windows": "source_passed_UI05_case05_PublicControlException",
+        "linux_lan_donor_control_namespace": "success",
+        "cross_platform_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39910723239,
+        "commit": "0ac6695a112bf15cbb016c1c34a0c011b3f07137",
+        "overall": "failure",
+        "windows": "UI05_fixed_and_passed; PublicNativeReturn_failed_unknown_case",
+        "linux_lan_donor_control_namespace": "success",
+        "same_run_native_lifecycle_and_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39912156375,
+        "commit": "117a60d4a437d0cc71bc4aa0d94890ba122fbe24",
+        "overall": "failure",
+        "windows": "UI05_and_PublicNativeReturn_passed_this_run; FinalLaunchPreparation_fixed80_WSAEACCES",
+        "linux_lan_donor_control_namespace": "success",
+        "same_run_native_lifecycle_and_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39915438707,
+        "commit": "568c3c5c0de90749636d8ba5acff76e2b8e62f86",
+        "overall": "failure",
+        "windows": "managed_suites_and_core_dedicated_selections_passed; hooks_lib_test_compilation_E0425; IPC8_source8_interop3_and_branding_not_completed",
+        "linux_lan_donor_control_namespace": "success",
+        "same_run_native_lifecycle_and_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39918375705,
+        "commit": "1b6cdabcec13c3e1b313501ec4306c67ebcbf9f8",
+        "overall": "failure",
+        "windows": "managed_suites_native_return8_and_native_managed_interop3_passed; source_transport_failed_before_branding_and_final_components",
+        "linux_lan_donor_control_namespace": "success",
+        "same_run_native_lifecycle_and_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39919260768,
+        "commit": "6c11c8b85633ea5e2977ea0131c86ee01b316bbb",
+        "overall": "failure",
+        "windows": "PublicNativeReturn_case15_UnauthorizedAccessException_at_old_coarse_CONFIG_ACK_phase; no_specific_cleanup_cause_inferred_for_this_run",
+        "linux_lan_donor_control_namespace": "success",
+        "same_run_native_lifecycle_and_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
+      }
+    ],
+    "candidate_windows_source": "At1974 run39922764910 Windows job120311712409 succeeded. Official component ZIP digest verified; native8, interop3 and source8 each fully passed with zero ignored/skipped; four component hashes and checked PE branding matched. Quick39922765064 separately passed27return+9final and restored IIS.",
+    "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
+    "candidate_linux_matrix": "05c127a run39936896183/job120358529852 SUCCESS; official artifact digest and strict consumer verified all nine QUIC/WSS/development-TCP correct-pin/wrong-pin/restore phases, core cleanup/new traffic denial/TUN removal, six namespace removals and private-stage cleanup. Separate current-session challenge, native owner lease and production admission remain unverified.",
+    "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
+    "candidate_component_result": "b67 run39938418762: all eight component/isolation/static-preflight/native/stack jobs succeeded. Five native cases and both TCP owned-stack cases have verified official artifacts and strict-consumer success. This historical source predates OPEN. The retained13 replay and complete-package input gates failed; complete package skipped. Earlier528 failures and their unresolved exact causes remain in their records.",
+    "knowledge_snapshot_commit": "3872f3fabe27663e0d138e51d7cbcc2283455a2d",
+    "knowledge_snapshot_source": "533e77d50567cddb340b2144b190b8d9dbd1fd45",
+    "knowledge_snapshot_files": 174
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -93,7 +252,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-22T21:13:51.799609+00:00",
+  "updated_utc": "2026-10-23",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -101,8 +260,660 @@
     "lan_self_tests": 26,
     "native_api_tests": 27,
     "initial_native_api_failure": "stale producer fixture digest after executable rename; regenerated by actual producer, old historical fixture restored unchanged",
-    "github_full_build": "not_yet_configured_or_run",
-    "clean_public_package": "held_default_save_inputs_block_complete_build",
-    "live_game": "not_run"
+    "github_full_build": "b67_all_eight_component_isolation_preflight_native_and_owned_stack_jobs_passed;two_strict_withheld_input_gates_failed;fullpackage_skipped;historical_pre_OPEN_scope",
+    "clean_public_package": "strict_gate_failed_missing_8_lan_sav_meta_12_held_total",
+    "live_game": "not_run",
+    "cloud_initial_python": {
+      "tests": 37,
+      "errors": 16,
+      "skipped": 2,
+      "cause": "held SAV/META inputs absent",
+      "exit_code": 1
+    },
+    "cloud_initial_source_logic": {
+      "tests": 35,
+      "passed": 33,
+      "skipped": 2,
+      "exit_code": 0,
+      "scope": "Explicit selection excludes two complete-resource tests; strict resource tests remain unchanged and failing."
+    },
+    "initial_github_source_checks": "https://github.com/caox233/FifthFreedom/actions/runs/39855999361 (reported failure; same failure independently reproduced in cloud)",
+    "cloud_native_api": {
+      "passed": 29,
+      "exit_code": 0
+    },
+    "cloud_native_server": {
+      "passed": 390,
+      "exit_code": 0,
+      "zero_test_targets": 5,
+      "initial_failed_run": "18 required owned fixture directories; corrected runner environment and reran"
+    },
+    "cloud_donor_native_reference": {
+      "passed": 183,
+      "exit_code": 0,
+      "zero_test_targets": 10
+    },
+    "cloud_donor_manager": {
+      "executed": 154,
+      "passed": 153,
+      "skipped": 1,
+      "exit_code": 0
+    },
+    "cloud_wpf_cross_compile": {
+      "warnings": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "windows_runtime_validated": false
+    },
+    "cloud_background_task_regression": {
+      "checks": 10,
+      "exit_code": 0
+    },
+    "cloud_observer_session": {
+      "exit_code": 0
+    },
+    "cloud_portplan": {
+      "exit_code": 134,
+      "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
+    },
+    "cloud_source_current": {
+      "source_commit": "4b49da73223b97e40ad4923325d45af1e3064684",
+      "executed": 538,
+      "passed": 536,
+      "skipped": 2,
+      "exit_code": 0,
+      "environment": "fresh detached4b49da7; .local/cloud-receipts/clean-checkout-4b49da73223b/receipt.json",
+      "tracked_files_unchanged": true,
+      "complete_package": false,
+      "source_report_sha256": "877dda8e7a11fb994e1458f17743f40c9a1fd172963cd70de7391dfd26f26b8e"
+    },
+    "cloud_authenticated_reader": {
+      "passed": 69,
+      "exit_code": 0,
+      "scope": "synthetic SQLite/native-token fixtures and real owned loopback TLS; no deployment"
+    },
+    "cloud_native_bridge_fixture": {
+      "rust_passed": 2,
+      "python_passed": 5,
+      "fixture_sha256": "ba92c9917c8de43dd6b83ba31c0d985cba88cc868171d4872ce25cbd5416c663",
+      "scope": "real current native producer, synthetic keys and identities; no production key handoff"
+    },
+    "cloud_network_environment": {
+      "passed": 34,
+      "exit_code": 0,
+      "production_adapters_wired": true,
+      "windows_probe": "passed_on_7dcecd9_run39899786790_including_owned_exit_refresh"
+    },
+    "cloud_vss_policy_audit": {
+      "passed": 7,
+      "exit_code": 0,
+      "scope": "four unchanged production pure-policy modules; no native bind/tick or game execution; no confirmed root cause",
+      "record": "docs/tasks/vss-lifecycle-audit.md"
+    },
+    "hosted_windows_components": {
+      "conclusion": "success",
+      "run_id": 39901945731,
+      "job_id": 120245275923,
+      "scope": "WPF publish, real DPAPI credential and isolated no-game LAN/Public-context probes; managed suites; native API/auth tests; x86 hooks/gameplay and Windows LAN compilation",
+      "complete_package": false,
+      "live_game": false
+    },
+    "cloud_native_dedicated_current": {
+      "implementation_commit": "eba13de9092475015038f3e9f9e8a4c55c5a6128",
+      "passed": 370,
+      "exit_code": 0,
+      "scope": "SERVER16 real private-config/SCM lease/SQLite Users/HMAC observer policy; strict default false bound to admitted current owner. Three new integration tests and retained native suite passed; no ordinary Public activation. Initial disk-full build failure retained before exact inactive incremental-cache cleanup and final rerun."
+    },
+    "cloud_protected_transport": {
+      "passed": 16,
+      "exit_code": 0,
+      "scope": "Linux TLS/source/framing/limits/key/SIGTERM integration, synthetic inputs only"
+    },
+    "cloud_public_candidate": {
+      "tests_passed": 10,
+      "exit_code": 0,
+      "scope": "standalone zipapp integrity/reproducibility; actual local candidate built and CLI executed; full game runtime false"
+    },
+    "cloud_public_package_identity": {
+      "passed": 45,
+      "new_tests": 16,
+      "exit_code": 0,
+      "scope": "Linux native API45 passed; real same-run Windows/Linux component identity passed in hosted job120244277083 at7dcecd9. Later native Public preflight remains separate."
+    },
+    "public_network_dependency_audit": {
+      "archives_verified": 4,
+      "notices_verified": 2,
+      "tests_passed": 8,
+      "closure_complete": false,
+      "hold": "Original read-only audit did not execute drivers. Separate7930 official Wintun input and319 finite driver evidence below; Npcap and final distribution/usage conditions remain unresolved."
+    },
+    "cloud_public_deployment_credentials": {
+      "passed": 12,
+      "windows_dpapi": "passed_on_7dcecd9_run39899786790_with_managed_production_storage_suite",
+      "wpf_crosscompile": {
+        "warnings": 0,
+        "errors": 0
+      },
+      "public_enabled": false
+    },
+    "cloud_quazal_current": {
+      "passed": 81,
+      "exit_code": 0,
+      "scope": "SERVER08 final69library+11integration+1doc; actual retained protocol tests and source rejection; no gameplay"
+    },
+    "cloud_public_preflight": {
+      "native_debug_and_release_cli": "passed_with_synthetic_inert_Windows_roles",
+      "unique_marker": "exactly_one_after_shared_noninline_retention_fix",
+      "adapter_tests": 9,
+      "actual_release_adapter": "passed_static_check_and_ordinary_Public_rejection; ephemeral inputs removed",
+      "startup_allowed": false,
+      "real_same_run_hosted_components": "passed_run39901945731_job120249688978_static_startup_allowed_false"
+    },
+    "cloud_socket_isolation": {
+      "harness_tests_passed": 26,
+      "ci_adapter_tests_passed": 5,
+      "actual_cloud_command_exit": 1,
+      "actual_cloud_reason": "ROOT_NAMESPACE_PRIVILEGES_REQUIRED",
+      "namespaces_created_in_cloud": 0,
+      "real_privileged_namespace_isolation": "passed_run39901945731_job120245275962_actual_controls_and_owned_cleanup",
+      "public_runtime_ready": false
+    },
+    "cloud_public_source_admission": {
+      "implementation_commit": "3987d6e4e3576af76faffbbbe4b3e2f6d7e0734a",
+      "native_full_tests": 348,
+      "protocol_full_tests": 81,
+      "current_public_activation": false,
+      "scope": "API/HTTP/PRUDP/ticket kernel-peer policy; admitted token/release/current-run binding retained; ordinaryPublic CLI still rejected before state work"
+    },
+    "cloud_public_session_client": {
+      "implementation_commit": "a52902863d11b0fdc23dc4489bb06088e5e3d03a",
+      "passed": 15,
+      "independent_review_passed": 15,
+      "wpf_crosscompile_warnings": 0,
+      "wpf_crosscompile_errors": 0,
+      "scope": "Production-linked owned temporary-CA TLS; actual trust/name/redirect/bounds/cancellation/run-context cases; native token handoff not implemented in this commit"
+    },
+    "cloud_owned_supervision": {
+      "implementation_commit": "d258a54c940717fbd76be67ced49fb15c2c3af1e",
+      "passed": 16,
+      "independent_review_passed": 16,
+      "skipped": 0,
+      "scope": "Actual owned synthetic ELF children, pidfds, parent death and established TCP closure; injected observations; no real EasyTier/TUN",
+      "production_admission": false
+    },
+    "cloud_overlay_secure_contracts": {
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "secure_session_before": "3_pass_1_fail",
+      "secure_session_after": "4_pass",
+      "secure_filter_before": "6_pass_4_fail",
+      "secure_filter_after": "10_pass",
+      "existing_datagram_and_session": "9_plus_2_pass",
+      "in_memory_noise_roundtrip": "1_pass",
+      "official_binary_changed": false,
+      "real_network_runtime": false,
+      "clean_guard2_build": "26_selected_tests_and_GNU_Release_passed_local; runtime_not_executed; evidence/easytier-clean-linux-build-guard2.json",
+      "explicit_peer_pin_before": "2_pass_1_fail_wrong_key_with_valid_PSK_accepted",
+      "explicit_peer_pin_after": "3_pass_wrong_key_explicitly_identity_rejected",
+      "guard3_regression_checks": 35,
+      "guard3_clean_release": "Passed local35 and GNU Release; first hosted39909129708 also passed35 and GNU Release; separate actual overlay39910723452 failed containment readback"
+    },
+    "windows_branding_metadata": {
+      "implementation_commit": "b171d4d",
+      "source_migration_check": "passed",
+      "actual_file_properties": "1974actual hosted FileVersionInfo checks passed;3PE ProductName Fifth Freedom and server OriginalFilename match",
+      "wire_and_crate_names_preserved": true
+    },
+    "cloud_native_api_current": {
+      "passed": 54,
+      "exit_code": 0,
+      "scope": "UI06 nine new bounded wire/auth-generation contracts plus retained45; not Windows IPC execution"
+    },
+    "cloud_parent_lease": {
+      "implementation_commit": "99e3c6245dd8c1af70bab46c79e6407d6e49e3e2",
+      "timing_delta_commit": "b9ad6c6",
+      "passed": 10,
+      "original_lifecycle_passed": 16,
+      "actual_rust_test_peer_composition": "passed_5_loopback_listeners_and_revoke_exit92; not_real_main_Public_activation",
+      "production_admission": false
+    },
+    "cloud_ui_native_return": {
+      "launcher_commit": "ce4c29d",
+      "native_commit": "56f8feaef8cd595c983243630e79d1d31de8660b",
+      "portable_managed_passed": 14,
+      "windows_managed_pending": 0,
+      "native_contract_passed": 9,
+      "windows_native_pending": 0,
+      "wpf_crosscompile_warnings": 0,
+      "wpf_crosscompile_errors": 0,
+      "cross_language_windows_runtime": "actual same-run Rust helper/C# owned-process IPC3 passed in1b6cdab; package/loadedDLL admission explicitly not exercised",
+      "public_enabled": false,
+      "windows_managed_passed_this_run": 27,
+      "earlier_unexplained_failure_resolved": false,
+      "windows_native_passed_this_run": 8,
+      "later_managed_failure": "9e owned directory cleanup failure retained; bounded fixture-only cleanup16ccb185 passed27 actual Windows checks at1974, including real delayed-lock and persistent-denial controls. External denial cause remains unidentified.",
+      "hosted_managed_run": 39922765064,
+      "native_and_interop_hosted_run": 39918375705
+    },
+    "hosted_overlay_guard2_build": {
+      "run_id": 39905205148,
+      "job_id": 120255467838,
+      "conclusion": "success",
+      "selected_contracts": 26,
+      "gnu_release": "success",
+      "artifact_scope": "three bounded JSON receipts only; archive contents not downloaded in cloud",
+      "runtime_executed": false,
+      "binary_published": false
+    },
+    "safe_cache_cleanup": {
+      "freed_bytes": 2052317184,
+      "scope": "only owned reproducible guard-build incremental cache; guard1/2 four original ELFs and receipts retained with before/after matching hashes",
+      "receipt": ".local/cloud-receipts/cache-cleanup-guard-incremental/receipt.json"
+    },
+    "cloud_ui_final_login": {
+      "implementation_commit": "90fde12",
+      "passed": 9,
+      "wpf_crosscompile_warnings": 0,
+      "wpf_crosscompile_errors": 0,
+      "scope": "actual final HTTP2 login and historical kernel socket observation; no live overlay lease or Public startup",
+      "hosted": "Passed original9 in568c3c5 quick run39915438709 with scoped default-IIS preparation and restoration; no whole-package or runtime admission claim"
+    },
+    "cloud_native_lifecycle_harness": {
+      "implementation_commit": "92945e3dd043e1ee1dae21afdb73f5265b0f2c1f",
+      "receipt_fix_commit": "49b66bf64b25bc2a8bf033ec01301ac4810be084",
+      "local_checks_passed": 13,
+      "actual_local_preflight_exit": 1,
+      "actual_local_namespaces_created": 0,
+      "actual_hosted": "b67run39938418762/job120375464994 SUCCESS: all five cases, official658-byte ZIP digest and strict consumer verified. Withheld/denied create no state; EOF/expiry/parent-death each observe five listeners, rejection/closure/release/exit92 and cleanup. Historical pre-OPEN source; synthetic runtime bindings, no production-provider claim. Older528 listener failure remains unexplained, not rewritten.",
+      "scope": "five owned isolated main-process activation/revocation cases; no ordinary production admission",
+      "checkout_fix_commit": "ce0df6da5630e76f9bd5960920fe8ca18ac13176"
+    },
+    "cloud_overlay_probe_harness": {
+      "implementation_commit": "26adec5",
+      "local_checks_passed": 30,
+      "actual_local_preflight_exit": 1,
+      "actual_local_runtime_started": false,
+      "actual_hosted": "45e879b run39924391718/job120317103110 failed. Verified official artifact: QUIC initiator123 observations, owned core image/TUN true, parser rejects PEER_RESOLVED_ENDPOINT_INVALID;0 phases. Namespaces2/2/private stage cleanup verified. A separate production QUIC loopback reproduced a mapped-IPv4 resolved form rejected at that parser boundary;45 did not retain its raw endpoint.54a62c4 permits only the exact configured IPv4/port canonical mapping for QUIC initiator resolved_remote_addr. Correctedb613 run39929836302/job120335089272 instead failed observe/OVERLAY_OBSERVATION_UNAVAILABLE, zero phases. Official ZIP SHA256 e38d93d4ad3a3395b5aeea910c9b6884a0c535c10517e8c68bde568e0941197d verified; worker cleanup_reaped true and2/2 namespaces removed, no cleanup errors. Neither observation proves an authentication failure or successful readiness. Latest49193b5run39933668757 completed the QUIC correct-pin-before three-echo phase then failed precise OVERLAY_ADDRESS_QUERY_UNAVAILABLE, worker reaped and namespaces/private stage removed. Role/errno unknown; neither complete matrix nor authentication-failure claim. Separate actual ioctl/source evidence supports reviewed1bc552c: only first UP/EADDRNOTAVAIL is pending, while other errors and address loss after success remain fatal.20lifecycle+19overlay+31probe local checks passed; independent2regressions passed, actual rerun pending.",
+      "scope": "owned QUIC/WSS/TCP positives, wrong configured key with same PSK, restore; native SocketPolicy traffic and cleanup; not production admission",
+      "readiness_fix_commit": "45e879be85814ac7b7a46596092d139398610f90"
+    },
+    "cloud_canonical_patch_proof": {
+      "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "target": "4b49da73223b97e40ad4923325d45af1e3064684",
+      "patch_sha256": "69832130f880f98d9576b5bc33834b9d1613be29d4c2fc97417a45d33e228a51",
+      "original_paths": 1312,
+      "forward_paths": 1660,
+      "reverse_paths": 1312,
+      "reverse_git_clean": true,
+      "scope": "exact canonical Git bytes/modes/pathsets; original private four-role evidence unchanged"
+    },
+    "hosted_overlay_guard3_build": {
+      "run_id": 39909129708,
+      "conclusion": "success",
+      "selected_contracts": 35,
+      "gnu_release": "success",
+      "artifact_scope": "bounded JSON receipts only; contents not downloaded",
+      "runtime_executed": false,
+      "binary_published": false
+    },
+    "cloud_owned_overlay_monitor": {
+      "implementation_commit": "6a8e8fe05446b40ebaa5bb2bf3250c8bef99cb6b",
+      "new_checks_passed": 18,
+      "retained_lifecycle_passed": 16,
+      "retained_parent_lease_passed": 10,
+      "independent_review": "same44_checks_passed_zero_skips",
+      "scope": "actual owned ELF/loopback RPC inode/bounded CLI/SCM-credential parent lease composition; TUN and peer service/native peer explicitly synthetic",
+      "actual_easytier_native_stack_verified": true,
+      "production_admission": false,
+      "actual_runtime_scope": "b67 finite owned guard3 TCP development composition; separate historical pre-OPEN source, not newer challenge or ordinary Public admission"
+    },
+    "hosted_windows_loopback_prerequisite": {
+      "run_id": 39915438709,
+      "job_id": 120287860155,
+      "source_commit": "568c3c5c0de90749636d8ba5acff76e2b8e62f86",
+      "conclusion": "success",
+      "original_final_login_checks": 9,
+      "default_site_stop_bind_restore_verified": true,
+      "production_ports_changed": false,
+      "complete_package": false
+    },
+    "hosted_strict_overlay_containment": {
+      "run_id": 39916016496,
+      "job_id": 120289657927,
+      "source_commit": "f85c515168c35a7d727b0f936ad2254be144e036",
+      "conclusion": "success",
+      "scope": "exact full nft readback and owned namespace cleanup only; no EasyTier/TUN/native runtime executed",
+      "normalizer_and_comparator_weakened": false,
+      "actual_runtime_verified": false
+    },
+    "cloud_owned_native_overlay_stack": {
+      "implementation_commit": "31f1e5eb0eb1bb5aa880ce998b83cfca6c4f69ee",
+      "local_checks_passed": 20,
+      "independent_review": "20passed_zero_skips",
+      "local_positive_scope": "synthetic native wire peer/TUN plus real owned children, SCM lease, TCP closure, ordering and cleanup fault cases",
+      "actual_local_guard_exit": 1,
+      "actual_local_runtimes_started": 0,
+      "actual_hosted": "b67run39938418762/job120375464937 SUCCESS: official1750-byte ZIP/full2JSON and strict consumer verified. Lease-revoke/peer-loss each nativeREADY+five listeners and established TCP; lease case watchdog92/five rebound/EOF-or-reset/overlay alive, peer case exact peer reaped/permanent revoke/native reaped/no listeners and no remote EOF claim. Four namespaces/private stage removed. Historical guard3 TCP/pre-OPEN scope; no active nonce or Public claim.",
+      "production_admission": false
+    },
+    "cloud_ui_source_transport": {
+      "implementation_commit": "75db71b9284a3a9efd8e3b72067c1312088e83c5",
+      "linux_api_passed": 56,
+      "windows_source_contracts_pending": 0,
+      "type_check": "actual Rust API and tests with declaration-only local wrapper; not whole Windows DLL build",
+      "production_issuer": "closed; no actual Windows owned kernel-session chain yet",
+      "game_udp_confinement_verified": false,
+      "option_readback_fix_commit": "2ace33616b9444761b734a769889a1e1be15f297",
+      "actual_hosted": "1974run39922764910/job120311712409 native source contracts8passed0failed0ignored; official component artifact digest verified. Not actual EasyTier/Wintun/game runtime.",
+      "windows_source_contracts_passed": 8
+    },
+    "retained_native_replay_input_gate": {
+      "implementation_commit": "1b6cdabcec13c3e1b313501ec4306c67ebcbf9f8",
+      "held_tests": 13,
+      "executed": false,
+      "fixture_source_and_provenance": "absent",
+      "original_test_source_sha256": "a0942f34386a90b7dfbfa95d634e98b0211e4248fc4c18d87ca98dce8552e679",
+      "actual_hosted_run": 39918375705,
+      "actual_hosted_gate": "failure",
+      "full_native_replay_verified": false
+    },
+    "fusionfix_loader_provenance": {
+      "identity_commit": "116555bc0939c594cd4d6ec6bec5c068782bbd53",
+      "packaging_commit": "c7ffe7ac8370d5bf664e22bc6d7c61a466c08a76",
+      "loader": "official Ultimate ASI Loader v9.7.0 Win32 dinput8.dll is byte-identical to frozen version.dll",
+      "upstream_source": "f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc",
+      "pinned_notice_texts": 7,
+      "embedded_binary_identities": 3,
+      "packaging_and_assembly_checks_passed": 29,
+      "independent_same_checks_passed": 29,
+      "permission_closure": false,
+      "independent_rebuild": false,
+      "binary_executed": false
+    },
+    "cloud_ui_windows_session": {
+      "implementation_commit": "1974fad83ecf76f138fe5d42e7db2f2e02328b8d",
+      "build_workflow_commit": "1a6b2e65e33b5af3a31db4fb8efc7403b5bfdfdb",
+      "production_linked_session_checks_passed": 6,
+      "source_and_build_checks_passed": 14,
+      "exact_prepared_source_sha256": "0e01b494704e7a4f3afb67d7c54b446149fda7317938623d36164d0d53c0d1eb",
+      "locked_metadata_verified": true,
+      "actual_full_windows_build_run": 39927010635,
+      "actual_full_windows_build": "success_actual_locked_MSVC_core_CLI_compile_codegen_link;14focused_checks_passed;official_three_receipt_artifact_digest_verified",
+      "driver_or_core_executed": false,
+      "production_issuer": "closed",
+      "boundary": "This paired build-only workflow did not execute either binary or driver. Separate319 finite Wintun backend probe passed below; actual EasyTier owner/source-route/secure-peer/IPC chain and ordinary Public admission remain unresolved. No Win7 or runtime-binary publication claim.",
+      "paired_windows_rerun": {
+        "source_head": "41fe262cc1e279b7cb44c3dcfba5b6a696ff60b7",
+        "run_id": 39927010635,
+        "job_id": 120325760177,
+        "status": "completed",
+        "conclusion": "success",
+        "focused_windows_checks_passed": 14,
+        "compile_or_link_success_claimed": true,
+        "receipt": "docs/evidence/hosted-windows-easytier-41fe262.json"
+      },
+      "typed_current_session_read": {
+        "implementation_commit": "ad60fe0ee85d69d7041af712ae6da0fefaa70dd1",
+        "linked_rust_checks": 8,
+        "builder_checks": 20,
+        "independent_review": "8Rust+18initialbuilder independently passed; separate2PE-wrapper checks passed independently",
+        "snapshot_is_lease": false,
+        "actual_windows_build_run": 39935015346,
+        "actual_windows_build_job": 120352316132,
+        "actual_windows_builder_checks_passed": 20,
+        "actual_ten_patch_compile_link_verified": true,
+        "scope": "current typed NicCtx read and actual locked MSVC compile/codegen/link; no core execution, owner IPC, active challenge or production lease",
+        "actual_windows_typed_checks_passed": 8,
+        "actual_windows_typed_checks_ignored": 0,
+        "official_artifact_sha256": "9b30c0f8d4f068fe12f2e811e0b44aae8ce5041b78375577bc8e65dcadafaef9",
+        "record": "docs/evidence/hosted-windows-easytier-23d5923.json"
+      }
+    },
+    "hosted_windows_components_current": {
+      "run_id": 39922764910,
+      "job_id": 120311712409,
+      "source_head": "1974fad83ecf76f138fe5d42e7db2f2e02328b8d",
+      "receipt_checkout_commit": "0e8485983c23a33b451a0fa52ca9aec421704b4d",
+      "conclusion": "success",
+      "official_component_zip_sha256": "87d447a8cf3e7658ecaea0fe335b6fa41bc3e78246cc18e0dcc530e989af372c",
+      "official_artifact_digest_matches": true,
+      "native_ipc": 8,
+      "native_managed_interop": 3,
+      "source_transport": 8,
+      "four_component_hashes_match": true,
+      "full_package": false,
+      "live_game": false,
+      "same_run_identity_static_preflight": "job120320810694_success"
+    },
+    "official_wintun_input": {
+      "implementation_commit": "7930de91b68125bf458bc164cf0d340f8da60e1d",
+      "archive_sha256": "07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51",
+      "archive_bytes": 750540,
+      "official_https_download": true,
+      "official_api_digest_available": false,
+      "members_verified": 7,
+      "prior_amd64_x86_dll_pins_match": true,
+      "original_license_sha256": "183adac21e7d96c508c8fd34d394b7b6708bc81564ad1bad61ab66143a008cd2",
+      "original_crlf_bytes_preserved": true,
+      "focused_checks_passed": 10,
+      "independent_same_checks_passed": 10,
+      "official_binary_origin_gap_resolved": true,
+      "final_usage_and_distribution_conditions_verified": false,
+      "npcap_hold_unchanged": true,
+      "driver_executed": false,
+      "finite_hosted_session_probe": "Separate actual319bf44 run39930667783 passed2cases; original7930 input audit itself remained read-only. See hosted_wintun_session below.",
+      "production_admission": false
+    },
+    "hosted_wintun_session": {
+      "source_head": "319bf445073b362acf8129a80ff0bf68f19e53a5",
+      "checkout_commit": "1723ec2ad34b69a18ca5f9260ed9594488bd977a",
+      "run_id": 39930667783,
+      "job_id": 120337826134,
+      "conclusion": "success",
+      "actual_cases_passed": 2,
+      "portable_checks_passed": 15,
+      "artifact_zip_sha256": "ec4547d5eeb018122309f346de54ef3b447db8655d9bbe6b24ef9b141f485fd1",
+      "official_artifact_digest_matches": true,
+      "actual_owner_drop": true,
+      "actual_async_shutdown_and_receive_eof": true,
+      "owned_adapters_absent_after": true,
+      "unrelated_kernel_and_pnp_identities_preserved": true,
+      "driver_package_remains_in_disposable_vm": true,
+      "driver_uninstalled": false,
+      "network_configured": false,
+      "packets_sent": false,
+      "secure_peer_verified": false,
+      "public_admission": false,
+      "receipt": "docs/evidence/hosted-wintun-319bf44.json"
+    },
+    "authenticated_peer_freshness_boundary": {
+      "handshake_history_is_fresh_authenticated_traffic": false,
+      "ping_pong_is_authenticated_traffic": false,
+      "actual_decrypt_observation_implementation": "2408d6ae4d0c02d53d14389736bfb0f2ec65e18c separate production-linked patch; runtime recipes unchanged",
+      "new_checks_passed": 15,
+      "retained_checks_passed": 29,
+      "same_generation_and_aba_regression": "actual2fail_before_fix_then15pass; independent final15pass",
+      "source_patch_apply_reverse_verified": true,
+      "active_challenge_verified": false,
+      "production_admission": false,
+      "record": "docs/tasks/authenticated-receive.md",
+      "independent_build_recipe": "5006e0b eight-patch recipe; exact prepare/reverse/forward verified; actual hosted authenticated-receive job120358530925 in run39936896405 succeeded",
+      "existing_runtime_recipes_changed": false,
+      "actual_hosted_build": {
+        "branch_source": "05c127a544ca8ea70d25f07f3101244b55c43842",
+        "checkout_commit": "d7d819317a4e3ff72efa53400ce258c4154eb783",
+        "run_id": 39936896405,
+        "job_id": 120358530925,
+        "passed": 44,
+        "failed": 0,
+        "ignored": 0,
+        "locked_release_core_cli_built": true,
+        "official_artifact_sha256": "09e287ffda1ac7b0f63073c02fe47dc4243a7a71c2180be786947225e31f230c",
+        "runtime_executed": false,
+        "binary_uploaded": false,
+        "record": "docs/evidence/hosted-authenticated-receive-build-05c127a.json"
+      },
+      "default_builder_compatibility": {
+        "run_id": 39936896405,
+        "job_id": 120358530652,
+        "passed": 35,
+        "failed": 0,
+        "ignored": 0,
+        "locked_release_core_cli_built": true,
+        "official_artifact_sha256": "c27ca2d0f06942c3e112f7da046e48efb05c0a0905ea6f9482efe19b76c410a0",
+        "runtime_executed": false,
+        "record": "docs/evidence/hosted-guard3-builder-compatibility-05c127a.json"
+      }
+    },
+    "hosted_portable_source_matrix": {
+      "source_head": "05c127a544ca8ea70d25f07f3101244b55c43842",
+      "run_id": 39936896158,
+      "ubuntu": {
+        "conclusion": "success",
+        "executed": 486,
+        "passed": 484,
+        "skipped": 2
+      },
+      "windows": {
+        "conclusion": "success",
+        "executed": 486,
+        "passed": 397,
+        "skipped": 89
+      },
+      "both_official_artifact_digests_verified": true,
+      "complete_package_ready": false,
+      "scope": "explicit platform-specific skips, including two Windows symlink privilege checks; not native runtime evidence",
+      "record": "docs/evidence/hosted-source-matrix-05c127a.json"
+    },
+    "cloud_pe_dependency_inventory": {
+      "implementation_commit": "a093045c82861a7011c460c9efe8f65320870d22",
+      "builder_hook_commit": "23d592358d556438c66fb7ce398986d7b83ad839",
+      "focused_checks_passed": 14,
+      "independent_same_checks_passed": 14,
+      "independent_actual_pe_comparisons": 4,
+      "normal_and_delay_directories_verified": true,
+      "actual_paired_core_cli_imports_pending": false,
+      "scope": "static DLL-name inventory only; no executable loading, symbol resolution, transitive or dynamic-load dependency closure",
+      "actual_core_imports_packet_dll": true,
+      "actual_cli_imports_packet_dll": false,
+      "actual_both_delay_imports_empty": true,
+      "source_of_output_inventory": "23d5923 official digest-verified runner receipt; executable bytes were not uploaded/downloaded for independent rehash"
+    },
+    "cloud_native_listener_state_regression": {
+      "implementation_commit": "2f10f82215b624710db6f7d9ec3d9c5270ca8ee7",
+      "old_checker_actual_established_and_time_wait_controls_failed": true,
+      "corrected_controls_passed": true,
+      "native_checks_passed": 16,
+      "stack_checks_passed": 20,
+      "independent_real_socket_checks_passed": 3,
+      "accepted_only_foreign_inode_multiple_listeners_rejected": true,
+      "prior_528_exact_case_identified": false,
+      "hosted_fix_verification_pending": true,
+      "record": "docs/tasks/server-11.md"
+    },
+    "cloud_diagnostic_text_streaming": {
+      "implementation_commit": "6a60418",
+      "production_linked_checks_passed": 12,
+      "independent_same_checks_passed": 12,
+      "full_wpf_cross_target_warnings": 0,
+      "full_wpf_cross_target_errors": 0,
+      "hosted_windows_run": 39938418815,
+      "hosted_result": "success_12_passed_zero_skipped_official_artifact_digest_independently_verified",
+      "original_file_bytes_unchanged": true,
+      "full_windows_zip_24_rerun": false,
+      "historical_user_exception_resolved": false,
+      "record": "docs/tasks/diagnostic-streaming.md",
+      "hosted_job": 120363584181,
+      "hosted_artifact_sha256": "c203db5c00f0d7bdee38ced6313098607d86a4b02ddde3e9e3809567faf4123b",
+      "hosted_record": "docs/evidence/hosted-windows-diagnostic-stream-b67af6c.json"
+    },
+    "hosted_complete_overlay_matrix": {
+      "source_head": "05c127a544ca8ea70d25f07f3101244b55c43842",
+      "checkout_commit": "d7d819317a4e3ff72efa53400ce258c4154eb783",
+      "run_id": 39936896183,
+      "job_id": 120358529852,
+      "conclusion": "success",
+      "transport_phase_pairs_passed": 9,
+      "namespaces_created": 6,
+      "namespaces_removed": 6,
+      "official_artifact_sha256": "a72a3b2cacc7857b4cd4bb8c1bf4a330f2a648dd4568414de7930f9faea00699",
+      "strict_receipt_consumer_exit_code": 0,
+      "private_stage_removed": true,
+      "native_owner_lease_verified": false,
+      "active_nonce_challenge_in_runtime": false,
+      "production_admission": false,
+      "record": "docs/evidence/hosted-owned-overlay-05c127a.json"
+    },
+    "hosted_combined_stack_partial": {
+      "source_head": "528668e22e9b768bf004e1e1788eb6e65cd6190f",
+      "run_id": 39932526946,
+      "job_id": 120355233682,
+      "conclusion": "failure",
+      "lease_revoke_case": "nativeREADY/five owned listeners/watchdog92/five rebound ports/TCP EOF or reset/overlay alive; predates OPEN barrier, no causal closure claim",
+      "peer_loss_case": "observe/WORKER_UNCLASSIFIED_ERROR before combined readiness was confirmed; underlying cause unknown",
+      "worker_reaped": true,
+      "all_four_namespaces_removed": true,
+      "private_stage_removed": true,
+      "official_artifact_sha256": "29adfe90b748e878d7123237f0b3e28dc7743d10ea0e7de970dc79438c7a6d8e",
+      "record": "docs/evidence/hosted-owned-stack-528668e.json"
+    },
+    "cloud_owned_windows_process": {
+      "implementation_commit": "f79ecc642d70bf54631253b42a1a880f8ed28ec3",
+      "portable_passed": 5,
+      "windows_skipped_locally": 12,
+      "retained_return_portable_passed": 14,
+      "retained_return_windows_skipped_locally": 13,
+      "wpf_cross_compile_warnings": 0,
+      "wpf_cross_compile_errors": 0,
+      "actual_windows17_result": "success_17_passed_zero_skipped_x86_synthetic_helper",
+      "architecture_required": "x86 self-contained helper; actual architecture assertion required",
+      "core_or_driver_executed": false,
+      "record": "docs/tasks/owned-core-process.md",
+      "actual_windows_run": 39939697022,
+      "actual_windows_job": 120367800235,
+      "official_artifact_sha256": "a587b7102370bcfed7e3a63f4c230962fb50550aad0e62ff423168bcf41578b1",
+      "actual_apphost_bytes_unchanged": true,
+      "hosted_record": "docs/evidence/hosted-owned-core-08b3d07.json"
+    },
+    "safe_native_incremental_cleanup": {
+      "removed_generated_files": 681,
+      "removed_generated_bytes": 490245263,
+      "retained_entries_verified": 6887,
+      "retained_regular_file_bytes_modes_paths_and_symlink_targets_unchanged": true,
+      "symlink_targets_dereferenced": false,
+      "scope": "six confirmed inactive native incremental directories only; no source, final binary, log, evidence or active EasyTier target deletion",
+      "receipt": ".local/cloud-receipts/cache-cleanup-native-incremental-2/receipt.json"
+    },
+    "hosted_native_lifecycle_b67": {
+      "source_head": "b67af6ca1014510dfb16469a416f3e049be9b06b",
+      "checkout_commit": "61323a20c02f1081988e30dac0d0fdcd89c48162",
+      "run_id": 39938418762,
+      "job_id": 120375464994,
+      "conclusion": "success",
+      "cases": 5,
+      "official_artifact_sha256": "97c50af2562bd4f1d28ed7ff8e8df1bc387a4dbd2e5e50aa7943884d1a7ea3dd",
+      "strict_receipt_consumer_exit_code": 0,
+      "pre_revocation_open_barrier_in_this_source": false,
+      "production_admission": false,
+      "record": "docs/evidence/hosted-native-lifecycle-b67af6c.json"
+    },
+    "hosted_combined_stack_complete_b67": {
+      "source_head": "b67af6ca1014510dfb16469a416f3e049be9b06b",
+      "checkout_commit": "61323a20c02f1081988e30dac0d0fdcd89c48162",
+      "run_id": 39938418762,
+      "job_id": 120375464937,
+      "conclusion": "success",
+      "cases_passed": [
+        "lease-revoke",
+        "peer-loss"
+      ],
+      "namespaces_removed": 4,
+      "private_stage_removed": true,
+      "official_artifact_sha256": "286942669852b5cf029ae801a0f201ff96f5829333c98ccd5c6500efc022b037",
+      "strict_receipt_consumer_exit_code": 0,
+      "pre_revocation_open_barrier_in_this_source": false,
+      "current_nonce_challenge_in_runtime": false,
+      "production_admission": false,
+      "record": "docs/evidence/hosted-owned-stack-b67af6c.json"
+    }
   }
 }

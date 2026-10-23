@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T05:02:33.107340+00:00",
+  "implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39901945731",
+  "run_attempt": 1,
+  "status": "completed",
+  "overall_conclusion": "failure",
+  "jobs": [
+    {
+      "id": 120245275724,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120245275923,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120245275962,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120245275989,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120245276082,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120245276098,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120245333100,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120249688978,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12480096036,
+      "name": "linux-public-server-component-candidate-61338d8c0b1d90386ac033163b0cad45ef361374",
+      "size_in_bytes": 84357517,
+      "digest": "sha256:24092e313b83c6c1a873f5f77f24ff49bb43906e8168e944d647583234f0a2da",
+      "expired": false
+    },
+    {
+      "id": 12480036108,
+      "name": "windows-compile-only-components-61338d8c0b1d90386ac033163b0cad45ef361374",
+      "size_in_bytes": 74622749,
+      "digest": "sha256:2fe0ab67beda247c5275ae4d69c2230f5d5958fa900b71de46e967594020903f",
+      "expired": false
+    },
+    {
+      "id": 12479347668,
+      "name": "linux-lan-baseline-61338d8c0b1d90386ac033163b0cad45ef361374",
+      "size_in_bytes": 9807482,
+      "digest": "sha256:7558f3933c9d6233f9f4a01e3b8ad70c3a3b2d721f773a662486bea9dec8d7f4",
+      "expired": false
+    },
+    {
+      "id": 12479287602,
+      "name": "linux-public-donor-reference-61338d8c0b1d90386ac033163b0cad45ef361374",
+      "size_in_bytes": 4005478,
+      "digest": "sha256:5c76f3aa9e26b3a241fafc867554b3f8983fc4d2d27443b1b9061fc20966c185",
+      "expired": false
+    },
+    {
+      "id": 12479117594,
+      "name": "linux-public-control-61338d8c0b1d90386ac033163b0cad45ef361374",
+      "size_in_bytes": 37608,
+      "digest": "sha256:1c00a39da120883c23399d2c92ca65ce56b1cf14711f4ce912cd1c5b1d66f640",
+      "expired": false
+    },
+    {
+      "id": 12479096897,
+      "name": "complete-package-input-gate-61338d8c0b1d90386ac033163b0cad45ef361374",
+      "size_in_bytes": 1657,
+      "digest": "sha256:14cde74f78a75fb6c7521b6b396f9ce28c15747b93921cf97c803f4507f0d8ab",
+      "expired": false
+    },
+    {
+      "id": 12478902739,
+      "name": "linux-native-socket-isolation-61338d8c0b1d90386ac033163b0cad45ef361374",
+      "size_in_bytes": 3678028,
+      "digest": "sha256:3ea6d849f5ea69b201157bff69861c490a0a5666b081dd9703446fb0f6d08940",
+      "expired": false
+    }
+  ],
+  "artifact_metadata_source": "Official GitHub Actions API; archive contents not downloaded here. Artifact name SHA is the PR merge checkout, distinct from branch head. Same-run component verification and static native preflight executed in GitHub-hosted job120249688978.",
+  "native_interface_ingress_isolation_job_success": true,
+  "native_static_deployment_preflight_job_success": true,
+  "public_startup_allowed": false,
+  "owned_encrypted_overlay_verified": false,
+  "complete_windows_package": false,
+  "full_public_game_runtime": false,
+  "game_executed": false,
+  "production_deployed": false
+}

@@ -54,3 +54,38 @@ fn p2p_request_and_response_keep_distinct_challenge_tags() {
     assert_eq!(misc::TestP2pRequest{challenge:vec![0xaa,0xbb]}.encode_to_vec(),[0x0a,0x02,0xaa,0xbb]);
     assert_eq!(misc::TestP2pResponse{challenge:vec![0xaa,0xbb]}.encode_to_vec(),[0x12,0x02,0xaa,0xbb]);
 }
+
+#[test]
+fn login_and_registration_keep_package_identity_at_tag_eleven() {
+    // Synthetic account u/p; product x at tag 10; package schema 1 at tag 11.
+    let wire = [0x0a, 0x01, b'u', 0x12, 0x01, b'p', 0x52, 0x01, b'x', 0x5a, 0x02, 0x08, 0x01];
+    let login = users::LoginRequest::decode(wire.as_slice()).unwrap();
+    let register = users::RegisterRequest::decode(wire.as_slice()).unwrap();
+    assert_eq!(login.package_identity.as_ref().unwrap().schema, 1);
+    assert_eq!(register.package_identity.as_ref().unwrap().schema, 1);
+    assert_eq!(login.encode_to_vec(), wire);
+    assert_eq!(register.encode_to_vec(), wire);
+    // A legacy donor request stays legacy: decoding must never manufacture a
+    // product or package identity that would bypass release_for_login admission.
+    let old = &wire[..6];
+    let login = users::LoginRequest::decode(old).unwrap();
+    let register = users::RegisterRequest::decode(old).unwrap();
+    assert!(login.client_product.is_empty() && login.package_identity.is_none());
+    assert!(register.client_product.is_empty() && register.package_identity.is_none());
+}
+
+#[test]
+fn capabilities_decode_all_stable_tags_without_upgrading_unknown_protocol() {
+    // product x, unknown protocol 99, version v, ready, official-only,
+    // config/content/auth/secure ports 80/8000/21126/21127 and observer allowed.
+    let wire = [0x0a, 0x01, b'x', 0x10, 99, 0x1a, 0x01, b'v', 0x20, 1, 0x28, 1,
+        0x30, 80, 0x38, 0xc0, 0x3e, 0x40, 0x86, 0xa5, 0x01, 0x48, 0x87, 0xa5, 0x01, 0x50, 1];
+    let capabilities = users::CapabilitiesResponse::decode(wire.as_slice()).unwrap();
+    assert_eq!((&*capabilities.product, capabilities.protocol_version, &*capabilities.version), ("x", 99, "v"));
+    assert!(capabilities.ready && capabilities.official_only && capabilities.observer_allowed);
+    assert_eq!([capabilities.config_port, capabilities.content_port, capabilities.auth_port, capabilities.secure_port], [80, 8000, 21126, 21127]);
+    assert_eq!(capabilities.encode_to_vec(), wire);
+    let absent = users::CapabilitiesResponse::decode(&[][..]).unwrap();
+    assert!(!absent.ready && !absent.observer_allowed);
+    assert_eq!(absent.protocol_version, 0);
+}

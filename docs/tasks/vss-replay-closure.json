@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "checked_utc": "2026-10-23T07:11:16Z",
+  "inspected_commit": "a689dd5759bdbebc78aadf940b2247b77b792c5e",
+  "scope": "Read-only integrity and dependency audit of uploaded authored source; not a native execution receipt.",
+  "commands": [
+    {
+      "command": "Python standard-library SHA256 and byte-length comparison of every INDEX.json entry",
+      "exit_code": 0
+    },
+    {
+      "command": "git ls-tree -rz --name-only a689dd5759bdbebc78aadf940b2247b77b792c5e; exact case-insensitive dependency basenames and game executable names",
+      "exit_code": 0
+    }
+  ],
+  "inventory_sha256": "9fc3d3f1055f92eba036d5a274741c7afca344eccf7348a2b3a988b2b0c3afc4",
+  "tracked_tree_nul_paths_sha256": "58cf50017d9bcc4708dfe268f7abb29c827da5510bedd61dbed9afaabd4a73c4",
+  "historical_source_count": 13,
+  "historical_sources_matching_index": 13,
+  "historical_sources": [
+    {
+      "path": "multiplayer/vss-agent/chat/run.py.txt",
+      "bytes": 6088,
+      "sha256": "3e6752dd8425348aeb95be14e5482c1c22fbc27c1a665d720d5cd95e305aaa77",
+      "matches_index": true
+    },
+    {
+      "path": "multiplayer/vss-agent/chat/probe.cpp.txt",
+      "bytes": 15853,
+      "sha256": "3e15c81f5bc9cf4d798d28032709664956e59ca41acab514034c200f314e580a",
+      "matches_index": true
+    },
+    {
+      "path": "multiplayer/export-agent/check-source.py.txt",
+      "bytes": 3064,
+      "sha256": "62b74b49ff5d5f56c2a88b5f5c3880a790b4f36d07429986f7db60e5f3fda0fa",
+      "matches_index": true
+    },
+    {
+      "path": "multiplayer/export-agent/candidate/tests/CrashDiagnostics/DiagnosticByteDumpRegression.cs.txt",
+      "bytes": 4900,
+      "sha256": "70aebd468a721059d96576b70c4346c3fe5b830b7c9f3aa38f7097bff062b764",
+      "matches_index": true
+    },
+    {
+      "path": "multiplayer/crash-agent/check-source.py.txt",
+      "bytes": 4150,
+      "sha256": "9f8341d79f31e36bc8f5710e823f8d64c0ee48ea2aa9966af0e057d4dbbf3a8d",
+      "matches_index": true
+    },
+    {
+      "path": "multiplayer/crash-agent/contract_tests.rs.txt",
+      "bytes": 4584,
+      "sha256": "a79e641ea13a6950af6feb84b573dc758354e981c728daf7cc8e30f1c60cc6c4",
+      "matches_index": true
+    },
+    {
+      "path": "multiplayer/crash-agent/candidate/NativeExceptionContextRegression.cs.txt",
+      "bytes": 4856,
+      "sha256": "facdf0775a86695ccbca92da0e88f90d17a1e8855829660c550b4bba0857c0c7",
+      "matches_index": true
+    },
+    {
+      "path": "entry/continuation1/entry-root/contract/check.py.txt",
+      "bytes": 3458,
+      "sha256": "214a62c623eb872830ec19cb60985a3228343da70796037b0d2f31c7ddd000af",
+      "matches_index": true
+    },
+    {
+      "path": "entry/continuation1/entry-root/contract/entry.cpp.txt",
+      "bytes": 13481,
+      "sha256": "e45dabbf4b4e811c75d27c70bf3ce4e5aaae88eafd1c891f014c321529dbbb5f",
+      "matches_index": true
+    },
+    {
+      "path": "entry/continuation1/entry-root/contract/fixture.template.rs.txt",
+      "bytes": 2181,
+      "sha256": "4d553cc0177c02a3c1be004486a07c1564e495e12b0cdf9c0c79d9f29ac06e99",
+      "matches_index": true
+    },
+    {
+      "path": "emf/continuation4/check-source.py.txt",
+      "bytes": 12654,
+      "sha256": "f711809aea9844890840135c2054917ab9ed611cbc003118eaece6c6c1cd918c",
+      "matches_index": true
+    },
+    {
+      "path": "emf/continuation4/harness/source-probe.cpp.txt",
+      "bytes": 8646,
+      "sha256": "63e587f4e97b524a2afea5a04b8832f1d5e97790795ba09ba419cd795e236967",
+      "matches_index": true
+    },
+    {
+      "path": "emf/continuation4/harness/fixture-stubs.rs.txt",
+      "bytes": 2295,
+      "sha256": "022d29391ee092db14db3b2801eb3f91453b8844a8d11120dfafa67e2ab9c6b4",
+      "matches_index": true
+    }
+  ],
+  "inspected_production_sources": [
+    {
+      "path": "src/native/client/hooks/gameplay/src/scis_scope_actor.rs",
+      "sha256": "968623e3053199e601a7591baacc3dd60fa7cbddc9924c4188c834cb4eeaa43c",
+      "matches_inspected_commit": true
+    },
+    {
+      "path": "src/native/client/hooks/gameplay/src/scis_resource_request.rs",
+      "sha256": "fae29eafc1809782de4c385c73193e12866feefb339433b43e16897a6b53ac6c",
+      "matches_inspected_commit": true
+    },
+    {
+      "path": "src/native/client/hooks/gameplay/src/scis_resource_policy.rs",
+      "sha256": "1ef5de53cb9d4dda29d821fa955d38abd45d6819e339f2847ab3443a8dbf1e44",
+      "matches_inspected_commit": true
+    },
+    {
+      "path": "src/native/client/hooks/gameplay/src/vss_attachment.rs",
+      "sha256": "eda45b7916c1d12a14adee47e58144871aeb4a2e1edc54b6d29ab522918cb5d9",
+      "matches_inspected_commit": true
+    },
+    {
+      "path": "src/native/client/hooks/gameplay/src/mac11_combat.rs",
+      "sha256": "370e7193b3b529aec2c21c0e593d23cf636add40f5f5d5ed62a18458dacb6a99",
+      "matches_inspected_commit": true
+    }
+  ],
+  "required_historical_basenames": {
+    "relocs.h": [],
+    "retail.h": [],
+    "PINS.json": [],
+    "entry.exe": [],
+    "full-code.h": [],
+    "NATIVE-PINS.json": []
+  },
+  "tracked_game_executables": [],
+  "historical_retail_image_sha256": "c6b9f330fac1412f19f32a6fd86edb4c66291a6902611e9433b9b0ea659eb4bc",
+  "historical_retail_image_hash_origin": "entry check.py.txt:25 and emf check-source.py.txt:15; expected identity only, no image bytes available or verified",
+  "result": "needs-info: native late-geometry/create/bind/tick input closure absent",
+  "executed": {
+    "historical_scripts": false,
+    "native_replay": false,
+    "game": false,
+    "gpu_capture": false,
+    "new_policy_tests": false
+  },
+  "claims": {
+    "late_geometry_reproduced": false,
+    "changed_generation_native_callback_verified": false,
+    "attachment_fifo_native_verified": false,
+    "vss_lifecycle_fixed": false,
+    "accepted_emf_or_f3_reopened": false
+  }
+}
