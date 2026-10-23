@@ -134,3 +134,38 @@ This is a negative prerequisite check, not a hosted runtime result. Actual guard
 controls require the new hosted job after independent review. No production
 provider, automatic Release, game, private SAV/META data or deployment is
 introduced. The complete client package privacy gate remains unchanged.
+
+## Executable-entry audit and bounded failure diagnostics
+
+The SERVER-15 command already is the minimal executable development assembly.
+It loads genuine component and guard3 identities, creates the isolated owned
+namespace/profile, then invokes the existing production monitor, supervisor
+and parent lease. A second launcher or synthetic admission issuer would add no
+missing capability. `create_public_supervisor` correctly remains closed: the
+only implemented runtime recipe has purpose `owned-isolated-development`, the
+actual hosted encrypted-runtime/native composition is still unverified, and no
+reviewed production admission provider supplies the required ownership and
+current runtime proof. Candidate integrity and a namespace name are not such
+proof.
+
+An execution audit found and reproduced a concrete diagnostic gap. The stack
+worker discarded all exception details to its null stderr. Two actual worker
+subprocesses (bad arguments and an absent private manifest) therefore yielded
+only `WORKER_REPLY_EOF` in the parent. They failed before namespace entry or any
+runtime startup. The retained pre-fix test log records 19 tests with two errors.
+
+The stack now reuses SERVER-13's reviewed fixed failure schema, phase whitelist,
+code whitelist and exact worker reaping. It forwards no raw exception, private
+path or config. Unknown stack-specific errors remain the fixed unclassified
+code; accepting arbitrary upper-case text is deliberately not part of this
+change. Failed startup without a returned child handle does not independently
+claim that child was reaped. A later cleanup failure cannot replace the original
+phase/code or produce a successful acknowledgement. The enclosing case remains
+failed and can retain this one bounded record for diagnosis.
+
+Post-fix checks: 20/20 passed locally, including both real worker failures with
+exact Popen wait/pidfd close and a failed spawn plus independently failing cleanup.
+The failure path retained the original fixed code and suppressed a private
+sentinel. This establishes the diagnostic repair, not the root cause of the
+separate earlier full-overlay hosted EOF and not successful encrypted runtime
+startup. That root cause awaits the new hosted phase/code evidence.

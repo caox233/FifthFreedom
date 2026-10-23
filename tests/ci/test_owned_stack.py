@@ -5,6 +5,7 @@ import json
 import hashlib
 import shutil
 import signal
+import subprocess
 import os
 from pathlib import Path
 import socket
@@ -12,7 +13,7 @@ import sys
 import tempfile
 import time
 import unittest
-from unittest.mock import patch
+from unittest.mock import AsyncMock, Mock, patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -216,6 +217,30 @@ class CleanupTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(clean)
         self.assertEqual(events, ["native-stop-failed", "query-and-namespace-closed", "second", "first"])
 
+    async def test_failed_spawn_never_claims_reap_and_cleanup_cannot_replace_original_code(self):
+        _, profiles = pair()
+        document = dict(profile=asdict(profiles[0]), config="/tmp/synthetic-only-config",
+            **{role: dict(path="/tmp/synthetic-" + role, sha256="1" * 64, bytes=64) for role in ("core", "cli")})
+        for close_fails in (False, True):
+            state = dict(phase="arguments", cleanup_code=None)
+            handles = [Mock(), Mock()]
+            monitor = Mock(); monitor.prepare = AsyncMock()
+            monitor.close = AsyncMock(side_effect=OSError("PRIVATE_SECRET_SENTINEL") if close_fails else None)
+            monitor.core_spec.return_value = worker.ChildSpec(None, ())
+            with patch.object(worker, "VerifiedExecutable", side_effect=handles), \
+                 patch.object(worker, "OwnedOverlayMonitor", return_value=monitor), \
+                 patch.object(worker.OwnedChild, "spawn", new=AsyncMock(side_effect=worker.LifecycleError("CHILD_EXEC_FAILED"))):
+                with self.assertRaisesRegex(worker.LifecycleError, "CHILD_EXEC_FAILED") as caught:
+                    await worker.serve(document, -1, state)
+            record = worker.failure_record(caught.exception, state)
+            self.assertEqual((record["phase"], record["code"]), ("core-start", "CHILD_EXEC_FAILED"))
+            self.assertFalse(record["cleanup_reaped"])
+            self.assertEqual(record["cleanup_code"], "WORKER_CHILD_CLEANUP_FAILED" if close_fails
+                             else "CHILD_START_CLEANUP_UNCONFIRMED")
+            self.assertNotIn("PRIVATE_SECRET_SENTINEL", json.dumps(record))
+            for handle in handles: handle.close.assert_called_once()
+            monitor.close.assert_awaited_once()
+
     async def test_monitor_failure_preserves_failure_and_releases_remaining_real_descriptors(self):
         read, write = os.pipe()
         self.addCleanup(os.close, write)
@@ -284,6 +309,43 @@ class RealChildCompositionTests(unittest.IsolatedAsyncioTestCase):
                 finally:
                     owner.revoke(); proxy.release.set()
                     await supervisor.stop()
+
+
+@unittest.skipUnless(sys.platform == "linux" and hasattr(os, "pidfd_open"), "Linux exact worker pidfd")
+class RealWorkerFailureTests(unittest.TestCase):
+    def failure(self, arguments, command):
+        # This launches only the actual worker's argument/private-input failure
+        # path. No namespace entry, runtime, native server or game is possible.
+        handle = stack.StackWorker.__new__(stack.StackWorker)
+        handle.cleaned, handle.worker_failure, handle.pidfd = False, None, -1
+        handle.process = subprocess.Popen([sys.executable, "-I", "-B",
+            str(ROOT / "scripts/owned_stack_worker.py"), *arguments], stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=stack.probe.CLEAN_ENV, bufsize=0)
+        handle.pidfd = os.pidfd_open(handle.process.pid)
+        process = handle.process
+        try:
+            if command:
+                handle.process.stdin.write(command)
+            with self.assertRaises(stack.probe.WorkerFailure) as raised:
+                handle.read(3)
+            self.assertTrue(handle.stop())
+            self.assertEqual(process.returncode, 1)
+            self.assertIsNone(handle.process)
+            self.assertEqual(handle.pidfd, -1)
+            self.assertNotIn("PRIVATE_SECRET_SENTINEL", json.dumps(raised.exception.record))
+            return raised.exception.record
+        finally:
+            if handle.process is not None: handle.stop()
+
+    def test_actual_argument_failure_retains_fixed_code_and_exact_reap(self):
+        record = self.failure([], None)
+        self.assertEqual((record["phase"], record["code"]), ("arguments", "WORKER_ARGUMENTS_INVALID"))
+        self.assertTrue(record["cleanup_reaped"])
+
+    def test_actual_private_input_failure_is_sanitized_and_never_enters_namespace(self):
+        record = self.failure(["-1", "/tmp/PRIVATE_SECRET_SENTINEL/missing.json"], b"START\n")
+        self.assertEqual((record["phase"], record["code"]), ("manifest", "PRIVATE_FILE_UNAVAILABLE"))
+        self.assertTrue(record["cleanup_reaped"])
 
 
 if __name__ == "__main__": unittest.main()

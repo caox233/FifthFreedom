@@ -47,6 +47,7 @@ class StackWorker(probe.NamespaceWorker):
     """Reuse reviewed bounded commands/exact worker stop; retain START barrier."""
     def __init__(self, namespaces, name, manifest_path):
         self.process, self.pidfd, self.cleaned = None, -1, False
+        self.worker_failure = None
         expected = parse_profile(probe.encoded(probe.json_bytes(Path(manifest_path).read_bytes())["profile"])).sha256
         namespaces.assert_owned(name)
         descriptor = namespaces.owned[name]
@@ -57,8 +58,13 @@ class StackWorker(probe.NamespaceWorker):
             self.pidfd = os.pidfd_open(self.process.pid)
             self.process.stdin.write(b"START\n")
             require(self.read(15) == {"event": "started", "profile_sha256": expected}, "STACK_WORKER_START_FAILED")
-        except BaseException:
-            self.stop()
+        except BaseException as error:
+            try:
+                cleaned = self.stop()
+            except BaseException:
+                cleaned = False
+            if isinstance(error, probe.WorkerFailure) and not cleaned and error.record["cleanup_reaped"]:
+                error.record = dict(error.record, cleanup_reaped=False, cleanup_code="WORKER_CHILD_CLEANUP_FAILED")
             raise
 
 
@@ -150,6 +156,7 @@ def run_case(case, candidate, images, stage, identity, ip, nft):
     except (probe.ProbeError, probe.IsolationError, native.ProbeError, LifecycleError,
             OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
         row["error"] = probe.diagnostic(error)
+        if isinstance(error, probe.WorkerFailure): row["worker_failure"] = error.record
         if isinstance(error, probe.ContainmentMismatch): row["fixed_diagnostics"] = error.diagnostics
     except KeyboardInterrupt:
         row["error"] = "OWNED_STACK_CANCELLED"

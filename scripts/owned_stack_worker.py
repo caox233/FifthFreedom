@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "src/public"))
 import ci_native_lifecycle as native
 from ci_easytier_probe import encoded, json_bytes, sha
-from easytier_probe_worker import ProbeError, fail
+from easytier_probe_worker import ProbeError, WorkerFailure, failure_record, fail
 from fifth_freedom_control.easytier_profile import parse_profile
 from fifth_freedom_control.native_lease import NativeOwnerLease
 from fifth_freedom_control.owned_overlay import OwnedOverlayMonitor
@@ -188,7 +188,8 @@ async def cleanup_stack(*, held, owner, pause, supervisor, startup, core, monito
     return clean
 
 
-async def serve(document, namespace_fd):
+async def serve(document, namespace_fd, state):
+    state["phase"] = "profile"
     profile = parse_profile(encoded(document["profile"]))
     if profile.transport != "tcp": fail("STACK_ONLY_TCP_DEVELOPMENT")
     handles, core, monitor, supervisor, startup, owner, held = [], None, None, None, None, None, None
@@ -197,6 +198,7 @@ async def serve(document, namespace_fd):
     primary_failure = False
     pause = None
     try:
+        state["phase"] = "images"
         images = {}
         for role in ("core", "cli") + (("native",) if profile.role == "responder" else ()):
             row = document[role]
@@ -206,6 +208,7 @@ async def serve(document, namespace_fd):
             # Evidence is recorded synchronously before any native cleanup await.
             monitor_revocations.append(bool(supervisor is not None and supervisor.native is not None))
             if owner is not None: owner.revoke()
+        state["phase"] = "monitor-prepare"
         monitor = OwnedOverlayMonitor(encoded(document["profile"]), images["core"], images["cli"], namespace_fd, revoke=revoke)
         pause = None
         if profile.role == "responder":
@@ -218,23 +221,32 @@ async def serve(document, namespace_fd):
             pause = PauseAfterObservation(monitor) if document["case"] == "lease-revoke" else None
             supervisor = OwnedSupervisor(monitor.core_spec(document["config"]), native_spec, pause or monitor,
                 owner, LifecycleLimits(startup=60, observation=2, interval=.05, terminate=.5, kill=2))
+            state["phase"] = "core-start"
             startup = asyncio.create_task(supervisor.start())
             await asyncio.sleep(0)
         else:
             await monitor.prepare()
             spec = monitor.core_spec(document["config"])
+            state["phase"] = "core-start"
             core = await OwnedChild.spawn(spec.executable, spec.arguments, startup_timeout=10)
         reply("started", profile_sha256=profile.sha256)
         while True:
+            state["phase"] = "parent-command"
             command = await input_line(sys.stdin.fileno())
             if command is None or command == {"action": "stop"}: break
             if type(command) is not dict or set(command) != {"action"}: fail("STACK_COMMAND_INVALID")
             action = command["action"]
+            state["phase"] = "observe"
             if action == "observe" and core is not None:
                 observed = await monitor.observe(core)
                 reply("observation", authenticated=observed is not None)
             elif action == "status" and supervisor is not None:
-                if startup.done() and startup.exception() is not None: fail("STACK_START_FAILED")
+                if startup.done() and startup.exception() is not None:
+                    # The lifecycle engine may have failed before a spawned
+                    # handle was returned. Do not infer a reap proof from EOF.
+                    if supervisor.overlay is None or supervisor.native is None:
+                        state["cleanup_code"] = "CHILD_START_CLEANUP_UNCONFIRMED"
+                    raise startup.exception()
                 if supervisor.ready:
                     native.listener_ownership(supervisor.native, str(profile.local.overlay.ip))
                     reply("ready", native_listeners=5)
@@ -279,18 +291,26 @@ async def serve(document, namespace_fd):
         stopped = True
     except BaseException:
         primary_failure = True
+        if state["phase"] == "core-start" and supervisor is None and core is None:
+            state["cleanup_code"] = "CHILD_START_CLEANUP_UNCONFIRMED"
         raise
     finally:
         clean = await cleanup_stack(held=held, owner=owner, pause=pause, supervisor=supervisor,
             startup=startup, core=core, monitor=monitor, handles=handles)
-        if not clean and not primary_failure:
-            fail("STACK_CHILD_CLEANUP_FAILED")
+        if not clean:
+            state["cleanup_code"] = "WORKER_CHILD_CLEANUP_FAILED"
+            if not primary_failure:
+                state["phase"] = "cleanup"
+                fail("WORKER_CHILD_CLEANUP_FAILED")
     if stopped: reply("stopped", children_reaped=True)
 
 
-def main(namespace_fd, manifest_path):
+def main(namespace_fd, manifest_path, state):
+    state["phase"] = "release"
     if sys.stdin.buffer.readline(7) != b"START\n": fail("WORKER_NOT_RELEASED")
+    state["phase"] = "manifest"
     document = json_bytes(read_private(manifest_path, 32768), 32768)
+    state["phase"] = "namespace"
     expected = document["namespace"]
     info = os.fstat(namespace_fd)
     if [info.st_dev, info.st_ino] != expected: fail("WORKER_NAMESPACE_IDENTITY_MISMATCH")
@@ -299,15 +319,23 @@ def main(namespace_fd, manifest_path):
     if [actual.st_dev, actual.st_ino] != expected: fail("WORKER_NAMESPACE_ENTRY_FAILED")
     os.chdir(Path(manifest_path).parent)
     try:
-        asyncio.run(serve(document, namespace_fd))
+        asyncio.run(serve(document, namespace_fd, state))
     finally:
         os.close(namespace_fd)
 
 
 if __name__ == "__main__":
+    state = dict(phase="arguments", cleanup_code=None)
     try:
         if len(sys.argv) != 3: fail("WORKER_ARGUMENTS_INVALID")
-        main(int(sys.argv[1]), sys.argv[2])
-    except BaseException:
+        main(int(sys.argv[1]), sys.argv[2], state)
+    except BaseException as error:
+        # Reuse the already-reviewed strict whitelist and schema. Unknown
+        # runtime failures stay unclassified; never echo a path or exception.
+        try:
+            record = error.record if isinstance(error, WorkerFailure) else failure_record(error, state)
+            print(json.dumps(record, separators=(",", ":")), flush=True)
+        except BaseException:
+            pass
         sys.stderr.write("OWNED_STACK_WORKER_FAILED\n")
         raise SystemExit(1)
