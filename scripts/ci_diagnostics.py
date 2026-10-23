@@ -47,6 +47,15 @@ _MANAGED_FAILURE = re.compile(
     r"EndOfStreamException|ObjectDisposedException|"
     r"Exception|OtherException)\Z"
 )
+_TLS_FAILURE = re.compile(
+    r"CI_TLS_FAILURE suite=PublicSessionControl case=05 "
+    r"client=(REQUEST_REJECTED|RESPONSE_INVALID|TRANSPORT_FAILED|TIMEOUT|OTHER) "
+    r"server_stage=(ACCEPT|TLS|REQUEST|RESPONSE|COMPLETE) "
+    r"server_exception=(NONE|OperationCanceledException|IOException|AuthenticationException|"
+    r"SocketException|InvalidOperationException|OtherException) "
+    r"native=(NONE|NO_CREDENTIALS|UNKNOWN_CREDENTIALS|ALGORITHM_MISMATCH|ILLEGAL_MESSAGE|"
+    r"UNTRUSTED_ROOT|WRONG_PRINCIPAL|CERT_EXPIRED|INTERNAL_ERROR|BAD_KEYSET|OTHER)\Z"
+)
 
 
 def owned_process_codes(text: str) -> list[str]:
@@ -153,10 +162,13 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
     managed = sorted({"PublicSessionControl:" + match[1] + ":" + match[2]
                       for line in text.splitlines()
                       if (match := _MANAGED_FAILURE.fullmatch(line))})[:MAX_ITEMS]
+    tls = sorted({"PublicSessionControl:05:" + ":".join(match.groups())
+                  for line in text.splitlines()
+                  if (match := _TLS_FAILURE.fullmatch(line))})[:MAX_ITEMS]
     return {"compiler_codes": codes, "ui_checks": labels[:MAX_ITEMS],
             "categories": signatures[:MAX_ITEMS], "exception_types": exceptions,
             "preflight_codes": preflight, "owned_process_codes": owned_process_codes(text),
-            "managed_cases": managed}
+            "managed_cases": managed, "tls_cases": tls}
 
 
 def read_bounded_logs(paths) -> str:

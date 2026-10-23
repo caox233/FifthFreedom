@@ -200,6 +200,29 @@ class AnnotationSafetyTests(unittest.TestCase):
         self.assertEqual(diagnostics.diagnostic_details(text)["managed_cases"], [])
         self.assertNotIn("PRIVATE", str(diagnostics.diagnostic_details(text)))
 
+    def test_tls_failure_exposes_only_exact_case_stage_and_native_classification(self):
+        marker = ("CI_TLS_FAILURE suite=PublicSessionControl case=05 client=TRANSPORT_FAILED "
+                  "server_stage=TLS server_exception=AuthenticationException native=NO_CREDENTIALS")
+        details = diagnostics.diagnostic_details(marker + "\r\n/private/PRIVATE_KEY 0x8009030E")
+        self.assertEqual(details["tls_cases"], ["PublicSessionControl:05:TRANSPORT_FAILED:TLS:AuthenticationException:NO_CREDENTIALS"])
+        self.assertNotIn("PRIVATE", str(details))
+        self.assertNotIn("0x8009030E", str(details))
+        for bad in (marker + " token=PRIVATE_TOKEN", marker.replace("case=05", "case=06"),
+                    marker.replace("stage=TLS", "stage=PRIVATE_STAGE"),
+                    marker.replace("native=NO_CREDENTIALS", "native=0x8009030E"),
+                    marker.replace("native=NO_CREDENTIALS", "native=NO_CREDENTIALS_PRIVATE_SUFFIX"),
+                    marker.replace("suite=PublicSessionControl", "suite=PRIVATE_SUITE"),
+                    marker.replace("client=TRANSPORT_FAILED", "client=PRIVATE_CODE")):
+            with self.subTest(marker=bad):
+                self.assertEqual(diagnostics.diagnostic_details(bad)["tls_cases"], [])
+                self.assertNotIn("PRIVATE", str(diagnostics.diagnostic_details(bad)))
+        output = io.StringIO()
+        with redirect_stdout(output), self.assertRaises(diagnostics.AnnotatedFailure):
+            with diagnostics.diagnostic_step("ci-test-PublicSessionControl"):
+                raise RuntimeError(marker + "\nPRIVATE_RAW_SERVER_EXCEPTION")
+        self.assertIn("tls_cases=PublicSessionControl:05:TRANSPORT_FAILED:TLS:AuthenticationException:NO_CREDENTIALS", output.getvalue())
+        self.assertNotIn("PRIVATE", output.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
