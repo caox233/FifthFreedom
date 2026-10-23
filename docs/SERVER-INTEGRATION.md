@@ -1,6 +1,8 @@
 # Windows/LAN 与 Linux/公网整合
 
-状态：源码和构建入口审计，**尚未完成服务端整合或公网部署验证**。
+状态：Windows LAN 与 Linux 基线/供体组件已通过 hosted 构建；生产认证桥已实现，
+**完整公网服务及部署验证仍未完成**。本页保留最初整合合同，当前执行收据见
+[SERVER-02](tasks/server-02.md)、[CI-01](tasks/ci-01.md) 和 [云端进展](CLOUD-PROGRESS.md)。
 目标固定为 Windows 服务端用于局域网、Linux 服务端用于公网，不沿用 donor 文档中
 “新部署默认 Windows 公网”的旧产品选择。所有路径相对于仓库根。
 
@@ -80,7 +82,7 @@ donor Windows管理器并不是“更完整的LAN后端”。不能直接替代�
 做保留测试；根`src/native`使用独立Cargo workspace。两者同名crate不能在同一次root Cargo
 命令中混合。整合后删除重复实现前必须证明契约覆盖，不只做逐文件合并。
 
-建议根CI三个独立lane（**建议，未实施/未运行**）：
+最初规划的根 CI 范围（具体已实施 lane 与运行结果以 CI-01 为准）：
 
 - Linux：Python编译/manager与协议合同、`cargo test --locked -p dedicated_server -p quazal -p sc_bl_protocols`
   （从选定workspace执行）、公共API合成fixture、源码隐私/资源清单检查。
@@ -110,8 +112,8 @@ Linux云端不能代替WPF实际界面、IME/DPAPI、管理员驱动/防火墙�
 多台玩家真实联网、公众网络NAT和实际用户体验的验收。服务器编译成功不等于公网可用；
 离线/GPU回放不等于新包实机通过。集中出包后由用户测试未通过/受影响项目，不要求重做全部旧项。
 
-本轮未执行构建、测试、启动游戏/服务、网络修改或发布。源码事实和建议在文中分别标记；
-迁入donor代码/文档不代表已经完成最终架构。
+本页最初审计未执行构建；后续真实云端构建结果已记录在上述任务收据中。
+没有启动游戏、部署现网或正式发布；迁入 donor 不代表已经完成最终架构。
 
 ## 7. 云端第一批服务器任务
 

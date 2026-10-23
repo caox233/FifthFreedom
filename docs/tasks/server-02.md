@@ -1,9 +1,11 @@
 # SERVER-02 — authenticated public query bridge
 
-Status: **ready-for-agent**. A callable, in-process authentication/query seam is
-implemented and tested. The public runtime, protected listener, Linux lifecycle
-and launcher Public adapter remain unconnected. This is not a public service or
-a completion claim for the six-milestone migration.
+Status: **ready-for-agent**. This record preserves the initial callable
+authentication/query seam and its executed evidence. Subsequent native key/grant
+work is tracked in [SERVER-03](server-03.md), and the real HTTPS listener and
+Linux lifecycle checks in [protected transport](public-transport.md). The full
+game runtime and launcher Public adapter remain unconnected. This is not a
+deployed public service or a six-milestone completion claim.
 
 ## Exact inspected compatibility contract
 
@@ -23,7 +25,8 @@ key `1|release_id|compat_id|manifest_sha256` and optional
 signed fields, not request headers or the package declaration, establish the
 identity passed to the read-only query adapter.
 
-Two concrete differences block wiring this module to a live runtime today:
+At the end of SERVER-02, two concrete differences blocked process integration
+(the subsequent SERVER-03 implementation addresses these explicit seams):
 
 1. The LAN issuer generates a new private signing key inside its server process
    on each start. The donor used an explicit `SCBL_AUTH_TOKEN_KEY`. There is no

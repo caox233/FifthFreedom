@@ -155,3 +155,58 @@ These are artifact archive digests; component-specific checksums remain inside
 the corresponding artifact. Full download redirects remained restricted in this
 cloud session. Candidate entry points now use PR/manual only to avoid duplicate
 push-plus-PR builds; no checks or privacy gates were removed.
+
+## 2026-10-23: production LAN connection and protected control service
+
+The final prior revision `814c5c1ae930afc9887c5a6b08ec4a95e3c74597` completed
+[candidate run 39863077851](https://github.com/caox233/FifthFreedom/actions/runs/39863077851)
+with Windows and both Linux component jobs successful. The strict package input
+gate failed and complete packaging skipped. That earlier result does not cover
+the following new implementation.
+
+- [UI-03](tasks/ui-03.md) now connects actual Host/Join operations, launch-time
+  host preparation and owned cleanup through the environment controller and WPF
+  dispatcher. Initial Join preserves a saved local endpoint; late capability
+  responses cannot publish into another lease/address/bind generation. Managed
+  tests passed 34/34, source UI contracts 12/12, and WPF cross-compilation had no
+  warnings/errors. New real-dispatcher probes are in the Windows no-game entry.
+- [SERVER-03](tasks/server-03.md) adds explicit Linux owner-only key-file loading,
+  native signed run-bound observer grants and a held-FD data-directory lock.
+  Default LAN still gets a random process key. Dedicated-server tests passed
+  330/330; focused final key tests passed 6/6 and non-test compilation passed.
+  The previous native producer fixture remains byte-identical.
+- [Protected transport](tasks/public-transport.md) adds a real HTTPS endpoint
+  and CLI, actual socket-source binding, bounded HTTP/TLS/query work, rate
+  limits, read-only SQLite, and owned shutdown. Sixteen integration tests and
+  all 69 server Python methods passed using synthetic private inputs. An
+  independent reviewer repeated the 16 tests and found no unresolved blocker.
+- [Control candidate](tasks/public-candidate.md) produces a deterministic
+  standalone zipapp, exact hash manifest and separate deployment templates.
+  Ten packaging regressions passed. The actual local lane built, verified and
+  ran the entry point; its receipt explicitly records a dirty working tree,
+  rather than attributing uncommitted code to an old clean revision. A dedicated
+  hosted Linux lane now exercises the real control component.
+- Source checks ran 163 methods: 161 passed, two existing Windows-only skips.
+  CI helper checks passed 30/30, actionlint and whitespace checks passed. New
+  native authentication filters on Windows require nonzero passing tests.
+
+These changes retain the native Public startup gate. Its current package verifier
+is bound to the four-role Windows catalog: a Linux server binary needs an explicit
+server-package identity plus admitted Windows-client catalog contract. Skipping
+the checks or silently changing the server digest would break admission. The
+protected game/overlay transport, launcher Public adapter and complete Linux
+installation/switch/rollback transaction remain work; a tested HTTPS component
+does not complete them. No production service, game or capture was started.
+
+All remote heads were checked again: the promised Capture helper source supplement
+was still absent. The new read-only receipt tool verified the preserved EXE's
+hash, size, x86 PE and asset pin, then exited 2 for `blocked_source_not_supplied`.
+Its seven regression tests passed. It does not reconstruct missing source or
+claim source/binary equivalence. The 12 privacy-held SAV/META files and original
+evidence remain preserved and excluded from publication.
+
+The six ordered milestones and existing accepted gameplay scopes remain intact.
+The environment API reports the same connected cloud instance, but still exposes
+no persistent Goal/scheduler interface. This turn executes autonomously; later
+agent turns require a message or platform wake-up. The saved reusable environment
+draft remains distinct from a published snapshot.

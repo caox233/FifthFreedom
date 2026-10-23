@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Implementation d0ee78e59b3d6c0691c00a224383d27dc6500ada passed all three hosted component lanes in push run39860535649 and PR run39860607037: Windows WPF publish/no-game UI/managed/native checks and x86 DLL/Windows LAN builds; Linux LAN and public-donor reference builds. Strict privacy input gate failed and complete package skipped as intended. Source and DevDocs draft PR #1 created. Full migration and live acceptance remain incomplete.",
-  "NEXT_EXECUTABLE_ACTION": "Continue UI02 by binding the tested environment model to a production LAN adapter while preserving named-pipe/package/capability paths; keep Public unavailable. In parallel implement reviewed native issuer-key and observer-grant handoff, then protected public transport and Linux lifecycle. Receive and hash the capture-helper source supplement; complete frozen-input provenance. For unresolved VSS lifecycle use the concrete late-geometry replay defined in docs/tasks/vss-lifecycle-audit.md. Preserve all six milestones, accepted scopes and remaining bugs; current tools do not schedule future agent turns.",
+  "LAST_CONFIRMED_RESULT": "UI03 production LAN lifecycle connected; managed34 and UI source12 passed, WPF Linux crosscompile0warnings/errors. Native dedicated330 passed; trusted Linux key/run-bound observer/flock added. Real protected HTTPS control tests16 and full Python server69 passed; reproducible standalone candidate built and verified. Source163 methods=161passed+2Windows-onlyskips. Prior final hosted814c5c1 run39863077851 all3component lanes passed; new hosted Windows/Linux verification pending push. Fullpackage privacy gate and native Public gate preserved.",
+  "NEXT_EXECUTABLE_ACTION": "Verify new hosted Windows production-adapter probes and Linux protected-control artifact after pushing. Then implement the explicit Linux server package identity plus admitted Windows client catalog contract; retain four-role admission instead of bypassing it. Integrate protected native game/overlay transport and owned launcher Public adapter, then verified Linux runtime install/switch/rollback. Capture helper source remains absent from all remote heads; receive and hash its reviewed supplement. Preserve all six milestones and accepted gameplay; VSS late-geometry native replay and real three-client networking remain separate missing evidence. No Goal scheduler interface is available.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -23,12 +23,12 @@
     {
       "id": 2,
       "name": "SCBL3 UI with retained LAN behavior",
-      "status": "donor_shell_windows_no_game_probe_passed_environment_model_tested_production_adapters_pending"
+      "status": "donor_shell_and_production_lan_controller_connected_local_regressions_pass_new_windows_probe_pending"
     },
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "windows_lan_and_linux_reference_components_pass_authenticated_read_bridge_verified_public_runtime_pending"
+      "status": "native_key_grant_and_linux_lock_integrated_real_https_control_component_tested_full_public_game_runtime_pending"
     },
     {
       "id": 4,
@@ -43,7 +43,7 @@
     {
       "id": 6,
       "name": "Standalone development root and safe cleanup",
-      "status": "originals_preserved_upstream_notice_verified_frozen_binary_version_capture_source_and_save_privacy_pending"
+      "status": "originals_preserved_capture_receipt_tool_verified_binary_but_source_absent_save_privacy_and_frozen_binary_provenance_pending"
     }
   ],
   "continuation_policy": "Code changes primarily in cloud per user. Local work finishes migration, privacy review, current builds and preservation; never auto-start game or private capture.",
@@ -81,7 +81,7 @@
     "personal_data_excluded": true
   },
   "cloud": {
-    "thread_title": "FifthFreedom\u4e91\u7aef",
+    "thread_title": "FifthFreedom云端",
     "repository": "caox233/FifthFreedom",
     "verified": "running connected Linux x86_64; Git HTTPS fetch/push and official gh repository/PR APIs succeeded",
     "environment_display_name": "not independently exposed by status API",
@@ -123,6 +123,13 @@
         "overall": "failure",
         "all_component_jobs": "success",
         "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39863077851,
+        "commit": "814c5c1ae930afc9887c5a6b08ec4a95e3c74597",
+        "overall": "failure",
+        "all_component_jobs": "success",
+        "complete_package": "skipped_private_input_gate_failed"
       }
     ],
     "candidate_windows_source": "passed on PR run39860607037",
@@ -137,7 +144,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-22T22:11:16.124505+00:00",
+  "updated_utc": "2026-10-23T03:33:28.846595+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -202,16 +209,16 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "executed": 120,
-      "passed": 118,
+      "executed": 163,
+      "passed": 161,
       "skipped": 2,
       "exit_code": 0,
-      "environment": "GITHUB_ACTIONS=true on Linux; Windows-only skips explicit"
+      "environment": "Linux current working tree; exact new hosted revision pending"
     },
     "cloud_authenticated_reader": {
-      "passed": 47,
+      "passed": 69,
       "exit_code": 0,
-      "scope": "synthetic databases only; no listener"
+      "scope": "synthetic SQLite/native-token fixtures and real owned loopback TLS; no deployment"
     },
     "cloud_native_bridge_fixture": {
       "rust_passed": 2,
@@ -220,9 +227,10 @@
       "scope": "real current native producer, synthetic keys and identities; no production key handoff"
     },
     "cloud_network_environment": {
-      "passed": 28,
+      "passed": 34,
       "exit_code": 0,
-      "production_adapters_wired": false
+      "production_adapters_wired": true,
+      "windows_probe": "pending_hosted_rerun"
     },
     "cloud_vss_policy_audit": {
       "passed": 7,
@@ -237,6 +245,21 @@
       "scope": "WPF publish and isolated no-game UI probe; four managed suites; native core/API tests; x86 hooks/gameplay and Windows LAN compilation",
       "complete_package": false,
       "live_game": false
+    },
+    "cloud_native_dedicated_current": {
+      "passed": 330,
+      "exit_code": 0,
+      "scope": "dedicated_server test target; prior wider protocol baseline retained separately"
+    },
+    "cloud_protected_transport": {
+      "passed": 16,
+      "exit_code": 0,
+      "scope": "Linux TLS/source/framing/limits/key/SIGTERM integration, synthetic inputs only"
+    },
+    "cloud_public_candidate": {
+      "tests_passed": 10,
+      "exit_code": 0,
+      "scope": "standalone zipapp integrity/reproducibility; actual local candidate built and CLI executed; full game runtime false"
     }
   }
 }
