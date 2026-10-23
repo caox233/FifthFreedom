@@ -16,7 +16,7 @@ _EXCEPTIONS = {"RuntimeError", "ValueError", "OSError", "FileNotFoundError", "Pe
                "FileExistsError", "TimeoutExpired", "CalledProcessError", "UnicodeDecodeError",
                "ImportError", "ModuleNotFoundError", "AssertionError", "XamlParseException",
                "IOException", "InvalidOperationException", "TypeInitializationException",
-               "OperationalError", "IntegrityError", "DatabaseError", "ProgrammingError"}
+               "OperationalError", "IntegrityError", "DatabaseError", "ProgrammingError", "LifecycleError"}
 _KNOWN_SIGNATURES = {
     "dependency-download-failed": ("failed to download", "unable to load the service index"),
     "custom-build-command-failed": ("failed to run custom build command",),
@@ -33,6 +33,16 @@ _PREFLIGHT_CODES = {
     "PREFLIGHT_PUBLIC_GATE_NOT_CLOSED", "PREFLIGHT_REPORT_INVALID", "PREFLIGHT_REPORT_MISMATCH",
     "PREFLIGHT_TEMP_INSIDE_CANDIDATE", "PREFLIGHT_TEMP_INVALID", "PREFLIGHT_UNVERIFIED_CANDIDATE",
 }
+_OWNED_PROCESS_CODES = {
+    "OWNED_PROCESS_UNSUPPORTED", "EXECUTABLE_PATH_INVALID", "EXECUTABLE_FILE_INVALID",
+    "EXECUTABLE_IDENTITY_INVALID", "EXECUTABLE_CAPABILITIES_UNVERIFIED", "EXECUTABLE_CAPABILITIES_FORBIDDEN",
+    "EXECUTABLE_ELF_INVALID", "EXECUTABLE_HASH_MISMATCH", "EXECUTABLE_CHANGED", "EXECUTABLE_UNAVAILABLE",
+}
+
+
+def owned_process_codes(text: str) -> list[str]:
+    return sorted({code for code in _OWNED_PROCESS_CODES
+                   if re.search(r"(?<![A-Za-z0-9_])" + code + r"(?![A-Za-z0-9_])", text)})[:MAX_ITEMS]
 
 
 def escape_command_data(text: str) -> str:
@@ -71,7 +81,13 @@ def test_failure_summary(suite: str, result) -> str:
     suffix = f"; additional_failed_methods={len(names) - len(shown)}" if len(names) > len(shown) else ""
     exceptions = sorted({kind for _, trace in [*result.failures, *result.errors]
                          for kind in known_exception_types(trace)})[:MAX_ITEMS]
+    owned = sorted({code for _, trace in [*result.failures, *result.errors]
+                    for code in owned_process_codes(trace)})[:MAX_ITEMS]
+    # Put fixed guard codes before long method lists so the bounded annotation
+    # still distinguishes an unsupported platform from rejected fixture metadata.
+    owned_field = f"owned_process_codes={','.join(owned)}; " if owned else ""
     return (f"suite={safe_identifier(suite)}; executed_methods={result.testsRun}; "
+            f"{owned_field}"
             f"failed_methods={','.join(shown) or 'none'}; assertion_events={len(result.failures)}; "
             f"error_events={len(result.errors)}; unexpected_successes={len(result.unexpectedSuccesses)}"
             f"; exception_types={','.join(exceptions) or 'unclassified'}"
@@ -125,7 +141,7 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
                         if re.search(r"(?<![A-Za-z0-9_])" + code + r"(?![A-Za-z0-9_])", text)})[:MAX_ITEMS]
     return {"compiler_codes": codes, "ui_checks": labels[:MAX_ITEMS],
             "categories": signatures[:MAX_ITEMS], "exception_types": exceptions,
-            "preflight_codes": preflight}
+            "preflight_codes": preflight, "owned_process_codes": owned_process_codes(text)}
 
 
 def read_bounded_logs(paths) -> str:

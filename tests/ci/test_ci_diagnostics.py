@@ -115,6 +115,26 @@ class AnnotationSafetyTests(unittest.TestCase):
                             'Check(valid,\n    "account " + username);\n', encoding="utf-8")
             self.assertEqual(diagnostics.known_ui_labels([path]), {"static route contract", "multiline route contract"})
 
+    def test_owned_process_summary_reports_fixed_guard_code_without_fixture_values(self):
+        class LifecycleError(RuntimeError):
+            pass
+        class FailedFixture(unittest.TestCase):
+            def runTest(self):
+                raise LifecycleError("EXECUTABLE_PATH_INVALID /private/PRIVATE_ACCOUNT ELF=PRIVATE_BYTES "
+                                     "EXECUTABLE_FILE_INVALID_PRIVATE_SUFFIX EXECUTABLE_PRIVATE_UNKNOWN")
+        FailedFixture.__qualname__ = "FailedFixture"
+        result = unittest.TestResult()
+        FailedFixture().run(result)
+        summary = diagnostics.test_failure_summary("server", result)
+        self.assertIn("owned_process_codes=EXECUTABLE_PATH_INVALID", summary)
+        self.assertIn("exception_types=LifecycleError", summary)
+        self.assertNotIn("PRIVATE", summary)
+        self.assertNotIn("/private", summary)
+        self.assertNotIn("EXECUTABLE_FILE_INVALID", summary)
+        details = diagnostics.diagnostic_details(result.errors[0][1])
+        self.assertEqual(details["owned_process_codes"], ["EXECUTABLE_PATH_INVALID"])
+        self.assertNotIn("PRIVATE", str(details))
+
     def test_nested_steps_emit_once_and_do_not_print_exception_message(self):
         for actions, prefix in (("false", "CI_ERROR_SUMMARY"), ("true", "::error title=Fifth Freedom CI::")):
             with self.subTest(github_actions=actions):

@@ -158,7 +158,10 @@ def prepare(archive, destination, lock, repository=ROOT):
     env["GIT_CEILING_DIRECTORIES"] = str(destination.parent)
     for _, patch_data in patches:
         for check in (True, False):
-            result = subprocess.run(["git", "apply", *(["--check"] if check else []), "--whitespace=error-all", "-"],
+            # Reviewed patches name exact LF byte identities. A runner's global
+            # Windows autocrlf setting must not rewrite the resulting source.
+            result = subprocess.run(["git", "-c", "core.autocrlf=false", "-c", "core.eol=lf", "apply",
+                                    *(["--check"] if check else []), "--whitespace=error-all", "-"],
                                     cwd=destination, env=env, input=patch_data, capture_output=True, timeout=30)
             if result.returncode:
                 raise PreparationError("SOURCE_PATCH_REJECTED")

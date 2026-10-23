@@ -111,6 +111,14 @@ class CleanSourcePreparationTests(unittest.TestCase):
         self.assertEqual((self.output / "easytier/secure.rs").read_bytes(), self.patched)
         self.assertEqual(result["source_files"]["easytier/secure.rs"]["sha256"], prepare.sha(self.patched))
 
+    def test_git_autocrlf_cannot_rewrite_reviewed_patch_output(self):
+        with patch.dict("os.environ", {"GIT_CONFIG_COUNT": "2", "GIT_CONFIG_KEY_0": "core.autocrlf",
+                                      "GIT_CONFIG_VALUE_0": "true", "GIT_CONFIG_KEY_1": "core.eol",
+                                      "GIT_CONFIG_VALUE_1": "crlf"}):
+            result = self.run_prepare()
+        self.assertEqual((self.output / "easytier/secure.rs").read_bytes(), self.patched)
+        self.assertEqual(result["source_files"]["easytier/secure.rs"]["sha256"], prepare.sha(self.patched))
+
     def test_untrusted_paths_duplicates_and_special_members_never_write_outside(self):
         for name in ("../outside", "/absolute", "a/../../outside", "a\\outside", "a/.git/config", "Cargo.lock"):
             with self.subTest(name=name):
