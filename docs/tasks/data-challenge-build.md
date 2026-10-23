@@ -1,7 +1,8 @@
 # Data challenge: independent Linux candidate build
 
-Status: **ready-for-agent** — exact source preparation and builder regressions
-passed locally; the new hosted 59-contract/core/CLI build has not run yet.
+Status: **ready-for-agent** — the independent hosted job passed all 59 contracts
+with zero ignored tests and compiled core/CLI Release outputs. The same run also
+passed the original guard3 35 and authenticated-receive 44 compatibility builds.
 Ordinary Public startup remains closed. This continues the actual owned transport
 prerequisite within the full migration and preserves all earlier build/runtime
 identities and evidence.
@@ -39,10 +40,10 @@ old recipes produced receipts equal in every field to their preserved receipts.
 | Unchanged Cargo.lock | `8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9` |
 | Restored auth44 source tree | `b0a7d3cf802d3de1f3741943ccd48db02cf883fe68899e9cd7f636627ec74e0f` |
 
-The new job requires each actual Rust filter below to pass with zero failures and
+The new job passed each actual Rust filter below with zero failures and
 zero ignored tests. A missing, partial or duplicate success summary fails the job
-before Release compilation. These are the production-linked tests already run
-locally for the reviewed source patch; hosted execution is still pending. The
+before Release compilation. These production-linked tests were previously run locally for the reviewed
+source patch and have now also passed on the hosted runner. The
 seven Python recipe/orchestration tests use inert compiler-output fixtures and
 do not count as actual Rust execution.
 
@@ -85,6 +86,36 @@ ownership, or prove remote completion of a new key epoch under the retained sync
 grace policy. A response is generated once per ticket and may be read repeatedly
 only while that original owner/revision/deadline remains current. This candidate
 does not compose it with a retained NIC session or issuer, and does not grant a
-launcher/native lease. The next action is to run this independent hosted job and
-verify its official three-JSON artifact against the exact recipe, full inventory,
-59 counts and Release result before recording any new build identity.
+launcher/native lease. The next bounded source integration adds actual PeerMap/Peer/connection
+membership checks to the existing ticket interface. It must preserve this recipe
+and its receipts, recheck exact live object membership around asynchronous work
+and reads, and remain separate from complete Instance/process/NIC ownership or
+launcher/native admission.
+
+
+## Actual hosted result
+
+[Run 39943233069](https://github.com/caox233/FifthFreedom/actions/runs/39943233069)
+completed successfully. The [verified receipt](../evidence/hosted-data-challenge-build-4322658.json)
+records branch head `4322658bd7f3c4489888f62311293da0e73899d9` separately from
+actual PR merge checkout `2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51`; the official
+merge parents include that branch head. Job `120379516061` passed all 59 tests
+with zero failures/ignored tests and completed the locked Release build.
+
+Official artifact `12498401001` is 40,260 bytes with ZIP SHA-256
+`40637f8e72d1e46f590a794246fcf085bb33f482079726108c3e9c154ef9831a`.
+Its exact three JSON members, all 700 prepared source files, ten ordered patches,
+recipe/lock identities, actual eight filter counts and Release result were
+verified. Core/CLI hashes in the receipt are the runner's static output checks;
+no executable was downloaded, independently rehashed here, executed or uploaded.
+The next PeerMap membership wrapper is absent from this successful recipe.
+
+The two retained jobs also passed in the same run: guard3 job `120379515757`
+passed its original 35 checks, and auth44 job `120379516015` passed its original
+44, both with zero failures/ignored tests and successful Release compilation.
+Their separately downloaded official artifacts `12496743899` and `12498357324`
+matched their official digests and contained exactly their own three JSON
+receipts. Both full 699-file source receipts equal the preserved earlier
+preparations in every field. The combined evidence document retains those
+separate build/source/artifact identities; none becomes evidence for another
+candidate or for runtime admission.
