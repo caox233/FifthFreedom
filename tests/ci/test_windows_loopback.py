@@ -54,6 +54,33 @@ class WindowsLoopbackTests(unittest.TestCase):
             invoke.assert_not_called()
             self.assertFalse(path.exists())
 
+    def test_return_suite_requires_all_windows_cases_and_zero_skips(self):
+        summary = "RESULT 25 passed, 0 skipped"
+        valid = "\n".join([f"PASS case {i}" for i in range(25)] + [summary])
+        self.assertTrue(loopback.verified_output(valid, "PublicNativeReturn"))
+        for changed in (valid.replace("PASS case 24", "SKIP case 24"), valid.replace(summary, "RESULT 14 passed, 11 skipped"),
+                        valid + "\n" + SUMMARY, valid.replace(summary, "RESULT 25 passed, 1 skipped"),
+                        valid + "\nCI_MANAGED_FAILURE suite=PublicNativeReturn case=15 exception=UnauthorizedAccessException"):
+            self.assertFalse(loopback.verified_output(changed, "PublicNativeReturn"))
+        self.assertFalse(loopback.verified_output(valid))
+
+    def test_return_command_and_receipt_are_distinct_from_native_interop(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "receipt.json"
+            stdout = "\n".join([f"PASS case {i}" for i in range(25)] + ["RESULT 25 passed, 0 skipped"])
+            child = subprocess.CompletedProcess([], 0, stdout, "PRIVATE_NOT_RETAINED")
+            with patch.object(sys, "argv", ["probe", "--suite", "PublicNativeReturn", "--report", str(path)]), \
+                    patch.object(sys, "platform", "win32"), patch.dict("os.environ", {"RUNNER_ENVIRONMENT": "github-hosted"}), \
+                    patch.object(loopback.subprocess, "run", return_value=child) as invoke:
+                self.assertEqual(loopback.main(), 0)
+            self.assertIn("PublicNativeReturn.csproj", " ".join(invoke.call_args.args[0]))
+            self.assertNotIn("--native-interop", invoke.call_args.args[0])
+            receipt = json.loads(path.read_text())
+            self.assertEqual(receipt["passed_checks"], 25)
+            self.assertEqual(receipt["skipped_checks"], 0)
+            self.assertIs(receipt["native_interop_exercised"], False)
+            self.assertNotIn("PRIVATE", path.read_text())
+
 
 if __name__ == "__main__":
     unittest.main()

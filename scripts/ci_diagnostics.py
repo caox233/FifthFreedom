@@ -68,7 +68,7 @@ _MANAGED_FAILURE = re.compile(
 _RETURN_PHASE_PATTERN = (
     r"RUN_CASE|CHILD_START|WAIT_IDLE|WAIT_FRAME|WAIT_CONNECT|WAIT_AUTH|WAIT_DISCONNECT|"
     r"WAIT_REJECT|CONFIG_DELIVERY|CONFIG_ACK|OWNER_CAPTURE|STATE_WAIT|"
-    r"PIPE_CONNECT|PIPE_READ|CHILD_EXIT|CLEANUP"
+    r"PIPE_CONNECT|PIPE_READ|CHILD_EXIT|CLEANUP|CONFIG_DELIVERY_WAIT|OWNED_DIRECTORY_CLEANUP"
 )
 _RETURN_PHASE = re.compile(
     r"CI_RETURN_PHASE suite=(PublicNativeReturn|NativeManagedInterop) case=([0-9]{2}) "
@@ -77,6 +77,11 @@ _RETURN_PHASE = re.compile(
 _RETURN_CHILD_FAILURE = re.compile(
     r"CI_RETURN_CHILD_FAILURE phase=(" + _RETURN_PHASE_PATTERN + r") "
     r"exception=(" + _MANAGED_EXCEPTION_PATTERN + r")\Z"
+)
+_RETURN_DIRECTORY_FAILURE = re.compile(
+    r"CI_RETURN_DIRECTORY_FAILURE suite=PublicNativeReturn case=(15|16|17) "
+    r"exception=(" + _MANAGED_EXCEPTION_PATTERN + r") child_exited=(YES|NO|UNKNOWN) "
+    r"process_disposed=(YES|NO) config_disposed=(YES|NO) readonly_files=(YES|NO|UNKNOWN)\Z"
 )
 
 
@@ -222,6 +227,9 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
     child_failures = sorted({":".join(match.groups())
                              for line in text.splitlines()
                              if (match := _RETURN_CHILD_FAILURE.fullmatch(line))})[:MAX_ITEMS]
+    directory_failures = sorted({"PublicNativeReturn:" + ":".join(match.groups())
+                                for line in text.splitlines()
+                                if (match := _RETURN_DIRECTORY_FAILURE.fullmatch(line))})[:MAX_ITEMS]
     tls = sorted({"PublicSessionControl:05:" + ":".join(match.groups())
                   for line in text.splitlines()
                   if (match := _TLS_FAILURE.fullmatch(line))})[:MAX_ITEMS]
@@ -237,6 +245,7 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
             "preflight_codes": preflight, "owned_process_codes": owned_process_codes(text),
             "managed_cases": managed, "tls_cases": tls,
             "return_phases": return_phases, "return_child_failures": child_failures,
+            "return_directory_failures": directory_failures,
             "native_interop_codes": fixed_codes(_INTEROP_CODES),
             "native_failed_tests": native_tests,
             "final_preparation_codes": fixed_codes(_PREPARATION_CODES)}

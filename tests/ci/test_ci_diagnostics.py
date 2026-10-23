@@ -308,6 +308,25 @@ class AnnotationSafetyTests(unittest.TestCase):
         self.assertIn("native_failed_tests=" + name, output.getvalue())
         self.assertNotIn("PRIVATE", output.getvalue())
 
+    def test_owned_directory_diagnostics_restrict_case_enum_and_never_export_file_names(self):
+        marker = ("CI_RETURN_DIRECTORY_FAILURE suite=PublicNativeReturn case=15 exception=UnauthorizedAccessException "
+                  "child_exited=YES process_disposed=YES config_disposed=YES readonly_files=UNKNOWN")
+        details = diagnostics.diagnostic_details(marker + "\nPRIVATE_FILENAME PRIVATE_PATH")
+        self.assertEqual(details["return_directory_failures"],
+                         ["PublicNativeReturn:15:UnauthorizedAccessException:YES:YES:YES:UNKNOWN"])
+        self.assertNotIn("PRIVATE", str(details))
+        for bad in (marker.replace("case=15", "case=14"), marker.replace("case=15", "case=18"),
+                    marker.replace("suite=PublicNativeReturn", "suite=NativeManagedInterop"),
+                    marker.replace("readonly_files=UNKNOWN", "readonly_files=PRIVATE_FILE"),
+                    marker.replace("process_disposed=YES", "process_disposed=UNKNOWN"),
+                    marker.replace("UnauthorizedAccessException", "UnauthorizedAccessException_PRIVATE_SUFFIX"),
+                    marker + " filename=PRIVATE_FILE"):
+            self.assertEqual(diagnostics.diagnostic_details(bad)["return_directory_failures"], [])
+            self.assertNotIn("PRIVATE", str(diagnostics.diagnostic_details(bad)))
+        for phase in ("CONFIG_DELIVERY_WAIT", "OWNED_DIRECTORY_CLEANUP"):
+            text = f"CI_RETURN_PHASE suite=PublicNativeReturn case=15 phase={phase}"
+            self.assertEqual(diagnostics.diagnostic_details(text)["return_phases"], ["PublicNativeReturn:15:" + phase])
+
 
 if __name__ == "__main__":
     unittest.main()
