@@ -231,6 +231,42 @@ public partial class MainWindow
                 "a fresh controller creates a distinct owned LAN generation");
             Check(!TryPublishLanCapabilities(lease, txtServer.Text, _settings.BindOverride, true, 1) && !_activeLanEnvironmentLease!.IsReady,
                 "late capability observation cannot cross an identical endpoint generation");
+            // Construct a real, owned configuration session without starting its
+            // pump or launching any executable. This follows the actual exit UI
+            // -> asynchronous session drain ordering that previously stuck the
+            // environment selector disabled after normal/early game exit.
+            var sessionField = typeof(GameLaunchService).GetField("session", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+            var sessionType = typeof(GameLaunchService).GetNestedType("LaunchSession", System.Reflection.BindingFlags.NonPublic)!;
+            void InstallSyntheticUnstartedSession()
+            {
+                var pipe = new ScblLan.LaunchPipe("ConfigServer = \"127.0.0.1\"\n", Path.Combine(AppContext.BaseDirectory, "synthetic-never-launched.exe"));
+                object value = Activator.CreateInstance(sessionType, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic,
+                    null, new object?[] { pipe, Path.Combine(AppContext.BaseDirectory, "synthetic-reference-" + Guid.NewGuid().ToString("N")), null }, null)!;
+                sessionField.SetValue(_gameLaunchService, value);
+            }
+            try
+            {
+                InstallSyntheticUnstartedSession();
+                Guid first = _gameLaunchService.SessionId!.Value;
+                SetGameRunningState(false);
+                Check(_ownedGameLaunchActive && !cmbConnectionMode.IsEnabled,
+                    "exit UI retains the real configuration-session lock until its drain");
+                await Task.Run(() => StopOwnedLaunchAndRefreshEnvironmentAsync(first));
+                Check(_gameLaunchService.SessionId is null && !_ownedGameLaunchActive && cmbConnectionMode.IsEnabled,
+                    "monitor cleanup re-samples the drained session and restores environment switching");
+                InstallSyntheticUnstartedSession();
+                Guid replacement = _gameLaunchService.SessionId!.Value;
+                SetGameStartingState(true);
+                await Task.Run(() => StopOwnedLaunchAndRefreshEnvironmentAsync(first));
+                Check(_gameLaunchService.SessionId == replacement && _ownedGameLaunchActive && !cmbConnectionMode.IsEnabled,
+                    "older monitor completion cannot unlock or drain a replacement launch session");
+                SetGameStartingState(false);
+                await Task.Run(() => StopOwnedLaunchAndRefreshEnvironmentAsync(replacement));
+                Check(_gameLaunchService.SessionId is null && !_ownedGameLaunchActive && cmbConnectionMode.IsEnabled,
+                    "replacement session unlocks only after its own cleanup completes");
+            }
+            finally { await _gameLaunchService.StopAsync(); }
+
         }
         finally
         {

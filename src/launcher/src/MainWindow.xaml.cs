@@ -2628,7 +2628,7 @@ public partial class MainWindow : Window
             }
             finally
             {
-                if(launchSession.HasValue) await _gameLaunchService.StopAsync(launchSession);
+                await StopOwnedLaunchAndRefreshEnvironmentAsync(launchSession);
             }
         });
     }

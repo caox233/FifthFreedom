@@ -148,6 +148,34 @@ public partial class MainWindow
         _activeLanEnvironmentLease?.ReportCapabilities(false);
     }
 
+    private async Task StopOwnedLaunchAndRefreshEnvironmentAsync(Guid? expectedSession)
+    {
+        try
+        {
+            if (expectedSession.HasValue) await _gameLaunchService.StopAsync(expectedSession).ConfigureAwait(false);
+        }
+        finally
+        {
+            // Exit UI can run before the named-pipe session finishes draining.
+            // Re-read the CURRENT owner afterwards: an older monitor must never
+            // clear the activity lock of a replacement launch session.
+            if (!Dispatcher.HasShutdownStarted && !Dispatcher.HasShutdownFinished)
+            {
+                try
+                {
+                    await Dispatcher.InvokeAsync(() =>
+                    {
+                        if (_closingBackgroundTasks) return;
+                        _ownedGameLaunchActive = _gameLaunchService.SessionId.HasValue;
+                        RenderNetworkEnvironment();
+                    });
+                }
+                catch (OperationCanceledException) when (_closingBackgroundTasks || Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished) { }
+                catch (InvalidOperationException) when (_closingBackgroundTasks || Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished) { }
+            }
+        }
+    }
+
     private async Task<bool> CloseNetworkEnvironmentAsync()
     {
         if (_networkEnvironment is null) return true;
