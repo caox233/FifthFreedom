@@ -502,3 +502,38 @@ It and updated startup instructions are saved in the official environment draft.
 Saving does not publish/apply that draft or prove fresh snapshot restoration.
 No official Goal/scheduler or environment-publish tool is available. The full
 six milestones remain active; this checkpoint is not completed migration.
+
+
+## Actual hosted Schannel correction and next runtime failures
+
+At source0ac6695 the synthetic Schannel correction passed the actual Windows
+UI05 test. That candidate then failed PublicNativeReturn without an exact case.
+The later [117a60d run](https://github.com/caox233/FifthFreedom/actions/runs/39912156375)
+passed that managed suite, but failed final-login preparation at its required
+loopback port80 with WSAEACCES. This one successful retry does not identify or
+resolve the earlier return-suite failure. The bounded diagnostics preserve both
+outcomes. All three Linux component lanes and native ingress namespaces passed;
+Windows native/interop/branding and dependent lifecycle/assembly were not reached.
+
+The [b6e0687 read-only prerequisite probe](https://github.com/caox233/FifthFreedom/actions/runs/39913526182)
+confirmed a System-owned port80 listener, running W3SVC, an excluded-port entry,
+and the same failed owned bind. No service or reservation was changed by that
+probe. A scoped preparation/restoration of the verified default IIS site in the
+disposable hosted runner is the next test; the production port contract remains80.
+
+The [first hosted guard3 build](https://github.com/caox233/FifthFreedom/actions/runs/39909129708)
+passed35 finite contracts and GNU Release. The separate
+[first actual owned overlay run](https://github.com/caox233/FifthFreedom/actions/runs/39910723452)
+also built core/CLI and the native socket probe, but its runtime step failed with
+CONTAINMENT_CHANGED and TRANSPORT_MATRIX_INCOMPLETE. Those codes alone do not
+establish which runtime operations occurred before failure. The strict firewall
+readback remains unchanged; a containment-only diagnostic now runs before long
+builds to identify the precise structural difference.
+
+A fresh detached0ac6695 source checkout passed331 methods:329 passed and two
+existing Windows-only skips, with tracked files unchanged. Its canonical Git
+patch from fc8ef510 was applied and reversed with exact bytes, modes and pathsets:
+1312 baseline paths,1492 target paths,1312 restored paths and clean Git status.
+Patch SHA256 is6545f70219ae473021f1038abe7bf2df68f6fee455fe69ad6f08cd268b01fea8.
+Private original four-role evidence is unchanged. The separate knowledge snapshot
+at d92ed600 binds94 files, including92 exact source mirrors, to0ac6695.

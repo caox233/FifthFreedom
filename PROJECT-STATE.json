@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Hosted source39909129706 passed; candidate39909129801 Windows UI05 case05 reported TLS AuthenticationException/NO_CREDENTIALS. Reviewed synthetic-only Schannel key fix4668f96 and actual-parser interop fixture fixec4e403 await Windows execution. Local guard3 clean GNU Release and35 finite checks passed; first guard3 hosted build39909129708 is running. Native lifecycle12 and isolated overlay probe17 local guard/cleanup checks passed; genuine hosted namespace/main/TUN positives remain pending. Full six-milestone migration remains incomplete.",
-  "NEXT_EXECUTABLE_ACTION": "Run the committed synthetic Schannel correction on actual Windows, then require managed25/native8/cross-language3 and final-login9 plus component branding. Execute same-run native lifecycle five-case isolated job and separately built guard3 QUIC/WSS/TCP positive/wrong-pin/restore probes; diagnose actual failures and preserve receipts. Compose genuine runtime/source-route owners only after this evidence, keeping ordinary Public startup closed. Continue all six goals; held SAV/META, absent Capture source, exact third-party provenance and outstanding live evidence remain separate. No persistent Goal/scheduler API.",
+  "LAST_CONFIRMED_RESULT": "Hosted source39913525941 atb6e0687 passed. Windows synthetic Schannel fix passed actual UI05; candidate117a60d passed managed PublicNativeReturn then failed FinalLaunchPreparation binding fixed loopback80. Read-only hosted probe39913526182 confirmed System/IIS listener and WSAEACCES; scoped temporary default-site preparation is being implemented. Hosted guard3 build39909129708 passed35 finite contracts and GNU Release. First real overlay39910723452 failed strict containment readback; new pre-build shape diagnosis is running. No complete package or full migration claimed.",
+  "NEXT_EXECUTABLE_ACTION": "Complete and verify scoped hosted IIS preparation/restoration without changing production port80; require final-login9, managed25/native8/interop3 and branding on actual Windows, then same-run native lifecycle. Diagnose actual nft readback with bounded shape evidence and rerun genuine guard3 QUIC/WSS/TCP probes without weakening containment. Independently review and genuinely compose OwnedOverlayMonitor with parent native lease; continue Windows owned source-route capability implementation while ordinary Public admission stays closed. Preserve all six goals and separate held SAV/META, absent Capture source, provenance and live acceptance gates.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -92,7 +92,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Official gh API initially denied, later succeeded under existing configuration. Actions log/artifact redirect hosts still denied; narrow official environment draft additions saved. No bypass; draft publication unconfirmed.",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39909129801",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39913526004",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -190,13 +190,31 @@
         "linux_lan_donor_control_namespace": "success",
         "cross_platform_assembly": "skipped_windows_dependency_failed",
         "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39910723239,
+        "commit": "0ac6695a112bf15cbb016c1c34a0c011b3f07137",
+        "overall": "failure",
+        "windows": "UI05_fixed_and_passed; PublicNativeReturn_failed_unknown_case",
+        "linux_lan_donor_control_namespace": "success",
+        "same_run_native_lifecycle_and_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39912156375,
+        "commit": "117a60d4a437d0cc71bc4aa0d94890ba122fbe24",
+        "overall": "failure",
+        "windows": "UI05_and_PublicNativeReturn_passed_this_run; FinalLaunchPreparation_fixed80_WSAEACCES",
+        "linux_lan_donor_control_namespace": "success",
+        "same_run_native_lifecycle_and_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "a569ae7_source_passed; UI05_case05_TLS_NO_CREDENTIALS; synthetic_certificate_fix4668f96_not_yet_hosted",
+    "candidate_windows_source": "117a60d source/UI05/PublicNativeReturn passed, final-login fixed80 listener denied; b6e0687 quick probe confirms IIS/System listener, remedy pending actual execution",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "all_Linux_components_and_namespace_passed_on_c3bac15; a569ae7_ongoing_when_recorded",
+    "candidate_linux_matrix": "117a60d all three Linux components and owned ingress namespaces passed; b6e0687 candidate running",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "Latest Windows synthetic TLS handshake failure retained; previous all-component success remains revision-specific; no complete package."
+    "candidate_component_result": "Latest full candidate remains incomplete; explicit source/fixture and actual component outcomes are revision-specific. Privacy gate failed and complete package skipped."
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -204,7 +222,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T06:14:14.911866+00:00",
+  "updated_utc": "2026-10-23T06:54:07.548445+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -269,11 +287,13 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "executed": 285,
-      "passed": 283,
+      "executed": 331,
+      "passed": 329,
       "skipped": 2,
       "exit_code": 0,
-      "environment": "fresh detached checkout99e3c6245dd8c1af70bab46c79e6407d6e49e3e2; .local/cloud-receipts/clean-checkout-99e3c6245dd8/receipt.json"
+      "environment": "fresh detached checkout0ac6695a112bf15cbb016c1c34a0c011b3f07137; .local/cloud-receipts/clean-checkout-0ac6695a112b/receipt.json",
+      "tracked_files_unchanged": true,
+      "complete_package": false
     },
     "cloud_authenticated_reader": {
       "passed": 69,
@@ -402,7 +422,7 @@
       "explicit_peer_pin_before": "2_pass_1_fail_wrong_key_with_valid_PSK_accepted",
       "explicit_peer_pin_after": "3_pass_wrong_key_explicitly_identity_rejected",
       "guard3_regression_checks": 35,
-      "guard3_clean_release": "passed_local35_and_GNU_Release; exact_source_and_output_hashes_in_docs/evidence/easytier-clean-linux-build-guard3.json; first_hosted39909129708_pending"
+      "guard3_clean_release": "Passed local35 and GNU Release; first hosted39909129708 also passed35 and GNU Release; separate actual overlay39910723452 failed containment readback"
     },
     "windows_branding_metadata": {
       "implementation_commit": "b171d4d",
@@ -427,13 +447,16 @@
       "launcher_commit": "ce4c29d",
       "native_commit": "56f8feaef8cd595c983243630e79d1d31de8660b",
       "portable_managed_passed": 14,
-      "windows_managed_pending": 11,
+      "windows_managed_pending": 0,
       "native_contract_passed": 9,
       "windows_native_pending": 8,
       "wpf_crosscompile_warnings": 0,
       "wpf_crosscompile_errors": 0,
       "cross_language_windows_runtime": "three_actual_owned_child_cases_implemented; actual_shared_TOML_parser_fixec4e403_passed; Windows_pending",
-      "public_enabled": false
+      "public_enabled": false,
+      "windows_managed_passed_this_run": 25,
+      "hosted_run": 39912156375,
+      "earlier_unexplained_failure_resolved": false
     },
     "hosted_overlay_guard2_build": {
       "run_id": 39905205148,
@@ -456,7 +479,7 @@
       "wpf_crosscompile_warnings": 0,
       "wpf_crosscompile_errors": 0,
       "scope": "actual final HTTP2 login and historical kernel socket observation; no live overlay lease or Public startup",
-      "hosted": "pending"
+      "hosted": "117a60d actual test setup failed fixed80 WSAEACCES; b6e0687 read-only quick probe confirms System/IIS listener; targeted hosted preparation pending"
     },
     "cloud_native_lifecycle_harness": {
       "implementation_commit": "92945e3dd043e1ee1dae21afdb73f5265b0f2c1f",
@@ -464,7 +487,7 @@
       "local_checks_passed": 12,
       "actual_local_preflight_exit": 1,
       "actual_local_namespaces_created": 0,
-      "actual_hosted": "pending",
+      "actual_hosted": "Skipped in0ac and117 candidate because Windows prerequisite failed; no positive result",
       "scope": "five owned isolated main-process activation/revocation cases; no ordinary production admission"
     },
     "cloud_overlay_probe_harness": {
@@ -472,18 +495,27 @@
       "local_checks_passed": 17,
       "actual_local_preflight_exit": 1,
       "actual_local_runtime_started": false,
-      "actual_hosted": "pending",
+      "actual_hosted": "39910723452 same-job guard3/coreCLI/nativeprobe builds passed; actual runtime probe failed CONTAINMENT_CHANGED/TRANSPORT_MATRIX_INCOMPLETE; exact nft shape pending",
       "scope": "owned QUIC/WSS/TCP positives, wrong configured key with same PSK, restore; native SocketPolicy traffic and cleanup; not production admission"
     },
     "cloud_canonical_patch_proof": {
       "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
-      "target": "1c1bf67b0d30d7865a839c34c5aae531c8f2b06b",
-      "patch_sha256": "b243b83921fdb043a289b702f31812716bfdea4eeeb0e18ca6f2d508240a41c9",
+      "target": "0ac6695a112bf15cbb016c1c34a0c011b3f07137",
+      "patch_sha256": "6545f70219ae473021f1038abe7bf2df68f6fee455fe69ad6f08cd268b01fea8",
       "original_paths": 1312,
-      "forward_paths": 1467,
+      "forward_paths": 1492,
       "reverse_paths": 1312,
       "reverse_git_clean": true,
       "scope": "exact canonical Git blob bytes, modes and pathsets; checkout CRLF expansion is separate; original private four-role evidence not changed"
+    },
+    "hosted_overlay_guard3_build": {
+      "run_id": 39909129708,
+      "conclusion": "success",
+      "selected_contracts": 35,
+      "gnu_release": "success",
+      "artifact_scope": "bounded JSON receipts only; contents not downloaded",
+      "runtime_executed": false,
+      "binary_published": false
     }
   }
 }
