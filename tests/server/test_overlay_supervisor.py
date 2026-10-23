@@ -344,6 +344,87 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
         self.addAsyncCleanup(child.stop)
         self.assertIsNone(await monitor.observe(child))
 
+    async def test_kernel_monitor_real_missing_link_ioctl_reports_only_fixed_stage(self):
+        monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        await monitor.prepare()
+        child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
+        self.addAsyncCleanup(child.stop)
+        descriptors = len(os.listdir("/proc/self/fd"))
+        # Only discovery is injected. The actual read-only kernel ioctl sees
+        # the nonexistent interface and fails; no interface is created.
+        with patch("socket.if_nametoindex", return_value=123):
+            with self.assertRaisesRegex(LifecycleError, "^OVERLAY_LINK_QUERY_UNAVAILABLE$"):
+                await monitor.observe(child)
+        self.assertIsNone(monitor._index)
+        self.assertTrue(child.image_matches())
+        self.assertEqual(len(os.listdir("/proc/self/fd")), descriptors)
+
+    async def test_kernel_monitor_syscall_stages_remain_fail_closed_and_close_fds(self):
+        import contextlib
+        import errno
+        import fcntl
+        import stat
+        import struct
+        from types import SimpleNamespace
+        monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        await monitor.prepare()
+        child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
+        self.addAsyncCleanup(child.stop)
+        original_stat, original_open = os.stat, os.open
+        descriptors = len(os.listdir("/proc/self/fd"))
+        stages = ("NAMESPACE_OBSERVATION", "ADDRESS_QUERY", "FDINFO_DIRECTORY", "FDINFO_LIST",
+                  "FDINFO_ENTRY", "FDINFO_READ", "TUN_DESCRIPTOR", "INTERFACE_RECHECK")
+        for stage in stages:
+            failure = PermissionError(errno.EACCES, "PRIVATE KERNEL ERROR SENTINEL")
+            def kernel_stat(path, *args, **kwargs):
+                if stage == "NAMESPACE_OBSERVATION" and path == "/proc/self/ns/net":
+                    raise failure
+                if isinstance(path, str) and path.startswith("fd/") and kwargs.get("dir_fd") == child.procfd:
+                    if stage == "TUN_DESCRIPTOR":
+                        raise failure
+                    if stage == "INTERFACE_RECHECK":
+                        return SimpleNamespace(st_mode=stat.S_IFCHR, st_rdev=os.makedev(10, 200))
+                return original_stat(path, *args, **kwargs)
+            def kernel_open(path, *args, **kwargs):
+                if path == "fdinfo" and stage == "FDINFO_DIRECTORY":
+                    raise failure
+                return original_open(path, *args, **kwargs)
+            def ioctl(_fd, request, _argument):
+                # Explicit synthetic interface observations, never real TUN
+                # readiness. Each case must fail before committing its index.
+                value = bytearray(256)
+                if request == 0x8913:
+                    struct.pack_into("H", value, 16, 1)
+                elif request == 0x8915:
+                    if stage == "ADDRESS_QUERY":
+                        raise failure
+                    value[20:24] = socket.inet_aton(monitor.address)
+                else:
+                    raise AssertionError("unexpected ioctl")
+                return bytes(value)
+            with self.subTest(stage=stage), contextlib.ExitStack() as patches:
+                patches.enter_context(patch("os.stat", side_effect=kernel_stat))
+                patches.enter_context(patch("os.open", side_effect=kernel_open))
+                patches.enter_context(patch.object(fcntl, "ioctl", side_effect=ioctl))
+                patches.enter_context(patch("socket.if_nametoindex", side_effect=
+                    [123, failure] if stage == "INTERFACE_RECHECK" else lambda _: 123))
+                if stage == "FDINFO_LIST":
+                    patches.enter_context(patch("os.listdir", side_effect=failure))
+                elif stage == "FDINFO_ENTRY":
+                    # A real procfs open of an absent entry represents the
+                    # disappeared-descriptor case; it is not silently skipped.
+                    patches.enter_context(patch("os.listdir", return_value=["999999999"]))
+                elif stage == "FDINFO_READ":
+                    patches.enter_context(patch("os.read", side_effect=failure))
+                elif stage in ("TUN_DESCRIPTOR", "INTERFACE_RECHECK"):
+                    patches.enter_context(patch("os.read", return_value=b"iff:\tffsynabsent09\n"))
+                with self.assertRaises(LifecycleError) as raised:
+                    await monitor.observe(child)
+                self.assertEqual(str(raised.exception), "OVERLAY_" + stage + "_UNAVAILABLE")
+            self.assertIsNone(monitor._index)
+            self.assertTrue(child.image_matches())
+            self.assertEqual(len(os.listdir("/proc/self/fd")), descriptors)
+
     async def test_pidfd_failure_withholds_release_and_reaps_bootstrap(self):
         marker = self.directory / "must-not-run"
         processes = []

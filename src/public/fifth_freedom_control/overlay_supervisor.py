@@ -342,6 +342,9 @@ class KernelTunMonitor:
         import fcntl  # Linux only; importing the package stays safe on Windows.
         if self._namespace is None or not child.image_matches():
             raise LifecycleError("OVERLAY_OWNERSHIP_LOST")
+        # Keep syscall failures fail-closed, but identify the fixed observation
+        # stage without publishing exception text, paths or kernel output.
+        unavailable = "OVERLAY_NAMESPACE_OBSERVATION_UNAVAILABLE"
         try:
             own_ns = os.stat("/proc/self/ns/net")
             child_ns = os.stat("ns/net", dir_fd=child.procfd)
@@ -357,13 +360,17 @@ class KernelTunMonitor:
             if self._index is not None and index != self._index:
                 raise LifecycleError("OVERLAY_OWNERSHIP_LOST")
             request = struct.pack("256s", self.interface.encode("ascii"))
+            unavailable = "OVERLAY_LINK_QUERY_UNAVAILABLE"
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as probe:
                 flags = struct.unpack_from("H", fcntl.ioctl(probe.fileno(), 0x8913, request), 16)[0]
+                unavailable = "OVERLAY_ADDRESS_QUERY_UNAVAILABLE"
                 address = socket.inet_ntoa(fcntl.ioctl(probe.fileno(), 0x8915, request)[20:24])
             if not flags & 1 or address != self.address:
                 raise LifecycleError("OVERLAY_ADDRESS_OR_LINK_LOST")
+            unavailable = "OVERLAY_FDINFO_DIRECTORY_UNAVAILABLE"
             folder = os.open("fdinfo", os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC, dir_fd=child.procfd)
             try:
+                unavailable = "OVERLAY_FDINFO_LIST_UNAVAILABLE"
                 descriptors = os.listdir(folder)
                 if len(descriptors) > 256:
                     raise LifecycleError("OVERLAY_FD_BOUND_EXCEEDED")
@@ -371,14 +378,17 @@ class KernelTunMonitor:
                 for entry in descriptors:
                     if not entry.isascii() or not entry.isdecimal():
                         continue
+                    unavailable = "OVERLAY_FDINFO_ENTRY_UNAVAILABLE"
                     descriptor = os.open(entry, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW, dir_fd=folder)
                     try:
+                        unavailable = "OVERLAY_FDINFO_READ_UNAVAILABLE"
                         data = os.read(descriptor, 8193)
                     finally:
                         os.close(descriptor)
                     if len(data) > 8192:
                         raise LifecycleError("OVERLAY_FDINFO_BOUND_EXCEEDED")
                     if b"iff:\t" + self.interface.encode("ascii") in data.splitlines():
+                        unavailable = "OVERLAY_TUN_DESCRIPTOR_UNAVAILABLE"
                         info = os.stat("fd/" + entry, dir_fd=child.procfd)
                         if stat.S_ISCHR(info.st_mode) and info.st_rdev == os.makedev(10, 200):
                             owned = True
@@ -386,9 +396,10 @@ class KernelTunMonitor:
                     raise LifecycleError("OVERLAY_TUN_NOT_OWNED")
             finally:
                 os.close(folder)
+            unavailable = "OVERLAY_INTERFACE_RECHECK_UNAVAILABLE"
             if not child.image_matches() or socket.if_nametoindex(self.interface) != index:
                 raise LifecycleError("OVERLAY_OWNERSHIP_LOST")
             self._index = index
             return OverlayObservation(*self._namespace, index, self.address)
         except OSError:
-            raise LifecycleError("OVERLAY_OBSERVATION_UNAVAILABLE") from None
+            raise LifecycleError(unavailable) from None
