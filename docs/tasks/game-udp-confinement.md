@@ -101,7 +101,46 @@ all three. These are checked Git ancestry facts; their actual checkout and
 execution outcomes require the new official receipts. Earlier b67 runtime
 success does not validate subsequent source changes or game confinement.
 
-Next: read-only verification of the exact WFP conditions/layers and lifetime
-interfaces, then choose the smallest complete candidate with explicit gaps.
-Do not alter system policy, install a driver, or enable a production lease as
-part of this audit.
+Next: retain the comparison below while following the actual candidate that
+contains SERVER-16 and OPEN. A complete transport boundary still needs a
+separately verified per-launch identity or kernel enforcement and existing-flow
+revocation tests. Do not alter system policy, install a driver, or enable a
+production lease as part of this audit.
+
+## Read-only WFP interface comparison
+
+The subsequent comparison read Microsoft's official documentation and the
+already locked `windows` 0.54 bindings. It did not call WFP on Windows, modify
+filters, install software or run a socket experiment. The relevant APIs already
+exist in those SDK bindings; actual host availability and access remain untested.
+
+| Requirement | Documented interface | Remaining boundary |
+| --- | --- | --- |
+| System support/access | `Fwpuclnt.dll`, `FwpmEngineOpen0`, desktop Windows Vista onward | Opening the engine needs `FWPM_ACTRL_OPEN`; adding policy requires separate rights. An opened engine is not proof of permission to add filters. |
+| IPv4/IPv6 TCP and UDP | Four `ALE_AUTH_CONNECT` / `ALE_AUTH_RECV_ACCEPT` layers | ALE authorizes flows, including the first UDP packet for a remote tuple. Existing flows require reauthorization tests, not just new-connect rejection. |
+| Interface and loopback | Local/arrival/next-hop interface conditions, address/protocol conditions and loopback flags | Conditions differ by layer. Reauthorization may supply `FWP_EMPTY` for unavailable arrival fields; a proposed policy must define rejection rather than infer a known interface. |
+| Exact owned process | `ALE_APP_ID` is an executable device path; `ALE_USER_ID` identifies the user; `ALE_PACKAGE_ID` identifies an AppContainer | These are not one PID/creation epoch. The documented condition catalog and locked bindings expose no direct generic PID filter condition. Kernel `FWPS_INCOMING_METADATA_VALUES0.processId` is callout metadata, valid only with its presence flag, not a user-mode filter key. |
+| Owner loss | Dynamic-session objects are deleted when the session ends | Removing the only block can remove protection while a game process still exists. A job lifetime and WFP cleanup are not documented as one atomic operation. |
+
+Consequently standard AppID filtering of the shared retail executable path is
+not yet a substitute for the exact owned-process boundary. A per-launch security
+identity or independently controlled unique executable identity would require
+its own launch/compatibility evidence; neither is present here. A design with a
+retained deny baseline and short-lived allowances also needs actual filter
+arbitration, established-flow reauthorization and crash-order tests. This audit
+does not select a new kernel callout driver as the automatic solution.
+
+Official references consulted:
+
+- [Filtering condition identifiers](https://learn.microsoft.com/en-us/windows/win32/fwp/filtering-condition-identifiers-)
+  and [conditions at each layer](https://learn.microsoft.com/en-us/windows/win32/fwp/filtering-conditions-available-at-each-filtering-layer).
+- [ALE layers](https://learn.microsoft.com/en-us/windows/win32/fwp/ale-layers)
+  and [ALE reauthorization](https://learn.microsoft.com/en-us/windows/win32/fwp/ale-re-authorization).
+- [Engine opening](https://learn.microsoft.com/en-us/windows/win32/api/fwpmu/nf-fwpmu-fwpmengineopen0),
+  [access control](https://learn.microsoft.com/en-us/windows/win32/fwp/access-control)
+  and [dynamic session lifetime](https://learn.microsoft.com/en-us/windows/win32/api/fwpmtypes/ns-fwpmtypes-fwpm_session0).
+- [Kernel incoming metadata](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/fwpsk/ns-fwpsk-fwps_incoming_metadata_values0_)
+  and [filter arbitration](https://learn.microsoft.com/en-us/windows/win32/fwp/filter-arbitration).
+
+Exact downloaded document hashes are retained in the ignored audit directory's
+`wfp-official/` indexes. These source references are not Windows execution receipts.
