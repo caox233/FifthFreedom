@@ -143,3 +143,35 @@ This cloud session has not run the privileged main topology. A hosted positive
 receipt is required; missing privileges are a failure, never a passing skip.
 The earlier Python synthetic-child tests and local Rust loopback composition
 remain distinct from that pending hosted result.
+
+## First hosted entry audit: sudo checkout ownership
+
+A read-only audit before the first actual native lifecycle run found that this
+harness used unscoped Git commands after sudo. The checkout belongs to the
+ordinary runner; its Git safe-directory configuration is not root's global
+configuration. Unlike the separate EasyTier/stack runner, this command could
+fail before package checks with Git's dubious-ownership refusal.
+
+The fix scopes `safe.directory` to the exact absolute checkout for each of the
+two read-only Git invocations. It does not write global configuration, trust
+`*`, change ownership, or bypass the expected HEAD and tracked-clean checks.
+Git execution errors are reduced to a fixed code, without raw stderr in the
+public diagnostic stream.
+
+A real throwaway Git repository with Git's own different-owner test switch
+reproduced exit128/dubious ownership before the change and exit0 for the scoped
+read. The regression also rejects an incorrect expected revision and changed
+tracked bytes, while its empty global configuration remains unchanged. Retained
+lifecycle/input checks plus this test: 13/13 passed locally and independently
+reviewed with the same 13/13 result, zero skips. This tests Git's
+ownership boundary; it does not replace the first privileged native run.
+
+The same audit checked the current producer's additional notice files: its
+20 recorded files (plus the separate receipt/checksum list) remain within the
+existing 64-file bound. Every recorded notice/provenance file is hashed and
+copied by the existing candidate validator. The four-role Windows admission
+identity and separate Linux service identity are unchanged. Native CLI fields,
+raw configuration digest, owner credentials, READY sequence1, five actual bind
+callbacks and EOF/expiry/parent-death cleanup agree with the harness inputs.
+No additional definite startup blocker was identified in that source review;
+actual hosted execution remains the deciding evidence.

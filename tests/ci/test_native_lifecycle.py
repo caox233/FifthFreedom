@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -49,6 +50,38 @@ def fixture(root):
     (package / 'CANDIDATE-RECEIPT.json').write_text(json.dumps(receipt))
     (package / 'SHA256SUMS.txt').write_text('synthetic metadata only\n')
     return package, receipt
+
+
+@unittest.skipUnless(shutil.which("git"), "Git executable required")
+class CheckoutOwnershipTests(unittest.TestCase):
+    def test_exact_command_trusts_foreign_owner_but_still_rejects_dirty_or_wrong_revision(self):
+        with tempfile.TemporaryDirectory(prefix="ff-synthetic-foreign-checkout-") as directory:
+            root = Path(directory)
+            global_config = root / "empty-global-git-config"
+            global_config.write_bytes(b"")
+            environment = dict(os.environ, GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=str(global_config))
+            git = ["git", "-C", str(root)]
+            subprocess.run([*git, "init", "--quiet"], check=True, env=environment,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            tracked = root / "tracked.txt"; tracked.write_text("synthetic checkout\n")
+            subprocess.run([*git, "add", "tracked.txt"], check=True, env=environment,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run([*git, "-c", "user.name=Synthetic Test", "-c", "user.email=test@example.invalid",
+                "commit", "--quiet", "-m", "synthetic ownership test"], check=True, env=environment,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            expected = subprocess.check_output([*git, "rev-parse", "HEAD"], text=True, env=environment).strip()
+            environment["GIT_TEST_ASSUME_DIFFERENT_OWNER"] = "1"
+            denied = subprocess.run([*git, "rev-parse", "HEAD"], env=environment, capture_output=True)
+            self.assertEqual(denied.returncode, 128)
+            self.assertIn(b"dubious ownership", denied.stderr)
+            with mock.patch.object(probe, "ROOT", root), mock.patch.dict(os.environ, environment, clear=True):
+                probe.verify_checkout(expected)
+                with self.assertRaisesRegex(probe.ProbeError, "CHECKOUT_REVISION_MISMATCH"):
+                    probe.verify_checkout("0" * 40)
+                tracked.write_text("changed synthetic checkout\n")
+                with self.assertRaisesRegex(probe.ProbeError, "CHECKOUT_TRACKED_SOURCE_DIRTY"):
+                    probe.verify_checkout(expected)
+            self.assertEqual(global_config.read_bytes(), b"")
 
 
 class NativeLifecycleInputTests(unittest.TestCase):

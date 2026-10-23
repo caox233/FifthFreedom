@@ -500,12 +500,26 @@ def closed_ports(address):
             handle.close()
 
 
+
+def verify_checkout(commit):
+    # sudo executes as root while checkout remains owned by the ordinary runner.
+    # Trust only this read-only command's exact repository, never global Git
+    # configuration, a wildcard safe.directory or a chown of shared inputs.
+    git = ["git", "-c", "safe.directory=" + str(ROOT), "-C", str(ROOT)]
+    try:
+        actual = subprocess.check_output([*git, "rev-parse", "HEAD"], text=True,
+            stderr=subprocess.DEVNULL, timeout=5).strip()
+        dirty = subprocess.check_output([*git, "status", "--porcelain", "--untracked-files=no"],
+            stderr=subprocess.DEVNULL, timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        raise ProbeError("CHECKOUT_VERIFICATION_FAILED") from None
+    require(actual == commit, "CHECKOUT_REVISION_MISMATCH")
+    require(not dirty.strip(), "CHECKOUT_TRACKED_SOURCE_DIRTY")
+
+
 def run(package, receipt_path, runner_temp, commit, run_id, attempt):
     ip = isolation.preflight()  # Missing root/caps is a failure before mutation.
-    actual_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, timeout=5).strip()
-    require(actual_commit == commit, "CHECKOUT_REVISION_MISMATCH")
-    require(not subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT, timeout=5).strip(),
-            "CHECKOUT_TRACKED_SOURCE_DIRTY")
+    verify_checkout(commit)
     package, runner_temp = package.absolute(), runner_temp.absolute()
     require(not runner_temp.is_relative_to(package), "PRIVATE_ROOT_INSIDE_CANDIDATE")
     receipt = candidate.read_json(receipt_path)
