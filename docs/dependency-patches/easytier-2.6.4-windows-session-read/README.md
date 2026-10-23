@@ -1,8 +1,9 @@
 # Current typed Windows NIC read
 
-Status: implemented; eight linked helper tests and eighteen source/build boundary
-checks passed locally. Full paired Windows codegen for this additive patch is
-pending. This is a read-only development interface, not a Public lease issuer.
+Status: implemented and built on GitHub Windows. The actual eight linked helper
+contracts and twenty source/build checks passed, followed by full paired core/CLI
+MSVC code generation and linking in [run 39935015346](../../evidence/hosted-windows-easytier-23d5923.json).
+This is a read-only development interface, not a Public lease issuer.
 
 The independent tenth patch extends the original nine-patch Windows preparation.
 The previous patches, original upstream bytes, driver probe and successful
@@ -97,3 +98,20 @@ will run exactly eight minimal contracts, reject missing/ignored cases even if
 the test process exits zero, and then build the actual feature-enabled core/CLI.
 No Packet-linked core/test executable is run and no Npcap requirement is relaxed.
 Only source/build JSON receipts are uploaded.
+
+## Actual paired Windows result
+
+Source `23d5923`, checkout `a6665f1062fbbefcbbc283444ce0e52b93bf4b3d`,
+completed the exact eight contracts with zero ignored tests and compiled the thin
+real `NicCtx`/`Instance` binding in both full release binaries. The official
+artifact digest matches the downloaded three-member JSON ZIP. Source/patch/lock
+identities above match the actual runner inventory. The prior eighteen local
+checks remain historical; the static-import wrapper added two, and all twenty
+passed on this Windows job.
+
+The new core directly imports `packet.dll`; the CLI does not. Both PE delay-import
+lists are empty. This is a static name inventory, not proof of DLL resolution,
+loading, dynamic dependencies or licensing. Neither binary nor a driver was run
+in this job. Packet/Npcap runtime and publication holds remain; the earlier finite
+Wintun-only probe does not discharge them. Current owner IPC, authenticated peer
+state and live route/source admission are still separate work.
