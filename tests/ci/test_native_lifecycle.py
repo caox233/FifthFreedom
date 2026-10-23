@@ -3,7 +3,10 @@
 Synthetic package bytes are never executed; no native service/network is started.
 """
 import copy
+from contextlib import redirect_stderr
+import io
 import json
+import os
 from pathlib import Path
 import signal
 import subprocess
@@ -125,6 +128,34 @@ class NativeLifecycleInputTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             probe.private_file(target, b'replacement')
         self.assertEqual(target.read_bytes(), b'original')
+
+    def test_only_sanitized_receipt_is_uploader_readable_without_overwriting(self):
+        target, private = self.root / 'receipt.json', self.root / 'private-input'
+        document = {'schema': 1, 'scope': dict(probe.SCOPE)}
+        previous = os.umask(0o077)
+        try:
+            probe.write_report(target, document)
+            probe.private_file(private, b'SYNTHETIC PRIVATE INPUT')
+        finally:
+            os.umask(previous)
+        self.assertEqual(json.loads(target.read_bytes()), document)
+        if os.name == 'posix':
+            self.assertEqual(target.stat().st_mode & 0o777, 0o644)
+            self.assertEqual(private.stat().st_mode & 0o777, 0o600)
+        original = target.read_bytes()
+        with self.assertRaises(FileExistsError):
+            probe.write_report(target, {'overwritten': True})
+        self.assertEqual(target.read_bytes(), original)
+        missing_parent = self.root / 'not-created-by-runner'
+        errors = io.StringIO()
+        with mock.patch.object(probe, 'run') as run, redirect_stderr(errors):
+            code = probe.dispatch(['--package', str(self.package), '--candidate-receipt', str(target),
+                '--runner-temp', str(self.root), '--report', str(missing_parent / 'receipt.json'),
+                '--commit', COMMIT, '--run-id', '123', '--run-attempt', '1'])
+        self.assertEqual(code, 1)
+        self.assertEqual(errors.getvalue(), 'REPORT_DIRECTORY_REQUIRED\n')
+        self.assertFalse(missing_parent.exists())
+        run.assert_not_called()
 
     def test_missing_namespace_privileges_fail_before_any_temporary_or_copy_work(self):
         with mock.patch.object(probe.isolation, 'preflight', side_effect=probe.isolation.IsolationError('NET_ADMIN_AND_SYS_ADMIN_REQUIRED')), \

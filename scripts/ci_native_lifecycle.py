@@ -128,6 +128,16 @@ def private_file(path, content):
         stream.write(content)
 
 
+def write_report(path, report):
+    """Only the final sanitized receipt is readable by the non-root uploader."""
+    with os.fdopen(os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0), 0o644), "wb") as stream:
+        stream.write((json.dumps(report, indent=2) + "\n").encode())
+        if os.name == "posix":
+            # Keep this independent of sudo's umask; no private inputs use this
+            # writer. Change the owned descriptor, never a replacement pathname.
+            os.fchmod(stream.fileno(), 0o644)
+
+
 def emit(event, **fields):
     print(json.dumps({"event": event, **fields}, separators=(",", ":")), flush=True)
 
@@ -566,9 +576,11 @@ def dispatch(argv=None):
         parser.add_argument("--run-attempt", required=True)
         args = parser.parse_args(arguments)
         require(not args.report.absolute().is_relative_to(args.package.absolute()), "REPORT_INSIDE_CANDIDATE")
+        # The ordinary CI runner creates this directory before invoking sudo;
+        # creating it as root with umask077 would prevent artifact traversal.
+        require(args.report.parent.is_dir(), "REPORT_DIRECTORY_REQUIRED")
         result = run(args.package, args.candidate_receipt, args.runner_temp, args.commit, args.run_id, args.run_attempt)
-        args.report.parent.mkdir(parents=True, exist_ok=True)
-        private_file(args.report, (json.dumps(result, indent=2) + "\n").encode())
+        write_report(args.report, result)
         print(json.dumps({"status": result["status"], "private_tree_removed": True,
                           "production_provider_open": False, "encrypted_overlay_verified": False}))
         return 0

@@ -82,6 +82,11 @@ rewritten. Root's private-key ancestry rules require a trusted temporary parent;
 `/tmp` is the root-owned sticky parent and every fresh test directory is0700.
 The runner-owned checkout/`RUNNER_TEMP` ancestors are not relaxed or changed.
 Only the sanitized result is written to the requested artifact report location.
+That exclusive final receipt is0644 for the ordinary runner's artifact uploader,
+including under a restrictive sudo umask. Private inputs remain0600/0700; no
+downloaded or shared directory ownership is changed. The ordinary runner must
+create the report directory before sudo; the harness rejects a missing parent
+instead of creating a root-only directory that the uploader cannot traverse.
 
 The harness reuses SERVER-06's exact owned namespace handles. Server, admitted
 peer and wrong-interface peer have only the private veth topology and no default
@@ -110,6 +115,7 @@ cleanup. SIGKILL or loss of the whole runner cannot run userspace cleanup.
 Example for the dedicated isolated GitHub-hosted Linux job:
 
 ```sh
+mkdir -p "$RUNNER_TEMP/native-lifecycle"
 sudo python3 scripts/ci_native_lifecycle.py \
   --package "$CANDIDATE" \
   --candidate-receipt "$CANDIDATE/CANDIDATE-RECEIPT.json" \
@@ -125,10 +131,10 @@ and all five cases passing. The receipt keeps `encrypted_overlay_verified`,
 `deployed` and `published` false. No raw worker logs, configuration, key, database,
 private path or private config hash is uploaded.
 
-Current local harness evidence is **8 portable input/copy/privacy guard tests**,
+Current local harness evidence is **9 portable input/copy/privacy guard tests**,
 plus **3 Linux owned-interpreter cleanup fault tests** covering image mismatch
 after child pinning, unconfirmed parent rejection without signalling unrelated
-processes, and repeated SIGTERM through finally cleanup. All11 passed locally;
+processes, and repeated SIGTERM through finally cleanup. All12 passed locally;
 the three Linux-only methods are explicitly platform-skipped on Windows. These
 tests do not create namespaces or native listeners. There is also an actual
 isolated-Python entrypoint refusal with
