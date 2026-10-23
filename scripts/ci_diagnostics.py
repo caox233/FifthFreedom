@@ -88,7 +88,7 @@ def known_ui_labels(source_paths) -> set[str]:
             text = Path(path).read_text(encoding="utf-8-sig")
         except OSError:
             continue
-        for label in re.findall(r'\bCheck\([^\r\n]*,\s*"([^"\\\r\n]{1,160})"\s*\);', text):
+        for label in re.findall(r'\bCheck\([^;]{0,4096},\s*"([^"\\\r\n]{1,160})"\s*\);', text):
             if all(ord(char) >= 32 for char in label):
                 labels.add(label)
     return labels
@@ -104,6 +104,8 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
             candidate = line[5:]
         elif line.startswith("System.Exception: "):
             candidate = line[len("System.Exception: "):]
+        elif line.startswith("System.InvalidOperationException: "):
+            candidate = line[len("System.InvalidOperationException: "):]
         else:
             continue
         if candidate in allowed and candidate not in labels:

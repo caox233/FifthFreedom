@@ -11,14 +11,16 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import unittest
 from contextlib import contextmanager
 
 import build
 import ci_diagnostics
+import ci_checks
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / "artifacts"
-LANES = ("windows-components", "windows-package-smoke", "linux-lan-baseline", "linux-public-donor-reference")
+LANES = ("windows-components", "windows-package-smoke", "linux-lan-baseline", "linux-public-donor-reference", "linux-public-control")
 
 
 def run_build_step(label, args, cwd=None, env=None):
@@ -42,6 +44,24 @@ def parse_probe_report(text: str, flag: str) -> int:
     if len(summaries) != 1 or passes == 0 or int(summaries[0]) != passes:
         raise RuntimeError("Launcher probe has no complete, matching nonzero RESULT summary")
     return passes
+
+
+def required_native_test_count(text: str) -> int:
+    summaries = re.findall(r"^test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;", text, re.MULTILINE)
+    passed = sum(int(row[0]) for row in summaries)
+    if not passed or any(int(failed) or int(ignored) for _, failed, ignored in summaries):
+        raise RuntimeError("Required native test selection did not execute nonzero passing checks")
+    return passed
+
+
+def required_native_tests(cargo: str, env: dict, filters: tuple[str, ...]) -> list[dict]:
+    rows = []
+    for selection in filters:
+        label = "ci-native-" + selection
+        base = run_build_step(label, [cargo, "test", "--locked", "-p", "dedicated_server", selection], ROOT / "src/native", env)
+        passed = required_native_test_count(base.with_suffix(".stdout.txt").read_text(encoding="utf-8", errors="replace"))
+        rows.append({"filter": selection, "passed": passed, "failed": 0, "ignored": 0})
+    return rows
 
 
 def run_launcher_probe(program: Path, flag: str, destination: Path) -> dict:
@@ -163,6 +183,10 @@ def windows_components(receipt: dict) -> None:
     env["CARGO_NET_GIT_FETCH_WITH_CLI"] = "true"
     native = ROOT / "src/native"
     run_build_step("ci-native-core-tests", [cargo, "test", "--locked", "-p", "hooks-plugin-api", "-p", "hooks-config", "-p", "api", "--lib"], native, env)
+    with owned_server_test_env(env) as test_env:
+        receipt["native_authentication_checks"] = required_native_tests(cargo, test_env, (
+            "native_bridge_fixture_tests", "native_observer_fixture_tests", "auth_key_file",
+        ))
     for label, args in (
         ("hooks", ["-p", "hooks", "--lib", "--features", "patch-free,lan-goal-origin"]),
         ("gameplay", ["-p", "scbl-gameplay", "--lib", "--features", "goggle-feedback"]),
@@ -218,6 +242,65 @@ def linux_server(lane: str, receipt: dict) -> None:
     collect(lane, {"dedicated_server": Path(env["CARGO_TARGET_DIR"]) / "release/dedicated_server"}, receipt)
 
 
+def required_public_suite(root: Path):
+    """A Linux candidate must exercise the actual transport, not an empty selection."""
+    suite = unittest.TestLoader().discover(str(root / "tests/server"))
+    tests = list(ci_checks.flatten(suite))
+    required = ("test_protected_transport.SecureConfigTests.", "test_protected_transport.ProtectedTransportTests.")
+    if any(not any(test.id().startswith(prefix) for test in tests) for prefix in required):
+        raise RuntimeError("Required protected transport tests were not discovered")
+    return unittest.TestSuite(tests)
+
+
+def require_public_result(result: unittest.TestResult) -> None:
+    # A platform/dependency skip must not make this dedicated Linux lane green.
+    if not result.testsRun or not result.wasSuccessful() or result.skipped:
+        raise RuntimeError("Required Linux public-control tests did not all execute successfully")
+
+
+def linux_public_control(receipt: dict) -> None:
+    if not sys.platform.startswith("linux") or not shutil.which("openssl"):
+        raise RuntimeError("Linux and OpenSSL are required for protected transport integration checks")
+    receipt.update(workspace="src/public", public_runtime_scope="read_only_control_service",
+                   native_public_game_server_enabled=False,
+                   test_transport="synthetic_loopback_tls_only")
+    result = ci_checks.run_suite("linux-public-control", required_public_suite(ROOT))
+    receipt["suites"] = [ci_checks.result_row("linux-public-control", result)]
+    if not result.wasSuccessful():
+        ci_diagnostics.emit_error(ci_diagnostics.test_failure_summary("linux-public-control", result))
+    require_public_result(result)
+    builder_suite = unittest.TestLoader().discover(str(ROOT / "tests/public_candidate"))
+    builder_result = ci_checks.run_suite("public-candidate-builder", builder_suite)
+    receipt["suites"].append(ci_checks.result_row("public-candidate-builder", builder_result))
+    if not builder_result.wasSuccessful():
+        ci_diagnostics.emit_error(ci_diagnostics.test_failure_summary("public-candidate-builder", builder_result))
+    require_public_result(builder_result)
+    output = ART / "ci/linux-public-control/candidate"
+    builder = ROOT / "scripts/public_candidate.py"
+    run_build_step("ci-public-control-build", [sys.executable, "-B", builder, "build", "--output", output,
+                                              "--source-commit", receipt["commit"]])
+    run_build_step("ci-public-control-verify", [sys.executable, "-B", builder, "verify", "--directory", output])
+    # Exercise the packaged entry point without loading runtime secrets or binding.
+    run_build_step("ci-public-control-entry", [sys.executable, "-B", output / "FifthFreedom-Control.pyz", "--help"])
+    manifest = build.read(output / "candidate.json")
+    receipt["candidate"] = {"path": output.relative_to(ROOT).as_posix(), **manifest["program"]}
+    templates = ART / "ci/linux-public-control/templates"
+    templates.mkdir(parents=True, exist_ok=False)
+    rows = {}
+    # Exact reviewed examples only; do not sweep any runtime configuration tree.
+    for relative in ("deploy/systemd/fifth-freedom-control.service", "deploy/control.example.json"):
+        source = ROOT / relative
+        if source.is_symlink() or not source.is_file() or source.stat().st_size > 64 * 1024:
+            raise RuntimeError("Reviewed control-service template is missing or invalid")
+        destination = templates / source.name
+        shutil.copyfile(source, destination)
+        rows[source.name] = {"sha256": hashlib.sha256(destination.read_bytes()).hexdigest(),
+                             "bytes": destination.stat().st_size}
+    (templates / "SHA256SUMS.txt").write_text(
+        "".join(f"{row['sha256']}  {name}\n" for name, row in sorted(rows.items())), encoding="ascii")
+    receipt["deployment_templates"] = rows
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("lane", choices=LANES)
@@ -230,9 +313,13 @@ def main() -> int:
                 windows_components(receipt)
             elif args.lane == "windows-package-smoke":
                 windows_package_smoke(receipt)
+            elif args.lane == "linux-public-control":
+                linux_public_control(receipt)
             else:
                 linux_server(args.lane, receipt)
-        receipt["status"] = "package_no_game_checks_passed" if args.lane == "windows-package-smoke" else "components_built_and_selected_tests_passed"
+        receipt["status"] = ("package_no_game_checks_passed" if args.lane == "windows-package-smoke"
+                             else "control_service_candidate_verified" if args.lane == "linux-public-control"
+                             else "components_built_and_selected_tests_passed")
         code = 0
     except Exception as error:
         receipt.update(status="failed", error=str(error))

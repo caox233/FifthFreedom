@@ -85,15 +85,18 @@ class AnnotationSafetyTests(unittest.TestCase):
         label = "retained UI route remains reachable"
         details = diagnostics.diagnostic_details(
             "FAIL " + label + "\nFAIL account=PRIVATE_VALUE\nSystem.Exception: " + label +
-            "\nSystem.Exception: PRIVATE_EXCEPTION\n", ui_labels={label})
+            "\nSystem.Exception: PRIVATE_EXCEPTION\nSystem.InvalidOperationException: " + label +
+            "\nSystem.InvalidOperationException: PRIVATE_NEW_EXCEPTION\n", ui_labels={label})
         self.assertEqual(details["ui_checks"], [label])
         self.assertNotIn("PRIVATE", str(details))
 
     def test_ui_label_allowlist_excludes_dynamic_values(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "Probe.cs"
-            path.write_text('Check(valid, "static route contract");\nCheck(valid, "account " + username);\n', encoding="utf-8")
-            self.assertEqual(diagnostics.known_ui_labels([path]), {"static route contract"})
+            path.write_text('Check(valid, "static route contract");\nCheck(valid, "account " + username);\n'
+                            'Check(valid && Nested(left, right),\n    "multiline route contract");\n'
+                            'Check(valid,\n    "account " + username);\n', encoding="utf-8")
+            self.assertEqual(diagnostics.known_ui_labels([path]), {"static route contract", "multiline route contract"})
 
     def test_nested_steps_emit_once_and_do_not_print_exception_message(self):
         for actions, prefix in (("false", "CI_ERROR_SUMMARY"), ("true", "::error title=Fifth Freedom CI::")):

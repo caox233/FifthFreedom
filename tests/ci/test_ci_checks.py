@@ -5,6 +5,7 @@ import json
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -142,6 +143,50 @@ class VerifiedToolTests(unittest.TestCase):
 
 
 class RunnerReceiptTests(unittest.TestCase):
+    def test_native_selection_cannot_pass_on_zero_or_ignored_cases(self):
+        self.assertEqual(ci_candidate.required_native_test_count(
+            "test result: ok. 3 passed; 0 failed; 0 ignored; 20 filtered out; finished in 0.01s\n"), 3)
+        for text in ("", "test result: ok. 0 passed; 0 failed; 0 ignored; 20 filtered out;\n",
+                     "test result: ok. 3 passed; 0 failed; 1 ignored; 20 filtered out;\n",
+                     "test result: FAILED. 1 passed; 1 failed; 0 ignored; 20 filtered out;\n"):
+            with self.subTest(text=text), self.assertRaisesRegex(RuntimeError, "nonzero passing"):
+                ci_candidate.required_native_test_count(text)
+
+    def test_public_candidate_cannot_pass_with_missing_transport_selection(self):
+        class OtherTest(unittest.TestCase):
+            def runTest(self):
+                pass
+        class ConfigOnlyTest(OtherTest):
+            def id(self):
+                return "test_protected_transport.SecureConfigTests.test_config_only"
+        for selection in ([OtherTest()], [ConfigOnlyTest()]):
+            with patch.object(unittest.TestLoader, "discover", return_value=unittest.TestSuite(selection)):
+                with self.assertRaisesRegex(RuntimeError, "transport tests were not discovered"):
+                    ci_candidate.required_public_suite(Path("unused"))
+
+    def test_public_candidate_rejects_zero_tests_and_platform_skips(self):
+        with self.assertRaisesRegex(RuntimeError, "did not all execute"):
+            ci_candidate.require_public_result(unittest.TestResult())
+
+        class SkippedTest(unittest.TestCase):
+            @unittest.skip("synthetic missing transport prerequisite")
+            def runTest(self):
+                pass
+        result = unittest.TestResult()
+        SkippedTest().run(result)
+        self.assertTrue(result.wasSuccessful())
+        with self.assertRaisesRegex(RuntimeError, "did not all execute"):
+            ci_candidate.require_public_result(result)
+
+    def test_public_candidate_rejects_failed_required_test(self):
+        class FailingTest(unittest.TestCase):
+            def runTest(self):
+                self.fail("synthetic required transport failure")
+        result = unittest.TestResult()
+        FailingTest().run(result)
+        with self.assertRaisesRegex(RuntimeError, "did not all execute"):
+            ci_candidate.require_public_result(result)
+
     def test_launcher_summary_requires_all_pass_rows_and_no_failure(self):
         self.assertEqual(ci_candidate.parse_probe_report("PASS one\nPASS two\nRESULT 2 isolated UI/protocol checks passed.\n", "--self-test"), 2)
         self.assertEqual(ci_candidate.parse_probe_report("PASS one\nRESULT 1 passed; 0 failed; isolated UI and save fixtures only\n", "--lan-tools-self-test"), 1)
