@@ -31,6 +31,13 @@ from easytier_probe_worker import CLEAN_ENV, ProbeError, fail
 PIN_GUARD = "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328"
 TRANSPORTS = ("quic", "wss", "tcp")
 SCHEMA = "ff-easytier-isolated-development-probe-v1"
+CONTAINMENT_SCHEMA = "ff-easytier-containment-preflight-v1"
+
+
+class ContainmentMismatch(ProbeError):
+    def __init__(self, diagnostics):
+        super().__init__("CONTAINMENT_CHANGED")
+        self.diagnostics = diagnostics
 
 
 def encoded(value):
@@ -276,6 +283,58 @@ def normalize_nft(objects):
     return tables + chains + rules, dropped
 
 
+def nft_difference_codes(expected, actual):
+    """Bounded shape evidence only; does not normalize or accept any mismatch.
+
+    Paths are constructed solely from this whitelist and bounded list indices.
+    Unknown keys, addresses, names and raw values never enter diagnostics.
+    """
+    known_keys = frozenset(("table", "chain", "rule", "family", "name", "type", "hook", "prio",
+        "policy", "expr", "match", "op", "left", "right", "meta", "key", "payload", "protocol",
+        "field", "ct", "accept", "drop", "counter", "packets", "bytes", "set", "prefix", "addr", "len"))
+    enums = {value: value.upper().replace("-", "_") for value in ("inet", "input", "output", "forward",
+        "filter", "drop", "accept", "ip", "ip6", "tcp", "udp", "ipv4", "ipv6", "nfproto", "iifname",
+        "oifname", "l4proto", "saddr", "daddr", "sport", "dport", "state", "established", "related",
+        "new", "invalid", "untracked")}
+    enums.update({"==": "EQ", "!=": "NE", "in": "IN", "&": "AND", "|": "OR"})
+    kinds = {dict: "OBJECT", list: "LIST", str: "STRING", int: "INTEGER", bool: "BOOL", type(None): "NULL"}
+    codes = []
+    def number(value):
+        return str(value) if 0 <= value <= 63 else "OVER63"
+    def emit(path, suffix):
+        if len(codes) < 16:
+            code = "NFT_" + "_".join(path) + "_" + suffix
+            codes.append(code if len(code) <= 160 else "NFT_UNCLASSIFIED_DEEP_DIFFERENCE")
+    def visit(one, two, path=()):
+        if len(codes) >= 16 or type(one) is type(two) and one == two:
+            return
+        if type(one) is not type(two):
+            emit(path, "TYPE_" + kinds.get(type(one), "OTHER") + "_TO_" + kinds.get(type(two), "OTHER"))
+        elif type(one) is dict:
+            for key in sorted((set(one) | set(two)) & known_keys):
+                if key not in one:
+                    emit(path + (key.upper(),), "EXTRA_KEY")
+                elif key not in two:
+                    emit(path + (key.upper(),), "MISSING_KEY")
+                else:
+                    visit(one[key], two[key], path + (key.upper(),))
+            if set(one) - known_keys or set(two) - known_keys:
+                emit(path, "UNCLASSIFIED_KEY_DIFFERENCE")
+        elif type(one) is list:
+            if len(one) != len(two):
+                emit(path, "COUNT_" + number(len(one)) + "_TO_" + number(len(two)))
+            for index, (first, second) in enumerate(zip(one, two)):
+                if index >= 64:
+                    emit(path, "UNCLASSIFIED_INDEX_OVER63"); break
+                visit(first, second, path + ("I" + str(index),))
+        elif type(one) is str and one in enums and two in enums:
+            emit(path, enums[one] + "_TO_" + enums[two])
+        else:
+            emit(path, kinds.get(type(one), "OTHER") + "_VALUE_DIFFERENT")
+    visit(expected, actual)
+    return codes or ["NFT_UNCLASSIFIED_DIFFERENCE"]
+
+
 class ProbeNamespaces(OwnedNamespaces):
     def setup_pair(self):
         client, server = self.topology.names
@@ -305,8 +364,9 @@ class ProbeNamespaces(OwnedNamespaces):
         if type(value) is not dict or set(value) != {"nftables"}:
             fail("CONTAINMENT_READBACK_INVALID")
         actual, dropped = normalize_nft(value["nftables"])
-        if actual != normalize_nft(expected)[0]:
-            fail("CONTAINMENT_CHANGED")
+        normalized_expected = normalize_nft(expected)[0]
+        if actual != normalized_expected:
+            raise ContainmentMismatch(nft_difference_codes(normalized_expected, actual))
         self.verify_routes(name)
         return dropped
 
@@ -594,6 +654,8 @@ def run_transport(transport, candidate, images, stage, ip, nft):
         row["status"] = "owned_overlay_probe_verified"
     except (ProbeError, IsolationError, LifecycleError, OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
         row["error"] = diagnostic(error)
+        if isinstance(error, ContainmentMismatch):
+            row["fixed_diagnostics"] = error.diagnostics
     except KeyboardInterrupt:
         row["error"] = "DEVELOPMENT_PROBE_CANCELLED"
     finally:
@@ -615,6 +677,68 @@ def run_transport(transport, candidate, images, stage, ip, nft):
     return row
 
 
+def checked_checkout():
+    # sudo changes euid but not checkout ownership; scope trust to this
+    # exact read-only repository invocation, never global git configuration.
+    git = ["git", "-c", "safe.directory=" + str(ROOT), "-C", str(ROOT)]
+    commit = bounded_command([*git, "rev-parse", "HEAD"]).decode().strip()
+    if (commit != os.environ.get("GITHUB_SHA")
+            or bounded_command([*git, "status", "--porcelain", "--untracked-files=no"])):
+        fail("CHECKOUT_IDENTITY_MISMATCH")
+    return commit
+
+
+def run_containment():
+    """Same kernel prerequisite and containment contract, no runtime startup."""
+    receipt = dict(schema=CONTAINMENT_SCHEMA, status="failed", precondition_failures=preconditions(),
+        transports=[], runtime_executed=False, runtime_binary_uploaded=False, production_admission=False,
+        input_identity="synthetic_profile_only_no_executable", raw_runtime_output_retained=False)
+    if receipt["precondition_failures"]:
+        return receipt
+    try:
+        receipt["checkout_commit"] = checked_checkout()
+        from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
+        # The profile parser requires an identity object, but this marked
+        # synthetic identity is never loaded, executed, published or admitted.
+        synthetic = RuntimeCandidateIdentity("0" * 40, "0" * 64, "0" * 64,
+            "0" * 64, "0" * 64, "0" * 64, 64)
+        for transport in TRANSPORTS:
+            namespaces = ProbeNamespaces(shutil.which("ip"), ProbeTopology.fresh(), run=namespace_command)
+            row = dict(transport=transport, status="failed", cleanup_errors=[], namespaces_created=0, namespaces_removed=0)
+            try:
+                namespaces.setup_pair()
+                profiles = profile_pair(namespaces.topology, transport, synthetic,
+                    [X25519PrivateKey.generate(), X25519PrivateKey.generate()])
+                for name, profile in zip(namespaces.topology.names, profiles):
+                    namespaces.containment(name, shutil.which("nft"), profile, install=True)
+                row["status"] = "containment_pair_verified"
+            except (ProbeError, IsolationError, LifecycleError, OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
+                row["error"] = diagnostic(error)
+                if isinstance(error, ContainmentMismatch):
+                    row["fixed_diagnostics"] = error.diagnostics
+            except KeyboardInterrupt:
+                row["error"] = "DEVELOPMENT_PROBE_CANCELLED"
+            finally:
+                row["namespaces_created"] = len(namespaces.owned)
+                try:
+                    namespaces.cleanup()
+                except (ProbeError, IsolationError, OSError):
+                    row["cleanup_errors"].append("OWNED_NAMESPACE_CLEANUP_FAILED")
+                row["namespaces_removed"] = len(namespaces.deleted)
+                row["cleanup_errors"].extend(namespaces.cleanup_errors)
+                if row["cleanup_errors"]:
+                    row["status"] = "failed"
+            receipt["transports"].append(row)
+            if row["status"] != "containment_pair_verified":
+                fail("CONTAINMENT_PREFLIGHT_INCOMPLETE")
+        receipt["status"] = "containment_preflight_verified"
+    except (ProbeError, IsolationError, LifecycleError, OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
+        receipt["error"] = diagnostic(error)
+    except KeyboardInterrupt:
+        receipt["error"] = "DEVELOPMENT_PROBE_CANCELLED"
+    return receipt
+
+
 def run(args):
     receipt = dict(schema=SCHEMA, status="failed", precondition_failures=preconditions(), transports=[],
         runtime_binary_uploaded=False, raw_runtime_output_retained=False, game_executed=False,
@@ -624,14 +748,7 @@ def run(args):
         return receipt
     stage, stage_identity = None, None
     try:
-        # sudo changes euid but not checkout ownership; scope trust to this
-        # exact read-only repository invocation, never global git configuration.
-        git = ["git", "-c", "safe.directory=" + str(ROOT), "-C", str(ROOT)]
-        commit = bounded_command([*git, "rev-parse", "HEAD"]).decode().strip()
-        if (commit != os.environ.get("GITHUB_SHA")
-                or bounded_command([*git, "status", "--porcelain", "--untracked-files=no"])):
-            fail("CHECKOUT_IDENTITY_MISMATCH")
-        receipt["checkout_commit"] = commit
+        receipt["checkout_commit"] = checked_checkout()
         lock = json_bytes((ROOT / "scripts/easytier-source.lock.json").read_bytes())
         build, candidate = load_build(args.build_receipt, lock)
         receipt["runtime_candidate"] = asdict(candidate)
@@ -680,13 +797,19 @@ def write_receipt(path, receipt):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--build-receipt", type=Path, required=True)
-    parser.add_argument("--core", type=Path, required=True)
-    parser.add_argument("--cli", type=Path, required=True)
-    parser.add_argument("--socket-probe", type=Path, required=True)
-    parser.add_argument("--socket-probe-sha256", required=True)
+    parser.add_argument("--containment-only", action="store_true")
+    parser.add_argument("--build-receipt", type=Path)
+    parser.add_argument("--core", type=Path)
+    parser.add_argument("--cli", type=Path)
+    parser.add_argument("--socket-probe", type=Path)
+    parser.add_argument("--socket-probe-sha256")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    inputs = (args.build_receipt, args.core, args.cli, args.socket_probe, args.socket_probe_sha256)
+    if args.containment_only and any(value is not None for value in inputs):
+        parser.error("containment-only does not accept runtime build/image inputs")
+    if not args.containment_only and any(value is None for value in inputs):
+        parser.error("the full probe requires build-receipt, core, cli, socket-probe and socket-probe-sha256")
     def cancel(_signum, _frame):
         # First cancellation unwinds owned cleanup; repeated signals cannot
         # interrupt cleanup. SIGKILL cannot produce a cleanup receipt.
@@ -695,14 +818,16 @@ def main():
         raise KeyboardInterrupt
     signal.signal(signal.SIGTERM, cancel)
     signal.signal(signal.SIGINT, cancel)
-    receipt = run(args)
+    receipt = run_containment() if args.containment_only else run(args)
     try:
         write_receipt(args.output, receipt)
     except OSError:
         sys.stderr.write("PUBLIC_RECEIPT_WRITE_FAILED\n")
         return 1
-    print("EASYTIER_ISOLATED_DEVELOPMENT_" + ("VERIFIED" if receipt["status"] == "isolated_development_matrix_verified" else "FAILED"))
-    return 0 if receipt["status"] == "isolated_development_matrix_verified" else 1
+    verified = receipt["status"] in ("isolated_development_matrix_verified", "containment_preflight_verified")
+    prefix = "EASYTIER_CONTAINMENT_" if args.containment_only else "EASYTIER_ISOLATED_DEVELOPMENT_"
+    print(prefix + ("VERIFIED" if verified else "FAILED"))
+    return 0 if verified else 1
 
 
 if __name__ == "__main__":

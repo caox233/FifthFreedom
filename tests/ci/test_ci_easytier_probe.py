@@ -93,6 +93,46 @@ class ContainmentTests(unittest.TestCase):
             with self.assertRaises(probe.ProbeError):
                 probe.ProbeTopology(token, subnet)
 
+    def test_mismatch_codes_explain_shapes_without_accepting_or_echoing_unknown_values(self):
+        expected = probe.normalize_nft(probe.containment_rules(profiles()[0]))[0]
+        changed = copy.deepcopy(expected)
+        state_match = next(expression["match"] for item in changed if "rule" in item
+            for expression in item["rule"]["expr"] if "match" in expression and "ct" in expression["match"]["left"])
+        state_match["op"] = "in"
+        codes = probe.nft_difference_codes(expected, changed)
+        self.assertTrue(any(code.endswith("MATCH_OP_EQ_TO_IN") for code in codes))
+        self.assertNotEqual(expected, changed)  # Diagnostics do not relax equality.
+        changed[0]["table"]["secret-unknown-key"] = "private-secret-value"
+        changed[1]["chain"]["name"] = "private-namespace-name"
+        codes = probe.nft_difference_codes(expected, changed)
+        self.assertNotIn("secret", json.dumps(codes))
+        self.assertNotIn("private", json.dumps(codes))
+        self.assertLessEqual(len(codes), 16)
+        for code in codes: self.assertRegex(code, r"^NFT_[A-Z0-9_]{1,156}$")
+        codes = probe.nft_difference_codes([0] * 1000, [1] * 1000)
+        self.assertEqual(len(codes), 16)
+
+    def test_containment_only_never_loads_or_starts_runtime_and_cleans_failures(self):
+        created = []
+        class Namespaces:
+            def __init__(self, _ip, topology, **_):
+                self.topology, self.owned, self.deleted, self.cleanup_errors = topology, {}, [], []
+                created.append(self)
+            def setup_pair(self): self.owned = dict.fromkeys(self.topology.names)
+            def containment(self, *_args, **_kwargs):
+                raise probe.ContainmentMismatch(["NFT_I6_RULE_EXPR_COUNT_6_TO_5"])
+            def cleanup(self): self.deleted = list(self.owned); self.owned.clear()
+        with patch.object(probe, "preconditions", return_value=[]), patch.object(probe, "checked_checkout", return_value="1" * 40), patch.object(probe, "ProbeNamespaces", Namespaces), patch.object(probe, "NamespaceWorker") as worker, patch.object(probe, "load_build") as load:
+            receipt = probe.run_containment()
+        self.assertEqual(receipt["schema"], probe.CONTAINMENT_SCHEMA)
+        self.assertEqual(receipt["status"], "failed")
+        self.assertFalse(receipt["runtime_executed"])
+        self.assertFalse(receipt["production_admission"])
+        self.assertEqual(receipt["transports"][0]["namespaces_created"], 2)
+        self.assertEqual(receipt["transports"][0]["namespaces_removed"], 2)
+        self.assertEqual(receipt["transports"][0]["fixed_diagnostics"], ["NFT_I6_RULE_EXPR_COUNT_6_TO_5"])
+        worker.assert_not_called(); load.assert_not_called()
+
 
 class ReceiptAndControlTests(unittest.TestCase):
     def test_real_guard3_receipt_and_older_or_incomplete_identity(self):

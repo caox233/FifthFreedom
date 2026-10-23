@@ -158,6 +158,34 @@ Local verification on 2026-10-23:
   No core or namespace was started. Command/output/receipt originals remain at
   `.local/evidence/cloud/server13-probe-precondition/`.
 
-No hosted positive is recorded yet. The next executable action is the reviewed,
-explicit privileged workflow and inspection of its actual receipt; a source/unit
-pass or this truthful precondition failure cannot replace that run.
+The first actual hosted probe,
+[run 39910723452](https://github.com/caox233/FifthFreedom/actions/runs/39910723452),
+completed the same-job guard3 GNU build and native socket-probe compilation, then
+failed the runtime step with `CONTAINMENT_CHANGED` and
+`TRANSPORT_MATRIX_INCOMPLETE`. Official metadata is preserved in
+`docs/evidence/hosted-owned-overlay-0ac6695.json`. The strict nft readback check
+stopped the run; no successful overlay result is inferred. Raw nft output was
+not recorded by that version and the artifact redirect is unavailable through
+the current official network path. No fallback bypass is used.
+
+To get the missing evidence before another expensive build, the script now has
+an explicit `--containment-only --output PATH` mode. It uses the same hosted,
+capability and tool preconditions, creates the same two owned namespaces for each
+transport, installs the same rules and checks the complete readback/routes, then
+cleans up. It does not load a build receipt or start any core, CLI, TUN or native
+probe. Its distinct `ff-easytier-containment-preflight-v1` receipt marks the
+recipe identity synthetic and `runtime_executed: false`; a pass means only that
+this containment setup/readback contract passed.
+
+For a mismatch, both modes retain `CONTAINMENT_CHANGED` and include at most 16
+fixed structural diagnostic codes. Paths use only source-defined JSON key names
+and indices 0..63. Known enum/operator changes, type differences and bounded
+counts are described; unknown names, keys, addresses and raw values are not
+printed. The equality decision is unchanged. Possible nft canonicalization is
+still a hypothesis until the next real readback supplies evidence; no expression
+or operator is ignored to obtain a pass.
+
+No hosted positive is recorded yet. The next executable action is the quick
+privileged containment preflight and inspection of its fixed diagnostics, then a
+narrow reviewed correction if the actual representation warrants one. Source
+tests or this preflight cannot replace the full transport run.
