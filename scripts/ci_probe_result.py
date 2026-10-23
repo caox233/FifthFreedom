@@ -77,6 +77,9 @@ WRONG_INTERFACE_NOT_ISOLATED""".split())
 # read_json/sha_file/checked_copy can fail before the native process is started.
 CODES.update("""INPUT_JSON_DUPLICATE INPUT_LINK_REJECTED INPUT_FILE_INVALID INPUT_CHANGED
 INPUT_JSON_INVALID COPY_HASH_MISMATCH""".split())
+# The namespace worker also reads its own private config and copied receipt.
+CODES.update("WORKER_" + code for code in """INPUT_JSON_DUPLICATE INPUT_LINK_REJECTED
+INPUT_FILE_INVALID INPUT_CHANGED INPUT_JSON_INVALID""".split())
 # The same owned-process errors may reach dispatch directly or through read_event.
 _NATIVE_LIFECYCLE_CODES = frozenset("""PUBLIC_OWNER_LEASE_INVALID EXECUTABLE_PATH_INVALID
 OWNED_PROCESS_UNSUPPORTED EXECUTABLE_IDENTITY_INVALID EXECUTABLE_FILE_INVALID

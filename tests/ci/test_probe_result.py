@@ -265,7 +265,8 @@ class ProbeResultTests(unittest.TestCase):
                         and isinstance(arg.value, str) and arg.value.isupper() and "_" in arg.value)
         self.assertGreater(len(codes), 80)
         for code in codes | {"INPUT_CHANGED", "COPY_HASH_MISMATCH", "EXECUTABLE_CAPABILITIES_FORBIDDEN",
-                             "WORKER_EXECUTABLE_HASH_MISMATCH", "WORKER_CHILD_EXEC_FAILED"}:
+                             "WORKER_EXECUTABLE_HASH_MISMATCH", "WORKER_CHILD_EXEC_FAILED",
+                             "WORKER_INPUT_JSON_INVALID", "WORKER_INPUT_CHANGED"}:
             with self.subTest(code=code):
                 self.error_log.write_text(code + "\n", encoding="utf-8")
                 output_stream = io.StringIO()
