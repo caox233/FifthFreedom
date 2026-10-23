@@ -204,8 +204,11 @@ mod platform {
         let mut value = 0u32;
         let mut length = std::mem::size_of::<u32>() as i32;
         unsafe {
+            // Winsock's API is asymmetric: setsockopt takes network byte
+            // order, whereas getsockopt returns this interface index in host
+            // byte order. Do not byte-swap the already-native readback.
             if getsockopt(SOCKET(raw), IPPROTO_IP.0, IP_UNICAST_IF, PSTR((&mut value as *mut u32).cast()), &mut length) != 0
-                || length != 4 || u32::from_be(value) != binding.index() { return Err(unavailable()); }
+                || length != 4 || value != binding.index() { return Err(unavailable()); }
         }
         Ok(())
     }
