@@ -66,6 +66,7 @@ def create_public_supervisor(candidate: RuntimeCandidateIdentity):
 class ChildSpec:
     executable: VerifiedExecutable = field(repr=False)
     arguments: tuple = field(repr=False)
+    lease_socket: socket.socket | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)
@@ -137,6 +138,15 @@ class OwnedSupervisor:
         if self.reason is None:
             self.reason = reason
         self.state = State.REVOKED
+        revoke = getattr(self.service, "revoke", None)
+        if revoke is not None:
+            # Close the private admission endpoint before any awaited cleanup.
+            # The native watchdog must not depend on the Python cleanup task.
+            try:
+                revoke()
+            except Exception:
+                if self.reason is None:
+                    self.reason = "NATIVE_LEASE_REVOCATION_FAILED"
 
     async def _observe(self):
         if not self.overlay.image_matches():
@@ -194,8 +204,13 @@ class OwnedSupervisor:
             if self._stop_requested.is_set():
                 raise LifecycleError("STOP_REQUESTED")
             self.state = State.STARTING_NATIVE
-            self.native = await OwnedChild.spawn(self.native_spec.executable, self.native_spec.arguments,
-                startup_timeout=max(0.1, deadline - asyncio.get_running_loop().time()))
+            try:
+                self.native = await OwnedChild.spawn(self.native_spec.executable, self.native_spec.arguments,
+                    startup_timeout=max(0.1, deadline - asyncio.get_running_loop().time()),
+                    lease_socket=self.native_spec.lease_socket)
+            finally:
+                if self.native_spec.lease_socket is not None:
+                    self.native_spec.lease_socket.close()
             while True:
                 await self._observe()
                 if not self.native.image_matches():

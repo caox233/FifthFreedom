@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import select
 import signal
+import socket
 import stat
 import subprocess
 import sys
@@ -190,13 +191,30 @@ class OwnedChild:
         self._stop_lock = asyncio.Lock()
 
     @classmethod
-    async def spawn(cls, program, arguments, *, startup_timeout=10.0):
+    async def spawn(cls, program, arguments, *, startup_timeout=10.0, lease_socket=None):
         if not isinstance(program, VerifiedExecutable) or not 0.1 <= startup_timeout <= 30:
             raise LifecycleError("CHILD_SPEC_INVALID")
         if (not isinstance(arguments, tuple) or len(arguments) > 32
                 or any(not isinstance(value, str) or len(value) > 4096 or "\x00" in value for value in arguments)):
             raise LifecycleError("CHILD_SPEC_INVALID")
         program.check_unchanged()
+        inherited = ()
+        if lease_socket is not None:
+            # Only one explicitly connected local owner-lease endpoint can be
+            # inherited. This is not a general pass_fds/configuration surface.
+            try:
+                import struct
+                if (not isinstance(lease_socket, socket.socket) or lease_socket.fileno() < 3
+                        or lease_socket.family != socket.AF_UNIX
+                        or lease_socket.getsockopt(socket.SOL_SOCKET, socket.SO_TYPE) != socket.SOCK_SEQPACKET
+                        or lease_socket.getsockopt(socket.SOL_SOCKET, socket.SO_PASSCRED) != 1
+                        or struct.unpack("3i", lease_socket.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
+                        != (os.getpid(), os.geteuid(), os.getegid())):
+                    raise LifecycleError("CHILD_LEASE_SOCKET_INVALID")
+                lease_socket.getpeername()
+                inherited = (lease_socket.fileno(),)
+            except (OSError, ValueError, AttributeError):
+                raise LifecycleError("CHILD_LEASE_SOCKET_INVALID") from None
         deadline = asyncio.get_running_loop().time() + startup_timeout
         ready_read = ready_write = release_read = release_write = -1
         child = None
@@ -209,7 +227,7 @@ class OwnedChild:
                 program.identity.sha256, str(program.path), *arguments],
                 stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                 env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "TZ": "UTC"},
-                close_fds=True, pass_fds=(program.fd, ready_write, release_read))
+                close_fds=True, pass_fds=(program.fd, ready_write, release_read, *inherited))
             # Do not poll/wait/reap before pinning the PID. The bootstrap cannot
             # exec the target until this exact ownership handle has been acquired.
             pidfd = os.pidfd_open(process.pid)
@@ -258,6 +276,10 @@ class OwnedChild:
             for descriptor in (ready_read, ready_write, release_read, release_write):
                 if descriptor >= 0:
                     os.close(descriptor)
+
+    @property
+    def pid(self):
+        return self._process.pid
 
     @property
     def alive(self):
