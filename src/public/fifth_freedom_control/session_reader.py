@@ -1,7 +1,7 @@
 """Read-only session projection for the retained LAN schema.
 
-This is not an authentication endpoint. The future protected control-plane
-adapter must verify the token signature, expiry and source before creating
+This is not an authentication endpoint. The protected control-plane bridge
+verifies the token signature, expiry and source before creating
 AuthenticatedGameIdentity. An instance of that dataclass is not itself proof of
 authentication. No request JSON should be unpacked directly into it.
 
@@ -75,7 +75,7 @@ class ServerPolicy:
 
 @dataclass(frozen=True)
 class AuthenticatedGameIdentity:
-    # Server-internal output of a future verified token/admission adapter.
+    # Server-internal output of the verified token/admission adapter.
     user_id: int
     username: str
     auth_version: int

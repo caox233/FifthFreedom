@@ -24,3 +24,9 @@ requirements and the retained database admission reader. It has no token issuer,
 HTTP listener, environment-key loader, deployment action or automatic key sharing.
 No independently verified third-party license claim is added by this provenance
 record.
+
+The separately implemented `protected_transport.py`, `secure_config.py` and
+`__main__.py` provide the explicit Linux HTTPS candidate runtime described in
+`docs/tasks/public-transport.md`. They use only Python's standard library and
+OpenSSL through Python's `ssl` module. The bridge's optional signed observer grant
+follows the current retained native issuer; it is not a client-supplied authority.
