@@ -25,7 +25,7 @@ internal sealed class OwnedCoreProcess : IAsyncDisposable
     { this.job = job; this.process = process; this.thread = thread; this.identity = identity; this.inputs = inputs; }
     private static IOException Failed(string code) => new(code);
 
-    internal static OwnedCoreProcess CreateSuspended(OwnedCoreLaunchInputs specification, CancellationToken cancellationToken = default)
+    internal static OwnedCoreProcess CreateSuspended(OwnedCoreLaunchInputs specification, CancellationToken cancellationToken = default, OwnedCoreReadDescriptor? readDescriptor = null)
     {
         ArgumentNullException.ThrowIfNull(specification);
         cancellationToken.ThrowIfCancellationRequested();
@@ -55,7 +55,9 @@ internal sealed class OwnedCoreProcess : IAsyncDisposable
             var windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
             if (string.IsNullOrWhiteSpace(windows) || string.IsNullOrWhiteSpace(Environment.SystemDirectory)) throw Failed("OWNED_CORE_ENVIRONMENT_FAILED");
             var temporary = Path.GetDirectoryName(specification.Configuration)!;
-            string block = $"PATH={Environment.SystemDirectory}\0SystemRoot={windows}\0TEMP={temporary}\0TMP={temporary}\0WINDIR={windows}\0\0";
+            if (readDescriptor is not null && !readDescriptor.Alive) throw Failed("OWNED_CORE_ENVIRONMENT_FAILED");
+            string extra = readDescriptor is null ? "" : $"{OwnedCoreReadDescriptor.Variable}={readDescriptor.Serialized}\0";
+            string block = extra + $"PATH={Environment.SystemDirectory}\0SystemRoot={windows}\0TEMP={temporary}\0TMP={temporary}\0WINDIR={windows}\0\0";
             environment = Marshal.StringToHGlobalUni(block);
             var startup = new StartupInfoEx { Startup = new StartupInfo { Size = Marshal.SizeOf<StartupInfoEx>() }, Attributes = attributes };
             string command = $"\"{specification.Executable}\" --config-file \"{specification.Configuration}\" --disable-env-parsing --console-log-level off --file-log-level off";

@@ -88,7 +88,7 @@ internal static partial class Program
                 await owned.StopAsync();
             }, windows: true);
             await Case("ambient network and return-channel environment is not inherited", async () => {
-                string[] keys = ["ET_NETWORK_SECRET", "FF_PUBLIC_RETURN_V1", "OWNED_CORE_SENTINEL"];
+                string[] keys = ["ET_NETWORK_SECRET", "FF_PUBLIC_RETURN_V1", "FF_OWNED_CORE_READ_V1", "OWNED_CORE_SENTINEL"];
                 string?[] previous = keys.Select(Environment.GetEnvironmentVariable).ToArray();
                 try {
                     foreach (string key in keys) Environment.SetEnvironmentVariable(key, "synthetic-not-inherited");
@@ -163,7 +163,7 @@ internal static partial class Program
     private static void Mark(string path)
     {
         using var self = Process.GetCurrentProcess();
-        bool absent = new[] { "ET_NETWORK_SECRET", "FF_PUBLIC_RETURN_V1", "OWNED_CORE_SENTINEL" }.All(k => Environment.GetEnvironmentVariable(k) is null);
+        bool absent = new[] { "ET_NETWORK_SECRET", "FF_PUBLIC_RETURN_V1", "FF_OWNED_CORE_READ_V1", "OWNED_CORE_SENTINEL" }.All(k => Environment.GetEnvironmentVariable(k) is null);
         string temporary = path + ".partial";
         File.WriteAllText(temporary, JsonSerializer.Serialize(new ChildState(self.Id, self.StartTime.ToUniversalTime().Ticks, absent)));
         File.Move(temporary, path);
