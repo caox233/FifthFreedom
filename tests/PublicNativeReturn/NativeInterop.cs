@@ -75,11 +75,11 @@ internal static partial class Program
             start.Environment["FF_SYNTHETIC_RETURN_INTEROP_V1"] = JsonSerializer.Serialize(new {
                 launcher_path = launcher.ImagePath, launcher_sha256 = imageHash,
                 release_id = package.Package.ReleaseId, compat_id = package.Package.CompatId, manifest_sha256 = package.Package.ManifestSha256 });
-            Task delivery = configuration.DeliverAsync(deadline.Token);
-            child = Process.Start(start) ?? throw new IOException("NATIVE_INTEROP_CHILD_FAILED");
-            server.CaptureCreated(child, executable);
+            phase = Phase.CONFIG_DELIVERY; Task delivery = configuration.DeliverAsync(deadline.Token);
+            phase = Phase.CHILD_START; child = Process.Start(start) ?? throw new IOException("NATIVE_INTEROP_CHILD_FAILED");
+            phase = Phase.OWNER_CAPTURE; server.CaptureCreated(child, executable);
             stderr = DrainBounded(child.StandardError, deadline.Token);
-            await delivery.WaitAsync(deadline.Token);
+            phase = Phase.CONFIG_DELIVERY; await delivery.WaitAsync(deadline.Token);
             Check(acknowledgements == 1);
             if (scenario != "valid")
             {
@@ -139,6 +139,9 @@ internal static partial class Program
     }
     private static async Task NativeMarker(Process child, string expected, CancellationToken token)
     {
+        phase = expected switch { "READY" => Phase.WAIT_CONNECT, "AUTHENTICATED" => Phase.WAIT_AUTH,
+            "INVALIDATED" => Phase.STATE_WAIT, "STOPPED" => Phase.CHILD_EXIT,
+            "NATIVE_INTEROP_REJECTED" => Phase.WAIT_REJECT, _ => Phase.RUN_CASE };
         // No unbounded ReadLine allocation and no raw native output forwarding.
         char[] one = new char[1]; var line = new StringBuilder(); int total = 0;
         while (total++ < 16384)

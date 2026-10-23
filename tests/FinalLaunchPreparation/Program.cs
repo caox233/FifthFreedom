@@ -8,9 +8,28 @@ using SplinterCellCNLauncher.Services;
 internal static class Program
 {
     private static int passed;
+    private static bool failureReported;
+    private static string phase = "SETUP_PACKAGE";
+    private static void ReportFailure(string which, Exception error)
+    {
+        if (failureReported) return;
+        failureReported = true;
+        string type = error.GetType().Name;
+        string[] allowed = ["AuthenticationException", "CryptographicException", "IOException", "EndOfStreamException",
+            "SocketException", "HttpRequestException", "OperationCanceledException", "TaskCanceledException", "TimeoutException",
+            "ArgumentException", "InvalidOperationException", "ObjectDisposedException", "PlatformNotSupportedException", "PublicControlException",
+            "Win32Exception", "FileNotFoundException", "DirectoryNotFoundException", "UnauthorizedAccessException", "InvalidDataException",
+            "MissingMethodException", "JsonException", "Exception", "OtherException"];
+        if (!allowed.Contains(type, StringComparer.Ordinal)) type = "OtherException";
+        Console.WriteLine($"CI_MANAGED_FAILURE suite=FinalLaunchPreparation case={which} exception={type}");
+    }
     private const string Username = "requested-user", Password = "synthetic-password", Account = "synthetic-account";
     private static void Check(bool result) { if (!result) throw new Exception("Synthetic preparation assertion failed"); }
-    private static async Task Case(string name, Func<Task> action) { await action(); passed++; Console.WriteLine("PASS " + name); }
+    private static async Task Case(string name, Func<Task> action)
+    {
+        try { await action(); passed++; Console.WriteLine("PASS " + name); }
+        catch (Exception error) { ReportFailure((passed + 1).ToString("D2", System.Globalization.CultureInfo.InvariantCulture), error); throw; }
+    }
     private static byte[] RawFrame(LaunchPipe pipe) => ((byte[])typeof(LaunchPipe).GetField("config", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(pipe)!).ToArray();
     private static async Task<bool> Disposed(LaunchPipe pipe)
     {
@@ -20,7 +39,12 @@ internal static class Program
     }
     private static async Task Main()
     {
-        using var package = new SyntheticPackage(); await using var api = await LoopbackApi.Start();
+        try { await Run(); }
+        catch (Exception error) { ReportFailure(phase, error); Environment.ExitCode = 1; }
+    }
+    private static async Task Run()
+    {
+        using var package = new SyntheticPackage(); phase = "SETUP_LISTENER"; await using var api = await LoopbackApi.Start(); phase = "UNKNOWN_PHASE";
         string executable = Path.Combine(package.Package.PackageRoot, "Blacklist_DX11_game.exe");
         var configuration = new HookConfigService(_ => package.Package);
         Task<PreparedGameConfiguration> Prepare() => configuration.PrepareConfigurationAsync(executable, Username, Password, Account, api.Address, "127.0.0.1");
@@ -93,7 +117,7 @@ internal static class Program
             await first.DisposeAsync(); await first.DisposeAsync(); Check(await Disposed(firstPipe) && !await Disposed(secondPipe));
             Check(RawFrame(firstPipe).All(value => value == 0));
         });
-        Console.WriteLine($"RESULT {passed} final-login preparation checks passed; owned loopback HTTP2 only; no game, Public runtime or live-route admission.");
+        phase = "CLEANUP"; Console.WriteLine($"RESULT {passed} final-login preparation checks passed; owned loopback HTTP2 only; no game, Public runtime or live-route admission.");
     }
     private sealed class Operations(Func<Task<PreparedGameConfiguration>> prepare) : ILaunchPreparationOperations
     {

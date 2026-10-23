@@ -11,11 +11,34 @@ internal static partial class Program
     private const string Instance = "0123456789abcdef0123456789abcdef";
     private const string User = "synthetic-client";
     private static int passed, skipped;
+    private static bool failureReported;
+    private static string suite = "PublicNativeReturn", setup = "SETUP_PACKAGE";
+    private enum Phase { RUN_CASE, CHILD_START, WAIT_IDLE, WAIT_FRAME, WAIT_CONNECT, WAIT_AUTH, WAIT_DISCONNECT, WAIT_REJECT,
+        CONFIG_DELIVERY, CONFIG_ACK, OWNER_CAPTURE, STATE_WAIT, PIPE_CONNECT, PIPE_READ, CHILD_EXIT, CLEANUP }
+    private static Phase phase = Phase.RUN_CASE;
+    private static readonly string[] exceptionTypes = ["AuthenticationException", "CryptographicException", "IOException", "EndOfStreamException",
+        "SocketException", "HttpRequestException", "OperationCanceledException", "TaskCanceledException", "TimeoutException",
+        "ArgumentException", "InvalidOperationException", "ObjectDisposedException", "PlatformNotSupportedException", "PublicControlException",
+        "Win32Exception", "FileNotFoundException", "DirectoryNotFoundException", "UnauthorizedAccessException", "InvalidDataException",
+        "MissingMethodException", "JsonException", "Exception", "OtherException"];
+    private static string ErrorType(Exception error) => exceptionTypes.Contains(error.GetType().Name, StringComparer.Ordinal) ? error.GetType().Name : "OtherException";
+    private static void ReportFailure(string which, Exception error)
+    {
+        if (failureReported) return;
+        failureReported = true;
+        Console.WriteLine($"CI_MANAGED_FAILURE suite={suite} case={which} exception={ErrorType(error)}");
+        if (int.TryParse(which, out _)) Console.WriteLine($"CI_RETURN_PHASE suite={suite} case={which} phase={phase}");
+    }
     private static SyntheticPackage package = null!;
     private static PublicDeploymentProfile profile = null!;
     private static string token = "";
     private static void Check(bool result) { if (!result) throw new Exception("Assertion failed"); }
-    private static async Task Case(string name, Func<Task> action) { await action(); passed++; Console.WriteLine("PASS " + name); }
+    private static async Task Case(string name, Func<Task> action)
+    {
+        phase = Phase.RUN_CASE;
+        try { await action(); passed++; Console.WriteLine("PASS " + name); }
+        catch (Exception error) { ReportFailure((passed + 1).ToString("D2", System.Globalization.CultureInfo.InvariantCulture), error); throw; }
+    }
     private static async Task Reject(Func<Task> action)
     {
         try { await action(); } catch (Exception e) when (e is IOException or ArgumentException or InvalidOperationException or JsonException or OperationCanceledException) { return; }
@@ -35,17 +58,33 @@ internal static partial class Program
         game_run = new { product = "scbl-lan/2/game/mod", instance = Instance } })) + "." + Encode(new byte[32]);
     private static async Task Main(string[] args)
     {
+        bool child = args is ["--config-child", _, _] or ["--child", _] or ["--idle"];
+        if (args is ["--native-interop", _]) suite = "NativeManagedInterop";
+        try { await Run(args); }
+        catch (Exception error)
+        {
+            // Child arguments, frames, tokens and exception messages/stacks must
+            // never enter diagnostics. Only exact source-known tokens leave here.
+            if (child) Console.WriteLine($"CI_RETURN_CHILD_FAILURE phase={phase} exception={ErrorType(error)}");
+            else ReportFailure(setup, error);
+            Environment.ExitCode = 1;
+        }
+    }
+    private static async Task Run(string[] args)
+    {
         if (args is ["--config-child", var configPipe, var reply]) { await ConfigChild(configPipe, int.Parse(reply)); return; }
         if (args is ["--child", var pipe]) { await Child(pipe); return; }
         if (args is ["--idle"]) { Console.WriteLine("IDLE"); _ = Console.ReadLine(); return; }
         using var ownedPackage = new SyntheticPackage(); package = ownedPackage;
+        setup = "UNKNOWN_PHASE";
         profile = new("synthetic-return", "https://control.example.invalid", "10.66.0.0/24", "10.66.0.1", PublicTransport.Fast,
             "quic://relay.example.invalid:11010", new("synthetic", Enum.GetValues<PublicRuntimeRole>().Select(role => new PublicRuntimePin(role, 1, new string('a', 64)))));
         token = MakeToken();
         if (args is ["--native-interop", var nativeHelper])
         {
             try { await NativeInterop(nativeHelper); }
-            catch (Exception) { Console.WriteLine("NATIVE_MANAGED_INTEROP_FAILED"); Environment.ExitCode = 1; }
+            catch (Exception error) { ReportFailure("UNKNOWN_PHASE", error); Console.WriteLine("NATIVE_MANAGED_INTEROP_FAILED"); Environment.ExitCode = 1; }
+            setup = "CLEANUP";
             return;
         }
         await Case("bounded framing round trip preserves document after buffer clearing", async () => {
@@ -155,23 +194,44 @@ internal static partial class Program
         });
         if (OperatingSystem.IsWindows()) await WindowsCases();
         else { skipped = 11; Console.WriteLine("SKIP 11 Windows-only actual named-pipe and owned-child process cases"); }
-        Console.WriteLine($"RESULT {passed} passed, {skipped} skipped");
+        setup = "CLEANUP"; Console.WriteLine($"RESULT {passed} passed, {skipped} skipped");
     }
     private static async Task Eventually(Func<bool> condition)
     {
+        phase = Phase.STATE_WAIT;
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         while (!condition()) await Task.Delay(25, deadline.Token);
     }
     private static Process StartChild(params string[] arguments)
     {
-        var start = new ProcessStartInfo(Environment.ProcessPath!) { UseShellExecute = false, RedirectStandardInput = true, RedirectStandardOutput = true };
+        phase = Phase.CHILD_START;
+        var start = new ProcessStartInfo(Environment.ProcessPath!) { UseShellExecute = false, RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true };
         if (Path.GetFileNameWithoutExtension(Environment.ProcessPath!).Equals("dotnet", StringComparison.OrdinalIgnoreCase)) start.ArgumentList.Add(Assembly.GetExecutingAssembly().Location);
         foreach (string argument in arguments) start.ArgumentList.Add(argument);
         start.Environment.Remove(PublicReturnProtocol.EnvironmentKey);
         return Process.Start(start) ?? throw new Exception("Synthetic child failed");
     }
     private static async Task Line(Process child, string expected)
-    { Check(await child.StandardOutput.ReadLineAsync().WaitAsync(TimeSpan.FromSeconds(10)) == expected); }
+    {
+        phase = expected switch { "IDLE" => Phase.WAIT_IDLE, "FRAME_RECEIVED" => Phase.WAIT_FRAME,
+            "CONNECTED" => Phase.WAIT_CONNECT, "AUTH_SENT" => Phase.WAIT_AUTH,
+            "DISCONNECTED" => Phase.WAIT_DISCONNECT, "REJECTED" => Phase.WAIT_REJECT, _ => Phase.RUN_CASE };
+        using var limit = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        var line = new StringBuilder(); char[] one = new char[1];
+        while (line.Length < 512)
+        {
+            if (await child.StandardOutput.ReadAsync(one.AsMemory(), limit.Token) == 0) break;
+            if (one[0] == '\n') break;
+            line.Append(one[0]);
+        }
+        string value = line.ToString().TrimEnd('\r');
+        string[] parts = value.Split(' ');
+        if (parts.Length == 3 && parts[0] == "CI_RETURN_CHILD_FAILURE" && parts[1].StartsWith("phase=", StringComparison.Ordinal)
+            && parts[2].StartsWith("exception=", StringComparison.Ordinal)
+            && Enum.TryParse<Phase>(parts[1][6..], out var childPhase) && Enum.IsDefined(childPhase) && childPhase.ToString() == parts[1][6..]
+            && exceptionTypes.Contains(parts[2][10..], StringComparer.Ordinal)) Console.WriteLine(value);
+        Check(value == expected);
+    }
     private static async Task End(Process child)
     {
         if (!child.HasExited)
@@ -198,14 +258,14 @@ internal static partial class Program
                 config.PeerValidated += _ => Interlocked.Increment(ref validated);
                 config.ConfigurationAcknowledged += _ => Interlocked.Increment(ref acknowledged);
                 using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
-                Task delivery = config.DeliverAsync(deadline.Token);
-                var start = new ProcessStartInfo(executable) { UseShellExecute = false, RedirectStandardInput = true, RedirectStandardOutput = true };
+                phase = Phase.CONFIG_DELIVERY; Task delivery = config.DeliverAsync(deadline.Token);
+                var start = new ProcessStartInfo(executable) { UseShellExecute = false, RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true };
                 start.ArgumentList.Add("--config-child"); start.ArgumentList.Add(config.Name); start.ArgumentList.Add(reply.ToString());
-                using var child = Process.Start(start)!;
+                phase = Phase.CHILD_START; using var child = Process.Start(start)!;
                 try
                 {
                     await Line(child, "FRAME_RECEIVED"); Check(validated == 1 && acknowledged == 0 && !delivery.IsCompleted);
-                    await child.StandardInput.WriteLineAsync("ack");
+                    phase = Phase.CONFIG_ACK; await child.StandardInput.WriteLineAsync("ack");
                     if (reply == 1) { await delivery; Check(acknowledged == 1); }
                     else { await Reject(() => delivery); Check(acknowledged == 0); }
                     await child.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(5));
@@ -223,14 +283,14 @@ internal static partial class Program
             Check(!start.Environment.ContainsKey(PublicReturnProtocol.EnvironmentKey));
         });
         await Case("actual owned process handle pins creation time and rejects image substitution", async () => {
-            using var child = StartChild("--idle"); try { await Line(child, "IDLE"); using var owned = PublicReturnProcess.Capture(child, Environment.ProcessPath!);
+            using var child = StartChild("--idle"); try { await Line(child, "IDLE"); phase = Phase.OWNER_CAPTURE; using var owned = PublicReturnProcess.Capture(child, Environment.ProcessPath!);
                 Check(owned.Matches((uint)child.Id, owned.CreationFileTime)); Check(!owned.Matches((uint)child.Id, owned.CreationFileTime + 1));
                 await Reject(() => { using var wrong = PublicReturnProcess.Capture(child, Path.Combine(Path.GetTempPath(), "wrong.exe")); return Task.CompletedTask; });
             } finally { await End(child); }
         });
         await Case("actual pipe publishes only after exact created process ACK and EOF cancels", async () => {
             await using var server = new PublicReturnPipe(Create); server.Start(Guid.NewGuid()); using var child = StartChild("--child", server.Name);
-            try { server.CaptureCreated(child, Environment.ProcessPath!); await StartClient(child); Check(server.Current == null);
+            try { phase = Phase.OWNER_CAPTURE; server.CaptureCreated(child, Environment.ProcessPath!); await StartClient(child); Check(server.Current == null);
                 await Task.Delay(100); Check(server.Current == null); server.ConfigurationAcknowledged(child); await Line(child, "AUTH_SENT");
                 await Eventually(() => server.Current != null); var old = server.Current!;
                 await child.StandardInput.WriteLineAsync("disconnect"); await Line(child, "DISCONNECTED");
@@ -257,7 +317,8 @@ internal static partial class Program
             {
                 await Line(child, "IDLE"); server.CaptureCreated(child, Environment.ProcessPath!);
                 using var candidate = new NamedPipeClientStream(".", server.Name, PipeDirection.InOut, PipeOptions.Asynchronous);
-                await candidate.ConnectAsync(10000); using var limit = new CancellationTokenSource(TimeSpan.FromSeconds(13));
+                phase = Phase.PIPE_CONNECT; await candidate.ConnectAsync(10000); using var limit = new CancellationTokenSource(TimeSpan.FromSeconds(13));
+                phase = Phase.PIPE_READ;
                 byte[] one = new byte[1]; Check(await candidate.ReadAsync(one, limit.Token) == 0 && server.Current == null);
             }
             finally { await End(child); }
@@ -283,11 +344,11 @@ internal static partial class Program
     private static async Task ConfigChild(string name, int reply)
     {
         using var pipe = new NamedPipeClientStream(".", name, PipeDirection.InOut, PipeOptions.Asynchronous);
-        await pipe.ConnectAsync(10000); byte[] prefix = new byte[4]; await pipe.ReadExactlyAsync(prefix);
+        phase = Phase.PIPE_CONNECT; await pipe.ConnectAsync(10000); phase = Phase.PIPE_READ; byte[] prefix = new byte[4]; await pipe.ReadExactlyAsync(prefix);
         int count = BinaryPrimitives.ReadInt32LittleEndian(prefix); Check(count is > 0 and < 65536);
         byte[] body = new byte[count]; await pipe.ReadExactlyAsync(body);
         Check(Encoding.UTF8.GetString(body) == "ConfigServer = \"127.0.0.1\"\n"); Console.WriteLine("FRAME_RECEIVED");
-        if (await Console.In.ReadLineAsync() == "ack" && reply >= 0) { await pipe.WriteAsync(new byte[] { (byte)reply }); await pipe.FlushAsync(); }
+        phase = Phase.CONFIG_ACK; if (await Console.In.ReadLineAsync() == "ack" && reply >= 0) { await pipe.WriteAsync(new byte[] { (byte)reply }); await pipe.FlushAsync(); }
     }
     private static async Task Child(string name)
     {
@@ -301,10 +362,10 @@ internal static partial class Program
                 if (pipe == null)
                 {
                     pipe = new(".", name, PipeDirection.InOut, PipeOptions.Asynchronous);
-                    await pipe.ConnectAsync(10000); Console.WriteLine("CONNECTED");
+                    phase = Phase.PIPE_CONNECT; await pipe.ConnectAsync(10000); Console.WriteLine("CONNECTED");
                     try
                     {
-                        using var challenge = await PublicReturnProtocol.ReadAsync(pipe, default); var frame = challenge.RootElement;
+                        phase = Phase.PIPE_READ; using var challenge = await PublicReturnProtocol.ReadAsync(pipe, default); var frame = challenge.RootElement;
                         await PublicReturnProtocol.WriteAsync(pipe, new { schema = 1, kind = "hello", launch_id = frame.GetProperty("launch_id").GetString(), challenge = frame.GetProperty("challenge").GetString(), game_instance = instance }, default);
                         await PublicReturnProtocol.WriteAsync(pipe, new { schema = 1, kind = "authenticated", generation = 1, account_id = "synthetic-account", username = User, token = bearer }, default);
                         Console.WriteLine("AUTH_SENT");
