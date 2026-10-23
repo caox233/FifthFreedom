@@ -9,7 +9,7 @@ permissions:
 
 concurrency:
   group: fifth-easytier-build-only-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   reviewed-linux-source:
