@@ -2,8 +2,8 @@
 
 Status: **ready-for-agent** — the independent hosted authenticated-receive job
 passed all 44 contracts and compiled core/CLI Release outputs. The separate old
-guard3 35-contract compatibility job was still running when this receipt was
-recorded; no whole-workflow success is inferred.
+guard3 job subsequently passed its original 35 contracts and Release build too;
+both official job conclusions and the workflow conclusion are successful.
 Ordinary Public startup remains closed. This continues the owned transport
 prerequisite within the full migration, without changing the currently validated
 Linux guard3 or Windows source/runtime identities.
@@ -84,6 +84,14 @@ was downloaded or independently rehashed here; the core/CLI sizes and hashes in
 the receipt are the runner's static ELF/build observations. Neither runtime was
 started or uploaded. The active challenge described below is a later source
 candidate and is absent from this successful recipe.
+
+The separate default guard3 compatibility job `120358530652` subsequently
+completed successfully. Its [own verified receipt](../evidence/hosted-guard3-builder-compatibility-05c127a.json)
+records the original six-patch/699-file identity, exact `4+10+9+2+7+3=35` checks,
+Release stage and separately verified three-member official artifact. This
+confirms the shared builder's default path still works on hosted Linux. The
+first auth44 receipt's pending-35 flag records its earlier observation time and
+is preserved; the later compatibility receipt records the completed result.
 
 ## Next bounded active-challenge path (read-only finding; not implemented)
 

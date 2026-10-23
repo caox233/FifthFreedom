@@ -1,0 +1,164 @@
+{
+  "artifact_verification": {
+    "exact_three_json_members": true,
+    "full_699_file_source_inventory_matches_unchanged_guard3": true,
+    "members": {
+      "easytier-build-only-run.json": {
+        "bytes": 359,
+        "sha256": "d7bcec16fac97b6c02c0a483bebe09790eb6c6200788d66bd391f12f80f4a313"
+      },
+      "easytier-build-only/receipt.json": {
+        "bytes": 3378,
+        "sha256": "9e237f4722c2b3bb8eed6e0d6815a29c901cc24d35e179c87d9c6c4922913bae"
+      },
+      "easytier-build-only/source-receipt.json": {
+        "bytes": 139758,
+        "sha256": "41d13b6b55557d21f3639ce8b602790debdc731f4edc08a2abec6d58d0d78add"
+      }
+    },
+    "zip_matches_official_digest_and_size": true
+  },
+  "boundaries": {
+    "active_nonce_challenge_in_this_recipe": false,
+    "actual_hosted_contracts_passed": 35,
+    "actual_locked_release_compilation": true,
+    "authenticated_receive_patch_in_this_recipe": false,
+    "core_cli_executed": false,
+    "dependency_distribution_closure_verified": false,
+    "downloaded_or_independently_rehashed_executables": false,
+    "driver_tun_game_started": false,
+    "failed": 0,
+    "ignored": 0,
+    "public_startup_allowed": false,
+    "runner_elf_checks_and_hashes_only": true,
+    "runtime_binary_uploaded": false
+  },
+  "distinct_authenticated_receive_job_receipt": "docs/evidence/hosted-authenticated-receive-build-05c127a.json",
+  "github": {
+    "branch_head": "05c127a544ca8ea70d25f07f3101244b55c43842",
+    "job_conclusion": "success",
+    "job_id": 120358530652,
+    "run_id": 39936896405,
+    "tested_merge_commit": "d7d819317a4e3ff72efa53400ce258c4154eb783",
+    "url": "https://github.com/caox233/FifthFreedom/actions/runs/39936896405",
+    "workflow_conclusion": "success"
+  },
+  "official_artifact": {
+    "digest": "sha256:c27ca2d0f06942c3e112f7da046e48efb05c0a0905ea6f9482efe19b76c410a0",
+    "id": 12495801996,
+    "name": "easytier-linux-build-only-receipts-d7d819317a4e3ff72efa53400ce258c4154eb783",
+    "size_in_bytes": 39749
+  },
+  "recipe": {
+    "path": "scripts/easytier-source.lock.json",
+    "sha256": "c9135af75df006062141b9ecb209887d46a9b374ed0b3d52924c15220448ebeb"
+  },
+  "schema": 1,
+  "scope": "unchanged Linux guard3 default entry compatibility after shared builder parameterization; not runtime admission",
+  "verified_build_receipt": {
+    "admission": {
+      "readiness_adapter_version": null,
+      "runtime_admission_ready": false,
+      "runtime_publication_approved": false,
+      "security_profile_id": null
+    },
+    "build_inputs": {
+      "bins": [
+        "easytier-core",
+        "easytier-cli"
+      ],
+      "cargo_features": "default",
+      "cargo_incremental": false,
+      "crypto_backend": "ring; wireguard enabled; openssl-crypto/aes-gcm absent",
+      "official_musl_jemalloc_build_reproduction": false,
+      "profile": "release",
+      "rust_toolchain": "1.95.0",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "built_executables": {
+      "easytier-cli": {
+        "bytes": 12261752,
+        "sha256": "56cdcba6a1ca57694c0b4054d70bfc05c2e769f0be5de9926e6c6aeca6a11689"
+      },
+      "easytier-core": {
+        "bytes": 28593032,
+        "sha256": "287bae094cfc40fd1ca0c096b80ec5de99d9f852e094d5d5a24511587362accb"
+      }
+    },
+    "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+    "checkout_commit": "d7d819317a4e3ff72efa53400ce258c4154eb783",
+    "dependency_source_closure_verified": false,
+    "official_binary_reproduced": false,
+    "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+    "public_startup_allowed": false,
+    "run_attempt": "1",
+    "run_id": "39936896405",
+    "runs": [
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "0537f5d62a5d9e821620ad20ef08628daa5bf3c841a04eb8d5ebf5d758f76f2f",
+        "passed": 4,
+        "stage": "fifth_freedom_secure_profile_contract"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "e5f0b04abc8c2cc5cf64106d5f3b4b462a56983e4aea5da386ca5e04a24c2f6b",
+        "passed": 10,
+        "stage": "fifth_freedom_ingress_contract"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "d6f0b385aba7933d3dbdb758412fbaf04d21ac92e32681ab0c772cc06c69343e",
+        "passed": 9,
+        "stage": "peers::secure_datagram::tests"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "4788130cdc2a83f5f96b8d239dfd0520d00d824653150fafe22f292753f08fba",
+        "passed": 2,
+        "stage": "peers::peer_session::tests"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "2cc45f9dae7388a98173d963ee855adb575eecf139189bd30646e3693f0129c5",
+        "passed": 7,
+        "stage": "peer_conn_secure_mode_"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "69abd102ac1a372cd06cfeb226b365ad1c98ae8ca6197febb44e23332bbc7786",
+        "passed": 3,
+        "stage": "ff_explicit_pin_contract"
+      },
+      {
+        "exit_code": 0,
+        "log_sha256": "7c936503c4e9b1afac31c003cb10c03bbcf0a20eacfbbaa4e4e3f10e7aa6c8a4",
+        "stage": "release-build"
+      }
+    ],
+    "runtime_binary_uploaded": false,
+    "runtime_executed": false,
+    "schema": 1,
+    "source_archive_sha256": "fe41b78a040f77f7fb9c87028b5dca79bf71c582036d1f84f355e6b79935ffd3",
+    "source_tree_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+    "status": "built_and_contracts_verified_not_admitted",
+    "upstream": {
+      "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "repository": "https://github.com/EasyTier/EasyTier",
+      "source_date_epoch": 1778588776,
+      "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+    }
+  }
+}
