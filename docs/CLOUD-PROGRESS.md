@@ -333,3 +333,50 @@ A clean checkout of `5e5ef05940a387bc3f275132acf474ba14674860` passed232 source
 methods:230 passed and two existing Windows-only skips. Full-package readiness
 remains false. None of these checks proves owned encrypted-overlay liveness,
 Public source admission or live gameplay, so Public activation remains closed.
+
+
+## Source admission, owned lifecycle and protected session client
+
+[Run 39901945731](https://github.com/caox233/FifthFreedom/actions/runs/39901945731)
+at `2b66f307a8b4fd1106ca529a72f974bebc362d54` completed with Windows and all three
+Linux components successful. Real privileged three-namespace ingress isolation
+and same-run native dual-identity/static Public preflight also passed. The
+unchanged resource gate failed and complete packaging skipped; this is still
+an overall failed workflow. [The official receipt](evidence/hosted-candidate-2b66f30.json)
+records all eight jobs and seven artifacts without claiming redirected archive
+downloads, Public activation or gameplay.
+
+[SERVER-08](tasks/server-08.md) applies immutable kernel-peer source admission
+before HTTP, API, PRUDP and ticket effects while retaining LAN policy and signed
+current-run/package checks. Dedicated348 and Quazal81 passed. [UI-05](tasks/ui-05.md)
+adds the actual bounded HTTPS session reader, with 15 real temporary-CA TLS
+cases and independent review. [SERVER-09](tasks/server-09.md) adds exact owned
+Linux process execution, pidfds, parent-death cleanup and revoke-before-stop
+ordering; 16 real synthetic-child cases passed twice. These implementations
+retain closed production admission pending profile, encrypted-peer and native
+parent-lease integration. No static manifest alone enables Public service.
+
+Pinned EasyTier source tests preserved both original failures: an unencrypted
+Data packet reached the secure session, and secure filter branches could pass
+unencrypted Data onward. Two minimal reviewed guards now pass all 26 selected
+contracts, including an actual in-memory Noise handshake/Data path. Both clean
+GNU Release builds completed; [guard2 build evidence](evidence/easytier-clean-linux-build-guard2.json)
+records exact output hashes and unchanged prepared sources. Those binaries were
+not executed or published. This bounded audit is not a complete upstream
+security or license review. Original archives, prior failures and each built
+revision remain separately preserved.
+
+The build-only workflow prepares the exact Git archive, verifies each excluded
+binary/archive and applied patch, then tests and compiles on hosted Linux. Only
+three bounded JSON receipts are upload candidates. Windows candidate checks now
+include source admission, UI-05 and actual executable FileVersionInfo branding.
+These new hosted checks await the next pushed revision; local builds do not
+stand in for their results. A fresh detached checkout of
+`d37854d39ee68e54fbf931af598f471b43a93b77` passed 265 source methods: 263 passed
+and two existing Windows-only skips. Full-package readiness remained false.
+
+Work continues on native inherited owner leases with actual listener readiness,
+explicit private overlay profiles and exact owned-process native token return.
+The full six milestones remain active, including unresolved gameplay evidence,
+Capture source closure and private resource gates. No persistent Goal or
+scheduler interface is exposed in this session.

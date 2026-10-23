@@ -31,9 +31,11 @@ donor Windows管理器并不是“更完整的LAN后端”。不能直接替代�
 | [SERVER-02](tasks/server-02.md)、[受保护传输](tasks/public-transport.md) | 原生签名令牌、当前数据库准入、HTTPS 只读会话服务 | 与实际公网进程/来源边界集成 |
 | [SERVER-03](tasks/server-03.md) | Linux 私有密钥、运行代际观察者授权、数据目录互斥 | 公网启动事务复用这些已验证边界 |
 | [SERVER-04](tasks/server-04.md) | Linux 服务身份与原始 Windows 客户端 catalog 分离；真实同轮产物校验通过 | 不代替完整资源包或运行验收 |
-| [SERVER-05](tasks/server-05.md) | 原生只读部署预检接入真实包、密钥和服务配置 | 报告仍为 `startup_allowed:false`，新的 hosted 预检单独验证 |
-| [SERVER-06](tasks/server-06.md)、[隔离检查](tasks/socket-isolation.md) | 全部原生 socket 使用明确策略；GitHub 三命名空间入口隔离通过 | 覆盖网络存活监管和 Public 来源准入 |
+| [SERVER-05](tasks/server-05.md) | 原生只读部署预检接入真实包、密钥和服务配置；真实同轮 hosted 产物预检通过 | 报告仍为 `startup_allowed:false`，不代表服务已启动 |
+| [SERVER-06](tasks/server-06.md)、[隔离检查](tasks/socket-isolation.md) | 全部原生 socket 使用明确策略；GitHub 三命名空间入口隔离通过 | 覆盖网络存活监管和受控启动接入 |
 | [SERVER-07](tasks/server-07.md) | 固定 EasyTier 源码审计；实际会话负例与最小候选修复 | 完整所选入口合同、独立构建身份和自有进程生命周期 |
+| [SERVER-08](tasks/server-08.md) | 原生 API、PRUDP、HTTP 和票据入口在处理请求前执行明确来源网段约束 | 与受控 Public 启动共同启用；LAN 行为保留 |
+| [UI-05](tasks/ui-05.md) | 启动器受保护 HTTPS 会话读取、严格 TLS 和运行代际约束 | 实际自有 native token 回传与覆盖网络路由接入 |
 
 这里的通过范围分别对应源码、库测试、实际组件和隔离拓扑；没有启动游戏或现网服务。
 最新运行编号和精确提交统一记录在 `PROJECT-STATE.json` 和 CI 收据，后续实现不能借用旧结果。

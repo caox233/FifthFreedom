@@ -17,12 +17,13 @@ implemented boundary and actual evidence, including work still blocked:
 | Area | Records |
 | --- | --- |
 | Donor UI and retained LAN ownership | [UI-01](ui-01.md), [UI-02](ui-02.md), [UI-03](ui-03.md) |
-| Explicit Public profile and credential isolation | [UI-04](ui-04.md) |
+| Explicit Public profile, credential isolation and protected session reader | [UI-04](ui-04.md), [UI-05](ui-05.md) |
 | Native profile, signed admission and private Linux state | [SERVER-01](server-01.md), [SERVER-02](server-02.md), [SERVER-03](server-03.md) |
 | Protected HTTPS and component packaging | [Transport](public-transport.md), [control candidate](public-candidate.md) |
 | Platform identities and read-only native preflight | [SERVER-04](server-04.md), [SERVER-05](server-05.md) |
 | Native socket boundary and real ingress checks | [SERVER-06](server-06.md), [namespace harness](socket-isolation.md) |
 | Pinned overlay source, finite secure-session contracts and dependency holds | [SERVER-07](server-07.md), [dependency evidence](public-network-dependencies.md) |
+| Explicit Public source admission before native request processing | [SERVER-08](server-08.md) |
 | Hosted Windows/Linux checks and retained failures | [CI-01](ci-01.md), [cloud progress](../CLOUD-PROGRESS.md) |
 | Retained gameplay defects and missing native replay evidence | [Remaining bugs](remaining-bugs.md), [VSS audit](vss-lifecycle-audit.md) |
 
