@@ -1068,3 +1068,70 @@ confirmed they were unused:681 generated files,490245263 bytes. All6887 retained
 entries matched before and after by regular-file bytes/modes/path or symlink
 target; symlinks were not traversed. Sources, final binaries, logs and original
 evidence remain. Active EasyTier targets and ongoing compilation were untouched.
+
+## Verified native composition and source533 checkpoint
+
+The later [b67 native lifecycle](evidence/hosted-native-lifecycle-b67af6c.json)
+and [complete native/overlay composition](evidence/hosted-owned-stack-b67af6c.json)
+now both have independently verified official artifacts and successful strict
+consumers. Run39938418762 used actual merge checkout
+61323a20c02f1081988e30dac0d0fdcd89c48162. All eight component, isolation,
+static-preflight and runtime jobs succeeded. The five native cases include
+withheld/denied admission without state creation and EOF/expiry/parent death
+with five listeners, protected requests, wrong-interface rejection, connection
+closure, port release and exit92. The native artifact SHA256 is
+97c50af2562bd4f1d28ed7ff8e8df1bc387a4dbd2e5e50aa7943884d1a7ea3dd.
+
+Both owned TCP composition cases reached native READY with five listeners and
+an established connection. Lease revocation recorded watchdog92, five rebound
+ports, EOF/reset and a still-live overlay. Peer loss recorded exact peer reap,
+permanent monitor revocation, native reap and zero listeners, without a remote
+TCP EOF claim. Both independent namespace pairs and the private stage were
+removed. The composition artifact SHA256 is
+286942669852b5cf029ae801a0f201ff96f5829333c98ccd5c6500efc022b037.
+These are guard3 development results at the historical pre-OPEN source. They
+do not establish causal connection closure, the new authenticated challenge or
+ordinary Public admission. The original528 failures and unknown exact causes
+remain intact. Both withheld-input gates are still red and complete packaging
+is skipped; the overall candidate therefore remains failed.
+
+A separate fresh detached533e77d source checkout passed506 checks with two
+existing Windows skips and unchanged tracked files. Its report SHA256 is
+7eff6822dd00d0d11f642ec15f0b57b054d75aeb1776a1abfde8ff4938dbbeef.
+The canonical fc8ef510→533e77d patch applied and reversed with exact bytes,
+modes and path sets:1312→1618→1312, clean. Patch SHA256 is
+cc88bc1515d8953ba24e9e128e4015e605dc11ba5e3974fb2d79b94a44ebd162.
+This supplements the cloud receipts without replacing private four-role evidence.
+
+DevDocs3872f3fabe27663e0d138e51d7cbcc2283455a2d was pushed and its remote
+revision verified. Its174 verified content files include172 exact public source
+mirrors bound to533e77d50567cddb340b2144b190b8d9dbd1fd45. Both draft PR
+descriptions were updated to that reviewed checkpoint. Official environment
+draft18 was saved and read back with these two source revisions after a complete
+workspace inventory:29332 directories, two projects,26 classified dependency
+Git roots and zero errors. Normalized repository membership, revisions, depth
+and all other setup/network/secret/requirement fields were preserved.
+Publication and fresh restoration remain unverified; no Goal/scheduler or
+publish interface is exposed.
+
+Reviewedeba13de binds Linux observer permission to the exact admitted private
+configuration and current owner lease, defaulting to false. The real config/SCM/
+SQLite/Users/HMAC integration passed three new checks and the retained native
+suite passed370. An initial disk-full failure is retained; only ten confirmed
+inactive dedicated-server incremental caches were removed before the successful
+rerun. Sources, final binaries, dependencies and original evidence were retained.
+The new policy still needs its own hosted candidate; the b67 success predates it.
+Windows owner IPC, the independent no-Packet build and current nonce ownership
+composition continue as separate reviewed implementations and execution gates.
+
+The following reviewed implementation checkpoint4b49da7 additionally includes
+be08a7a's actual-Instance owned read channel and its independent Windows CI
+adapter. Fresh detached checks passed536 with two existing Windows skips and
+unchanged source. Report SHA256:
+877dda8e7a11fb994e1458f17743f40c9a1fd172963cd70de7391dfd26f26b8e.
+Its canonical patch applies/reverses exactly1312→1660→1312 with clean reverse;
+SHA25669832130f880f98d9576b5bc33834b9d1613be29d4c2fc97417a45d33e228a51.
+The first Windows read-channel job is tracked in run39944703650; source tests
+and cross-compilation do not substitute for its actual execution. This newer
+source proof does not change the exact older source bound by DevDocs3872f3f or
+environment draft18.
