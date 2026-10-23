@@ -12,18 +12,24 @@ internal sealed class OwnedCoreLaunchInputs
     internal string Configuration { get; }
     private readonly long imageLength, configurationLength;
     private readonly string imageHash, configurationHash;
+    private readonly OwnedCoreDependencyInputs? dependencies;
     internal OwnedCoreLaunchInputs(string executable, long imageLength, string imageHash,
-        string configuration, long configurationLength, string configurationHash)
+        string configuration, long configurationLength, string configurationHash, OwnedCoreDependencyInputs? dependencies = null)
     {
         Executable = Canonical(executable); Configuration = Canonical(configuration);
         if (imageLength is <= 0 or > 256 * 1024 * 1024 || configurationLength is <= 0 or > 1024 * 1024
             || !Digest(imageHash) || !Digest(configurationHash) || Executable.Equals(Configuration, StringComparison.OrdinalIgnoreCase)) throw Invalid();
         this.imageLength = imageLength; this.imageHash = imageHash;
         this.configurationLength = configurationLength; this.configurationHash = configurationHash;
+        dependencies?.RequireAdjacentTo(Executable);
+        var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        if (dependencies is not null && (string.Equals(dependencies.FilePath, Configuration, comparison)
+                || string.Equals(dependencies.FilePath, Executable, comparison))) throw Invalid();
+        this.dependencies = dependencies;
     }
     internal static IOException Invalid() => new("OWNED_CORE_INPUTS_INVALID");
     private static bool Digest(string value) => value is { Length: 64 } && value.All(c => c is >= '0' and <= '9' or >= 'a' and <= 'f');
-    private static string Canonical(string value)
+    internal static string Canonical(string value)
     {
         if (string.IsNullOrEmpty(value) || !Path.IsPathFullyQualified(value) || value.Any(char.IsControl)) throw Invalid();
         var full = Path.GetFullPath(value);
@@ -36,7 +42,13 @@ internal sealed class OwnedCoreLaunchInputs
     {
         if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("OWNED_CORE_WINDOWS_REQUIRED");
         var pinned = new PinnedInputs(this);
-        try { pinned.Add(Executable, imageLength, imageHash); pinned.Add(Configuration, configurationLength, configurationHash); return pinned; }
+        try
+        {
+            pinned.Add(Executable, imageLength, imageHash);
+            pinned.Add(Configuration, configurationLength, configurationHash);
+            dependencies?.Pin(pinned);
+            return pinned;
+        }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or ArgumentException or System.Security.SecurityException)
         { pinned.Dispose(); throw Invalid(); }
         catch { pinned.Dispose(); throw; }
