@@ -223,6 +223,15 @@ class AnnotationSafetyTests(unittest.TestCase):
         self.assertIn("tls_cases=PublicSessionControl:05:TRANSPORT_FAILED:TLS:AuthenticationException:NO_CREDENTIALS", output.getvalue())
         self.assertNotIn("PRIVATE", output.getvalue())
 
+    def test_native_interop_and_final_preparation_codes_exclude_dynamic_text(self):
+        details = diagnostics.diagnostic_details(
+            "NATIVE_INTEROP_CARGO_ARTIFACT_INVALID path=/PRIVATE_PATH/fixture.exe\n"
+            "FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE endpoint=PRIVATE_ADDRESS\n"
+            "FINAL_PREPARATION_LOOPBACK_START_FAILED_PRIVATE_SUFFIX\nNATIVE_INTEROP_PRIVATE_UNKNOWN\n")
+        self.assertEqual(details["native_interop_codes"], ["NATIVE_INTEROP_CARGO_ARTIFACT_INVALID"])
+        self.assertEqual(details["final_preparation_codes"], ["FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE"])
+        self.assertNotIn("PRIVATE", str(details))
+
 
 if __name__ == "__main__":
     unittest.main()

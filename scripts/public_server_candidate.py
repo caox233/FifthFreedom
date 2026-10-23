@@ -256,7 +256,8 @@ def assemble(windows_artifact, linux_artifact, output, checkout, commit, run_id,
               "NOT a complete Windows client or installable game package.\n"
               "client/ contains the four unchanged Windows role bytes only as admission evidence.\n"
               "Privacy-held saves remain excluded and the complete-package gate remains separate.\n"
-              "The native Public startup profile remains disabled. No deployment or game execution occurred.\n"
+              "The ordinary native Public command remains closed; controlled owner-lease development probes are separate.\n"
+              "No deployment or game execution occurred.\n"
               "Artifacts may reset executable permissions; offline verification uses tools/verify_public_package ROOT.\n")
     (output / "README.component-only.txt").write_text(readme, encoding="utf-8")
     files = {path.relative_to(output).as_posix(): sha_file(path) for path in sorted(output.rglob("*")) if path.is_file()}

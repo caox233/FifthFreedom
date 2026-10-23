@@ -18,6 +18,7 @@ import build
 import ci_diagnostics
 import ci_checks
 import ci_public_preflight
+import ci_native_interop
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / "artifacts"
@@ -179,7 +180,7 @@ def windows_components(receipt: dict) -> None:
     run_build_step("ci-wpf-compile", [build.dotnet(), "publish", ROOT / "src/launcher/src/SplinterCellCNLauncher.csproj",
               "-c", "Release", "-r", "win-x86", "--self-contained", "true", "--nologo", "-o", launcher])
     receipt["launcher_probes"] = [run_launcher_probe(launcher, "--self-test", ART / "ci/windows-components/ui-smoke")]
-    for name in ("PortPlan", "BackgroundTaskRegression", "ObserverSession", "NetworkEnvironment", "PublicDeployment", "PublicSessionControl", "PublicNativeReturn"):
+    for name in ("PortPlan", "BackgroundTaskRegression", "ObserverSession", "NetworkEnvironment", "PublicDeployment", "PublicSessionControl", "PublicNativeReturn", "FinalLaunchPreparation"):
         run_build_step("ci-test-" + name, [build.dotnet(), "run", "--project", ROOT / f"tests/{name}/{name}.csproj",
                   "-c", "Release", "--no-launch-profile"])
     cargo, env = build.native_env()
@@ -200,6 +201,22 @@ def windows_components(receipt: dict) -> None:
         "failed": 0, "ignored": 0, "game_executed": False,
         "scope": "owned synthetic Windows processes and production named-pipe contracts",
     }
+    metadata_log = run_build_step("ci-native-public-return-artifact", [cargo, "test", "--locked", "-p", "hooks", "--lib",
+        "--features", "patch-free,lan-goal-origin", "--no-run", "--message-format=json"], native, env)
+    target = Path(env["CARGO_TARGET_DIR"])
+    executable = ci_native_interop.test_executable(metadata_log.with_suffix(".stdout.txt").read_text(encoding="utf-8"), target)
+    digest_before = hashlib.sha256(executable.read_bytes()).hexdigest()
+    interop_log = run_build_step("ci-native-managed-interop", [build.dotnet(), "run", "--project",
+        ROOT / "tests/PublicNativeReturn/PublicNativeReturn.csproj", "-c", "Release", "--no-launch-profile",
+        "--", "--native-interop", executable])
+    passed = ci_native_interop.require_summary(interop_log.with_suffix(".stdout.txt").read_text(encoding="utf-8"))
+    if hashlib.sha256(executable.read_bytes()).hexdigest() != digest_before:
+        raise RuntimeError("NATIVE_INTEROP_TEST_EXECUTABLE_CHANGED")
+    receipt["native_managed_interop"] = {"passed": passed, "failed": 0, "skipped": 0,
+        "helper_relative_to_cargo_target": executable.relative_to(target.resolve()).as_posix(),
+        "helper_sha256": digest_before, "helper_bytes": executable.stat().st_size,
+        "helper_selected_from_same_invocation_cargo_json": True, "game_executed": False,
+        "package_and_loaded_dll_admission_exercised": False}
     for label, args in (
         ("hooks", ["-p", "hooks", "--lib", "--features", "patch-free,lan-goal-origin"]),
         ("gameplay", ["-p", "scbl-gameplay", "--lib", "--features", "goggle-feedback"]),

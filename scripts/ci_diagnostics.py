@@ -38,6 +38,10 @@ _OWNED_PROCESS_CODES = {
     "EXECUTABLE_IDENTITY_INVALID", "EXECUTABLE_CAPABILITIES_UNVERIFIED", "EXECUTABLE_CAPABILITIES_FORBIDDEN",
     "EXECUTABLE_ELF_INVALID", "EXECUTABLE_HASH_MISMATCH", "EXECUTABLE_CHANGED", "EXECUTABLE_UNAVAILABLE",
 }
+_INTEROP_CODES = {"NATIVE_INTEROP_CARGO_ARTIFACT_INVALID", "NATIVE_INTEROP_RESULT_INVALID",
+                  "NATIVE_INTEROP_TEST_EXECUTABLE_CHANGED", "NATIVE_MANAGED_INTEROP_FAILED"}
+_PREPARATION_CODES = {"FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE", "FINAL_PREPARATION_LOOPBACK_PERMISSION_DENIED",
+                      "FINAL_PREPARATION_LOOPBACK_START_FAILED"}
 _MANAGED_FAILURE = re.compile(
     r"CI_MANAGED_FAILURE suite=PublicSessionControl "
     r"case=(0[1-9]|1[0-5]|SETUP_PACKAGE|SETUP_CERTIFICATES|CLEANUP|UNKNOWN_PHASE) "
@@ -165,10 +169,15 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
     tls = sorted({"PublicSessionControl:05:" + ":".join(match.groups())
                   for line in text.splitlines()
                   if (match := _TLS_FAILURE.fullmatch(line))})[:MAX_ITEMS]
+    def fixed_codes(allowed):
+        return sorted(code for code in allowed
+                      if re.search(r"(?<![A-Za-z0-9_])" + code + r"(?![A-Za-z0-9_])", text))[:MAX_ITEMS]
     return {"compiler_codes": codes, "ui_checks": labels[:MAX_ITEMS],
             "categories": signatures[:MAX_ITEMS], "exception_types": exceptions,
             "preflight_codes": preflight, "owned_process_codes": owned_process_codes(text),
-            "managed_cases": managed, "tls_cases": tls}
+            "managed_cases": managed, "tls_cases": tls,
+            "native_interop_codes": fixed_codes(_INTEROP_CODES),
+            "final_preparation_codes": fixed_codes(_PREPARATION_CODES)}
 
 
 def read_bounded_logs(paths) -> str:
