@@ -1,7 +1,7 @@
 # Official Wintun input and bounded retained-session probe
 
-Status: official input and license retrieved; finite development probe authorized
-for implementation, **not yet executed**. Ordinary Public stays disabled.
+Status: official input and license retrieved; finite development probe implemented
+and cross-checked, **Windows driver execution pending**. Ordinary Public stays disabled.
 
 ## Actual input evidence
 
@@ -100,3 +100,65 @@ system inventories.
 Own-interface address loss, down/rename, source routing, secure-peer monitoring,
 owner IPC and a production UI-08 lease issuer remain separate work. These two
 session cases cannot establish a complete live overlay or make Public ready.
+
+## Implemented entry and actual local verification
+
+The separate [workflow](../../.github/workflows/wintun-session-probe.yml) invokes
+[scripts/ci_wintun_session_probe.py](../../scripts/ci_wintun_session_probe.py).
+It triggers only for the narrowly listed probe/paired-tun changes in a pull
+request, or by explicit dispatch once GitHub has registered it. It fetches the
+exact UI-09 tun commit/tree, verifies the canonical archive and
+patch recipe, then builds only the [tiny consumer](../../tests/native/wintun-session-probe/src/main.rs)
+with its own locked dependencies. Cargo resolution must identify the local
+patched tun manifest with exactly the `async` feature and its three implied
+features; default DNS support, EasyTier and pcap dependencies are rejected. The
+49-file prepared backend has SHA256
+`832192192b329f78407db9e21982108753efcce97ee0399af40c5932e6420b47`.
+The binary is bound to the same-run build by SHA256 before and after execution.
+
+The [read-only environment script](../../scripts/ci_wintun_session_environment.ps1)
+requires the official `win25` hosted image and an elevated process. It enumerates
+all PnP devices without `-PresentOnly`, reads Net-device hardware/service
+properties, the driver store, system drivers, the Wintun service registry key and
+system driver file. The original official INF names HardwareID `Wintun`, service
+`wintun`, driver `wintun.sys` and Net class; these checks also conservatively
+reject matching names/paths. Any enumeration failure is fatal. A pre-existing
+package/service/file blocks the initial load even without a live adapter.
+Afterwards, an installed driver may remain, but all owned adapters must be gone
+and the unrelated PnP identity digest/count must match. No uninstall is attempted.
+
+The Rust consumer additionally snapshots real kernel interface GUID/LUID/index/
+alias identities. It holds a read-sharing file handle over the pinned DLL for the
+whole operation, then relies on the existing production backend signature and
+signer checks. The shutdown case uses `AsyncWriteExt::shutdown` and a five-second
+`AsyncReadExt::read` EOF wait: the actual receive worker must release its sender.
+This is **not** a claim that its `JoinHandle` was explicitly joined. After owner
+drop, successful kernel table enumeration must prove the GUID/LUID absent within
+ten seconds; lookup errors are failures. Both weak observers must remain revoked.
+
+The parent bounds the exact probe child to 90 seconds, keeps each output pipe
+within a fixed memory limit, and terminates/reaps only its own `Popen` handle.
+Reader startup failure and cleanup failure cannot become success. A runtime
+failure remains the primary result if postflight also fails. Receipts contain
+only fixed codes, booleans, counts and hashes; adapter names, device IDs, raw
+exceptions and build output are not uploaded. The workflow publishes exactly one
+sanitized JSON file, never runtime binaries or the official DLL. The disposable
+VM is the containment boundary for driver-install/global orphan-cleanup effects,
+including an interrupted or failed probe.
+
+Actual local commands/results before hosted execution:
+
+- Fresh fixed-commit Git fetch/archive + real recipe application: 49 backend
+  source files verified; official DLL extracted and hash checked, never loaded.
+- `cargo +1.95.0 check --locked --offline --target x86_64-pc-windows-msvc`
+  against that backend and the tiny probe: passed. This is a Linux-hosted type
+  check, not a Windows link, signature or driver result.
+- `python3 -B -m unittest discover -s tests/ci -p test_ci_wintun_session_probe.py -v`:
+  14 passed, no skips. These cover dirty/nonpresent input refusal, false readiness
+  receipts, unrelated identity changes, bounded real child processes, injected
+  second-reader startup failure, immutable destinations, and paired resolution.
+  They do not simulate or claim an actual driver session.
+
+Next concrete action: run the reviewed workflow on the exact pushed revision,
+retain its run/job IDs and sanitized receipt, and inspect the actual first
+nonzero stage if any. Driver success cannot be inferred from these local results.

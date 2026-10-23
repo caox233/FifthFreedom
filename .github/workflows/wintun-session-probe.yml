@@ -1,0 +1,48 @@
+name: Disposable Windows Wintun retained session probe
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/wintun-session-probe.yml'
+      - 'scripts/ci_wintun_session_probe.py'
+      - 'scripts/ci_wintun_session_environment.ps1'
+      - 'scripts/wintun-session-probe.lock.json'
+      - 'tests/ci/test_ci_wintun_session_probe.py'
+      - 'tests/native/wintun-session-probe/**'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session/tun-session-observer.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session/receipt.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fifth-wintun-session-probe-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  retained-session:
+    name: Two actual owned sessions, no network configuration or Public admission
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install exact user-mode build toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --target x86_64-pc-windows-msvc
+      - name: Require bounded runner and receipt regressions
+        run: python -B -m unittest discover -s tests/ci -p test_ci_wintun_session_probe.py -v
+      - name: Require clean inventory then create and close real retained sessions
+        run: python -B scripts/ci_wintun_session_probe.py
+      - name: Preserve sanitized result only, never DLL or driver or executable
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: wintun-session-probe-receipt-${{ github.sha }}
+          path: artifacts/ci/wintun-session-probe.json
+          if-no-files-found: error
+          retention-days: 14
