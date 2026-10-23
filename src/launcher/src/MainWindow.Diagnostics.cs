@@ -241,7 +241,7 @@ public partial class MainWindow
             {
                 var pipe = new ScblLan.LaunchPipe("ConfigServer = \"127.0.0.1\"\n", Path.Combine(AppContext.BaseDirectory, "synthetic-never-launched.exe"));
                 object value = Activator.CreateInstance(sessionType, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic,
-                    null, new object?[] { pipe, Path.Combine(AppContext.BaseDirectory, "synthetic-reference-" + Guid.NewGuid().ToString("N")), null }, null)!;
+                    null, new object?[] { pipe, Path.Combine(AppContext.BaseDirectory, "synthetic-reference-" + Guid.NewGuid().ToString("N")), null, null }, null)!;
                 sessionField.SetValue(_gameLaunchService, value);
             }
             try

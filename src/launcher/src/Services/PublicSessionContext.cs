@@ -3,7 +3,29 @@ using System.Text.Json;
 
 namespace SplinterCellCNLauncher.Services;
 
-/// <summary>Caller expectations from the future owned native-run handoff, not decoded-token authority.</summary>
+/// <summary>Independent opaque account identity captured from an actual login response.</summary>
+public sealed class PublicNativeAccountAnchor
+{
+    internal string AccountId { get; }
+    internal string Username { get; }
+    /// <summary>Capture the actual account login response, never a local username-derived ID.</summary>
+    public PublicNativeAccountAnchor(string responseAccountId, string responseUsername)
+    {
+        if (!ValidAccountId(responseAccountId) || responseUsername is not { Length: > 0 and <= 64 }
+            || !responseUsername.All(c => char.IsAsciiLetterOrDigit(c) || c is '_' or '-' or '.')) throw PublicNativeRunExpectation.Invalid();
+        AccountId = responseAccountId; Username = responseUsername;
+    }
+    internal static bool ValidAccountId(string value)
+    {
+        try { return value is { Length: > 0 } && !value.Any(char.IsControl) && new UTF8Encoding(false, true).GetByteCount(value) <= 64; }
+        catch (Exception error) when (error is EncoderFallbackException) { return false; }
+    }
+    internal void MatchResponse(string id, string username)
+    { if (id != AccountId || username != Username) throw PublicNativeRunExpectation.Invalid(); }
+    public override string ToString() => "PublicNativeAccountAnchor (captured login context; not authentication proof)";
+}
+
+/// <summary>Expected run/account constraints; the containing session records numeric-ID provenance.</summary>
 public sealed class PublicNativeRunExpectation
 {
     public uint UserId { get; }
@@ -32,13 +54,16 @@ public sealed class PublicNativeRunExpectation
 /// <summary>
 /// In-memory post-native-auth input. Client checks purpose/context consistency;
 /// only the HTTPS server verifies signature, expiry, source, revocation and run.
-/// No production native-to-launcher token handoff currently supplies this class.
+/// The optional owned return channel may supply this class; Public activation remains gated.
 /// </summary>
 public sealed class PublicNativeGameSession : IDisposable
 {
     internal PublicDeploymentProfile Profile { get; }
     internal ReleasePackage Package { get; }
     internal PublicNativeRunExpectation Expected { get; }
+    // False for the owned-channel factory: numeric database ID is merely a
+    // native-token claim until the HTTPS server verifies signature and identity.
+    internal bool HasIndependentNumericUserId { get; private set; } = true;
     private string? bearer;
     private readonly CancellationTokenSource lifetime = new();
     internal CancellationToken Lifetime => lifetime.Token;
@@ -52,6 +77,20 @@ public sealed class PublicNativeGameSession : IDisposable
         NativeGameTokenContract.Validate(nativeGameToken, expected,
             $"1|{package.ReleaseId}|{package.CompatId}|{package.ManifestSha256}");
         Profile = profile; Package = package; Expected = expected; bearer = nativeGameToken;
+    }
+    internal static PublicNativeGameSession FromOwnedNativeResponse(PublicDeploymentProfile profile, CredentialIdentity credential,
+        string nativeEndpoint, ReleasePackage package, PublicNativeAccountAnchor account, string clientOverlayIp,
+        string product, string instance, bool observerRequested, string responseAccountId, string responseUsername, string token)
+    {
+        // The account's opaque ID and username come from two independent actual
+        // login responses. The numeric database ID has no independent protocol
+        // field; explicitly retain its weaker provenance, never call it proof.
+        account.MatchResponse(responseAccountId, responseUsername);
+        uint claimedUserId = NativeGameTokenContract.ReadUnverifiedNumericUserId(token);
+        var result = new PublicNativeGameSession(profile, credential, nativeEndpoint, package,
+            new PublicNativeRunExpectation(claimedUserId, account.Username, clientOverlayIp, product, instance, observerRequested), token);
+        result.HasIndependentNumericUserId = false;
+        return result;
     }
     internal string BearerFor(PublicDeploymentProfile profile)
     {
@@ -109,6 +148,22 @@ internal static class NativeGameTokenContract
         }
         catch (Exception error) when (error is JsonException or FormatException or InvalidOperationException
                                      or KeyNotFoundException or OverflowException or PublicControlException)
+        { throw PublicNativeRunExpectation.Invalid(); }
+    }
+    internal static uint ReadUnverifiedNumericUserId(string token)
+    {
+        try
+        {
+            if (token is not { Length: > 0 and <= 4096 } || token.Split('.') is not ["v1", var payload, _])
+                throw PublicNativeRunExpectation.Invalid();
+            using var document = JsonDocument.Parse(Decode(payload), new() { MaxDepth = 5 });
+            if (!document.RootElement.GetProperty("user_id").TryGetUInt32(out uint claimed) || claimed == 0)
+                throw PublicNativeRunExpectation.Invalid();
+            // Full strict purpose/context parsing immediately follows in the
+            // constructor. Reading this value does not authenticate its issuer.
+            return claimed;
+        }
+        catch (Exception error) when (error is JsonException or FormatException or InvalidOperationException or KeyNotFoundException)
         { throw PublicNativeRunExpectation.Invalid(); }
     }
     private static byte[] Decode(string text)
