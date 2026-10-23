@@ -201,7 +201,7 @@ class AnnotationSafetyTests(unittest.TestCase):
         self.assertNotIn("PRIVATE", str(diagnostics.diagnostic_details(text)))
 
     def test_all_managed_suites_enforce_their_own_public_case_bounds(self):
-        for suite, count in (("PublicSessionControl", 15), ("PublicNativeReturn", 25),
+        for suite, count in (("PublicSessionControl", 15), ("PublicNativeReturn", 27),
                              ("FinalLaunchPreparation", 9), ("NativeManagedInterop", 3)):
             with self.subTest(suite=suite):
                 template = f"CI_MANAGED_FAILURE suite={suite} case={{case}} exception=Win32Exception"
@@ -228,7 +228,7 @@ class AnnotationSafetyTests(unittest.TestCase):
         self.assertEqual(details["return_phases"], ["NativeManagedInterop:03:WAIT_DISCONNECT",
                                                    "PublicNativeReturn:25:CONFIG_ACK"])
         self.assertEqual(details["return_child_failures"], ["PIPE_READ:InvalidDataException"])
-        bad = (marker + " token=PRIVATE_TOKEN", marker.replace("25", "26"),
+        bad = (marker + " token=PRIVATE_TOKEN", marker.replace("25", "28"),
                marker.replace("PublicNativeReturn", "PublicSessionControl"),
                marker.replace("CONFIG_ACK", "PRIVATE_PHASE"),
                marker.replace("CONFIG_ACK", "CONFIG_READ"),

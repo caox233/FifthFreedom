@@ -44,7 +44,7 @@ jobs:
           python-version: '3.12'
       - name: Run the unchanged real FinalLaunchPreparation on this same runner
         run: python -B scripts/ci_windows_loopback.py --report "${{ runner.temp }}/ff-loopback/suite.json"
-      - name: Require all 25 real managed return and owned configuration-pipe checks
+      - name: Require all 27 real managed return and owned configuration-pipe checks
         run: python -B scripts/ci_windows_loopback.py --suite PublicNativeReturn --report "${{ runner.temp }}/ff-loopback/return-suite.json"
       - name: Restore the recorded default IIS site state
         if: ${{ always() && (steps.iis_prepare.outcome == 'success' || steps.iis_prepare.outcome == 'failure' || steps.iis_prepare.outcome == 'cancelled') }}

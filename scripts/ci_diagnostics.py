@@ -44,7 +44,7 @@ _PREPARATION_CODES = {"FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE", "FINAL_PREPAR
                       "FINAL_PREPARATION_LOOPBACK_START_FAILED"}
 # Case identities are public test source constants. Each suite has its own
 # bound so a valid ordinal from another suite cannot masquerade as evidence.
-_MANAGED_CASE_COUNTS = {"PublicSessionControl": 15, "PublicNativeReturn": 25,
+_MANAGED_CASE_COUNTS = {"PublicSessionControl": 15, "PublicNativeReturn": 27,
                         "FinalLaunchPreparation": 9, "NativeManagedInterop": 3}
 _MANAGED_SETUP_CASES = {
     "PublicSessionControl": {"SETUP_PACKAGE", "SETUP_CERTIFICATES", "CLEANUP", "UNKNOWN_PHASE"},

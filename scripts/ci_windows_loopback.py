@@ -12,7 +12,7 @@ import ci_diagnostics
 ROOT = Path(__file__).resolve().parents[1]
 SUITES = {
     "FinalLaunchPreparation": (9, "RESULT 9 final-login preparation checks passed; owned loopback HTTP2 only; no game, Public runtime or live-route admission."),
-    "PublicNativeReturn": (25, "RESULT 25 passed, 0 skipped"),
+    "PublicNativeReturn": (27, "RESULT 27 passed, 0 skipped"),
 }
 
 
