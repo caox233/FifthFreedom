@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T07:45:03.361362+00:00",
+  "source_head_sha": "1b6cdabcec13c3e1b313501ec4306c67ebcbf9f8",
+  "run_id": 39918375705,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39918375705",
+  "status": "completed",
+  "conclusion": "failure",
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no archive download",
+  "jobs": [
+    {
+      "id": 120297325741,
+      "name": "Strict retained native replay input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120297325849,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120297325852,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120297325907,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120297325923,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120297325956,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120297326039,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120297388760,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120301551772,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120301552904,
+      "name": "Same-run native owned lifecycle in synthetic namespaces",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12487180204,
+      "name": "windows-fixed-port-preparation-35b6945ba7cd03dfeb78ddb9b3780be91713fee8",
+      "size_in_bytes": 948,
+      "digest": "sha256:5354d6d18d90eb9585192096ff4810ccd5436d75947bbb05d4f53a0f23a500ce",
+      "expired": false
+    },
+    {
+      "id": 12486815620,
+      "name": "complete-package-input-gate-35b6945ba7cd03dfeb78ddb9b3780be91713fee8",
+      "size_in_bytes": 1657,
+      "digest": "sha256:46ab36ef68a68a08fb7141a1d1821f15b91eae6cd2caa93e370a24a52824bdda",
+      "expired": false
+    },
+    {
+      "id": 12486596701,
+      "name": "linux-public-donor-reference-35b6945ba7cd03dfeb78ddb9b3780be91713fee8",
+      "size_in_bytes": 4005464,
+      "digest": "sha256:d6b4ed59b3ad280dc6709ef8bc9b42d95089d558432c47da7d1aee0b4394aaf8",
+      "expired": false
+    },
+    {
+      "id": 12486416130,
+      "name": "linux-public-control-35b6945ba7cd03dfeb78ddb9b3780be91713fee8",
+      "size_in_bytes": 63554,
+      "digest": "sha256:5eeb763717437778fe7543ba597d13c73e2488b822c0503a907c5dd1ba482e68",
+      "expired": false
+    },
+    {
+      "id": 12486410896,
+      "name": "native-replay-input-gate-35b6945ba7cd03dfeb78ddb9b3780be91713fee8",
+      "size_in_bytes": 396,
+      "digest": "sha256:b21eb823d0ed58544db7c5cfbaeb5914c285b8355aeff80d034598947759084f",
+      "expired": false
+    },
+    {
+      "id": 12486342370,
+      "name": "linux-lan-baseline-35b6945ba7cd03dfeb78ddb9b3780be91713fee8",
+      "size_in_bytes": 9878919,
+      "digest": "sha256:f2a9b7ceefe3cb57f08d532585588ed18fe3a6ecdef2daa12b7fd8bfdeb489f6",
+      "expired": false
+    },
+    {
+      "id": 12485764204,
+      "name": "windows-compile-only-components-35b6945ba7cd03dfeb78ddb9b3780be91713fee8",
+      "size_in_bytes": 81194,
+      "digest": "sha256:d9ce4c429996cf1df787e2ab352545a568aff42e619fcd4aa9b6ae597766401c",
+      "expired": false
+    },
+    {
+      "id": 12485607829,
+      "name": "linux-native-socket-isolation-35b6945ba7cd03dfeb78ddb9b3780be91713fee8",
+      "size_in_bytes": 3680036,
+      "digest": "sha256:6ce84bd864d30b63e1aa9f9f09fe0268dd16070514b0498a1395c28061e2c385",
+      "expired": false
+    }
+  ],
+  "windows_bounded_failure": "step=ci-native-public-source-transport; exception=RuntimeError; full diagnostics remain in the run artifacts",
+  "windows_source_checks_passed": true,
+  "windows_managed_suites_passed_this_run": [
+    "PortPlan",
+    "BackgroundTaskRegression",
+    "ObserverSession",
+    "NetworkEnvironment",
+    "PublicDeployment",
+    "PublicSessionControl",
+    "PublicNativeReturn",
+    "FinalLaunchPreparation"
+  ],
+  "windows_core_and_dedicated_selections_passed_this_run": true,
+  "windows_native_public_return": {
+    "passed": 8,
+    "failed": 0,
+    "ignored": 0,
+    "game_executed": false
+  },
+  "windows_native_managed_interop": {
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "same_invocation_test_executable_and_hash_gate_passed": true,
+    "game_executed": false,
+    "loaded_dll_or_package_admission": false
+  },
+  "pass_evidence": "The sequential helper requires exact native8 and interop3 successful summaries plus unchanged helper SHA before entering ci-native-public-source-transport. Artifact contents were not downloaded.",
+  "windows_source_transport": {
+    "required_checks": 8,
+    "verified_pass_count": null,
+    "failed_test_ids_observed": [],
+    "conclusion": "failed before successful receipt; no compiler code in the fixed annotation"
+  },
+  "windows_final_component_build_branding_reached": false,
+  "external_native_replay": {
+    "status": "held_missing_external_input",
+    "tests": 13,
+    "executed": false,
+    "feature": "native-replay-fixtures",
+    "source_sha256": "a0942f34386a90b7dfbfa95d634e98b0211e4248fc4c18d87ca98dce8552e679",
+    "full_native_replay_verified": false,
+    "independent_gate_job_conclusion": "failure"
+  },
+  "prior_e0425_compile_boundary_passed_this_run": true,
+  "earlier_unclassified_managed_failure_cause_resolved": false,
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false,
+  "complete_package": false,
+  "production_admission": false,
+  "game_executed": false,
+  "release_or_deployment": false,
+  "next_actual_diagnostic_run": {
+    "run_id": 39919260768,
+    "source_head_sha": "6c11c8b85633ea5e2977ea0131c86ee01b316bbb",
+    "changes": "Fixed public Rust test-id diagnostics and separately reviewed overlay worker diagnostics; no claim the UI08 runtime failure is fixed."
+  }
+}
