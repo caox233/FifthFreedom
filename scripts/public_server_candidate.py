@@ -64,7 +64,18 @@ def regular(path, maximum=LIMIT):
 
 def identity(info):
     return (info.st_dev, info.st_ino, info.st_mode, info.st_nlink, info.st_size,
-            info.st_mtime_ns, info.st_ctime_ns)
+            info.st_mtime_ns, info.st_ctime_ns, getattr(info, "st_birthtime_ns", None))
+
+
+def opened_identity(info):
+    if sys.platform != "win32":
+        return identity(info)
+    # CPython's Windows path stat adds extension-based execute bits and maps
+    # ctime to creation time, whereas fstat reports ChangeTime. Bind the path
+    # and opened handle through common fields; still compare each API's full
+    # metadata before/after reading, including its own mode and ctime.
+    return (info.st_dev, info.st_ino, info.st_mode & ~0o111, info.st_nlink,
+            info.st_size, info.st_mtime_ns, getattr(info, "st_birthtime_ns", None))
 
 
 def sha_file(path):
@@ -72,14 +83,15 @@ def sha_file(path):
     sha = hashlib.sha256()
     size = 0
     with Path(path).open("rb") as handle:
-        if identity(before) != identity(os.fstat(handle.fileno())):
+        opened = os.fstat(handle.fileno())
+        if opened_identity(before) != opened_identity(opened):
             raise CandidateError("INPUT_CHANGED")
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             size += len(block)
             if size > LIMIT:
                 raise CandidateError("INPUT_FILE_INVALID")
             sha.update(block)
-        if identity(before) != identity(os.fstat(handle.fileno())):
+        if identity(opened) != identity(os.fstat(handle.fileno())):
             raise CandidateError("INPUT_CHANGED")
     if size != before.st_size or identity(before) != identity(regular(path)):
         raise CandidateError("INPUT_CHANGED")
@@ -89,10 +101,11 @@ def sha_file(path):
 def read_small(path, maximum=1024 * 1024):
     before = regular(path, maximum)
     with Path(path).open("rb") as handle:
-        if identity(before) != identity(os.fstat(handle.fileno())):
+        opened = os.fstat(handle.fileno())
+        if opened_identity(before) != opened_identity(opened):
             raise CandidateError("INPUT_CHANGED")
         data = handle.read(maximum + 1)
-        if identity(before) != identity(os.fstat(handle.fileno())):
+        if identity(opened) != identity(os.fstat(handle.fileno())):
             raise CandidateError("INPUT_CHANGED")
     if len(data) != before.st_size or len(data) > maximum or identity(before) != identity(regular(path, maximum)):
         raise CandidateError("INPUT_FILE_INVALID")

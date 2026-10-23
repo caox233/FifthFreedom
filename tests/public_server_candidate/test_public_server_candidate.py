@@ -3,10 +3,12 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import stat
 import struct
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -234,6 +236,72 @@ class PublicServerCandidateTests(unittest.TestCase):
                     candidate.verify_native(self.output, receipt)
         self.assertEqual(receipt["status"], "assembled_pending_native_verification")
         self.assertNotIn("native_verification", receipt)
+
+    def metadata(self, **changes):
+        info = self.component().stat()
+        values = {name: getattr(info, name) for name in (
+            "st_dev", "st_ino", "st_mode", "st_nlink", "st_size", "st_mtime_ns", "st_ctime_ns")}
+        values.update(st_mode=stat.S_IFREG | 0o666, st_birthtime_ns=1, st_ctime_ns=1)
+        return SimpleNamespace(**{**values, **changes})
+
+    def test_windows_path_handle_metadata_semantics_preserve_real_byte_reads(self):
+        path_info = self.metadata(st_mode=stat.S_IFREG | 0o777)
+        handle_info = self.metadata(st_ctime_ns=2)
+        expected = self.component().read_bytes()
+        # Model CPython 3.12's path-stat birthtime/extension mode versus fstat
+        # ChangeTime/no-extension mode while reading the real synthetic file.
+        with patch.object(candidate.sys, "platform", "win32"), \
+                patch.object(candidate, "regular", return_value=path_info), \
+                patch.object(candidate.os, "fstat", return_value=handle_info):
+            self.assertEqual(candidate.read_small(self.component()), expected)
+            self.assertEqual(candidate.sha_file(self.component()),
+                             {"bytes": len(expected), "sha256": candidate.digest(expected)})
+
+    def test_windows_cross_api_binding_still_rejects_changed_common_metadata(self):
+        path_info = self.metadata(st_mode=stat.S_IFREG | 0o777)
+        replacements = {"st_dev": path_info.st_dev + 1, "st_ino": path_info.st_ino + 1,
+                        "st_mode": stat.S_IFREG | 0o444, "st_nlink": 2,
+                        "st_size": path_info.st_size + 1, "st_mtime_ns": path_info.st_mtime_ns + 1,
+                        "st_birthtime_ns": 3}
+        for reader in (candidate.read_small, candidate.sha_file):
+            for field, value in replacements.items():
+                with self.subTest(reader=reader.__name__, field=field), \
+                        patch.object(candidate.sys, "platform", "win32"), \
+                        patch.object(candidate, "regular", return_value=path_info), \
+                        patch.object(candidate.os, "fstat", return_value=self.metadata(st_ctime_ns=2, **{field: value})):
+                    with self.assertRaisesRegex(candidate.CandidateError, "INPUT_CHANGED"):
+                        reader(self.component())
+
+    def test_windows_full_handle_metadata_changes_during_read_are_rejected(self):
+        for reader in (candidate.read_small, candidate.sha_file):
+            for change in ({"st_ctime_ns": 3}, {"st_mode": stat.S_IFREG | 0o777}):
+                with self.subTest(reader=reader.__name__, field=next(iter(change))), \
+                        patch.object(candidate.sys, "platform", "win32"), \
+                        patch.object(candidate, "regular", return_value=self.metadata()), \
+                        patch.object(candidate.os, "fstat", side_effect=[
+                            self.metadata(st_ctime_ns=2), self.metadata(**{"st_ctime_ns": 2, **change})]):
+                    with self.assertRaisesRegex(candidate.CandidateError, "INPUT_CHANGED"):
+                        reader(self.component())
+
+    def test_windows_full_path_metadata_changes_during_read_are_rejected(self):
+        for reader in (candidate.read_small, candidate.sha_file):
+            for change in ({"st_ctime_ns": 3}, {"st_mode": stat.S_IFREG | 0o777}):
+                with self.subTest(reader=reader.__name__, field=next(iter(change))), \
+                        patch.object(candidate.sys, "platform", "win32"), \
+                        patch.object(candidate, "regular", side_effect=[self.metadata(), self.metadata(**change)]), \
+                        patch.object(candidate.os, "fstat", return_value=self.metadata(st_ctime_ns=2)):
+                    with self.assertRaises(candidate.CandidateError):
+                        reader(self.component())
+
+    def test_linux_cross_api_binding_keeps_full_mode_and_ctime_checks(self):
+        for reader in (candidate.read_small, candidate.sha_file):
+            for change in ({"st_ctime_ns": 3}, {"st_mode": stat.S_IFREG | 0o777}):
+                with self.subTest(reader=reader.__name__, field=next(iter(change))), \
+                        patch.object(candidate.sys, "platform", "linux"), \
+                        patch.object(candidate, "regular", return_value=self.metadata()), \
+                        patch.object(candidate.os, "fstat", return_value=self.metadata(**change)):
+                    with self.assertRaisesRegex(candidate.CandidateError, "INPUT_CHANGED"):
+                        reader(self.component())
 
 
 if __name__ == "__main__":
