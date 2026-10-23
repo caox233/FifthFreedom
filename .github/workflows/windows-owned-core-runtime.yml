@@ -1,0 +1,128 @@
+name: Disposable Windows inert core and NIC probe
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-owned-core-runtime.yml'
+      - 'docs/dependency-patches/easytier-2.6.4-explicit-pin/explicit-pin-contract-tests.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-explicit-pin/require-explicit-peer-pin.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-ingress-data/ingress-contract-tests.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-ingress-data/require-encrypted-data-ingress.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-secure-session/contract-tests.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-secure-session/require-encrypted-flag.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-no-packet/no-packet.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-no-packet/source/windows_interfaces.rs'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-owned-read/owned-read.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-owned-read/receipt.json'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-owned-read/source/owned_read.rs'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-owned-read/source/owned_read_windows.rs'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session-read/receipt.json'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session-read/session-read.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session-read/source/windows_session_read.rs'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session/easytier-session-observer.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session/modern-windows-build.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session/receipt.json'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session/tun-session-observer.patch'
+      - 'scripts/ci_easytier_build.py'
+      - 'scripts/ci_easytier_windows_build.py'
+      - 'scripts/ci_easytier_windows_no_packet.py'
+      - 'scripts/ci_easytier_windows_owned_read.py'
+      - 'scripts/ci_prepare_easytier_source.py'
+      - 'scripts/ci_setup_protoc.py'
+      - 'scripts/easytier-source.lock.json'
+      - 'scripts/easytier-windows-no-packet.lock.json'
+      - 'scripts/easytier-windows-owned-read.lock.json'
+      - 'scripts/easytier-windows-source.lock.json'
+      - 'scripts/pe_imports.py'
+      - 'tests/ci/test_ci_easytier_windows_build.py'
+      - 'tests/ci/test_ci_easytier_windows_no_packet.py'
+      - 'tests/ci/test_ci_easytier_windows_owned_read.py'
+      - 'tests/ci/test_ci_prepare_easytier_source.py'
+      - 'tests/ci/test_pe_imports.py'
+      - 'tests/native/windows-no-packet/**'
+      - 'tests/native/windows-owned-read/**'
+      - 'tests/native/windows-session-read/**'
+      - 'scripts/ci_easytier_windows_inert.py'
+      - 'scripts/easytier-windows-inert-owned-read.lock.json'
+      - 'scripts/ci_owned_core_runtime.py'
+      - 'scripts/ci_windows_core_firewall.ps1'
+      - 'scripts/ci_owned_dependencies.py'
+      - 'scripts/ci_diagnostics.py'
+      - 'scripts/ci_wintun_session_environment.ps1'
+      - 'tests/ci/test_ci_easytier_windows_inert.py'
+      - 'tests/ci/test_ci_owned_core_runtime.py'
+      - 'docs/dependency-patches/easytier-2.6.4-inert-stun/receipt.json'
+      - 'docs/dependency-patches/easytier-2.6.4-inert-stun/inert-profile-combined.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-inert-stun/inert-profile.toml'
+      - 'tests/OwnedCoreRuntime/**'
+      - 'src/launcher/src/Services/OwnedCore*.cs'
+      - 'src/launcher/src/Services/PublicReturnProcess.cs'
+      - 'global.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fifth-windows-owned-core-runtime-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  inert-core-nic:
+    name: Same-job inert core, exact owned NIC and ordered cleanup
+    runs-on: windows-2025
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - name: Check bounded source and runtime receipt contracts
+        run: |
+          python -B -m unittest discover -s tests/ci -p test_ci_easytier_windows_inert.py -v
+          python -B -m unittest discover -s tests/ci -p test_ci_owned_core_runtime.py -v
+      - name: Install reviewed Rust and explicit Windows target
+        run: rustup toolchain install 1.95.0 --profile minimal --target x86_64-pc-windows-msvc
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Require hosted MSVC SDK and LLVM
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (!$vs) { throw 'WINDOWS_MSVC_TOOLCHAIN_REQUIRED' }
+          $clang = 'C:\Program Files\LLVM\bin'
+          if (!(Test-Path "$clang\libclang.dll")) { throw 'WINDOWS_LIBCLANG_REQUIRED' }
+          "LIBCLANG_PATH=$clang" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Build exact new inert source and retain all contract and no-Packet gates
+        run: python -B scripts/ci_easytier_windows_inert.py
+      - name: Publish the fixed x86 managed probe with embedded source recipe and profile
+        shell: pwsh
+        run: |
+          $output = Join-Path $env:RUNNER_TEMP 'ff-owned-core-runtime-tests'
+          if (Test-Path -LiteralPath $output) { throw 'RUNTIME_OUTPUT_EXISTS' }
+          dotnet publish tests/OwnedCoreRuntime/OwnedCoreRuntime.csproj -c Release -r win-x86 --self-contained true -o $output
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify pinned inputs, arm exact path blocks, execute the finite core and restore after drain
+        id: runtime
+        run: python -B scripts/ci_owned_core_runtime.py
+      - name: Retain blocks if exact drain is unknown; preserve failure and attempt owned recovery
+        if: always() && (steps.runtime.outcome == 'success' || steps.runtime.outcome == 'failure' || steps.runtime.outcome == 'cancelled')
+        run: python -B scripts/ci_owned_core_runtime.py --finalize
+      - name: Preserve only sanitized source, build and finite runtime receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-owned-core-runtime-receipts-${{ github.sha }}
+          path: |
+            artifacts/ci/easytier-windows-inert-run.json
+            artifacts/ci/easytier-windows-inert/source-receipt.json
+            artifacts/ci/easytier-windows-inert/receipt.json
+            artifacts/ci/owned-core-runtime.json
+          if-no-files-found: error
+          retention-days: 14
