@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using SplinterCellCNLauncher.Services;
 
-internal static class Program
+internal static partial class Program
 {
     private const string Instance = "0123456789abcdef0123456789abcdef";
     private const string User = "synthetic-client";
@@ -42,6 +42,12 @@ internal static class Program
         profile = new("synthetic-return", "https://control.example.invalid", "10.66.0.0/24", "10.66.0.1", PublicTransport.Fast,
             "quic://relay.example.invalid:11010", new("synthetic", Enum.GetValues<PublicRuntimeRole>().Select(role => new PublicRuntimePin(role, 1, new string('a', 64)))));
         token = MakeToken();
+        if (args is ["--native-interop", var nativeHelper])
+        {
+            try { await NativeInterop(nativeHelper); }
+            catch (Exception) { Console.WriteLine("NATIVE_MANAGED_INTEROP_FAILED"); Environment.ExitCode = 1; }
+            return;
+        }
         await Case("bounded framing round trip preserves document after buffer clearing", async () => {
             using var memory = new MemoryStream(); await PublicReturnProtocol.WriteAsync(memory, new { schema = 1, kind = "invalidate", generation = 1 }, default);
             memory.Position = 0; using var doc = await PublicReturnProtocol.ReadAsync(memory, default); Check(doc.RootElement.GetProperty("kind").GetString() == "invalidate");
