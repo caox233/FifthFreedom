@@ -192,6 +192,51 @@ class ProfileTests(unittest.TestCase):
             observed = parse_peer_observation(profile, json.dumps(projection).encode())
             self.assertEqual(observed.local_bind_kind, "wildcard" if index < 2 else "exact")
 
+    def test_quic_initiator_mapped_resolved_address_from_actual_producer(self):
+        fixture = json.loads((ROOT / "docs/dependency-patches/easytier-2.6.4-profile/quic-loopback-endpoints.json").read_bytes())
+        self.assertTrue(fixture["echo_verified"])
+        self.assertFalse(fixture["noise_or_overlay_verified"])
+        # Actual production outer transport produced a mapped client resolved
+        # endpoint, but IPv4 configured remote and responder endpoints.
+        self.assertIn("[::ffff:7f00:1]", fixture["client"]["resolved_remote_addr"]["url"])
+        self.assertIn("127.0.0.1:", fixture["client"]["remote_addr"]["url"])
+        for field in ("remote_addr", "resolved_remote_addr"):
+            self.assertIn("127.0.0.1:", fixture["server"][field]["url"])
+        profile = parsed(recipe("quic", "initiator"))
+        data = peer_json(profile)
+        tunnel = data[0]["peer"]["conns"][0]["tunnel"]
+        tunnel["local_addr"] = fixture["client"]["local_addr"]
+        # Same production URL builder applied to this public synthetic profile.
+        # The loopback connection did not perform Noise/peer authentication.
+        tunnel["resolved_remote_addr"] = {"url": fixture["synthetic_profile_mapped_url"]}
+        observed = parse_peer_observation(profile, json.dumps(data).encode())
+        self.assertEqual(observed.local_bind_kind, "wildcard")
+
+    def test_mapped_equivalence_is_limited_to_exact_quic_initiator_resolved_endpoint(self):
+        for transport in ("quic", "tcp", "wss"):
+            for role in ("initiator", "responder"):
+                profile = parsed(recipe(transport, role))
+                for field in ("local_addr", "remote_addr", "resolved_remote_addr"):
+                    if (transport, role, field) == ("quic", "initiator", "resolved_remote_addr"):
+                        continue
+                    with self.subTest(transport=transport, role=role, field=field), self.assertRaises(PeerObservationError):
+                        data = peer_json(profile)
+                        host = "::ffff:a4d:1" if field == "local_addr" else "::ffff:a4d:2"
+                        port = (22001 if role == "responder" else 35000) if field == "local_addr" else (22002 if role == "initiator" else 35000)
+                        data[0]["peer"]["conns"][0]["tunnel"][field] = dict(url=f"{transport}://[{host}]:{port}")
+                        parse_peer_observation(profile, json.dumps(data).encode())
+        profile = parsed(recipe("quic", "initiator"))
+        for url in ("quic://[::ffff:a4d:3]:22002", "quic://[::ffff:a4d:2]:22003",
+                "quic://[::ffff:a4d:2]:0", "quic://[::a4d:2]:22002", "quic://[fd00::a4d:2]:22002",
+                "quic://[64:ff9b::a4d:2]:22002", "quic://[::ffff:a4d:2%25eth0]:22002",
+                "quic://[::ffff:10.77.0.2]:22002", "quic://[::ffff:a4d:2]:22002?proxy=invalid",
+                "quic://u@[::ffff:a4d:2]:22002", "quic://[::ffff:a4d:2]:22002/extra"):
+            with self.subTest(url=url), self.assertRaises(PeerObservationError) as caught:
+                data = peer_json(profile)
+                data[0]["peer"]["conns"][0]["tunnel"]["resolved_remote_addr"] = dict(url=url)
+                parse_peer_observation(profile, json.dumps(data).encode())
+            self.assertEqual(caught.exception.reason, "PEER_RESOLVED_ENDPOINT_INVALID")
+
     def test_observation_failure_reasons_are_fixed_and_keep_old_error_contract(self):
         profile = parsed(recipe("quic", "initiator"))
         cases = [(b"private-invalid-input", "PEER_JSON_INVALID"), (b"[]", "PEER_SET_EMPTY")]

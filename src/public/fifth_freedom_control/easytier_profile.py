@@ -341,13 +341,20 @@ def _rpc_key(value):
     return bytes(value)
 
 
-def _tunnel_endpoint(value, scheme, address, port=None, *, allow_unspecified=False):
+def _tunnel_endpoint(value, scheme, address, port=None, *, allow_unspecified=False, allow_mapped=False):
     _object(value, ("url",))
     if type(value["url"]) is not str or len(value["url"]) > 128:
         _fail()
     url = urlsplit(value["url"])
     actual_port = url.port
     allowed_hosts = (address, "0.0.0.0", "::") if allow_unspecified else (address,)
+    if allow_mapped:
+        # Compare one canonical host generated from the configured IPv4. Do
+        # not normalize arbitrary incoming IPv6, scope IDs or escaped hosts.
+        ipv4 = int(ipaddress.IPv4Address(address))
+        # url::Url emits hexadecimal mapped words; Python versions differ in
+        # whether IPv6Address.__str__ instead chooses dotted IPv4 notation.
+        allowed_hosts += (f"::ffff:{ipv4 >> 16:x}:{ipv4 & 65535:x}",)
     if (url.scheme != scheme or url.hostname not in allowed_hosts or url.username is not None or url.password is not None
             or url.query or url.fragment or url.path not in ("", "/") or actual_port is None
             or not 1 <= actual_port <= 65535 or port is not None and actual_port != port):
@@ -424,7 +431,9 @@ def parse_peer_observation(profile, content):
         for name in ("remote_addr", "resolved_remote_addr"):
             reason = "PEER_REMOTE_ENDPOINT_INVALID" if name == "remote_addr" else "PEER_RESOLVED_ENDPOINT_INVALID"
             _tunnel_endpoint(tunnel[name], profile.transport, profile.remote.underlay_ipv4,
-                             profile.remote.listen_port if profile.role == "initiator" else None)
+                             profile.remote.listen_port if profile.role == "initiator" else None,
+                             allow_mapped=profile.transport == "quic" and profile.role == "initiator"
+                                          and name == "resolved_remote_addr")
         return PeerObservation(profile.sha256, conn_id, local_id, remote_id, local_bind_kind)
     except (ValueError, TypeError, KeyError, AttributeError, OverflowError):
         raise PeerObservationError(reason) from None

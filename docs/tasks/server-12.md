@@ -192,3 +192,41 @@ receipts are under `docs/dependency-patches/easytier-2.6.4-profile/` as
 `quic-bind-serde-*` and `quic-bind-receipt.json`. This corrects a confirmed
 producer/consumer semantic mismatch; it does not by itself establish the cause
 of any hosted readiness timeout or prove successful network operation.
+
+## Exact mapped-IPv4 resolved endpoint
+
+The next actual hosted run, [39924391718](https://github.com/caox233/FifthFreedom/actions/runs/39924391718),
+reached an owned TUN and matching core image, but its last of 123 initiator
+observations failed specifically with `PEER_RESOLVED_ENDPOINT_INVALID`. The
+official sanitized receipt is recorded in
+[hosted-owned-overlay-45e879b.json](../evidence/hosted-owned-overlay-45e879b.json).
+It contains no raw endpoint, so it does not identify that original address.
+
+A bounded local example then used the **actual pinned `QuicTunnelListener` and
+`QuicTunnelConnector`**, an owned IPv4 loopback listener on an OS-assigned port,
+and one synthetic echo. The connector reported the configured IPv4 remote URL,
+but `connection.remote_address()` became `quic://[::ffff:7f00:1]:40960` for
+`127.0.0.1:40960`. The IPv4 listener reported ordinary IPv4 remote addresses in
+both fields. This matches the exact producer call chain at
+[`quic.rs:592–600`](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/tunnel/quic.rs#L592):
+configured `remote_addr`, connection-derived `resolved_remote_addr`, and the
+production URL builder. The same builder emits `::ffff:a4d:2` for the public
+synthetic profile's `10.77.0.2`. The old parser rejected that projection with
+the same fixed reason; the corrected parser accepts it.
+
+The correction allows one additional host **only for a QUIC initiator's
+`resolved_remote_addr`**: the canonical hexadecimal IPv4-mapped form generated
+from the configured remote IPv4. Its port must still equal the configured peer
+listener. It does not normalize arbitrary incoming IPv6. Wrong mapped IPv4,
+wrong/zero ports, IPv4-compatible addresses, other IPv6 prefixes, scope IDs,
+mixed dotted notation, userinfo, proxy queries and other paths remain rejected.
+No other role, transport or endpoint field gains this allowance. Authentication,
+keys, route, namespace, nft containment and readiness deadlines are unchanged.
+
+The retained example and unchanged output are `quic-loopback-endpoints.rs` and
+`.json` in the profile evidence directory; `quic-resolved-receipt.json` binds
+their source, logs, exact upstream files and before/after checks. The example
+creates no core, TUN, RPC, PeerConn/Noise session, game or public-network traffic;
+the STUN collector is never started. Its echo is outer-transport/address evidence,
+not encrypted-overlay or peer-authentication proof. Current checks pass 14
+profile tests; the full hosted three-transport matrix still needs a new run.

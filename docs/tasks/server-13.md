@@ -298,3 +298,33 @@ Current focused checks pass: 27 probe, 12 profile, 18 production owned-overlay
 monitor and 20 combined-stack tests. The real upstream serialization example
 also passed without network activity. Actual QUIC/WSS/TCP matrix acceptance
 still requires a subsequent hosted run with these changes.
+
+The actual [45e879b run 39924391718](https://github.com/caox233/FifthFreedom/actions/runs/39924391718)
+then failed at the QUIC initiator with 123 observations, matching core image,
+owned TUN, and `parse-rejected / PEER_RESOLVED_ENDPOINT_INVALID`. There were no
+completed traffic phases; both namespaces and the private stage were removed,
+with no reported cleanup errors. These facts come from the downloaded official
+sanitized receipt recorded in
+[hosted-owned-overlay-45e879b.json](../evidence/hosted-owned-overlay-45e879b.json).
+They establish the fixed rejection boundary, not the unpublished endpoint or a
+successful authenticated connection. [SERVER-12](server-12.md) records the real
+production loopback reproduction and narrowly corrected mapped-IPv4 observation.
+
+An independent local reproduction of the exact candidate-stack isolated invocation
+failed before creating a receipt: the workflow invokes Python with `-I -B`, which
+removes automatic script-directory imports. The exact isolated `--help` command reproduced `ModuleNotFoundError`
+for `ci_socket_isolation`. The probe now adds only its resolved repository
+`ROOT/scripts` alongside the existing `ROOT/src/public`; Python isolation stays
+enabled. Three actual subprocess entry regressions cover isolated help while
+ambient `PYTHONPATH`/`PYTHONHOME` cannot inject imports, containment's fixed
+precondition refusal with hosted authorization removed, and the worker's fixed
+missing-argument failure before namespace entry. No permission or runtime gate
+was bypassed to exercise these cases.
+
+The updated suite passes 30 probe, 14 profile, 18 owned-overlay monitor and 20
+combined-stack tests. The actual local containment entry exits nonzero, records
+no transports/runtime execution, and refuses the missing hosted capabilities;
+this is expected refusal evidence. Source/command/log hashes are retained in
+`docs/dependency-patches/easytier-2.6.4-profile/quic-resolved-receipt.json`.
+The full QUIC/WSS/TCP correct-pin, wrong-pin, recovery and cleanup matrix remains
+required; the loopback reproduction and entry tests do not replace it.
