@@ -7,6 +7,20 @@ using SplinterCellCNLauncher.Services;
 internal static class Program
 {
     private static int passed;
+    private static bool failureReported;
+    private static void ReportFailure(string phase, Exception error)
+    {
+        if (failureReported) return;
+        failureReported = true;
+        // Fixed allowlisted tokens only. Never print message/inner/stack or any
+        // request, token, endpoint, account or filesystem path into CI annotations.
+        string type = error.GetType().Name;
+        string[] allowed = ["AuthenticationException", "CryptographicException", "IOException", "EndOfStreamException",
+            "SocketException", "HttpRequestException", "OperationCanceledException", "TaskCanceledException", "TimeoutException",
+            "ArgumentException", "InvalidOperationException", "ObjectDisposedException", "PlatformNotSupportedException", "PublicControlException", "Exception"];
+        if (!allowed.Contains(type, StringComparer.Ordinal)) type = "OtherException";
+        Console.WriteLine($"CI_MANAGED_FAILURE suite=PublicSessionControl case={phase} exception={type}");
+    }
     private const string User = "synthetic-client";
     private const string Nonce = "0123456789abcdef0123456789abcdef";
     private static PublicNativeRunExpectation Expect(bool observer = false, string source = "10.66.0.10", string instance = Nonce)
@@ -68,12 +82,29 @@ internal static class Program
     }
     private static async Task Case(string name, Func<Task> operation)
     {
-        await operation(); passed++; Console.WriteLine("PASS " + name);
+        try { await operation(); passed++; Console.WriteLine("PASS " + name); }
+        catch (Exception error) { ReportFailure((passed + 1).ToString("D2", System.Globalization.CultureInfo.InvariantCulture), error); throw; }
     }
-    private static async Task Main()
+    private static async Task<int> Main()
     {
-        using var package = new SyntheticPackage();
-        using var certificates = new SyntheticCertificates();
+        SyntheticPackage? package = null; SyntheticCertificates? certificates = null;
+        string phase = "SETUP_PACKAGE"; int result = 0;
+        try
+        {
+            package = new SyntheticPackage(); phase = "SETUP_CERTIFICATES";
+            certificates = new SyntheticCertificates(); phase = "UNKNOWN_PHASE";
+            await RunCases(package, certificates);
+        }
+        catch (Exception error) { ReportFailure(phase, error); result = 1; }
+        finally
+        {
+            try { certificates?.Dispose(); } catch (Exception error) { ReportFailure("CLEANUP", error); result = 1; }
+            try { package?.Dispose(); } catch (Exception error) { ReportFailure("CLEANUP", error); result = 1; }
+        }
+        return result;
+    }
+    private static async Task RunCases(SyntheticPackage package, SyntheticCertificates certificates)
+    {
         await Case("verified package and typed deployment context reject account legacy and foreign credentials", () => {
             var profile = Profile("https://control.example.invalid");
             var identity = CredentialEnvironmentContext.ForPublic(profile).CreateIdentity("10.66.0.1:50051", User);
