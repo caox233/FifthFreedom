@@ -1,0 +1,227 @@
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -2286,6 +2286,7 @@
+  "idna 1.0.3",
+  "igd-next",
+  "indoc",
++ "ipnetwork",
+  "itertools 0.14.0",
+  "kcp-sys",
+  "machine-uid",
+@@ -2309,6 +2310,7 @@
+  "petgraph 0.8.1",
+  "pin-project-lite",
+  "pnet",
++ "pnet_base",
+  "prefix-trie",
+  "prost",
+  "prost-build",
+--- a/easytier/Cargo.toml
++++ b/easytier/Cargo.toml
+@@ -149,7 +149,7 @@
+ rand = "0.8.5"
+ 
+ serde = { version = "1.0", features = ["derive"] }
+-pnet = { version = "0.35.0", features = ["serde"] }
++ipnetwork = "0.20.0"
+ serde_json = "1"
+ 
+ clap = { version = "4.5.30", features = [
+@@ -277,6 +277,8 @@
+ ] }
+ 
+ [target.'cfg(windows)'.dependencies]
++pnet = { version = "0.35.0", default-features = false, features = ["serde"] }
++pnet_base = { version = "0.35.0", default-features = false, features = ["std"] }
+ windows = { version = "0.62.2", features = [
+     "Win32_Foundation",
+     "Win32_NetworkManagement_IpHelper",
+@@ -297,6 +299,7 @@
+ winapi = { version = "0.3.9", features = ["impl-default"] }
+ 
+ [target.'cfg(not(windows))'.dependencies]
++pnet = { version = "0.35.0", features = ["serde"] }
+ jemallocator = { package = "tikv-jemallocator", version = "0.6.0", optional = true, features = [
+     "unprefixed_malloc_on_supported_platforms",
+ ] }
+@@ -403,7 +406,7 @@
+ ]
+ tracing = ["tokio/tracing", "dep:console-subscriber"]
+ magic-dns = ["dep:hickory-client", "dep:hickory-server"]
+-faketcp = ["dep:flume"]
++faketcp = ["dep:flume", "pnet/std"]
+ zstd = ["dep:zstd"]
+ # For Network Extension on macOS
+ macos-ne = []
+--- a/easytier/build.rs
++++ b/easytier/build.rs
+@@ -69,15 +69,19 @@
+     }
+ 
+     pub fn check_for_win() {
+-        // add third_party dir to link search path
+-        let target = std::env::var("TARGET").unwrap_or_default();
+-
+-        if target.contains("x86_64") {
+-            println!("cargo:rustc-link-search=native=easytier/third_party/x86_64/");
+-        } else if target.contains("i686") {
+-            println!("cargo:rustc-link-search=native=easytier/third_party/i686/");
+-        } else if target.contains("aarch64") {
+-            println!("cargo:rustc-link-search=native=easytier/third_party/arm64/");
++        // Only fake-TCP may require a Packet capture import library.
++        #[cfg(feature = "faketcp")]
++        {
++            // add third_party dir to link search path
++            let target = std::env::var("TARGET").unwrap_or_default();
++
++            if target.contains("x86_64") {
++                println!("cargo:rustc-link-search=native=easytier/third_party/x86_64/");
++            } else if target.contains("i686") {
++                println!("cargo:rustc-link-search=native=easytier/third_party/i686/");
++            } else if target.contains("aarch64") {
++                println!("cargo:rustc-link-search=native=easytier/third_party/arm64/");
++            }
+         }
+ 
+         let protoc_path = if let Some(o) = Self::check_protoc_exist() {
+--- a/easytier/src/common/network.rs
++++ b/easytier/src/common/network.rs
+@@ -1,11 +1,16 @@
+ use std::{net::IpAddr, ops::Deref, sync::Arc};
+ 
+-#[cfg(target_os = "windows")]
++#[cfg(all(target_os = "windows", feature = "faketcp"))]
+ use network_interface::{
+     Addr as SystemAddr, NetworkInterface as SystemNetworkInterface, NetworkInterfaceConfig,
+ };
++#[cfg(any(not(target_os = "windows"), feature = "faketcp"))]
+ use pnet::datalink::NetworkInterface;
+-#[cfg(target_os = "windows")]
++#[cfg(all(target_os = "windows", not(feature = "faketcp")))]
++mod windows_interfaces;
++#[cfg(all(target_os = "windows", not(feature = "faketcp")))]
++use windows_interfaces::Interface as NetworkInterface;
++#[cfg(all(target_os = "windows", feature = "faketcp"))]
+ use pnet::{ipnetwork::IpNetwork, util::MacAddr};
+ use tokio::{
+     sync::{Mutex, RwLock},
+@@ -148,7 +153,7 @@
+     }
+ }
+ 
+-#[cfg(target_os = "windows")]
++#[cfg(all(target_os = "windows", feature = "faketcp"))]
+ impl InterfaceFilter {
+     async fn filter_iface(&self) -> bool {
+         tracing::debug!(
+@@ -170,6 +175,13 @@
+     }
+ }
+ 
++#[cfg(all(target_os = "windows", not(feature = "faketcp")))]
++impl InterfaceFilter {
++    async fn filter_iface(&self) -> bool {
++        self.iface.allows_discovery()
++    }
++}
++
+ pub async fn local_ipv4() -> std::io::Result<std::net::Ipv4Addr> {
+     let socket = tokio::net::UdpSocket::bind("0.0.0.0:0").await?;
+     socket.connect("8.8.8.8:80").await?;
+@@ -290,7 +302,13 @@
+         ret
+     }
+ 
+-    #[cfg(target_os = "windows")]
++    #[cfg(all(target_os = "windows", not(feature = "faketcp")))]
++    fn collect_interfaces_windows() -> Vec<NetworkInterface> {
++        use network_interface::NetworkInterfaceConfig;
++        windows_interfaces::collect(network_interface::NetworkInterface::show())
++    }
++
++    #[cfg(all(target_os = "windows", feature = "faketcp"))]
+     fn collect_interfaces_windows() -> Vec<NetworkInterface> {
+         match SystemNetworkInterface::show() {
+             Ok(ifaces) => ifaces
+@@ -315,7 +333,7 @@
+         }
+     }
+ 
+-    #[cfg(target_os = "windows")]
++    #[cfg(all(target_os = "windows", feature = "faketcp"))]
+     fn convert_windows_interface(iface: SystemNetworkInterface) -> NetworkInterface {
+         let mac = iface.mac_addr.as_deref().and_then(|mac| {
+             mac.parse::<MacAddr>()
+@@ -342,7 +360,7 @@
+         }
+     }
+ 
+-    #[cfg(target_os = "windows")]
++    #[cfg(all(target_os = "windows", feature = "faketcp"))]
+     fn convert_windows_interface_addr(addr: SystemAddr) -> Option<IpNetwork> {
+         match addr {
+             SystemAddr::V4(addr) => {
+--- a/easytier/src/tunnel/websocket.rs
++++ b/easytier/src/tunnel/websocket.rs
+@@ -10,7 +10,7 @@
+ use bytes::BytesMut;
+ use forwarded_header_value::ForwardedHeaderValue;
+ use futures::{SinkExt, StreamExt, stream::FuturesUnordered};
+-use pnet::ipnetwork::IpNetwork;
++use ipnetwork::IpNetwork;
+ use std::{
+     net::SocketAddr,
+     sync::{Arc, LazyLock},
+--- /dev/null
++++ b/easytier/src/common/network/windows_interfaces.rs
+@@ -0,0 +1,50 @@
++//! Windows interface discovery without a packet-capture backend.
++//!
++//! The successful API path keeps the former flags=0 conversion/filter behavior.
++//! These records are discovery inputs, never interface ownership or UP evidence.
++use std::net::IpAddr;
++
++use ipnetwork::IpNetwork;
++use network_interface::{Addr, NetworkInterface as SystemInterface};
++use pnet::util::MacAddr;
++
++#[derive(Debug, Clone)]
++pub struct Interface {
++    pub name: String,
++    pub index: u32,
++    pub mac: Option<MacAddr>,
++    pub ips: Vec<IpNetwork>,
++}
++
++impl Interface {
++    pub fn allows_discovery(&self) -> bool {
++        self.ips.iter().map(IpNetwork::ip)
++            .any(|ip| !ip.is_loopback() && !ip.is_unspecified() && !ip.is_multicast())
++            && self.mac.map(|mac| !mac.is_zero()).unwrap_or(false)
++    }
++}
++
++fn address(addr: Addr) -> Option<IpNetwork> {
++    let (ip, mask) = match addr {
++        Addr::V4(addr) => (IpAddr::V4(addr.ip), IpAddr::V4(addr.netmask
++            .unwrap_or(std::net::Ipv4Addr::new(255, 255, 255, 255)))),
++        Addr::V6(addr) => (IpAddr::V6(addr.ip), IpAddr::V6(addr.netmask
++            .unwrap_or(std::net::Ipv6Addr::from(u128::MAX)))),
++    };
++    IpNetwork::with_netmask(ip, mask).ok()
++}
++
++pub fn collect(result: network_interface::Result<Vec<SystemInterface>>) -> Vec<Interface> {
++    match result {
++        Ok(ifaces) => ifaces.into_iter().map(|iface| Interface {
++            name: iface.name,
++            index: iface.index,
++            mac: iface.mac_addr.as_deref().and_then(|mac| mac.parse::<MacAddr>().ok()),
++            ips: iface.addr.into_iter().filter_map(address).collect(),
++        }).collect(),
++        Err(_) => {
++            tracing::warn!("Windows interface enumeration failed; no capture fallback available");
++            Vec::new()
++        }
++    }
++}
