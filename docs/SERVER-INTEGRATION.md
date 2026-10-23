@@ -1,8 +1,9 @@
 # Windows/LAN 与 Linux/公网整合
 
-状态：Windows LAN 与 Linux 基线/供体组件已通过 hosted 构建；生产认证桥已实现，
-**完整公网服务及部署验证仍未完成**。本页保留最初整合合同，当前执行收据见
-[SERVER-02](tasks/server-02.md)、[CI-01](tasks/ci-01.md) 和 [云端进展](CLOUD-PROGRESS.md)。
+状态：Windows LAN、Linux 基线/供体/受保护控制面组件与同轮跨平台包身份校验已通过
+GitHub-hosted 检查；真实 Linux 接口隔离检查也已通过。
+**完整公网服务及部署验证仍未完成**。当前执行收据见下表、
+[CI-01](tasks/ci-01.md) 和 [云端进展](CLOUD-PROGRESS.md)。
 目标固定为 Windows 服务端用于局域网、Linux 服务端用于公网，不沿用 donor 文档中
 “新部署默认 Windows 公网”的旧产品选择。所有路径相对于仓库根。
 
@@ -19,6 +20,23 @@
 donor Windows管理器并不是“更完整的LAN后端”。不能直接替代现有LAN host而暗中新增公网
 监听、下载、驱动、管理员权限或自动服务；它可提供原子安装/回滚设计参考，当前用户目标不需
 同时维护第二套Windows公网产品。
+
+## 当前实现入口
+
+下表使用现在实际任务编号。第 3 节和第 7 节保留最初规划，其阶段编号不代表当前同名任务的范围。
+
+| 当前任务 | 已实现的边界 | 仍需完成 |
+| --- | --- | --- |
+| [SERVER-01](tasks/server-01.md) | 显式 LAN/Public profile、保留 LAN 默认及 Public 拒绝入口 | 不能单凭 profile 打开公网服务 |
+| [SERVER-02](tasks/server-02.md)、[受保护传输](tasks/public-transport.md) | 原生签名令牌、当前数据库准入、HTTPS 只读会话服务 | 与实际公网进程/来源边界集成 |
+| [SERVER-03](tasks/server-03.md) | Linux 私有密钥、运行代际观察者授权、数据目录互斥 | 公网启动事务复用这些已验证边界 |
+| [SERVER-04](tasks/server-04.md) | Linux 服务身份与原始 Windows 客户端 catalog 分离；真实同轮产物校验通过 | 不代替完整资源包或运行验收 |
+| [SERVER-05](tasks/server-05.md) | 原生只读部署预检接入真实包、密钥和服务配置 | 报告仍为 `startup_allowed:false`，新的 hosted 预检单独验证 |
+| [SERVER-06](tasks/server-06.md)、[隔离检查](tasks/socket-isolation.md) | 全部原生 socket 使用明确策略；GitHub 三命名空间入口隔离通过 | 覆盖网络存活监管和 Public 来源准入 |
+| [SERVER-07](tasks/server-07.md) | 固定 EasyTier 源码审计；实际会话负例与最小候选修复 | 完整所选入口合同、独立构建身份和自有进程生命周期 |
+
+这里的通过范围分别对应源码、库测试、实际组件和隔离拓扑；没有启动游戏或现网服务。
+最新运行编号和精确提交统一记录在 `PROJECT-STATE.json` 和 CI 收据，后续实现不能借用旧结果。
 
 ## 2. 已核实的协议和安全差异
 
@@ -39,9 +57,9 @@ donor Windows管理器并不是“更完整的LAN后端”。不能直接替代�
 6. 两侧存储/migration也有差异；数据库不可直接互换或覆盖。只在合成数据库上做升级/回滚测试，
    用户账号和存档不随源码上传。最新LAN修复是迁移基线，donor不是新版本的当然上游。
 
-## 3. 建议的实现顺序和明确边界
+## 3. 最初规划的实现顺序和明确边界
 
-### SERVER-01：协议与配置接缝（下一条服务器实现任务）
+### 原阶段 SERVER-01：协议与配置接缝
 
 - 先保持LAN后端源码为唯一游戏业务实现，提取显式 `DeploymentProfile = Lan | Public` 配置，
   用依赖注入/配置工厂替代 `main.rs` 对LAN初始化的硬绑定。
@@ -52,7 +70,7 @@ donor Windows管理器并不是“更完整的LAN后端”。不能直接替代�
 - 为控制面所读数据库字段列兼容表；若模型不同，写只读查询适配或显式迁移，不共用未验证SQL。
 - 这一步只需合成输入、临时目录/loopback测试；不部署服务、不读取真实账号库。
 
-### SERVER-02：Linux公网生命周期
+### 原阶段 SERVER-02：Linux公网生命周期
 
 - 迁入donor Linux Manager的校验ZIP、不可变Runtime、备份、切换、失败回滚、systemd管理。
   连接上述单一游戏业务构建产物，不长期发布两套漂移的Dedicated。
@@ -60,7 +78,7 @@ donor Windows管理器并不是“更完整的LAN后端”。不能直接替代�
   路径和manifest校验要做负面测试。隧道/域名/端口用部署配置，不继承开发者现网端点。
 - 留出LAN与公网独立包清单及明确兼容ID；分支开关不能绕过已验证玩法模块的包匹配。
 
-### SERVER-03：UI公共适配器接入
+### 原阶段 SERVER-03：UI公共适配器接入
 
 - `UI-INTEGRATION.md` 的Public adapter执行公网网络就绪、受保护账号流程和能力协商，
   然后把会话交给保留的安全启动管道。
@@ -73,7 +91,7 @@ donor Windows管理器并不是“更完整的LAN后端”。不能直接替代�
 |---|---|---|
 | `scripts/build.py all` | Windows四组件构建/测试/打包；.NET10、MSVC x86、固定Rust、protoc、默认资源 | 保留作为Windows LAN/客户端基线；不要在Linux声称可完成全包 |
 | `scripts/build.py test` | build-entry、PortPlan、BackgroundTaskRegression、ObserverSession及native回归 | 拆纯逻辑与Windows测试，保留现有断言 |
-| 根 `.github/workflows/release.yml` | 审计时是Windows构建；tag push或manual可接发布job，manual publish默认true | 用户仅授权源码上传，先改为开发候选CI，不自动Release；独立复审后才发布 |
+| 根 `.github/workflows/candidate-build.yml` | 当前为 PR/manual 开发候选构建，保留独立完整资源门禁 | 继续补实际公网运行合同；不自动 Release 或部署 |
 | donor `.github/workflows/ci.yml` | Linux Python/manager/contracts、Windows launcher/hooks/server、Linux Rust/Go路由测试 | 嵌套目录不会自动注册到根Actions；提升经过路径改写的job，而不是宣称已有云CI |
 | donor `.github/workflows/build.yml` | Windows launcher/updater/hooks/windows-server；Linux dedicated独立job | 只保留目标需要的job，固定actions版本，移除重复产品发布 |
 | donor `server/packaging/scbl-server.py full` | Linux完整服务端组件ZIP | 接入新业务源/配置/manifest后独立测试，不改为生产机现场编译 |
@@ -115,7 +133,7 @@ Linux云端不能代替WPF实际界面、IME/DPAPI、管理员驱动/防火墙�
 本页最初审计未执行构建；后续真实云端构建结果已记录在上述任务收据中。
 没有启动游戏、部署现网或正式发布；迁入 donor 不代表已经完成最终架构。
 
-## 7. 云端第一批服务器任务
+## 7. 最初云端任务清单（保留规划记录）
 
 - **SERVER-01A**：添加两份protobuf差异契约测试，固定现有字段号和兼容拒绝行为；
   再实现单一 `DeploymentProfile` 配置边界。限定改动在游戏后端启动/配置/API及其测试，
@@ -127,5 +145,6 @@ Linux云端不能代替WPF实际界面、IME/DPAPI、管理员驱动/防火墙�
 - **SERVER-02**：配置/协议回归通过后接Linux安装包，制作运行/升级/回滚文档和受保护配置模板，
   不把用户电脑当持续服务端，也不自动部署现网。
 
-这些是接下来在云端实现的任务，不在当前本机回合修改产品代码。Windows编译可通过
-Windows runner单独完成；云端交接只有实际checkout和实际测试/构建进程结果才算启动成功。
+以上保留最初交接的任务定义。云端已实际实现并运行前述组件与合同检查，后续继续按
+`PROJECT-STATE.json` 的具体下一步推进。Windows 编译与验证由 GitHub-hosted runner 执行，
+不依赖用户电脑开机；没有平台持续 Goal 接口时也不把下一步文档说成后台调度器。
