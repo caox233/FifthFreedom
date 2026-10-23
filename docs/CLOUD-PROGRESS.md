@@ -683,3 +683,80 @@ bytes/modes/pathsets:1312→1536→1312, clean status. Patch SHA256 is
 Private original evidence remains unchanged. DevDocs896c632 is separately pushed
 and binds110 snapshot files, including108 exact mirrors, to source00e6971;
 subsequent source work requires a later explicitly bound snapshot.
+
+
+## Windows cleanup passed; paired build and runtime reruns started
+
+The [1974fad Windows quick run](https://github.com/caox233/FifthFreedom/actions/runs/39922765064)
+passed all27 owned-return checks and the original9 final-login checks, with the
+default IIS site restored. The official artifact ZIP digest was independently
+verified before reading its four bounded JSON receipts. The fixture cleanup fix
+retries only Windows access/share/lock errors under one finite deadline and only
+after its exact child and both owned handles are released. Real delayed-lock and
+persistent-denial tests retain that boundary. This result does not identify the
+external holder responsible for the earlier denial or rewrite the original0ac
+unknown failure. The separate full1974 Windows component job then succeeded.
+Its official74,830,972-byte artifact ZIP matches digest
+87d447a8cf3e7658ecaea0fe335b6fa41bc3e78246cc18e0dcc530e989af372c.
+Actual native8, interop3 and source8 all passed with zero ignored/skipped tests;
+the four component hashes match their receipt/checksum entries and checked PE
+branding passed. This verifies the getter correction in the registered Windows
+socket contracts, not a live overlay/game session. Same-run assembly and static
+preflight also passed. Native lifecycle and combined-stack jobs then failed
+without positive runtime evidence; the hosted result exposes only
+UNCLASSIFIED_PROBE_FAILURE. Independently, the exact isolated Python command
+reproduces a missing scripts import path in the stack containment entry. The
+next fixes retain isolation and add only the reviewed checkout module path;
+this reproduction does not reveal the separate native job's exact hosted cause.
+
+Normal official API downloads now work under the environment's existing
+unrestricted network selection. Downloaded1b and6c artifacts supplement earlier
+metadata-only records; their ZIP hashes and receipt checkout identities are
+retained separately from run source heads. Raw logs, signed URLs and credentials
+are not public evidence. The6c overlay receipt confirms a QUIC readiness timeout,
+zero completed phases, two namespaces removed and private stage cleanup; it does
+not prove TUN/peer readiness or that every child was reaped.
+
+Reviewed45e879b uses the pinned real Rust producer types, URL builder and serde
+projection to correct a specific QUIC initiator bind mismatch: its local endpoint
+can be a wildcard bind. That bind is not an observed outgoing source address.
+Remote endpoint, key/authentication, route and nft requirements remain exact.
+The new bounded last-readiness observations distinguish missing TUN, failed query
+and rejected peer projection. Profile12, probe27, monitor18 and stack20 local
+checks passed. [Actual full runtime39924391718](https://github.com/caox233/FifthFreedom/actions/runs/39924391718)
+must still complete correct-pin, wrong-pin and restored-key controls; the parser
+repair alone is not successful runtime evidence.
+
+The first native lifecycle command also had a reproducible sudo checkout trust
+failure. Reviewedce0df6d scopes Git trust to each exact repository command and
+preserves expected HEAD/clean-source rejection;13 independently rerun checks
+passed, including a genuine foreign-owner Git reproduction. No global Git config
+or repository ownership changed. The next candidate contains this correction;
+the older running1974 candidate does not.
+
+[UI-09](tasks/ui-09.md) now includes the real paired Windows session backend and
+EasyTier caller patches and a separate full MSVC
+[build-only run39925069086](https://github.com/caox233/FifthFreedom/actions/runs/39925069086).
+Exact preparation of700 EasyTier and49 tun source files, locked dependency/feature
+resolution and12 focused regressions passed. A separate modern-Windows feature
+avoids the upstream legacy Win7 thunk downloader's unverified archives. It does
+not promise Win7 compatibility. The workflow compiles core/CLI and inspects their
+PE headers without executing them, loading a driver or uploading binaries.
+The first hosted run passed its12 regressions, then failed before a recorded
+cargo stage with fixed WINDOWS_BUILD_FAILED. Exact stage/root cause requires
+bounded diagnosis; no compilation success is inferred. Full Windows compile/link,
+actual returned adapter/session identity, secure peer liveness and local owner
+IPC remain pending; ordinary Public stays closed.
+
+A fresh detached1a6b2e6 checkout passed425 methods:423 passed and two existing
+Windows-only skips, tracked files unchanged. Report SHA256 is
+61ff965e042f9a2f9e706cdc1e377864d36b99578ca57a668df3a6878e89f55d.
+The canonical patch fromfc8ef510 applied and reversed with exact bytes/modes/
+pathsets:1312→1556→1312, clean status. Patch SHA256 is
+5ff12babe168c4299fa53915174e7de69558d15e03e820ff8c80661217f72173.
+DevDocs557d3e8 independently binds120 snapshot files, including118 exact mirrors,
+to sourcec893c0b. Environment draft15 was saved/read back with both project
+revisions and preserved setup/network selection after a complete workspace walk;
+it still requires publication and does not verify fresh snapshot restoration.
+The platform exposes no Goal scheduler or publish action in this session.
+All six milestones, held resources and original private evidence remain tracked.

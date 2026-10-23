@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "At1b6cdab actual Windows native return8 and native/managed interop3 passed; UI08 source transport then failed. Reviewed2ace336 corrects documented IP_UNICAST_IF getter host order; actual rerun not yet reached. Actual9e1c7a1 quick/full Windows pinpointed case15 to owned test-directory cleanup after child exit and both disposals, not configuration ACK. Actual6c overlay progressed to OVERLAY_READY_TIMEOUT; exact root cause remains unresolved. Reviewed c7ffe7a packages7 pinned loader notices+exact provenance without changing component checksum contract; fresh clean405=403passed+2existingWindows-onlyskips and exact patch roundtrip passed. Six-goal migration/Public/fullpackage remain incomplete.",
-  "NEXT_EXECUTABLE_ACTION": "Fix and actually rerun the bounded Windows owned-test-directory cleanup, then reach UI08 source8 and complete component/branding/same-run lifecycle checks. Diagnose6c actual overlay readiness timeout using pinned QUIC producer/consumer semantics and bounded real observation, then run correct/wrong-pin/restore and SERVER15 A/B controls. Continue minimal genuine Windows retained-session ownership without inventing a new driver product or opening production Public prematurely. Preserve all six goals, accepted gameplay results, privateSAV/META, absentCapture/C71/VSS native inputs, exact asset notices and independent live acceptance.",
+  "LAST_CONFIRMED_RESULT": "At1974fad actual hosted Windows quick tests passed FinalLaunchPreparation9 and PublicNativeReturn27 with original IIS state restored; full candidate39922764910 Windows job succeeded and official artifact digest matches; native8, interop3 and source8 all passed, four actual component hashes match their manifests, and checked PE branding passed. Same-run assembly/static preflight also passed; native lifecycle and stack jobs then failed before runtime completion with only an unclassified hosted diagnostic. A local exact isolated-Python command separately reproduced the stack containment import failure. Reviewed45e879b/41a66aa align exact pinned QUIC initiator bind serialization and retain bounded last-readiness observations; next actual full overlay is running. Reviewed ce0df6d fixes independently reproduced sudo checkout trust failure with exact per-command scope. UI09 paired Windows builder1a6b2e6 failed after its12 regressions and before recorded cargo compilation, with fixed WINDOWS_BUILD_FAILED; exact stage/root cause awaits bounded diagnosis. Source preparation/locked metadata are locally verified only. Fresh detached1a6b2e6 passed425=423+2existingWindows-onlyskips and exact canonical patch roundtrip. All six goals/Public/fullpackage remain incomplete.",
+  "NEXT_EXECUTABLE_ACTION": "Fix the reproduced isolated-Python containment entry import and verify next native lifecycle/SERVER15 jobs with the scoped Git trust correction; preserve confirmed1974 Windows source8/four components and same-run identity/static preflight. Follow full-overlay45e879b last-readiness evidence through correct/wrong-pin/restore controls, without calling compile/readiness timeouts success. Follow first1a6b2e6 paired Windows core/CLI compile to an actual MSVC result; then implement the remaining owned Windows session/secure-peer/current-process chain only within observed driver and resource boundaries. Preserve all six goals, accepted gameplay, privateSAV/META, absentCapture/C71/VSS inputs and exact notices; sync reviewed source-bound DevDocs and reusable environment draft after concrete results.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -84,15 +84,15 @@
     "thread_title": "FifthFreedom云端",
     "repository": "caox233/FifthFreedom",
     "verified": "running connected Linux x86_64; Git HTTPS fetch/push and official gh repository/PR APIs succeeded",
-    "environment_display_name": "not independently exposed by status API",
-    "snapshot_publish_status": "not confirmed",
+    "environment_display_name": "FifthFreedom in official configuration draft; live status exposes environment ID but not a separate display name",
+    "snapshot_publish_status": "Official draft revision15 saved and read back, requires_publish true; no publish interface is available. Draft save is not published/fresh-restored verification.",
     "handoff_commit": "fc8ef510b51be83c31f9f8233997f758b0477acc",
     "development_branch": "codex/cloud-integration",
     "knowledge_repository": "caox233/FifthFreedom-DevDocs",
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
-    "api_access": "Official gh API initially denied, later succeeded under existing configuration. Actions log/artifact redirect hosts still denied; narrow official environment draft additions saved. No bypass; draft publication unconfirmed.",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39921420622",
+    "api_access": "Official GitHub API and normal redirected job-log/artifact downloads now succeed under existing unrestricted network selection. Earlier restricted/denied observations remain historical. Runtime reports network enforcement unknown; no policy bypass or token output.",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39922764910",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -237,14 +237,14 @@
         "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "1b native IPC8 and native/managed interop3 passed before UI08 source transport failure. New9e quick39921420637 and full120307306021 failed actual managed case15 OWNED_DIRECTORY_CLEANUP, owned child exited and process/config disposed, no readonly attribute. Source8 and latest complete components remain unverified.",
+    "candidate_windows_source": "At1974 run39922764910 Windows job120311712409 succeeded. Official component ZIP digest verified; native8, interop3 and source8 each fully passed with zero ignored/skipped; four component hashes and checked PE branding matched. Quick39922765064 separately passed27return+9final and restored IIS.",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "1b6cdab LAN/donor/control and ingress namespaces succeeded; source-only and strict containment runs also succeeded; actual overlay matrix remains unverified.",
+    "candidate_linux_matrix": "All1974 candidate Linux LAN/donor/control/namespace jobs succeeded; actual overlay45e879b runtime39924391718 still pending.",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "Latest9e Windows failed during test-owned directory cleanup. Strict package and C71 replay input gates remain failed; complete package skipped. Historical component passes remain revision-bound.",
-    "knowledge_snapshot_commit": "896c632841d1f623abfdbc318b1a146b8b8a7251",
-    "knowledge_snapshot_source": "00e6971b9608e89a7efe6e1398814ea95ec111a2",
-    "knowledge_snapshot_files": 110
+    "candidate_component_result": "1974 Windows/Linux component jobs, namespaces and same-run identity/static preflight succeeded. Native lifecycle and combined stack jobs failed with unclassified hosted diagnostic before positive runtime evidence. Complete-resource and C71 input gates fail; full package is skipped.",
+    "knowledge_snapshot_commit": "557d3e856eb148f5cd3259de0f76639f927cfa53",
+    "knowledge_snapshot_source": "c893c0bfed1036675ede6c6e6fb3ce29fe183050",
+    "knowledge_snapshot_files": 120
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -252,7 +252,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T08:05:19.668667+00:00",
+  "updated_utc": "2026-10-23T08:42:38.418989+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -260,7 +260,7 @@
     "lan_self_tests": 26,
     "native_api_tests": 27,
     "initial_native_api_failure": "stale producer fixture digest after executable rename; regenerated by actual producer, old historical fixture restored unchanged",
-    "github_full_build": "historical2b66f30_four_hosted_components_passed; latest9eWindows_test_cleanup_failed; fullpackage_privacy_gate_unresolved",
+    "github_full_build": "1974four_hosted_components_and_same_run_identity_static_preflight_passed;native_lifecycle_and_stack_jobs_failed;fullpackage_privacy_gate_unresolved",
     "clean_public_package": "strict_gate_failed_missing_8_lan_sav_meta_12_held_total",
     "live_game": "not_run",
     "cloud_initial_python": {
@@ -317,13 +317,14 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "executed": 405,
-      "passed": 403,
+      "executed": 425,
+      "passed": 423,
       "skipped": 2,
       "exit_code": 0,
-      "environment": "fresh detached checkoutc7ffe7ac8370d5bf664e22bc6d7c61a466c08a76; .local/cloud-receipts/clean-checkout-c7ffe7ac8370/receipt.json",
+      "environment": "fresh detached checkout1a6b2e65e33b5af3a31db4fb8efc7403b5bfdfdb; .local/cloud-receipts/clean-checkout-1a6b2e65e33b/receipt.json",
       "tracked_files_unchanged": true,
-      "complete_package": false
+      "complete_package": false,
+      "source_report_sha256": "61ff965e042f9a2f9e706cdc1e377864d36b99578ca57a668df3a6878e89f55d"
     },
     "cloud_authenticated_reader": {
       "passed": 69,
@@ -457,7 +458,7 @@
     "windows_branding_metadata": {
       "implementation_commit": "b171d4d",
       "source_migration_check": "passed",
-      "actual_file_properties": "pending_next_hosted_readonly_FileVersionInfo_check",
+      "actual_file_properties": "1974actual hosted FileVersionInfo checks passed;3PE ProductName Fifth Freedom and server OriginalFilename match",
       "wire_and_crate_names_preserved": true
     },
     "cloud_native_api_current": {
@@ -484,11 +485,12 @@
       "wpf_crosscompile_errors": 0,
       "cross_language_windows_runtime": "actual same-run Rust helper/C# owned-process IPC3 passed in1b6cdab; package/loadedDLL admission explicitly not exercised",
       "public_enabled": false,
-      "windows_managed_passed_this_run": 25,
-      "hosted_run": 39918375705,
+      "windows_managed_passed_this_run": 27,
       "earlier_unexplained_failure_resolved": false,
       "windows_native_passed_this_run": 8,
-      "later_managed_failure": "9e actual owned directory cleanup after child exit/disposal; earlier0acunknown failure not retroactively explained"
+      "later_managed_failure": "9e owned directory cleanup failure retained; bounded fixture-only cleanup16ccb185 passed27 actual Windows checks at1974, including real delayed-lock and persistent-denial controls. External denial cause remains unidentified.",
+      "hosted_managed_run": 39922765064,
+      "native_and_interop_hosted_run": 39918375705
     },
     "hosted_overlay_guard2_build": {
       "run_id": 39905205148,
@@ -516,26 +518,28 @@
     "cloud_native_lifecycle_harness": {
       "implementation_commit": "92945e3dd043e1ee1dae21afdb73f5265b0f2c1f",
       "receipt_fix_commit": "49b66bf64b25bc2a8bf033ec01301ac4810be084",
-      "local_checks_passed": 12,
+      "local_checks_passed": 13,
       "actual_local_preflight_exit": 1,
       "actual_local_namespaces_created": 0,
-      "actual_hosted": "Skipped in0ac,117,568 candidates because Windows prerequisite failed; no positive result",
-      "scope": "five owned isolated main-process activation/revocation cases; no ordinary production admission"
+      "actual_hosted": "1974job120321031695 failed with only UNCLASSIFIED_PROBE_FAILURE; it predates reviewed ce0df6d per-command Git trust fix. Exact hosted cause is not inferred from local reproduction.",
+      "scope": "five owned isolated main-process activation/revocation cases; no ordinary production admission",
+      "checkout_fix_commit": "ce0df6da5630e76f9bd5960920fe8ca18ac13176"
     },
     "cloud_overlay_probe_harness": {
       "implementation_commit": "26adec5",
-      "local_checks_passed": 25,
+      "local_checks_passed": 27,
       "actual_local_preflight_exit": 1,
       "actual_local_runtime_started": false,
-      "actual_hosted": "6c39919260513 actual containment/guard3/coreCLI/native-probe builds passed, runtime failed OVERLAY_READY_TIMEOUT/TRANSPORT_MATRIX_INCOMPLETE; prior EOF/reap failure did not recur. Timeout alone does not prove core/TUN/peer readiness or locate its exact cause.",
-      "scope": "owned QUIC/WSS/TCP positives, wrong configured key with same PSK, restore; native SocketPolicy traffic and cleanup; not production admission"
+      "actual_hosted": "Actual6c timeout receipt confirms onlyQUIC, zero phases, namespaces2created/2removed and private stage removed; no core/TUN/peer readiness or child reap inferred.45e879b next full run39924391718 pending, with exact production serde bind projection and bounded last observation.",
+      "scope": "owned QUIC/WSS/TCP positives, wrong configured key with same PSK, restore; native SocketPolicy traffic and cleanup; not production admission",
+      "readiness_fix_commit": "45e879be85814ac7b7a46596092d139398610f90"
     },
     "cloud_canonical_patch_proof": {
       "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
-      "target": "c7ffe7ac8370d5bf664e22bc6d7c61a466c08a76",
-      "patch_sha256": "4ac4f3b3f2cc37613dbba4f370a3007ddd8adaf1e200738bd286b2a1ecf0e954",
+      "target": "1a6b2e65e33b5af3a31db4fb8efc7403b5bfdfdb",
+      "patch_sha256": "5ff12babe168c4299fa53915174e7de69558d15e03e820ff8c80661217f72173",
       "original_paths": 1312,
-      "forward_paths": 1536,
+      "forward_paths": 1556,
       "reverse_paths": 1312,
       "reverse_git_clean": true,
       "scope": "exact canonical Git blob bytes, modes and pathsets; checkout CRLF expansion is separate; original private four-role evidence not changed"
@@ -580,23 +584,24 @@
     },
     "cloud_owned_native_overlay_stack": {
       "implementation_commit": "31f1e5eb0eb1bb5aa880ce998b83cfca6c4f69ee",
-      "local_checks_passed": 17,
-      "independent_review": "17passed_zero_skips",
+      "local_checks_passed": 20,
+      "independent_review": "20passed_zero_skips",
       "local_positive_scope": "synthetic native wire peer/TUN plus real owned children, SCM lease, TCP closure, ordering and cleanup fault cases",
       "actual_local_guard_exit": 1,
       "actual_local_runtimes_started": 0,
-      "actual_hosted": "new6c11c8b same-run candidate dependency; not yet executed",
+      "actual_hosted": "1974job120321031710 failed at cheap containment with UNCLASSIFIED_PROBE_FAILURE, before full runtime build. Exact local Python -I entry independently fails missing scripts module path; correction and hosted rerun pending.",
       "production_admission": false
     },
     "cloud_ui_source_transport": {
       "implementation_commit": "75db71b9284a3a9efd8e3b72067c1312088e83c5",
       "linux_api_passed": 56,
-      "windows_source_contracts_pending": 8,
+      "windows_source_contracts_pending": 0,
       "type_check": "actual Rust API and tests with declaration-only local wrapper; not whole Windows DLL build",
       "production_issuer": "closed; no actual Windows owned kernel-session chain yet",
       "game_udp_confinement_verified": false,
       "option_readback_fix_commit": "2ace33616b9444761b734a769889a1e1be15f297",
-      "actual_hosted": "1bsource_transport_failed; later6c/9emanaged cleanup failure prevented fixed source suite execution"
+      "actual_hosted": "1974run39922764910/job120311712409 native source contracts8passed0failed0ignored; official component artifact digest verified. Not actual EasyTier/Wintun/game runtime.",
+      "windows_source_contracts_passed": 8
     },
     "retained_native_replay_input_gate": {
       "implementation_commit": "1b6cdabcec13c3e1b313501ec4306c67ebcbf9f8",
@@ -620,6 +625,35 @@
       "permission_closure": false,
       "independent_rebuild": false,
       "binary_executed": false
+    },
+    "cloud_ui_windows_session": {
+      "implementation_commit": "1974fad83ecf76f138fe5d42e7db2f2e02328b8d",
+      "build_workflow_commit": "1a6b2e65e33b5af3a31db4fb8efc7403b5bfdfdb",
+      "production_linked_session_checks_passed": 6,
+      "source_and_build_checks_passed": 12,
+      "exact_prepared_source_sha256": "0e01b494704e7a4f3afb67d7c54b446149fda7317938623d36164d0d53c0d1eb",
+      "locked_metadata_verified": true,
+      "actual_full_windows_build_run": 39925069086,
+      "actual_full_windows_build": "failed_after12_regressions_before_recorded_cargo_stage;WINDOWS_BUILD_FAILED;exact_stage_cause_unresolved",
+      "driver_or_core_executed": false,
+      "production_issuer": "closed",
+      "boundary": "Modern-Windows-only development feature skips unverified legacy Win7 thunk downloads. Actual Wintun API effects/returned identity, secure-peer and owner IPC chain remain unresolved; no binary publication."
+    },
+    "hosted_windows_components_current": {
+      "run_id": 39922764910,
+      "job_id": 120311712409,
+      "source_head": "1974fad83ecf76f138fe5d42e7db2f2e02328b8d",
+      "receipt_checkout_commit": "0e8485983c23a33b451a0fa52ca9aec421704b4d",
+      "conclusion": "success",
+      "official_component_zip_sha256": "87d447a8cf3e7658ecaea0fe335b6fa41bc3e78246cc18e0dcc530e989af372c",
+      "official_artifact_digest_matches": true,
+      "native_ipc": 8,
+      "native_managed_interop": 3,
+      "source_transport": 8,
+      "four_component_hashes_match": true,
+      "full_package": false,
+      "live_game": false,
+      "same_run_identity_static_preflight": "job120320810694_success"
     }
   }
 }
