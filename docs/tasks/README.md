@@ -28,6 +28,7 @@ implemented boundary and actual evidence, including work still blocked:
 | Explicit private overlay recipes and isolated development probes | [SERVER-12](server-12.md), [SERVER-13](server-13.md), [owned observations](server-14.md), [actual combined stack](server-15.md) |
 | Exact owned launcher/native authentication return and final login | [UI-06 launcher](ui-06.md), [UI-06 native](ui-06-native-return.md), [UI-07](ui-07.md), [source-bound revocable transport](ui-08.md) |
 | Windows retained overlay session and paired source build | [UI-09](ui-09.md), [pinned source patches](../dependency-patches/easytier-2.6.4-windows-session/README.md) |
+| Official Wintun binary identity, terms and finite development execution | [Pinned official input](wintun-official-binary-evidence.json), [retained-session probe](wintun-retained-session-probe.md) |
 | Hosted Windows/Linux checks and retained failures | [CI-01](ci-01.md), [cloud progress](../CLOUD-PROGRESS.md) |
 | Retained gameplay defects and missing native replay evidence | [Remaining bugs](remaining-bugs.md), [VSS audit](vss-lifecycle-audit.md), [replay dependency closure](vss-replay-closure.md) |
 

@@ -760,3 +760,24 @@ revisions and preserved setup/network selection after a complete workspace walk;
 it still requires publication and does not verify fresh snapshot restoration.
 The platform exposes no Goal scheduler or publish action in this session.
 All six milestones, held resources and original private evidence remain tracked.
+
+The completed45e879b actual overlay run now gives a narrower observation:
+QUIC initiator readiness sampled123 times, with its owned core image and TUN
+confirmed, while the peer projection failed PEER_RESOLVED_ENDPOINT_INVALID.
+No correct-pin/wrong-pin/restore phase completed and WSS/TCP were not reached.
+The official receipt ZIP digest matches
+16b7e82176aef2d12e41a70f71a328abf2b86e2f0b8bf9fd952a541052e6a8e6.
+Two namespace removals and private-stage cleanup are explicit. A rejected
+observation does not prove that the underlying peer lacked authentication; the
+exact resolved-address producer/consumer boundary remains the next correction.
+
+An ordinary HTTPS download also obtained the official Wintun0.14.1 ZIP and its
+prebuilt-binary license. Reviewed7930de9 records all seven members, exact matches
+to the previously pinned amd64/x86 DLLs, and the original CRLF license bytes.
+Ten focused checks passed independently. This closes the missing official
+origin/license input, while final API-use/distribution conditions, Npcap's
+separate hold and actual driver behavior remain unresolved. The finite
+[Windows session probe](tasks/wintun-retained-session-probe.md) is being
+implemented for a clean disposable hosted VM only; it has not executed a driver,
+configured a peer or enabled Public. DevDocs38f5efc has meanwhile been pushed and
+verified, binding135 files, including133 exact source mirrors, to source0604651.

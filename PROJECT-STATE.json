@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "At1974fad actual hosted Windows quick tests passed FinalLaunchPreparation9 and PublicNativeReturn27 with original IIS state restored; full candidate39922764910 Windows job succeeded and official artifact digest matches; native8, interop3 and source8 all passed, four actual component hashes match their manifests, and checked PE branding passed. Same-run assembly/static preflight also passed; native lifecycle and stack jobs then failed before runtime completion with only an unclassified hosted diagnostic. A local exact isolated-Python command separately reproduced the stack containment import failure. Reviewed45e879b/41a66aa align exact pinned QUIC initiator bind serialization and retain bounded last-readiness observations; next actual full overlay is running. Reviewed ce0df6d fixes independently reproduced sudo checkout trust failure with exact per-command scope. UI09 paired Windows builder1a6b2e6 failed after its12 regressions and before recorded cargo compilation, with fixed WINDOWS_BUILD_FAILED; exact stage/root cause awaits bounded diagnosis. Source preparation/locked metadata are locally verified only. Fresh detached1a6b2e6 passed425=423+2existingWindows-onlyskips and exact canonical patch roundtrip. All six goals/Public/fullpackage remain incomplete.",
-  "NEXT_EXECUTABLE_ACTION": "Fix the reproduced isolated-Python containment entry import and verify next native lifecycle/SERVER15 jobs with the scoped Git trust correction; preserve confirmed1974 Windows source8/four components and same-run identity/static preflight. Follow full-overlay45e879b last-readiness evidence through correct/wrong-pin/restore controls, without calling compile/readiness timeouts success. Follow first1a6b2e6 paired Windows core/CLI compile to an actual MSVC result; then implement the remaining owned Windows session/secure-peer/current-process chain only within observed driver and resource boundaries. Preserve all six goals, accepted gameplay, privateSAV/META, absentCapture/C71/VSS inputs and exact notices; sync reviewed source-bound DevDocs and reusable environment draft after concrete results.",
+  "LAST_CONFIRMED_RESULT": "At 1974fad, actual Windows components, native IPC 8, interop 3, source transport 8, managed return 27, final login 9 and same-run component identity/static preflight passed; downloaded hashes and branding were independently verified. Native lifecycle and stack jobs then failed before positive runtime evidence; the isolated-Python containment import failure was independently reproduced. Actual overlay run 45e879b confirmed its owned core/TUN but rejected the QUIC resolved endpoint, with zero completed transport phases. A real local production QUIC loopback reproduced IPv4-mapped IPv6 output; its narrow parser correction is in progress. Reviewed f799a0c fixes a real Git archive CRLF defect without changing pins; paired Windows rerun 39927010635 is still building. Official Wintun origin/license inputs were obtained and verified, while its finite hosted driver probe has not run. Fresh detached 1a6b2e6 passed 425 checks (423 passed, two existing Windows-only skips) and exact canonical patch reversal. All six goals, Public admission and the full package remain incomplete.",
+  "NEXT_EXECUTABLE_ACTION": "Finish the reviewed isolated-Python entry and exact QUIC resolved-endpoint corrections, then run the real transport matrix and native lifecycle/SERVER15 controls. Follow paired Windows build 39927010635 to its actual MSVC result and the finite owned Wintun session probe to real driver evidence; do not infer secure-peer or production lease readiness from those prerequisites alone. Preserve all six goals, accepted gameplay, held SAV/META, absent Capture/C71/VSS inputs, exact notices and original evidence. Continue source-bound DevDocs and environment checkpoint updates as concrete results arrive.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -43,7 +43,7 @@
     {
       "id": 6,
       "name": "Standalone development root and safe cleanup",
-      "status": "originals_preserved_public_network_inputs_pinned_capture_source_absent_saves_privacy_and_npcap_wintun_provenance_gates_open"
+      "status": "originals_preserved_official_wintun_origin_and_license_obtained_capture_source_absent_saves_privacy_npcap_and_final_distribution_conditions_open"
     }
   ],
   "continuation_policy": "Code changes primarily in cloud per user. Local work finishes migration, privacy review, current builds and preservation; never auto-start game or private capture.",
@@ -239,12 +239,12 @@
     ],
     "candidate_windows_source": "At1974 run39922764910 Windows job120311712409 succeeded. Official component ZIP digest verified; native8, interop3 and source8 each fully passed with zero ignored/skipped; four component hashes and checked PE branding matched. Quick39922765064 separately passed27return+9final and restored IIS.",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "All1974 candidate Linux LAN/donor/control/namespace jobs succeeded; actual overlay45e879b runtime39924391718 still pending.",
+    "candidate_linux_matrix": "1974 and 1a6b2e6 candidate Linux LAN/donor/control/namespace jobs succeeded. Actual overlay45e879b failed the QUIC resolved-endpoint observation after owned core/TUN readiness; no completed transport matrix.",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
     "candidate_component_result": "1974 Windows/Linux component jobs, namespaces and same-run identity/static preflight succeeded. Native lifecycle and combined stack jobs failed with unclassified hosted diagnostic before positive runtime evidence. Complete-resource and C71 input gates fail; full package is skipped.",
-    "knowledge_snapshot_commit": "557d3e856eb148f5cd3259de0f76639f927cfa53",
-    "knowledge_snapshot_source": "c893c0bfed1036675ede6c6e6fb3ce29fe183050",
-    "knowledge_snapshot_files": 120
+    "knowledge_snapshot_commit": "38f5efc1fce3331e577ace04ee936ef56e28bc1d",
+    "knowledge_snapshot_source": "060465124986e6f766974065171ca3200f04f574",
+    "knowledge_snapshot_files": 135
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -252,7 +252,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T08:42:38.418989+00:00",
+  "updated_utc": "2026-10-23T08:57:44.349335+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -530,7 +530,7 @@
       "local_checks_passed": 27,
       "actual_local_preflight_exit": 1,
       "actual_local_runtime_started": false,
-      "actual_hosted": "Actual6c timeout receipt confirms onlyQUIC, zero phases, namespaces2created/2removed and private stage removed; no core/TUN/peer readiness or child reap inferred.45e879b next full run39924391718 pending, with exact production serde bind projection and bounded last observation.",
+      "actual_hosted": "45e879b run39924391718/job120317103110 failed. Verified official artifact: QUIC initiator123 observations, owned core image/TUN true, parser rejects PEER_RESOLVED_ENDPOINT_INVALID;0 phases. Namespaces2/2/private stage cleanup verified. This does not prove the underlying peer lacked authentication. Exact producer/consumer fix and three-transport rerun pending.",
       "scope": "owned QUIC/WSS/TCP positives, wrong configured key with same PSK, restore; native SocketPolicy traffic and cleanup; not production admission",
       "readiness_fix_commit": "45e879be85814ac7b7a46596092d139398610f90"
     },
@@ -637,7 +637,15 @@
       "actual_full_windows_build": "failed_after12_regressions_before_recorded_cargo_stage;WINDOWS_BUILD_FAILED;exact_stage_cause_unresolved",
       "driver_or_core_executed": false,
       "production_issuer": "closed",
-      "boundary": "Modern-Windows-only development feature skips unverified legacy Win7 thunk downloads. Actual Wintun API effects/returned identity, secure-peer and owner IPC chain remain unresolved; no binary publication."
+      "boundary": "Modern-Windows-only development feature skips unverified legacy Win7 thunk downloads. Actual Wintun API effects/returned identity, secure-peer and owner IPC chain remain unresolved; no binary publication.",
+      "paired_windows_rerun": {
+        "source_head": "41fe262cc1e279b7cb44c3dcfba5b6a696ff60b7",
+        "run_id": 39927010635,
+        "job_id": 120325760177,
+        "status": "in_progress",
+        "focused_windows_checks_passed": 14,
+        "compile_or_link_success_claimed": false
+      }
     },
     "hosted_windows_components_current": {
       "run_id": 39922764910,
@@ -654,6 +662,25 @@
       "full_package": false,
       "live_game": false,
       "same_run_identity_static_preflight": "job120320810694_success"
+    },
+    "official_wintun_input": {
+      "implementation_commit": "7930de91b68125bf458bc164cf0d340f8da60e1d",
+      "archive_sha256": "07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51",
+      "archive_bytes": 750540,
+      "official_https_download": true,
+      "official_api_digest_available": false,
+      "members_verified": 7,
+      "prior_amd64_x86_dll_pins_match": true,
+      "original_license_sha256": "183adac21e7d96c508c8fd34d394b7b6708bc81564ad1bad61ab66143a008cd2",
+      "original_crlf_bytes_preserved": true,
+      "focused_checks_passed": 10,
+      "independent_same_checks_passed": 10,
+      "official_binary_origin_gap_resolved": true,
+      "final_usage_and_distribution_conditions_verified": false,
+      "npcap_hold_unchanged": true,
+      "driver_executed": false,
+      "finite_hosted_session_probe": "authorized_and_being_implemented;not_executed",
+      "production_admission": false
     }
   }
 }
