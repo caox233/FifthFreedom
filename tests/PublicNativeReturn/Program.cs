@@ -2,6 +2,7 @@ using System.Buffers.Binary;
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.Json;
 using SplinterCellCNLauncher.Services;
@@ -14,7 +15,8 @@ internal static partial class Program
     private static bool failureReported;
     private static string suite = "PublicNativeReturn", setup = "SETUP_PACKAGE";
     private enum Phase { RUN_CASE, CHILD_START, WAIT_IDLE, WAIT_FRAME, WAIT_CONNECT, WAIT_AUTH, WAIT_DISCONNECT, WAIT_REJECT,
-        CONFIG_DELIVERY, CONFIG_ACK, OWNER_CAPTURE, STATE_WAIT, PIPE_CONNECT, PIPE_READ, CHILD_EXIT, CLEANUP }
+        CONFIG_DELIVERY, CONFIG_ACK, CONFIG_DELIVERY_WAIT, OWNER_CAPTURE, STATE_WAIT, PIPE_CONNECT, PIPE_READ,
+        CHILD_EXIT, CLEANUP, OWNED_DIRECTORY_CLEANUP }
     private static Phase phase = Phase.RUN_CASE;
     private static readonly string[] exceptionTypes = ["AuthenticationException", "CryptographicException", "IOException", "EndOfStreamException",
         "SocketException", "HttpRequestException", "OperationCanceledException", "TaskCanceledException", "TimeoutException",
@@ -245,35 +247,7 @@ internal static partial class Program
     { await child.StandardInput.WriteLineAsync(JsonSerializer.Serialize(new { token, instance = Instance })); await Line(child, "CONNECTED"); }
     private static async Task WindowsCases()
     {
-        foreach (int reply in new[] { 1, 0, -1 }) await Case($"actual retained config pipe ACK={reply} grants only byte-one after validation", async () => {
-            string root = Path.Combine(Path.GetTempPath(), "ff-config-child-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
-            try
-            {
-                // This is a copy of our synthetic test apphost, never a game image.
-                foreach (string file in Directory.EnumerateFiles(AppContext.BaseDirectory)) File.Copy(file, Path.Combine(root, Path.GetFileName(file)));
-                string executable = Path.Combine(root, "Blacklist_DX11_game.exe");
-                File.Copy(Path.Combine(AppContext.BaseDirectory, "PublicNativeReturn.exe"), executable);
-                await using var config = new ScblLan.LaunchPipe("ConfigServer = \"127.0.0.1\"\n", executable);
-                int validated = 0, acknowledged = 0;
-                config.PeerValidated += _ => Interlocked.Increment(ref validated);
-                config.ConfigurationAcknowledged += _ => Interlocked.Increment(ref acknowledged);
-                using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
-                phase = Phase.CONFIG_DELIVERY; Task delivery = config.DeliverAsync(deadline.Token);
-                var start = new ProcessStartInfo(executable) { UseShellExecute = false, RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true };
-                start.ArgumentList.Add("--config-child"); start.ArgumentList.Add(config.Name); start.ArgumentList.Add(reply.ToString());
-                phase = Phase.CHILD_START; using var child = Process.Start(start)!;
-                try
-                {
-                    await Line(child, "FRAME_RECEIVED"); Check(validated == 1 && acknowledged == 0 && !delivery.IsCompleted);
-                    phase = Phase.CONFIG_ACK; await child.StandardInput.WriteLineAsync("ack");
-                    if (reply == 1) { await delivery; Check(acknowledged == 1); }
-                    else { await Reject(() => delivery); Check(acknowledged == 0); }
-                    await child.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(5));
-                }
-                finally { await End(child); }
-            }
-            finally { Directory.Delete(root, recursive: true); }
-        });
+        foreach (int reply in new[] { 1, 0, -1 }) await Case($"actual retained config pipe ACK={reply} grants only byte-one after validation", () => ConfigAckCase(reply));
         await Case("wrong launcher catalog cannot create a launch descriptor", async () => {
             await using var bridge = new PublicNativeReturn(profile, CredentialEnvironmentContext.ForPublic(profile).CreateIdentity("10.66.0.1:50051", User),
                 "10.66.0.1:50051", package.Package, new("synthetic-account", User), "10.66.0.10", "scbl-lan/2/game/mod", false);
@@ -340,6 +314,82 @@ internal static partial class Program
                 await Eventually(() => old.Lifetime.IsCancellationRequested && server.Current == null); await server.DisposeAsync();
             } finally { await End(child); }
         });
+    }
+    private static async Task ConfigAckCase(int reply)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "ff-config-child-" + Guid.NewGuid().ToString("N"));
+        Process? child = null;
+        ScblLan.LaunchPipe? config = null;
+        ExceptionDispatchInfo? firstFailure = null;
+        string childExited = "UNKNOWN";
+        bool processDisposed = false, configDisposed = false, directoryCreated = false;
+        string which = (passed + 1).ToString("D2", System.Globalization.CultureInfo.InvariantCulture);
+        void Remember(Exception error)
+        {
+            if (firstFailure != null) return;
+            firstFailure = ExceptionDispatchInfo.Capture(error);
+            // Record the failing operation before cleanup changes the phase or
+            // raises another exception. Cleanup still runs and cannot turn it green.
+            ReportFailure(which, error);
+        }
+        try
+        {
+            Directory.CreateDirectory(root); directoryCreated = true;
+            // This is a copy of our synthetic test apphost, never a game image.
+            foreach (string file in Directory.EnumerateFiles(AppContext.BaseDirectory)) File.Copy(file, Path.Combine(root, Path.GetFileName(file)));
+            string executable = Path.Combine(root, "Blacklist_DX11_game.exe");
+            File.Copy(Path.Combine(AppContext.BaseDirectory, "PublicNativeReturn.exe"), executable);
+            config = new ScblLan.LaunchPipe("ConfigServer = \"127.0.0.1\"\n", executable);
+            int validated = 0, acknowledged = 0;
+            config.PeerValidated += _ => Interlocked.Increment(ref validated);
+            config.ConfigurationAcknowledged += _ => Interlocked.Increment(ref acknowledged);
+            using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            phase = Phase.CONFIG_DELIVERY; Task delivery = config.DeliverAsync(deadline.Token);
+            var start = new ProcessStartInfo(executable) { UseShellExecute = false, RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true };
+            start.ArgumentList.Add("--config-child"); start.ArgumentList.Add(config.Name); start.ArgumentList.Add(reply.ToString());
+            phase = Phase.CHILD_START; child = Process.Start(start) ?? throw new InvalidOperationException();
+            await Line(child, "FRAME_RECEIVED"); Check(validated == 1 && acknowledged == 0 && !delivery.IsCompleted);
+            phase = Phase.CONFIG_ACK; await child.StandardInput.WriteLineAsync("ack");
+            phase = Phase.CONFIG_DELIVERY_WAIT;
+            if (reply == 1) { await delivery; Check(acknowledged == 1); }
+            else { await Reject(() => delivery); Check(acknowledged == 0); }
+            phase = Phase.CHILD_EXIT; await child.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(5));
+            childExited = "YES";
+        }
+        catch (Exception error) { Remember(error); }
+        finally
+        {
+            if (child != null)
+            {
+                phase = Phase.CHILD_EXIT;
+                try { await End(child); childExited = child.HasExited ? "YES" : "NO"; }
+                catch (Exception error) { Remember(error); }
+                phase = Phase.CLEANUP;
+                try { child.Dispose(); processDisposed = true; }
+                catch (Exception error) { Remember(error); }
+            }
+            if (config != null)
+            {
+                phase = Phase.CLEANUP;
+                try { await config.DisposeAsync(); configDisposed = true; }
+                catch (Exception error) { Remember(error); }
+            }
+            if (directoryCreated)
+            {
+                phase = Phase.OWNED_DIRECTORY_CLEANUP;
+                try { Directory.Delete(root, recursive: true); }
+                catch (Exception error)
+                {
+                    Remember(error);
+                    string readOnly = "UNKNOWN";
+                    try { readOnly = Directory.EnumerateFiles(root, "*", SearchOption.TopDirectoryOnly)
+                        .Any(file => (File.GetAttributes(file) & FileAttributes.ReadOnly) != 0) ? "YES" : "NO"; }
+                    catch { } // The failed observation cannot replace the first failure.
+                    Console.WriteLine($"CI_RETURN_DIRECTORY_FAILURE suite=PublicNativeReturn case={which} exception={ErrorType(error)} child_exited={childExited} process_disposed={(processDisposed ? "YES" : "NO")} config_disposed={(configDisposed ? "YES" : "NO")} readonly_files={readOnly}");
+                }
+            }
+        }
+        firstFailure?.Throw();
     }
     private static async Task ConfigChild(string name, int reply)
     {
