@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Actual paired Windows EasyTier core/CLI MSVC build39927010635 at41fe262 passed with locked source/patch identities. Actual clean hosted Wintun run39930667783 at319bf44 passed two owner-drop/async-shutdown lifecycle cases, receive EOF and owned adapter removal; unrelated adapter identities were preserved. The official driver package remains in the disposable VM, and no network/peer/Public lease was enabled. Candidate41fe262 Windows/Linux components and static assembly passed, but native lifecycle remains unclassified and stack failed a confirmed isolated-Python import. The319 candidate stopped in two new Windows isolated-entry source tests before Windows components or downstream native jobs. The corrected b613 Linux matrix instead reported observe/OVERLAY_OBSERVATION_UNAVAILABLE with zero completed phases; its worker was reaped and both namespaces removed. Both new failures are being diagnosed from real receipts. Fresh detachedb613861 passed451 methods (449 passed, two Windows-only skips) and exact canonical patch reversal. Complete Public/session authentication integration, full package and all six goals remain incomplete.",
-  "NEXT_EXECUTABLE_ACTION": "Reviewed528668e fixes the actual319 Windows entry tests (CRLF and missing Win32 fchmod); verify this on hosted Windows. Diagnose and fix the b613 worker observation failure, then rerun the corrected three-transport matrix and same-run native/stack jobs. Preserve first failures and source-specific evidence. Implement a separate current-session authenticated-receive observation at the actual decrypt/tag/replay boundary; handshake history and plaintext Ping/Pong are not fresh authenticated traffic. Continue the typed retained Windows session ownership path, then exact source/route/peer/owner IPC integration with ordinary Public still closed until proved. Keep accepted gameplay, held SAV/META, missing Capture/C71/VSS inputs, notices and original evidence; synchronize reviewed source-bound DevDocs and environment checkpoints.",
+  "LAST_CONFIRMED_RESULT": "Source23d592 passed real Ubuntu and Windows source jobs; Ubuntu477 methods=475pass+2existing Windows-only skips, Windows477=390pass+87explicit platform-specific skips, no failures and full-package readiness false. A fresh detached23d592 independently matched475+2 and exact patch apply/reverse. Prior full paired Windows41fe262 build and real319 Wintun two-case lifecycle remain verified. New typed retained-session accessor ad60fe0 passed8 linked Rust checks and20 builder checks; its full ten-patch Windows build39935015346 is running. Authenticated Data observation2408d6a passed15new+29retained checks with a real same-session sync/ABA regression fixed, but its patches are not yet adopted by runtime recipes. Actual Linux491 probe completed the QUIC correct-pin-before TCP/fixedUDP/ephemeralUDP echo phase then failed OVERLAY_ADDRESS_QUERY_UNAVAILABLE; the matrix is incomplete. The528 candidate Windows component and same-run static jobs passed at metadata level; native lifecycle then failed WORKER_NATIVE_LISTENER_OWNERSHIP_INVALID and the combined stack is running. Complete Public ownership/admission remains unverified. All six goals remain open where their explicit inputs/live evidence are absent.",
+  "NEXT_EXECUTABLE_ACTION": "Verify reviewed1bc552c initial-UP/EADDRNOTAVAIL pending correction on actual hosted runtime; rerun all correct-pin/wrong-pin/restore transport phases and preserve first failures. Diagnose the exact528 native listener-ownership failure and follow its actual combined-stack result and23d592 ten-patch Windows compile/static import results. Automate the separate authenticated-receive source recipe without changing guard3/runtime pins; continue real owned-core process/IPC implementation and three-client synthetic chat regression. Preserve accepted gameplay, original evidence, private SAV/META and missing Capture/C71/VSS inputs; source/DevDocs remain explicitly revision-bound.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -92,7 +92,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Official GitHub API and normal redirected job-log/artifact downloads now succeed under existing unrestricted network selection. Earlier restricted/denied observations remain historical. Runtime reports network enforcement unknown; no policy bypass or token output.",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39930668418",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39932526946",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -239,12 +239,12 @@
     ],
     "candidate_windows_source": "At1974 run39922764910 Windows job120311712409 succeeded. Official component ZIP digest verified; native8, interop3 and source8 each fully passed with zero ignored/skipped; four component hashes and checked PE branding matched. Quick39922765064 separately passed27return+9final and restored IIS.",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "b613 actual matrix39929836302/job120335089272 passed build stages but failed worker observe/OVERLAY_OBSERVATION_UNAVAILABLE, zero completed phases. Official artifact digest verified, worker cleanup_reaped true, two namespaces removed. No positive, wrong-pin, WSS/TCP or authentication-failure conclusion follows.",
+    "candidate_linux_matrix": "49193b5 run39933668757/job120347846855 passed the complete QUIC correct-pin-before echo phase (TCP, fixed UDP, ephemeral UDP), then failed observe/OVERLAY_ADDRESS_QUERY_UNAVAILABLE. Official artifact digest matched; worker reaped, two namespaces and private stage removed. Wrong-pin/restore and WSS/TCP remain incomplete; exact role/errno is not retained.",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "41fe262 Windows/Linux components, namespace controls and same-run identity/static preflight passed at official job metadata level; this follow-up does not rehash those new component bytes. Native lifecycle failed unclassified; stack failed ModuleNotFoundError ci_socket_isolation. Latest319 candidate contains reviewed import/fixed-diagnostic corrections and is running. Both strict held-input gates remain failing and full package skipped. The newer319 Windows source step failed two new isolated-entry tests (CRLF line comparison and missing JSON from a Unix-only fchmod call), before component compilation or downstream native jobs; exact cause is under diagnosis, not a regression claim against unexecuted components.",
-    "knowledge_snapshot_commit": "38f5efc1fce3331e577ace04ee936ef56e28bc1d",
-    "knowledge_snapshot_source": "060465124986e6f766974065171ca3200f04f574",
-    "knowledge_snapshot_files": 135
+    "candidate_component_result": "528 candidate39932526946 Windows component job120344867895 and same-run static job120354930050 succeeded at official metadata level. Native lifecycle job120355233722 failed WORKER_NATIVE_LISTENER_OWNERSHIP_INVALID; no native receipt artifact was produced, and exact case/cause requires diagnosis. Combined stack120355233682 remains running. This follow-up does not independently rehash new component bytes. Both held-input gates and full-package limits remain explicit.",
+    "knowledge_snapshot_commit": "a7e8b65a417d1a38f56a428ac28de33722965462",
+    "knowledge_snapshot_source": "02e35efc8029c8f638dbe7cb253e9ff64bd79f22",
+    "knowledge_snapshot_files": 149
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -252,7 +252,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T09:30:36.246451+00:00",
+  "updated_utc": "2026-10-23T10:00:07.313516+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -317,14 +317,14 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "executed": 451,
-      "passed": 449,
+      "executed": 477,
+      "passed": 475,
       "skipped": 2,
       "exit_code": 0,
-      "environment": "fresh detached checkoutb613861343df34c9151cb7cf6b4eeec9fdf4a4f6; .local/cloud-receipts/clean-checkout-b613861343df/receipt.json",
+      "environment": "fresh detached23d592358d556438c66fb7ce398986d7b83ad839; .local/cloud-receipts/clean-checkout-23d592358d55/receipt.json",
       "tracked_files_unchanged": true,
       "complete_package": false,
-      "source_report_sha256": "bf11040886ac5c85097c6ee0148843f13abcc02fa6a311833a0370ff05699dd3"
+      "source_report_sha256": "b65315f6fcd01c68e11ebe34c39b2f41ce1546bb9977a14480afba31cc5a8463"
     },
     "cloud_authenticated_reader": {
       "passed": 69,
@@ -521,7 +521,7 @@
       "local_checks_passed": 13,
       "actual_local_preflight_exit": 1,
       "actual_local_namespaces_created": 0,
-      "actual_hosted": "41fe262run39927010569/job120339549059 failed with UNCLASSIFIED_PROBE_FAILURE even after scoped Git trust correction. No exact cause established.319candidate has expanded fixed diagnostic codes but its Windows source prerequisite failed before this downstream job could execute.",
+      "actual_hosted": "528run39932526946/job120355233722 failed actual contract step with WORKER_NATIVE_LISTENER_OWNERSHIP_INVALID after checkout, download and runtime prerequisites succeeded. No failure receipt was produced. Exact failing case/listener/cause remains under investigation. Earlier41 generic failure is retained, not retroactively assigned this reason.",
       "scope": "five owned isolated main-process activation/revocation cases; no ordinary production admission",
       "checkout_fix_commit": "ce0df6da5630e76f9bd5960920fe8ca18ac13176"
     },
@@ -530,19 +530,19 @@
       "local_checks_passed": 30,
       "actual_local_preflight_exit": 1,
       "actual_local_runtime_started": false,
-      "actual_hosted": "45e879b run39924391718/job120317103110 failed. Verified official artifact: QUIC initiator123 observations, owned core image/TUN true, parser rejects PEER_RESOLVED_ENDPOINT_INVALID;0 phases. Namespaces2/2/private stage cleanup verified. A separate production QUIC loopback reproduced a mapped-IPv4 resolved form rejected at that parser boundary;45 did not retain its raw endpoint.54a62c4 permits only the exact configured IPv4/port canonical mapping for QUIC initiator resolved_remote_addr. Correctedb613 run39929836302/job120335089272 instead failed observe/OVERLAY_OBSERVATION_UNAVAILABLE, zero phases. Official ZIP SHA256 e38d93d4ad3a3395b5aeea910c9b6884a0c535c10517e8c68bde568e0941197d verified; worker cleanup_reaped true and2/2 namespaces removed, no cleanup errors. Neither observation proves an authentication failure or successful readiness.",
+      "actual_hosted": "45e879b run39924391718/job120317103110 failed. Verified official artifact: QUIC initiator123 observations, owned core image/TUN true, parser rejects PEER_RESOLVED_ENDPOINT_INVALID;0 phases. Namespaces2/2/private stage cleanup verified. A separate production QUIC loopback reproduced a mapped-IPv4 resolved form rejected at that parser boundary;45 did not retain its raw endpoint.54a62c4 permits only the exact configured IPv4/port canonical mapping for QUIC initiator resolved_remote_addr. Correctedb613 run39929836302/job120335089272 instead failed observe/OVERLAY_OBSERVATION_UNAVAILABLE, zero phases. Official ZIP SHA256 e38d93d4ad3a3395b5aeea910c9b6884a0c535c10517e8c68bde568e0941197d verified; worker cleanup_reaped true and2/2 namespaces removed, no cleanup errors. Neither observation proves an authentication failure or successful readiness. Latest49193b5run39933668757 completed the QUIC correct-pin-before three-echo phase then failed precise OVERLAY_ADDRESS_QUERY_UNAVAILABLE, worker reaped and namespaces/private stage removed. Role/errno unknown; neither complete matrix nor authentication-failure claim. Separate actual ioctl/source evidence supports reviewed1bc552c: only first UP/EADDRNOTAVAIL is pending, while other errors and address loss after success remain fatal.20lifecycle+19overlay+31probe local checks passed; independent2regressions passed, actual rerun pending.",
       "scope": "owned QUIC/WSS/TCP positives, wrong configured key with same PSK, restore; native SocketPolicy traffic and cleanup; not production admission",
       "readiness_fix_commit": "45e879be85814ac7b7a46596092d139398610f90"
     },
     "cloud_canonical_patch_proof": {
       "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
-      "target": "b613861343df34c9151cb7cf6b4eeec9fdf4a4f6",
-      "patch_sha256": "0397607c72be9856fba38542a4c7b9ccddb1e483af84bf1e9c4f1c7ce260a639",
+      "target": "23d592358d556438c66fb7ce398986d7b83ad839",
+      "patch_sha256": "e9abcd8c9f361335a47129d3af98655c396fe9d6b160e115f00e3b25af469b26",
       "original_paths": 1312,
-      "forward_paths": 1574,
+      "forward_paths": 1593,
       "reverse_paths": 1312,
       "reverse_git_clean": true,
-      "scope": "exact canonical Git blob bytes, modes and pathsets; checkout CRLF expansion is separate; original private four-role evidence unchanged"
+      "scope": "exact canonical Git bytes/modes/pathsets; original private four-role evidence unchanged"
     },
     "hosted_overlay_guard3_build": {
       "run_id": 39909129708,
@@ -647,6 +647,18 @@
         "focused_windows_checks_passed": 14,
         "compile_or_link_success_claimed": true,
         "receipt": "docs/evidence/hosted-windows-easytier-41fe262.json"
+      },
+      "typed_current_session_read": {
+        "implementation_commit": "ad60fe0ee85d69d7041af712ae6da0fefaa70dd1",
+        "linked_rust_checks": 8,
+        "builder_checks": 20,
+        "independent_review": "8Rust+18initialbuilder independently passed; separate2PE-wrapper checks passed independently",
+        "snapshot_is_lease": false,
+        "actual_windows_build_run": 39935015346,
+        "actual_windows_build_job": 120352316132,
+        "actual_windows_builder_checks_passed": 20,
+        "actual_ten_patch_compile_link_verified": false,
+        "scope": "current typed NicCtx ownership under one asynchronous budget; synchronous OS call is not hard-preempted; owner IPC/challenge chain still absent"
       }
     },
     "hosted_windows_components_current": {
@@ -709,9 +721,45 @@
     "authenticated_peer_freshness_boundary": {
       "handshake_history_is_fresh_authenticated_traffic": false,
       "ping_pong_is_authenticated_traffic": false,
-      "actual_decrypt_observation_implementation": "in_progress_separate_dependency_patch",
+      "actual_decrypt_observation_implementation": "2408d6ae4d0c02d53d14389736bfb0f2ec65e18c separate production-linked patch; runtime recipes unchanged",
+      "new_checks_passed": 15,
+      "retained_checks_passed": 29,
+      "same_generation_and_aba_regression": "actual2fail_before_fix_then15pass; independent final15pass",
+      "source_patch_apply_reverse_verified": true,
       "active_challenge_verified": false,
-      "production_admission": false
+      "production_admission": false,
+      "record": "docs/tasks/authenticated-receive.md"
+    },
+    "hosted_portable_source_matrix": {
+      "source_head": "23d592358d556438c66fb7ce398986d7b83ad839",
+      "run_id": 39935015323,
+      "ubuntu": {
+        "job_id": 120352315372,
+        "conclusion": "success",
+        "executed": 477,
+        "passed": 475,
+        "skipped": 2
+      },
+      "windows": {
+        "job_id": 120352315721,
+        "conclusion": "success",
+        "executed": 477,
+        "passed": 390,
+        "skipped": 87
+      },
+      "both_official_artifact_digests_verified": true,
+      "complete_package_ready": false,
+      "scope": "same source command on both platforms; skips are explicit platform contracts, not positive native runtime evidence"
+    },
+    "cloud_pe_dependency_inventory": {
+      "implementation_commit": "a093045c82861a7011c460c9efe8f65320870d22",
+      "builder_hook_commit": "23d592358d556438c66fb7ce398986d7b83ad839",
+      "focused_checks_passed": 14,
+      "independent_same_checks_passed": 14,
+      "independent_actual_pe_comparisons": 4,
+      "normal_and_delay_directories_verified": true,
+      "actual_paired_core_cli_imports_pending": true,
+      "scope": "static DLL-name inventory only; no executable loading, symbol resolution, transitive or dynamic-load dependency closure"
     }
   }
 }

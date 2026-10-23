@@ -856,3 +856,80 @@ their actual CRLF line comparison and unavailable Win32 fchmod call, preserving
 all three isolated CLI checks and POSIX file modes;31 focused checks passed.
 Both actual failures remain recorded and the fixes require hosted verification;
 Linux-only source success is not Windows success.
+
+## Current session observations and cross-platform source evidence
+
+Reviewed2408d6a adds a separate production-linked authenticated Data receive
+observation, after actual AEAD/replay success. Plaintext, Ping/Pong, RPC and relay
+pass-through cannot refresh it. Reads recheck connection ownership, current
+session installation, generation and a nonsecret synchronization revision.
+Independent review reproduced two failures when the same shared session Arc was
+resynchronized without changing its generation, including a generation round
+trip. The revision fence fixes those cases:15 new checks and29 retained crypto/
+ingress/pin/handshake checks passed; independent final15 and exact patch reversal
+also passed. [The source candidate](tasks/authenticated-receive.md) remains
+separate from current runtime recipes. It records an accepted event, without
+proving active challenge response, idle-peer liveness or a production lease.
+
+Reviewedad60fe0 connects the actual Windows Instance/NicCtx ownership path to a
+typed retained-session read. One shared deadline bounds waiting on the container
+and inner read; wrong type, missing context, owner loss, cancellation and timeout
+remain failures. The returned snapshot is historical and cannot grant a lease.
+Eight tests link the exact production helper, including a combined elapsed-budget
+case. Independent preparation and patch reverse/forward checks match the new
+ten-patch source inventory. The
+[23d592 Windows build39935015346](https://github.com/caox233/FifthFreedom/actions/runs/39935015346)
+has passed20 builder regressions and is compiling; its full result remains pending.
+
+Roota093045 and the reviewed23d592 hook also add bounded static normal/delay-load
+DLL inventories to the paired outputs. Fourteen parser checks passed independently.
+Four actual retained candidate PEs, including the144.9MB launcher and its two
+delay-load DLL names, were independently compared with binutils without execution
+or original-byte changes. Actual new paired core/CLI imports await the running
+builder. Static import names do not resolve search paths, symbols, forwarded
+imports or later dynamic loads, and do not close runtime/license requirements.
+The exact existing source separately shows a Windows pnet fallback outside the
+faketcp feature; simply disabling faketcp would not prove removal of Packet input.
+
+The first [dual-platform source run39935015323](https://github.com/caox233/FifthFreedom/actions/runs/39935015323)
+at23d592 succeeded on Ubuntu and Windows with both official artifact ZIP digests
+verified. Ubuntu executed477 methods:475 passed, two existing Windows-only skips.
+Windows executed477:390 passed,87 explicit platform-specific skips, including
+Linux pidfd/namespace/file-mode checks and Windows symlink privilege checks. Neither receipt reports complete-package readiness. The new
+lane uses the same source command and fixed Python dependency, without installing
+compiler SDKs or changing strict resource gates.
+
+The latest actual Linux probe49193b5run39933668757/job120347846855 completed the
+QUIC correct-pin-before phase: real TCP, fixed UDP and ephemeral UDP echoes all
+passed. It then failed observe/OVERLAY_ADDRESS_QUERY_UNAVAILABLE; no complete
+wrong-pin/restore or WSS/TCP result follows. The official ZIP digest is
+f56b796189a3f7634ccc139378616a416e6103c16202dfebb6e0eb4356f61cae.
+Worker reaping, both namespace removals and private-stage cleanup are explicit.
+This receipt does not identify which role/errno caused the later address error.
+Separate read-only Linux ioctl controls and exact upstream startup order show an
+initial visible-UP/no-IPv4 window. Reviewed1bc552c makes only an initial UP
+interface's exact EADDRNOTAVAIL pending, without committing readiness or index.
+Other errors and address loss after initial success remain fatal.20 lifecycle,
+19 monitor and31 probe local checks passed; the two new regressions passed
+independently. Actual hosted verification of this correction is still pending.
+
+A fresh detached23d592 independently passed475 methods with two Windows-only
+skips and unchanged tracked files. Report SHA256 is
+b65315f6fcd01c68e11ebe34c39b2f41ce1546bb9977a14480afba31cc5a8463.
+Its canonicalfc8ef510 patch applied and reversed exactly:1312→1593→1312, clean;
+SHA256e9abcd8c9f361335a47129d3af98655c396fe9d6b160e115f00e3b25af469b26.
+The original private four-role evidence remains unchanged. DevDocsa7e8b65 was
+pushed and its remote SHA verified;149 files, including147 exact public mirrors,
+bind source02e35ef. Both draft PR descriptions now identify that reviewed
+checkpoint and the remaining resource/runtime boundaries. No release or
+production deployment has occurred, and all six milestones remain tracked.
+
+The528 candidate39932526946 subsequently passed Windows component job120344867895
+and same-run identity/static job120354930050 at official job-metadata level.
+The native lifecycle job120355233722 now reports a concrete failure:
+WORKER_NATIVE_LISTENER_OWNERSHIP_INVALID, after checkout/download/runtime
+prerequisites succeeded. No native failure receipt artifact was produced; the
+exact case/listener/cause is still under investigation. This new result is not
+assigned retroactively to older generic native failures. The combined stack
+job120355233682 remains running. No independent new component-byte rehash or
+positive native lifecycle result is claimed by this metadata follow-up.
