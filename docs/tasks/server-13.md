@@ -218,8 +218,18 @@ archive and selected original source files/hashes are retained privately under
 `.local/evidence/cloud/server13-nft-source/`; no downloaded source or binary is
 added to the project runtime.
 
-The focused probe suite now has 20 passing tests. No hosted positive is recorded
-yet: the next executable action is the quick privileged preflight with this
-narrow generator change, followed by the complete runtime matrix. Any remaining
-readback difference still fails. Source tests or a preflight pass cannot replace
-the full transport run.
+The focused probe suite has 20 passing tests. The narrow correction then passed
+the actual privileged quick preflight:
+[39916016496](https://github.com/caox233/FifthFreedom/actions/runs/39916016496), job
+120289657927 at `f85c515168c35a7d727b0f936ad2254be144e036`. Official GitHub metadata
+reports success for the checked containment/cleanup step and its sanitized
+receipt upload. The workflow applies the strict three-transport/two-owned-
+namespace receipt validator. Bounded metadata is retained in
+`docs/evidence/hosted-containment-canonical-f85c515.json`; individual artifact
+fields were not independently downloaded through the unavailable archive path.
+
+This is an actual containment configuration/readback/cleanup pass, with no
+EasyTier or native runtime execution in that quick workflow. It resolves the
+observed predicate presentation mismatch while leaving strict comparisons in
+place. The complete owned runtime matrix is a separate run and is still needed;
+no full overlay or production admission success follows from this preflight.
