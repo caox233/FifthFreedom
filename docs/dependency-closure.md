@@ -1,7 +1,7 @@
 # Frozen-asset dependency closure
 
-Status: partial source/provenance evidence; exact frozen FusionFix binary version
-and capture-helper source rebuilding remain open. This record does not change
+Status: frozen loader identified as Ultimate ASI Loader v9.7.0 Win32; the exact
+FusionFix ASI source/build and capture-helper source rebuilding remain open. This record does not change
 asset pins, repack archives, release software or independently verify the owner's
 redistribution authorization.
 
@@ -51,8 +51,9 @@ remaining files differ:
 | `src/SYSTEM/scripts/SplinterCellBlacklist.FusionFix.ini` | `7afff9f1ca632991fb4cbf965e4810e3480935436e386bb782c41f93c4c32252` | `e8fd345ac9c4e584cf0c230798496b205750dd63ffd1c03fa10fe37bd70a9c49` |
 | `src/SYSTEM/version.dll` | `ad5d8d449ce305caf62cb17d8698ebf17e94f9120ee993d0dd85211dfe14f8dd` | `d5a059aa467a7a7127c8f6169f79fa63ff0f55986ee9eb2fd9a281bebf2aa2e6` |
 
-No exact tag, commit, semantic version or independently reproducible build has
-therefore been assigned to the frozen ASI or loader. Replacing them with the
+That rolling-release comparison did not identify the frozen binaries. The loader
+has since been matched to a separate exact official release below; the ASI's
+source/build identity remains unassigned. Replacing either binary with the
 current upstream release would be a behavior change requiring separate review
 and regression, not a way to close this documentation gap.
 
@@ -72,9 +73,77 @@ SHA256 `389eef0fb81f8b3bc7aca2025da43cf007acfb390a70f49439d269e51de0b8dc`.
 This is a verified notice/source reference for the cited upstream project. It is
 not a declaration that every file in the frozen archive, embedded loader,
 game-derived data, SDK input or other bundled third-party material is covered by
-that license. Exact frozen-binary attribution and any additional notices remain
-open. No notice was inserted into the pinned archive, so its integrity check
+that license. The ASI attribution and additional binary terms remain open; the
+following loader evidence narrows the gap. No notice was inserted into the pinned archive, so its integrity check
 continues to refer to the original bytes.
+
+## Exact loader release and embedded inputs
+
+The retained `src/SYSTEM/version.dll` is **2,376,192 bytes** with SHA256
+`ad5d8d449ce305caf62cb17d8698ebf17e94f9120ee993d0dd85211dfe14f8dd`.
+It is byte-for-byte identical to the sole `dinput8.dll` member of the official
+[Ultimate ASI Loader v9.7.0 Win32 release](https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases/tag/v9.7.0).
+This is a renamed identical member, not a version-string inference. Release ID
+277335045 / asset ID 341394264 identifies `Ultimate-ASI-Loader.zip`, 912,116 bytes,
+SHA256 `768d3ad612b8bbf16189c8dddd9626bb8d26eb7626a90339703ae0adb2c71390`.
+The download matched the official API digest before member comparison. Its tag
+resolves to `f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc`.
+
+The root PE `RT_VERSION` resource at `[16,1,1024]` reports file/product 9.7.0 and
+`GitHash=f9f6ccf`, consistent with that tag. The checker follows the PE resource
+directory; it does not search arbitrary UTF-16 strings. That distinction matters:
+the loader contains other DLLs with their own version/company strings. The ASI's
+root resource instead has fixed versions 1.2.0.0/3.0.0.0 and string versions
+1.0.0.0, without the loader's GitHash. Those generic/conflicting fields do not
+identify an exact ASI source revision or authorize assigning it a semantic release.
+
+The exact tagged Win32 resource script embeds three DLLs. Each was compared to
+the corresponding root loader RCDATA bytes, and all three match:
+
+| Tagged input | RCDATA path | Bytes | SHA256 |
+| --- | --- | ---: | --- |
+| `vorbisfile.dll` | `[10,101,1033]` | 37,376 | `4179f04a7b9134761f948fc81ae9b499fd7e97d69aac8ccd926354c1fb8df876` |
+| `wndmode.dll` | `[10,103,1033]` | 778,752 | `a3a4ca76a515801087d92ad9fc6c988bc0258691bf8f224c6ab82b941adfa1b0` |
+| `binkw32.dll` | `[10,105,1033]` | 215,552 | `9a3ab8f5f346ce36e468120194d467780bb9bf0233dda511966998b6f514f823` |
+
+This establishes their exact byte provenance. **Independent redistribution terms
+for those three binary inputs have not been verified.** In particular, a DLL
+filename or the loader's MIT notice does not establish that embedded binary's
+license. The owner's existing authorization statement remains separately recorded.
+
+The tagged build recipe and exact submodule commits identify seven available
+notices, copied without modification into `docs/third-party/`:
+
+| Component | Exact notice |
+| --- | --- |
+| Ultimate ASI Loader | MIT, copyright 2023 ThirteenAG |
+| miniz | MIT, RAD Game Tools/Valve and Rich Geldreich/Tenacious Software notices |
+| MemoryModule | MPL 2.0; source header credits Joachim Bauch |
+| d3d8to9 | BSD 2-Clause, Patrick Mours |
+| injector | zlib, LINK/2012 |
+| injector utility | MIT, praydog |
+| MinHook | BSD 2-Clause, including the HDE32/HDE64 notices |
+
+[`fusionfix-provenance.json`](fusionfix-provenance.json) records each exact source
+commit/path, original Git blob, notice length/hash, tagged build/resource script,
+release asset and embedded input. The tagged `xliveless.cpp` separately declares
+its public-domain donation. The minidx9 README defers to Microsoft's DirectX SDK
+terms; it is not itself an SDK redistribution grant. MemoryModule's MPL source
+availability/distribution obligations still need an explicit package plan. No
+independent loader rebuild or complete bundled-material permission closure is
+claimed by these notice copies.
+
+Run `python -B scripts/fusionfix_provenance.py` to verify both original archives,
+the independent existing asset pin, exact root PE metadata, three embedded
+binary digests and seven notice texts. The checker reads bounded regular-file
+snapshots, checks archive hashes before parsing, rejects cyclic/out-of-bounds
+resource trees, and never extracts, loads or executes a DLL. With an explicit
+`--upstream-loader-zip PATH` it also rechecks the pinned official ZIP and identical
+member. Without that input it reports `not_rechecked_in_this_run`; it performs no
+automatic download. Its identity success leaves permission/rebuild flags false
+and lists all unresolved holds. The actual official-ZIP check and six focused
+tests passed; original downloads/raw evidence stay under ignored
+`.local/evidence/cloud/fusionfix-exact/`.
 
 ## Capture helper: binary verified, reported source not received
 
@@ -128,8 +197,9 @@ compiler/linker command has been introduced before examining the received source
 
 ## Remaining closure gates
 
-- Preserve the frozen FusionFix archive while obtaining its exact source/build
-  provenance and any additional loader/data notices.
+- Preserve the frozen FusionFix archive while obtaining exact ASI source/build
+  provenance, the remaining embedded-DLL/SDK terms and a corresponding-source
+  distribution plan; the exact loader release identity is now established.
 - Receive and independently hash the capture-helper source; reproduce its build
   without running a game or collecting a capture.
 - Keep the 12 opaque SAV/META privacy holds in `ASSET-PUBLICATION.json`. This

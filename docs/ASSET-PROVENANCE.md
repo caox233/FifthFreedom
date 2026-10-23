@@ -13,9 +13,15 @@ when available. The frozen FusionFix archive still lacks an internal upstream
 license notice. A separately verified upstream source/license reference and
 byte-level release comparison are now recorded in
 [`dependency-closure.md`](dependency-closure.md). Eleven data/configuration files
-match the compared official distribution, but the ASI, main INI and loader differ;
-the exact frozen-binary version and additional notices remain unresolved. The
-upstream license copy does not relicense every bundled archive member.
+match the compared rolling FusionFix distribution, but the ASI, main INI and
+loader differ. A separate exact release comparison now identifies the frozen
+loader as Ultimate ASI Loader **v9.7.0 Win32**: its `version.dll` is identical to
+that official release's `dinput8.dll`. The retained ASI's exact source/build
+identity remains unresolved. [`fusionfix-provenance.json`](fusionfix-provenance.json)
+binds the downloaded official ZIP, tagged source, PE resources and seven exact
+notice texts. Three embedded DLLs also match the tagged binary inputs, but their
+independent redistribution terms remain unverified. These source notices do not
+relicense every archive member or establish an independent rebuild.
 
 `docs/ASSET-PUBLICATION.json` lists default SAV/META inputs held locally pending
 privacy verification. No actual secret was identified, but opaque SAV buffer I/O
