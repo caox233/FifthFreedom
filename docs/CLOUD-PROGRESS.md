@@ -537,3 +537,29 @@ patch from fc8ef510 was applied and reversed with exact bytes, modes and pathset
 Patch SHA256 is6545f70219ae473021f1038abe7bf2df68f6fee455fe69ad6f08cd268b01fea8.
 Private original four-role evidence is unchanged. The separate knowledge snapshot
 at d92ed600 binds94 files, including92 exact source mirrors, to0ac6695.
+
+
+## Owned observations connected to the native lease
+
+[SERVER-14](tasks/server-14.md), commit6a8e8fe, adds a concrete overlay monitor
+for the existing owned supervisor and native parent lease. It checks the core
+image/pidfd, namespace and TUN, requires the configured loopback RPC listener's
+sole inode to belong to that core, executes the pinned CLI under a bounded
+deadline, and rechecks ownership after the await. Accepted peer loss permanently
+revokes the lease; restoring old JSON cannot revive it. A distinct query child
+handles verified fast completion without relaxing long-lived core/native startup.
+
+The18 new real process/IPC tests and original16 lifecycle plus10 parent-lease
+tests passed both owner and independent review. The actual supervisor/monitor/
+lease composition reached READY then revoked and reaped its children. Its TUN
+and peer JSON/native peer are explicitly synthetic; this is not a real EasyTier
+or native-main positive. Same-build core/CLI provenance, private config and
+namespace containment remain separate trusted caller prerequisites.
+
+A fresh detached6a8e8fe checkout passed358 methods:356 passed and two existing
+Windows-only skips, with tracked files unchanged. The next executable integration
+uses the actual same-build core/CLI and same-run native component package in an
+owned namespace. It will distinguish lease revocation while the route remains
+alive (real held TCP closure) from peer disappearance (process/FD cleanup, without
+calling an unreachable remote TCP timeout an EOF). Ordinary Public admission
+remains closed and no complete package or gameplay acceptance is inferred.

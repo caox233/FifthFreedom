@@ -28,7 +28,7 @@
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "native_controlled_lease_and_isolated_runtime_harness_implemented_actual_hosted_composition_pending"
+      "status": "native_lease_and_owned_overlay_monitor_composed_with_synthetic_observations_real_hosted_runtime_stack_pending"
     },
     {
       "id": 4,
@@ -222,7 +222,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T06:54:07.548445+00:00",
+  "updated_utc": "2026-10-23T07:00:32.105493+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -287,11 +287,11 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "executed": 331,
-      "passed": 329,
+      "executed": 358,
+      "passed": 356,
       "skipped": 2,
       "exit_code": 0,
-      "environment": "fresh detached checkout0ac6695a112bf15cbb016c1c34a0c011b3f07137; .local/cloud-receipts/clean-checkout-0ac6695a112b/receipt.json",
+      "environment": "fresh detached checkout6a8e8fe05446b40ebaa5bb2bf3250c8bef99cb6b; .local/cloud-receipts/clean-checkout-6a8e8fe05446/receipt.json",
       "tracked_files_unchanged": true,
       "complete_package": false
     },
@@ -516,6 +516,16 @@
       "artifact_scope": "bounded JSON receipts only; contents not downloaded",
       "runtime_executed": false,
       "binary_published": false
+    },
+    "cloud_owned_overlay_monitor": {
+      "implementation_commit": "6a8e8fe05446b40ebaa5bb2bf3250c8bef99cb6b",
+      "new_checks_passed": 18,
+      "retained_lifecycle_passed": 16,
+      "retained_parent_lease_passed": 10,
+      "independent_review": "same44_checks_passed_zero_skips",
+      "scope": "actual owned ELF/loopback RPC inode/bounded CLI/SCM-credential parent lease composition; TUN and peer service/native peer explicitly synthetic",
+      "actual_easytier_native_stack_verified": false,
+      "production_admission": false
     }
   }
 }

@@ -25,7 +25,7 @@ implemented boundary and actual evidence, including work still blocked:
 | Pinned overlay source, finite secure-session contracts and dependency holds | [SERVER-07](server-07.md), [dependency evidence](public-network-dependencies.md) |
 | Explicit Public source admission before native request processing | [SERVER-08](server-08.md) |
 | Exact owned process lifecycle and native/parent activation lease | [SERVER-09](server-09.md), [SERVER-10](server-10.md), [SERVER-11](server-11.md) |
-| Explicit private overlay recipes and isolated development probes | [SERVER-12](server-12.md), [SERVER-13](server-13.md) |
+| Explicit private overlay recipes and isolated development probes | [SERVER-12](server-12.md), [SERVER-13](server-13.md), [owned observations](server-14.md) |
 | Exact owned launcher/native authentication return and final login | [UI-06 launcher](ui-06.md), [UI-06 native](ui-06-native-return.md), [UI-07](ui-07.md) |
 | Hosted Windows/Linux checks and retained failures | [CI-01](ci-01.md), [cloud progress](../CLOUD-PROGRESS.md) |
 | Retained gameplay defects and missing native replay evidence | [Remaining bugs](remaining-bugs.md), [VSS audit](vss-lifecycle-audit.md) |
