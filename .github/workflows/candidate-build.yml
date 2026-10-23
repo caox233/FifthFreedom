@@ -9,7 +9,7 @@ permissions:
 
 concurrency:
   group: fifth-freedom-candidate-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   package-inputs:
