@@ -1,4 +1,5 @@
 """Synthetic receipt fixtures verify CI admission, not privileged runtime success."""
+import ast
 from contextlib import redirect_stdout
 import copy
 import io
@@ -247,6 +248,40 @@ class ProbeResultTests(unittest.TestCase):
                      "ModuleNotFoundError: No module named 'ci_socket_isolation' /PRIVATE_PATH\n"):
             self.error_log.write_text(text)
             self.assertNotIn("missing_modules=", self.inspect("native", {}, 1)[1])
+
+    def test_native_entry_and_namespace_producer_codes_cannot_become_unclassified(self):
+        # Audit the producer/consumer boundary, not arbitrary strings from a log.
+        # Adding a new producer reason requires an explicit consumer review.
+        sources = (native_producer.ROOT / "scripts/ci_native_lifecycle.py",
+                   native_producer.ROOT / "scripts/ci_socket_isolation.py")
+        codes = set()
+        for source in sources:
+            for node in ast.walk(ast.parse(source.read_text(encoding="utf-8"))):
+                if not isinstance(node, ast.Call):
+                    continue
+                name = node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", "")
+                if name in ("require", "ProbeError", "IsolationError"):
+                    codes.update(arg.value for arg in node.args if isinstance(arg, ast.Constant)
+                        and isinstance(arg.value, str) and arg.value.isupper() and "_" in arg.value)
+        self.assertGreater(len(codes), 80)
+        for code in codes | {"INPUT_CHANGED", "COPY_HASH_MISMATCH", "EXECUTABLE_CAPABILITIES_FORBIDDEN",
+                             "WORKER_EXECUTABLE_HASH_MISMATCH", "WORKER_CHILD_EXEC_FAILED"}:
+            with self.subTest(code=code):
+                self.error_log.write_text(code + "\n", encoding="utf-8")
+                output_stream = io.StringIO()
+                # Some public constants themselves contain the word PRIVATE;
+                # assert the whole expected line, not that word's absence.
+                with redirect_stdout(output_stream):
+                    result = probe.inspect("native", 1, self.receipt, self.error_log)
+                self.assertEqual(result, 1)
+                output = output_stream.getvalue()
+                self.assertIn("fixed_codes=" + code + "; no raw probe output published", output)
+                self.assertNotIn("PRIVATE_RAW_ERROR", output)
+                self.error_log.write_text(code + "_PRIVATE_SUFFIX\nPRIVATE_UNKNOWN_CODE\n", encoding="utf-8")
+                result, output = self.inspect("native", {}, 1)
+                self.assertEqual(result, 1)
+                self.assertIn("UNCLASSIFIED_PROBE_FAILURE", output)
+                self.assertNotIn(code + ";", output)
 
     def test_native_worker_wrapping_and_namespace_command_codes_stay_fixed(self):
         for code in ("WORKER_WITHHELD_ADMISSION_WROTE_STATE", "WORKER_PUBLIC_OWNER_LEASE_INVALID",
