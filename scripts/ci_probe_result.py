@@ -7,6 +7,7 @@ import re
 
 import ci_diagnostics
 from easytier_probe_worker import valid_failure_record
+from ci_easytier_probe import valid_readiness_timeout
 
 CODES = set("""ROOT_NAMESPACE_PRIVILEGES_REQUIRED NET_ADMIN_AND_SYS_ADMIN_REQUIRED
 CAPABILITIES_UNVERIFIED EXISTING_TUN_REQUIRED GITHUB_HOSTED_REQUIRED OWNED_NAMESPACE_APIS_REQUIRED
@@ -99,6 +100,25 @@ def worker_diagnostics(value):
     return sorted(summaries)[:3]
 
 
+def readiness_diagnostics(value):
+    rows = value.get("transports", value.get("cases")) if type(value) is dict else None
+    if type(rows) is not list:
+        return []
+    summaries = set()
+    for row in rows[:3]:
+        record = row.get("readiness_timeout") if type(row) is dict else None
+        if valid_readiness_timeout(record):
+            last = record["last_observation"]
+            summaries.add(":".join((record["role"],
+                "expected_auth=" + str(record["expected_authenticated"]).lower(),
+                "observations=" + str(record["observation_count"]), "core=true",
+                "tun=" + str(last["tun_owned"]).lower(),
+                "peer=" + str(last["peer_authenticated"]).lower(),
+                "query=" + last["query_state"], "reason=" + (last["query_code"] or "NONE"),
+                "bind=" + (last["local_bind_kind"] or "NONE"))))
+    return sorted(summaries)[:3]
+
+
 def native_cases(cases):
     names = ["withheld", "denied", "eof", "expiry", "parent_death"]
     if (type(cases) is not list or any(type(row) is not dict for row in cases)
@@ -127,7 +147,7 @@ def echo_outcomes(value, allowed):
 def overlay_transport(row):
     phases = row.get("phases")
     if (row.get("status") != "owned_overlay_probe_verified" or row.get("cleanup_errors") != []
-            or "worker_failure" in row or "error" in row
+            or "worker_failure" in row or "readiness_timeout" in row or "error" in row
             or any(type(row.get(key)) is not int or row[key] != 2 for key in ("namespaces_created", "namespaces_removed"))
             or type(phases) is not list or any(type(item) is not dict for item in phases)
             or [item.get("phase") for item in phases] != ["correct-pin-before", "wrong-pin", "correct-pin-after"]):
@@ -159,7 +179,7 @@ def owned_stack_cases(cases):
     for row in cases:
         counters = row.get("containment_after")
         if (row.get("status") != "owned_stack_case_verified" or row.get("cleanup_errors") != []
-                or "worker_failure" in row or "error" in row
+                or "worker_failure" in row or "readiness_timeout" in row or "error" in row
                 or any(row.get(key) is not True for key in ("actual_native_ready", "established_tcp"))
                 or type(row.get("owned_listeners")) is not int or row["owned_listeners"] != 5
                 or any(type(row.get(key)) is not int or row[key] != 2 for key in ("namespaces_created", "namespaces_removed"))
@@ -258,6 +278,9 @@ def inspect(kind, exit_code, receipt, error_log):
     workers = worker_diagnostics(value)
     if workers:
         fields += "; worker_failures=" + ",".join(workers)
+    readiness = readiness_diagnostics(value)
+    if readiness:
+        fields += "; readiness_timeouts=" + ",".join(readiness)
     ci_diagnostics.emit_error("probe=" + kind + "; fixed_codes=" + reason + fields + "; no raw probe output published")
     return 1
 

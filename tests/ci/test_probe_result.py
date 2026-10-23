@@ -150,6 +150,40 @@ class ProbeResultTests(unittest.TestCase):
             good["transports" if kind == "easytier" else "cases"][0]["worker_failure"] = record
             self.assertEqual(self.inspect(kind, good)[0], 1)
 
+    def test_readiness_timeout_annotation_uses_real_producer_fixed_shape(self):
+        last = dict(schema=worker_producer.READINESS_SCHEMA, core_image_matches=True,
+            tun_owned=True, peer_authenticated=False, query_state="query-failed",
+            query_code="PIPE_READ_TIMEOUT", local_bind_kind=None)
+        record = overlay_producer.ReadinessTimeout("initiator", True, 7, last).record
+        value = {"error": "OVERLAY_READY_TIMEOUT", "transports": [{"readiness_timeout": record}]}
+        result, output = self.inspect("easytier", value, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("readiness_timeouts=initiator:expected_auth=true:observations=7:core=true:"
+            "tun=true:peer=false:query=query-failed:reason=PIPE_READ_TIMEOUT:bind=NONE", output)
+        for kind, good in (("easytier", overlay()), ("owned-stack", owned_stack())):
+            good["transports" if kind == "easytier" else "cases"][0]["readiness_timeout"] = record
+            self.assertFalse(probe.verified(kind, good))
+
+    def test_readiness_timeout_rejects_private_values_unknown_fields_and_contradictions(self):
+        last = dict(schema=worker_producer.READINESS_SCHEMA, core_image_matches=True,
+            tun_owned=False, peer_authenticated=False, query_state="tun-pending",
+            query_code=None, local_bind_kind=None)
+        record = overlay_producer.ReadinessTimeout("responder", False, 1, last).record
+        self.assertEqual(len(probe.readiness_diagnostics({"transports": [{"readiness_timeout": record}]})), 1)
+        changes = [(key, invalid) for key, invalid in (("role", "PRIVATE"), ("extra", "PRIVATE"),
+            ("schema", "PRIVATE"), ("expected_authenticated", 0), ("observation_count", True),
+            ("observation_count", 0), ("observation_count", 2049))]
+        bad_records = [{**record, key: invalid} for key, invalid in changes]
+        bad_records.extend({**record, "last_observation": {**last, key: invalid}}
+            for key, invalid in (("schema", "PRIVATE"), ("core_image_matches", False),
+                ("tun_owned", 0), ("peer_authenticated", True), ("query_state", "PRIVATE"),
+                ("query_code", "PIPE_READ_TIMEOUT_PRIVATE"), ("local_bind_kind", "PRIVATE"),
+                ("extra", "PRIVATE")))
+        for bad in bad_records:
+            value = {"transports": [{"readiness_timeout": bad}]}
+            self.assertEqual(probe.readiness_diagnostics(value), [])
+            self.assertNotIn("readiness_timeouts=", self.inspect("easytier", value, 1)[1])
+
     def test_native_missing_cases_cleanup_or_scope_cannot_pass(self):
         for changes in ({"cases": []}, {"cases": list(reversed(native()["cases"]))},
                         {"private_tree_removed": False}, {"all_owned_children_reaped": False},
