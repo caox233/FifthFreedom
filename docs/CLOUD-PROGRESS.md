@@ -6,7 +6,7 @@ The cloud checkout fetched and verified handoff commit
 evidence were retained. This is continuing implementation of all six milestones
 in `PROJECT-STATE.json`, not a completed migration or live acceptance.
 
-## Implemented boundaries
+## Initial implemented boundaries (later progress below)
 
 - [UI-01](tasks/ui-01.md): donor shell presentation with retained LAN controls,
   event bindings, launch path and DX11 policy; rendered-layout probes adapted to
@@ -23,7 +23,7 @@ in `PROJECT-STATE.json`, not a completed migration or live acceptance.
   checks; an independent strict complete-package gate preserves the withheld
   SAV/META boundary. No Release or deployment action is configured.
 
-## Executed local cloud checks
+## Initial local cloud checks (later progress below)
 
 | Check | Actual result and scope |
 | --- | --- |
@@ -210,3 +210,59 @@ The environment API reports the same connected cloud instance, but still exposes
 no persistent Goal/scheduler interface. This turn executes autonomously; later
 agent turns require a message or platform wake-up. The saved reusable environment
 draft remains distinct from a published snapshot.
+
+## 2026-10-23: confirmed four-lane hosted result and dual package identity
+
+[Run 39895749771](https://github.com/caox233/FifthFreedom/actions/runs/39895749771)
+completed against branch head `f54c9358c0e8df6775c4f29ed91ea3a91e870a80`.
+Windows components and the Linux LAN, donor reference and protected-control
+component jobs all passed. The source workflow also passed. The strict SAV/META
+input gate failed and full packaging skipped; the overall candidate workflow
+therefore remains failed. [Official API evidence](evidence/hosted-candidate-f54c935.json)
+records the job IDs and artifact archive digests. The artifacts were not
+downloaded in this cloud session; their names bind the PR merge checkout SHA.
+
+The later owned-launch cleanup fix refreshes environment availability after
+actual session disposal, including replacement-session protection. Its new WPF
+probe is not covered by the preceding run and needs the next Windows run.
+
+[SERVER-04](tasks/server-04.md) adds an independent Linux service identity plus
+an exact pin to the original four-role Windows client catalog. It preserves
+the original Windows verifier and all admission roles. All 45 native API tests
+passed, including 16 new synthetic-format tests; the read-only CLI compiled.
+Real same-run Windows/Linux component assembly remains a separate CI result.
+The native Public startup gate stays closed.
+
+[Dependency closure](tasks/public-network-dependencies.md) verified three pinned
+EasyTier 2.6.4 archives and WinDivert 2.2.2, two retained notices and eight tests.
+The Linux donor's automatic latest-version selection is not reused. Npcap
+redistribution rights and the exact Wintun binary license remain unresolved;
+no new driver/runtime binary was published or installed. The original WinDivert
+license is retained byte for byte, including its upstream trailing blank line.
+Formal network-draft additions for the official Wintun and Npcap hosts are
+saved but unpublished; current networking was not bypassed or changed.
+
+[UI-04](tasks/ui-04.md) now scopes actual stored credentials and recovery
+operations by explicit deployment identity, preserving the old LAN entropy and
+filenames. Changing deployment clears captured/manual/autofill/recovery state.
+Twelve production-linked managed cases and 12 UI source contracts passed; WPF
+cross-compilation had zero warnings/errors. Real Windows DPAPI and five new WPF
+assertions are queued for a new hosted run, distinct from the f54c935 result.
+
+The new candidate job consumes only same-run, same-attempt Windows/Linux
+artifacts, verifies their receipts/checksums, and invokes the real Rust identity
+checker over the assembled components. Sixteen Python builder tests and an
+actual Rust consumption of explicitly inert synthetic component data passed.
+The synthetic data was never executed or published. Source checks now cover
+187 methods: 185 passed and two existing Windows-only skips. Actual hosted
+component assembly still needs its own result.
+
+Next native runtime work has a concrete security boundary: Linux bind-to-address
+alone does not constrain the ingress interface. The distributed TCP, UDP, gRPC
+and temporary peer sockets need an enforced interface/namespace policy plus
+owned encrypted-overlay liveness. Static configuration/identity checks cannot
+substitute for that proof; the Public startup gate remains closed. This cloud
+instance lacks effective NET_ADMIN/NET_RAW/SYS_ADMIN and a TUN device, and an
+owned empty `unshare --net true` probe returned EPERM. Isolated privileged
+network testing belongs in an explicitly checked hosted Linux job, not a claim
+of local runtime verification or a connection to an old deployment.

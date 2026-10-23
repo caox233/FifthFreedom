@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "UI03 production LAN lifecycle connected; managed34 and UI source12 passed, WPF Linux crosscompile0warnings/errors. Native dedicated330 passed; trusted Linux key/run-bound observer/flock added. Real protected HTTPS control tests16 and full Python server69 passed; reproducible standalone candidate built and verified. Source163 methods=161passed+2Windows-onlyskips. Prior final hosted814c5c1 run39863077851 all3component lanes passed; new hosted Windows/Linux verification pending push. Fullpackage privacy gate and native Public gate preserved.",
-  "NEXT_EXECUTABLE_ACTION": "Verify new hosted Windows production-adapter probes and Linux protected-control artifact after pushing. Then implement the explicit Linux server package identity plus admitted Windows client catalog contract; retain four-role admission instead of bypassing it. Integrate protected native game/overlay transport and owned launcher Public adapter, then verified Linux runtime install/switch/rollback. Capture helper source remains absent from all remote heads; receive and hash its reviewed supplement. Preserve all six milestones and accepted gameplay; VSS late-geometry native replay and real three-client networking remain separate missing evidence. No Goal scheduler interface is available.",
+  "LAST_CONFIRMED_RESULT": "Hosted f54c935 run39895749771: Windows, Linux LAN/donor and protected-control component jobs all passed; overall strict privacy gate failed/full package skipped. Later UI04 deployment-scoped credential production paths: 12 managed cases and 12 source UI checks passed, WPF crosscompile0/0; Windows DPAPI/new WPF probes await hosted. SERVER04 native dual package identity45API passed; same-run candidate builder16 and Python source187 methods=185pass+2Windows-onlyskips. Four locked network archives and2notices verified; Npcap/Wintun holds preserved.",
+  "NEXT_EXECUTABLE_ACTION": "Observe next hosted UI04 DPAPI/WPF and real Windows+Linux dual-identity assembly run. Continue SERVER05 connected public deployment preflight and SERVER06 enforceable socket policy: Linux bind-IP alone does not provide ingress-interface isolation; all native TCP/UDP/gRPC and temporary peer sockets need explicit enforced policy and owned encrypted-overlay liveness before lifting Public gate. Then owned launcher Public adapter and reviewed Linux runtime install/switch/rollback. Capture source absent; held SAV/META and driver-license gates unchanged. Keep all six milestones, existing accepted gameplay and parallel unresolved VSS/crash/three-client evidence. No persistent Goal scheduler interface exists.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -23,12 +23,12 @@
     {
       "id": 2,
       "name": "SCBL3 UI with retained LAN behavior",
-      "status": "donor_shell_and_production_lan_controller_connected_local_regressions_pass_new_windows_probe_pending"
+      "status": "production_lan_lifecycle_hosted_passed_deployment_credential_isolation_implemented_new_windows_probe_pending"
     },
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "native_key_grant_and_linux_lock_integrated_real_https_control_component_tested_full_public_game_runtime_pending"
+      "status": "protected_https_component_hosted_passed_dual_linux_windows_identity_verified_locally_full_public_overlay_runtime_pending"
     },
     {
       "id": 4,
@@ -43,7 +43,7 @@
     {
       "id": 6,
       "name": "Standalone development root and safe cleanup",
-      "status": "originals_preserved_capture_receipt_tool_verified_binary_but_source_absent_save_privacy_and_frozen_binary_provenance_pending"
+      "status": "originals_preserved_public_network_inputs_pinned_capture_source_absent_saves_privacy_and_npcap_wintun_provenance_gates_open"
     }
   ],
   "continuation_policy": "Code changes primarily in cloud per user. Local work finishes migration, privacy review, current builds and preservation; never auto-start game or private capture.",
@@ -81,7 +81,7 @@
     "personal_data_excluded": true
   },
   "cloud": {
-    "thread_title": "FifthFreedom云端",
+    "thread_title": "FifthFreedom\u4e91\u7aef",
     "repository": "caox233/FifthFreedom",
     "verified": "running connected Linux x86_64; Git HTTPS fetch/push and official gh repository/PR APIs succeeded",
     "environment_display_name": "not independently exposed by status API",
@@ -92,7 +92,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Official gh API initially denied, later succeeded under existing configuration. Actions log/artifact redirect hosts still denied; narrow official environment draft additions saved. No bypass; draft publication unconfirmed.",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39860607037",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39895749771",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -130,13 +130,20 @@
         "overall": "failure",
         "all_component_jobs": "success",
         "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39895749771,
+        "commit": "f54c9358c0e8df6775c4f29ed91ea3a91e870a80",
+        "overall": "failure",
+        "all_component_jobs": "success_windows_linux_lan_donor_protected_control",
+        "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "passed on PR run39860607037",
+    "candidate_windows_source": "passed on PR run39895749771",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "both jobs passed on PR run39860607037",
-    "validated_implementation_commit": "d0ee78e59b3d6c0691c00a224383d27dc6500ada",
-    "candidate_component_result": "Windows and both Linux component jobs passed in runs39860535649 and39860607037; overall failure is strict privacy gate; full package skipped"
+    "candidate_linux_matrix": "LAN, donor and protected-control jobs passed on PR run39895749771",
+    "validated_implementation_commit": "f54c9358c0e8df6775c4f29ed91ea3a91e870a80",
+    "candidate_component_result": "All four component jobs passed on run39895749771; overall failure is the strict privacy gate; full package skipped. Later implementation requires a new hosted run."
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -144,7 +151,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T03:33:28.846595+00:00",
+  "updated_utc": "2026-10-23T04:07:41.919443+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -152,7 +159,7 @@
     "lan_self_tests": 26,
     "native_api_tests": 27,
     "initial_native_api_failure": "stale producer fixture digest after executable rename; regenerated by actual producer, old historical fixture restored unchanged",
-    "github_full_build": "all_three_hosted_component_lanes_passed_strict_privacy_gate_failed_complete_package_skipped",
+    "github_full_build": "four_hosted_component_lanes_passed_strict_privacy_gate_failed_complete_package_skipped",
     "clean_public_package": "strict_gate_failed_missing_8_lan_sav_meta_12_held_total",
     "live_game": "not_run",
     "cloud_initial_python": {
@@ -209,11 +216,11 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "executed": 163,
-      "passed": 161,
+      "executed": 187,
+      "passed": 185,
       "skipped": 2,
       "exit_code": 0,
-      "environment": "Linux current working tree; exact new hosted revision pending"
+      "environment": "Linux source suites; exact clean-checkout receipt recorded separately, new hosted revision pending"
     },
     "cloud_authenticated_reader": {
       "passed": 69,
@@ -230,7 +237,7 @@
       "passed": 34,
       "exit_code": 0,
       "production_adapters_wired": true,
-      "windows_probe": "pending_hosted_rerun"
+      "windows_probe": "passed_on_f54c935_run39895749771; subsequent owned-exit refresh probe awaits new hosted run"
     },
     "cloud_vss_policy_audit": {
       "passed": 7,
@@ -240,9 +247,9 @@
     },
     "hosted_windows_components": {
       "conclusion": "success",
-      "run_id": 39860607037,
-      "job_id": 120110028309,
-      "scope": "WPF publish and isolated no-game UI probe; four managed suites; native core/API tests; x86 hooks/gameplay and Windows LAN compilation",
+      "run_id": 39895749771,
+      "job_id": 120225693926,
+      "scope": "WPF publish and isolated no-game production LAN lifecycle probe; managed suites; native API/auth tests; x86 hooks/gameplay and Windows LAN compilation",
       "complete_package": false,
       "live_game": false
     },
@@ -260,6 +267,28 @@
       "tests_passed": 10,
       "exit_code": 0,
       "scope": "standalone zipapp integrity/reproducibility; actual local candidate built and CLI executed; full game runtime false"
+    },
+    "cloud_public_package_identity": {
+      "passed": 45,
+      "new_tests": 16,
+      "exit_code": 0,
+      "scope": "Linux native API, inert synthetic PE/ELF fixtures; read-only verifier CLI built; actual Windows/Linux component bundle validation pending hosted run"
+    },
+    "public_network_dependency_audit": {
+      "archives_verified": 4,
+      "notices_verified": 2,
+      "tests_passed": 8,
+      "closure_complete": false,
+      "hold": "Npcap redistribution authorization and exact Wintun binary license unresolved; no driver installation or execution"
+    },
+    "cloud_public_deployment_credentials": {
+      "passed": 12,
+      "windows_dpapi": "not_run_on_linux; next hosted Windows managed suite required",
+      "wpf_crosscompile": {
+        "warnings": 0,
+        "errors": 0
+      },
+      "public_enabled": false
     }
   }
 }
