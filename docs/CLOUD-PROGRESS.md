@@ -933,3 +933,66 @@ exact case/listener/cause is still under investigation. This new result is not
 assigned retroactively to older generic native failures. The combined stack
 job120355233682 remains running. No independent new component-byte rehash or
 positive native lifecycle result is claimed by this metadata follow-up.
+
+## Typed Windows build, listener state and retained diagnostics
+
+The actual [23d5923 Windows build](evidence/hosted-windows-easytier-23d5923.json)
+completed successfully: 20 builder checks, eight typed current-session contracts
+with zero ignored tests, locked metadata, and full MSVC core/CLI compilation and
+linking. The official three-receipt artifact digest was independently verified.
+Its exact ten-patch source inventory is
+efb765a226be8ad35826c71868b105f09d5d6971b9d58580754389efec058fcd.
+Runner inspection of the compiled outputs confirms that core directly imports
+Packet.dll; CLI does not, and both delay-import lists are empty. The executable
+bytes were not published or independently downloaded. This is a successful
+build with known runtime dependencies, not core execution or a Public lease.
+The earlier nine-patch build and separate two-case Wintun driver evidence remain
+unchanged.
+
+Reviewed2f10f82 fixes a real native listener-checker defect: established and
+TIME_WAIT TCP connections sharing a local tuple were incorrectly counted as
+additional listeners. Actual owned sockets reproduced both failures before the
+fix and passed afterward. Only LISTEN rows now enter TCP listener cardinality;
+exact owned inode, address, port and uniqueness remain required. Accepted-only,
+foreign-owner and duplicate-LISTEN controls still fail. Sixteen native and20
+stack checks passed; independent review reran three actual socket controls.
+This identifies a checker defect, not the exact unrecorded case/port of the528
+hosted failure. New candidate39938418762 still must verify native execution.
+
+Reviewed6a60418 extracts the retained diagnostic text reader into one shared
+production implementation and adds12 real-file streaming regressions. Tests
+cover UTF-8/redaction across16KiB reads, line and JSON limits, snapshot extent,
+cancellation and output failure while verifying unchanged original bytes.
+Independent12/12 and full WPF cross-target compilation with zero warnings/errors
+passed. These checks do not rerun the Windows full-ZIP24 cases or resolve the
+user's historical export exception. The independent hosted Windows job120363584181
+in run39938418815 subsequently passed all12 with zero skips. Its official
+single-receipt artifact SHA256 is
+c203db5c00f0d7bdee38ced6313098607d86a4b02ddde3e9e3809567faf4123b,
+independently verified; the receipt explicitly keeps full-ZIP coverage false.
+The [task record](tasks/diagnostic-streaming.md) also preserves the actual chat
+boundary: historical391 checks explicitly simulated delivery, and exact retail
+extraction/generated inputs are absent. Inventing three socket clients would
+not test the uploaded native serializer or establish three-client acceptance.
+
+The [05c127a source matrix](evidence/hosted-source-matrix-05c127a.json) passed with
+both official ZIP digests verified: Linux484 passed plus two existing Windows
+skips; Windows397 passed plus89 explicit platform-specific skips, including two
+symlink privilege cases. Separately, a fresh detachedb67af6c checkout passed489
+with two existing Windows-only skips and unchanged tracked files. Its report
+SHA256 is ed804c635988cfaca6755dd609727d8e721bd5580b6ffdb3410418f6c2a53613.
+The canonical patch fromfc8ef510 applied and reversed with exact bytes, modes
+and path sets:1312→1607→1312, clean. Patch SHA256 is
+4c0a6eb1d9e15a8d114e0d86e7f1ef955496af7170088412e1a316d3d85a0deb.
+Original private four-role evidence remains unchanged; full packaging remains
+blocked by the explicit withheld inputs.
+
+DevDocs68779b3 was pushed and its remote SHA verified:162 files, including160
+exact public source mirrors, bind source9d823da. Official environment draft17
+was saved and read back with source05c127a and that DevDocs revision after a
+complete workspace inventory:28281 directories, two projects,26 classified
+dependency/evidence Git roots and zero errors. Existing setup, network selection
+and requirements were preserved. The draft still requires publication through
+the environment UI; no publish or Goal/scheduler tool is exposed, and a fresh
+restoration has not been verified. All six milestones remain tracked; no formal
+Release, production deployment or game/capture launch has occurred.
