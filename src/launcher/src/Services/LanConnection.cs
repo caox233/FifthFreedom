@@ -18,6 +18,8 @@ public sealed class LanConnection : IDisposable
     public Users.UsersClient Api { get; }
     private readonly GrpcChannel channel;
     private readonly HttpClient http;
+    private SplinterCellCNLauncher.Services.ApiTransportObservation? apiTransport;
+    internal SplinterCellCNLauncher.Services.ApiTransportObservation? ObservedApiTransport => Volatile.Read(ref apiTransport);
     private LanConnection(IPAddress server, IPAddress local, int port)
     {
         ServerIp = server; LocalIp = local; Port = port;
@@ -29,6 +31,11 @@ public sealed class LanConnection : IDisposable
             {
                 socket.Bind(new IPEndPoint(LocalIp, 0));
                 await socket.ConnectAsync(ServerIp, context.DnsEndPoint.Port, ct);
+                // Capture kernel endpoints only for an actual API HTTP/2
+                // connection. This remains historical after connection disposal;
+                // it never becomes Public overlay or interface admission.
+                if (context.DnsEndPoint.Port == Port && context.InitialRequestMessage.Version.Major >= 2)
+                    Volatile.Write(ref apiTransport, SplinterCellCNLauncher.Services.ApiTransportObservation.TryCapture(socket));
                 return new NetworkStream(socket, ownsSocket: true);
             }
             catch { socket.Dispose(); throw; }

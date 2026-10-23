@@ -18,8 +18,8 @@ internal interface ILaunchPreparationOperations
 {
     string? ValidateMode(GameLaunchRequest request);
     void Deploy(GameLaunchRequest request);
-    Task<LaunchPipe> PrepareAsync(GameLaunchRequest request);
-    Task<Process> StartAsync(GameLaunchRequest request, LaunchPipe pipe, string? pluginDirectory);
+    Task<PreparedGameConfiguration> PrepareAsync(GameLaunchRequest request);
+    Task<Process> StartAsync(GameLaunchRequest request, PreparedGameConfiguration configuration, string? pluginDirectory);
 }
 
 // UI and tests enter this same sequence; platform/network work stays behind internal seams.
@@ -32,7 +32,7 @@ internal sealed class GameLaunchPreparation
     internal async Task<Process> StartAsync(GameLaunchRequest request, Func<Task> beforeStart,
         Action<LaunchPreparationStage>? progress = null)
     {
-        LaunchPipe? pending = null;
+        PreparedGameConfiguration? pending = null;
         try
         {
             string? pluginDirectory = operations.ValidateMode(request);
@@ -46,7 +46,8 @@ internal sealed class GameLaunchPreparation
             await beforeStart();
             progress?.Invoke(LaunchPreparationStage.Starting);
             Process process = await operations.StartAsync(request, pending, pluginDirectory);
-            pending = null; // Only success confirms ownership transferred to the existing session.
+            pending.TransferOwnership(); // Only success confirms adoption by the existing launch session.
+            pending = null;
             return process;
         }
         finally
@@ -64,12 +65,12 @@ internal sealed class GameLaunchPreparation
             GameplayRuntime.ValidateForLaunch(request.GameplayMode, request.RuntimeRoot, request.ObserverRequested);
         public void Deploy(GameLaunchRequest request) =>
             GameRuntime.Deploy(Path.Combine(request.GameDirectory, request.GameExecutable), request.RuntimeRoot);
-        public Task<LaunchPipe> PrepareAsync(GameLaunchRequest request) =>
-            configuration.PrepareAsync(Path.Combine(request.GameDirectory, request.GameExecutable),
+        public Task<PreparedGameConfiguration> PrepareAsync(GameLaunchRequest request) =>
+            configuration.PrepareConfigurationAsync(Path.Combine(request.GameDirectory, request.GameExecutable),
                 request.Username, request.Password, request.AccountId, request.Server, request.BindIp,
                 request.GameplayMode, request.FovScale);
-        public Task<Process> StartAsync(GameLaunchRequest request, LaunchPipe pipe, string? pluginDirectory) =>
-            launch.StartGameAsync(request.GameDirectory, request.GameExecutable, pipe, pluginDirectory: pluginDirectory,
+        public Task<Process> StartAsync(GameLaunchRequest request, PreparedGameConfiguration prepared, string? pluginDirectory) =>
+            launch.StartGameAsync(request.GameDirectory, request.GameExecutable, prepared.Pipe, pluginDirectory: pluginDirectory,
                 observerRequested: request.ObserverRequested);
     }
 }
