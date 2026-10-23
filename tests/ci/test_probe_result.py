@@ -151,6 +151,56 @@ class ProbeResultTests(unittest.TestCase):
             good["transports" if kind == "easytier" else "cases"][0]["worker_failure"] = record
             self.assertEqual(self.inspect(kind, good)[0], 1)
 
+    def test_kernel_query_annotation_requires_validated_worker_frame(self):
+        record = dict(event="failed", schema=worker_producer.FAILURE_SCHEMA,
+            phase="observe", code="OVERLAY_ADDRESS_QUERY_UNAVAILABLE", cleanup_reaped=True,
+            cleanup_code=None, kernel_query=dict(role="responder", query_stage="ipv4_address",
+                errno_class="EADDRNOTAVAIL", previously_observed=True, link_up=True))
+        self.assertTrue(worker_producer.valid_failure_record(record))
+        value = {"transports": [{"worker_failure": record}]}
+        result, output = self.inspect("easytier", value, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("kernel_queries=responder:ipv4_address:EADDRNOTAVAIL:previously_observed=true:link_up=true", output)
+        record = {**record, "phase": "echo", "code": "OVERLAY_NAMESPACE_OBSERVATION_UNAVAILABLE",
+            "kernel_query": dict(role="initiator", query_stage="namespace", errno_class="EPERM",
+                previously_observed=False, link_up=None)}
+        value = {"cases": [{"worker_failure": record}]}
+        self.assertTrue(worker_producer.valid_failure_record(record))
+        self.assertIn("kernel_queries=initiator:namespace:EPERM:previously_observed=false:link_up=NONE",
+            self.inspect("owned-stack", value, 1)[1])
+
+    def test_kernel_query_rejects_raw_values_mismatched_code_and_impossible_pending_failure(self):
+        details = dict(role="responder", query_stage="ipv4_address", errno_class="EADDRNOTAVAIL",
+            previously_observed=True, link_up=True)
+        record = dict(event="failed", schema=worker_producer.FAILURE_SCHEMA,
+            phase="observe", code="OVERLAY_ADDRESS_QUERY_UNAVAILABLE", cleanup_reaped=True,
+            cleanup_code=None, kernel_query=details)
+        bad_records = [{**record, "kernel_query": {**details, key: bad}} for key, bad in (
+            ("role", "PRIVATE"), ("query_stage", "PRIVATE"), ("errno_class", "PRIVATE"),
+            ("errno_class", 99), ("errno_class", "EADDRNOTAVAIL_PRIVATE"), ("extra", "PRIVATE"),
+            ("previously_observed", 1), ("previously_observed", False), ("link_up", 1), ("link_up", None))]
+        bad_records += [{**record, key: bad} for key, bad in (("phase", "core-start"),
+            ("code", "OVERLAY_LINK_QUERY_UNAVAILABLE"), ("extra", "PRIVATE"), ("cleanup_code", "PRIVATE"))]
+        for bad in bad_records:
+            with self.subTest(record=bad):
+                value = {"transports": [{"worker_failure": bad}]}
+                self.assertEqual(probe.kernel_query_diagnostics(value), [])
+                output = self.inspect("easytier", value, 1)[1]
+                self.assertNotIn("kernel_queries=", output)
+                self.assertNotIn("PRIVATE", output)
+
+    def test_kernel_failure_details_never_certify_success_and_legacy_frames_still_work(self):
+        record = dict(event="failed", schema=worker_producer.FAILURE_SCHEMA,
+            phase="observe", code="OVERLAY_ADDRESS_QUERY_UNAVAILABLE", cleanup_reaped=True,
+            cleanup_code=None)
+        self.assertTrue(worker_producer.valid_failure_record(record))
+        self.assertEqual(probe.kernel_query_diagnostics({"transports": [{"worker_failure": record}]}), [])
+        record["kernel_query"] = dict(role="initiator", query_stage="ipv4_address",
+            errno_class="EIO", previously_observed=False, link_up=True)
+        for kind, good in (("easytier", overlay()), ("owned-stack", owned_stack())):
+            good["transports" if kind == "easytier" else "cases"][0]["worker_failure"] = record
+            self.assertEqual(self.inspect(kind, good)[0], 1)
+
     def test_readiness_timeout_annotation_uses_real_producer_fixed_shape(self):
         last = dict(schema=worker_producer.READINESS_SCHEMA, core_image_matches=True,
             tun_owned=True, peer_authenticated=False, query_state="query-failed",

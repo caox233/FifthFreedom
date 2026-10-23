@@ -149,6 +149,21 @@ def worker_diagnostics(value):
     return sorted(summaries)[:3]
 
 
+def kernel_query_diagnostics(value):
+    rows = value.get("transports", value.get("cases")) if type(value) is dict else None
+    if type(rows) is not list:
+        return []
+    summaries = set()
+    for row in rows[:3]:
+        record = row.get("worker_failure") if type(row) is dict else None
+        if valid_failure_record(record) and "kernel_query" in record:
+            details = record["kernel_query"]
+            summaries.add(":".join((details["role"], details["query_stage"], details["errno_class"],
+                "previously_observed=" + str(details["previously_observed"]).lower(),
+                "link_up=" + ("NONE" if details["link_up"] is None else str(details["link_up"]).lower()))))
+    return sorted(summaries)[:3]
+
+
 def readiness_diagnostics(value):
     rows = value.get("transports", value.get("cases")) if type(value) is dict else None
     if type(rows) is not list:
@@ -327,6 +342,9 @@ def inspect(kind, exit_code, receipt, error_log):
     workers = worker_diagnostics(value)
     if workers:
         fields += "; worker_failures=" + ",".join(workers)
+    kernel_queries = kernel_query_diagnostics(value)
+    if kernel_queries:
+        fields += "; kernel_queries=" + ",".join(kernel_queries)
     readiness = readiness_diagnostics(value)
     if readiness:
         fields += "; readiness_timeouts=" + ",".join(readiness)
