@@ -1,0 +1,116 @@
+{
+  "admission": {
+    "readiness_adapter_version": null,
+    "runtime_admission_ready": false,
+    "runtime_publication_approved": false,
+    "security_profile_id": null
+  },
+  "build_inputs": {
+    "bins": [
+      "easytier-core",
+      "easytier-cli"
+    ],
+    "cargo_features": "default",
+    "cargo_incremental": false,
+    "crypto_backend": "ring; wireguard enabled; openssl-crypto/aes-gcm absent",
+    "official_musl_jemalloc_build_reproduction": false,
+    "profile": "release",
+    "rust_toolchain": "1.95.0",
+    "target": "x86_64-unknown-linux-gnu"
+  },
+  "built_executables": {
+    "easytier-cli": {
+      "bytes": 12266040,
+      "sha256": "e83edb4e7ed8bc3fe8e4df92ce8982ba2ed77854a58a89e337b7894df92a1c04"
+    },
+    "easytier-core": {
+      "bytes": 28623720,
+      "sha256": "71a20f80ccf30f179bf76cfc40ceab962414665c4eff1aff86dc7dce7056a887"
+    }
+  },
+  "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+  "dependency_source_closure_verified": false,
+  "official_binary_reproduced": false,
+  "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+  "public_startup_allowed": false,
+  "runs": [
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "202499b9d0f2ba3d4602937e10191fd0264ac9c0b61ab95b14513d2bf32f57d7",
+      "passed": 4,
+      "stage": "fifth_freedom_secure_profile_contract"
+    },
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "ea70e5db66545c69894f97c747d481286a8ae22b956823d09c5e4f8f5396b970",
+      "passed": 10,
+      "stage": "fifth_freedom_ingress_contract"
+    },
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "9cbc67eae04248fde8b77aca71d847d2410475fae1433d0600365a9e4ebb420b",
+      "passed": 9,
+      "stage": "peers::secure_datagram::tests"
+    },
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "638145093cb0d8e376a112938af52fa2944a306335db4935f03ae330b37a032b",
+      "passed": 2,
+      "stage": "peers::peer_session::tests"
+    },
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "88109e62934de0d591a0444adf09223910873139e68c84b3af9a3ba323746830",
+      "passed": 7,
+      "stage": "peer_conn_secure_mode_"
+    },
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "afc8cc36dd55da5f4ab6c2e3db02bfe86a72afeeeeee4dad82b2124671a5d304",
+      "passed": 3,
+      "stage": "ff_explicit_pin_contract"
+    },
+    {
+      "exit_code": 0,
+      "log_sha256": "3a72ebe8763ecc259d625c2d9f7e91a8dd97e49758a12c70af33d81228f02cef",
+      "stage": "release-build"
+    }
+  ],
+  "runtime_binary_uploaded": false,
+  "runtime_executed": false,
+  "schema": 1,
+  "source_archive_sha256": "fe41b78a040f77f7fb9c87028b5dca79bf71c582036d1f84f355e6b79935ffd3",
+  "source_tree_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+  "status": "built_and_contracts_verified_not_admitted",
+  "upstream": {
+    "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+    "repository": "https://github.com/EasyTier/EasyTier",
+    "source_date_epoch": 1778588776,
+    "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+  },
+  "observation": {
+    "kind": "local cloud actual clean derived-source build; not a hosted job",
+    "observed_utc": "2026-10-23T05:49:57.324277+00:00",
+    "repository_head": "1c1bf67b0d30d7865a839c34c5aae531c8f2b06b",
+    "source_lock_committed_at_execution": false,
+    "source_lock_sha256": "c9135af75df006062141b9ecb209887d46a9b374ed0b3d52924c15220448ebeb",
+    "separately_prepared_source": true,
+    "unchanged_source_reverified_after_build": true,
+    "previous_dependency_compile_cache_reused": true,
+    "previous_guard1_and_guard2_originals_preserved": true,
+    "incremental_compilation_disabled": true,
+    "local_bindgen_note": "Explicit GCC system-header include used for the available local libclang; hosted runner installs clang/libclang development packages"
+  }
+}

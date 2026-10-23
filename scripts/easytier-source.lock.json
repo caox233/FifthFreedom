@@ -37,6 +37,18 @@
       "sha256": "676e9b9dbeaad45cab7e7b85f245091c5e0d2a683f1436e4a1955f2b6e4245a3",
       "bytes": 637,
       "role": "production-guard"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/explicit-pin-contract-tests.patch",
+      "bytes": 4765,
+      "sha256": "9a3d13a08259acbe11352ccb084a565e04df465f42dc6d16f4a805429705b7cb",
+      "role": "contract-tests"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/require-explicit-peer-pin.patch",
+      "bytes": 1744,
+      "sha256": "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328",
+      "role": "production-guard"
     }
   ],
   "modified_files": [
@@ -53,7 +65,7 @@
     {
       "path": "easytier/src/peers/peer_conn.rs",
       "original_sha256": "ac70462079f7f07edc6e024b5a0e833ec7411848c51d1d07dda5b4ce4616bc69",
-      "patched_sha256": "f3c1dd756e01975263d0cf5be5d7f3e6847bd6200616c7519f84dafd360304d0"
+      "patched_sha256": "55be4e5f00acd548a9977e5d34874396a84888a7f00f08bbd8b43ab7d6cf85cc"
     }
   ],
   "omitted_files": [
@@ -196,7 +208,8 @@
       "easytier-core",
       "easytier-cli"
     ],
-    "official_musl_jemalloc_build_reproduction": false
+    "official_musl_jemalloc_build_reproduction": false,
+    "cargo_incremental": false
   },
   "admission": {
     "security_profile_id": null,

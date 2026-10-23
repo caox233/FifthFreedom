@@ -32,7 +32,9 @@ jobs:
       - name: Install checksum-pinned protoc
         run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
       - name: Verify synthetic archive, patch and build-receipt regressions
-        run: python -B -m unittest discover -s tests/ci -p 'test_ci_*easytier*.py' -v
+        run: |
+          python -B -m unittest discover -s tests/ci -p test_ci_prepare_easytier_source.py -v
+          python -B -m unittest discover -s tests/ci -p test_ci_easytier_build.py -v
       - name: Prepare exact reviewed sources, execute finite contracts and compile only
         run: python -B scripts/ci_easytier_build.py
       - name: Preserve receipts only; no original archive, dependency cache or executables

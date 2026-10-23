@@ -43,7 +43,7 @@ class EasyTierBuildEvidenceTests(unittest.TestCase):
 
     def test_receipts_bind_source_and_exact_contracts_without_copying_or_running_binaries(self):
         result = self.run_build()
-        self.assertEqual([row["passed"] for row in result["runs"][:-1]], [4, 10, 9, 2, 1])
+        self.assertEqual([row["passed"] for row in result["runs"][:-1]], [4, 10, 9, 2, 7, 3])
         self.assertEqual(result["patch_manifest_sha256"], self.prepared["patch_manifest_sha256"])
         self.assertEqual(set(path.name for path in self.output.iterdir()), {"receipt.json", "source-receipt.json"})
         self.assertFalse(result["runtime_executed"])

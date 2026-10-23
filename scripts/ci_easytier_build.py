@@ -16,7 +16,8 @@ CHECKS = (
     ("fifth_freedom_ingress_contract", 10, False),
     ("peers::secure_datagram::tests", 9, False),
     ("peers::peer_session::tests", 2, False),
-    ("peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip", 1, True),
+    ("peer_conn_secure_mode_", 7, False),
+    ("ff_explicit_pin_contract", 3, False),
 )
 
 
@@ -77,16 +78,16 @@ def build_source(directory, target, output, lock, cargo="cargo", environment=Non
         "dependency_source_closure_verified": False, "runtime_executed": False,
         "runtime_binary_uploaded": False, "official_binary_reproduced": False, "public_startup_allowed": False}
     env = dict(os.environ if environment is None else environment)
-    env.update(CARGO_TARGET_DIR=str(target), CARGO_BUILD_JOBS="2", CARGO_PROFILE_DEV_DEBUG="0",
+    env.update(CARGO_TARGET_DIR=str(target), CARGO_BUILD_JOBS="2", CARGO_INCREMENTAL="0", CARGO_PROFILE_DEV_DEBUG="0",
                CARGO_PROFILE_TEST_DEBUG="0", CARGO_ENCODED_RUSTFLAGS="", CARGO_NET_GIT_FETCH_WITH_CLI="true",
                GIT_CEILING_DIRECTORIES=str(directory.parent), SOURCE_DATE_EPOCH=str(lock["upstream"]["source_date_epoch"]))
     base = [cargo, "+" + lock["build"]["rust_toolchain"]]
     common = ["--locked", "--target", lock["build"]["target"], "-p", "easytier"]
-    commands = [(selection, base + ["test", *common, "--lib", selection, "--", *(["--exact"] if exact else [])], count)
+    commands = [(selection, base + ["test", *common, "--lib", selection, "--", "--test-threads=1", *(["--exact"] if exact else [])], count)
                 for selection, count, exact in CHECKS]
     commands.append(("release-build", base + ["build", *common, "--release", "--bin", "easytier-core", "--bin", "easytier-cli"], None))
     # Raw compiler logs stay beside the temporary target and are not uploaded.
-    logs = target.parent / (target.name + "-logs")
+    logs = target.parent / (target.name + "-logs-" + prepared["source_tree_sha256"][:12])
     logs.mkdir(exist_ok=False)
     try:
         for index, (label, command, count) in enumerate(commands):
