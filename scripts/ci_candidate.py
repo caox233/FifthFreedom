@@ -177,7 +177,7 @@ def windows_components(receipt: dict) -> None:
     run_build_step("ci-wpf-compile", [build.dotnet(), "publish", ROOT / "src/launcher/src/SplinterCellCNLauncher.csproj",
               "-c", "Release", "-r", "win-x86", "--self-contained", "true", "--nologo", "-o", launcher])
     receipt["launcher_probes"] = [run_launcher_probe(launcher, "--self-test", ART / "ci/windows-components/ui-smoke")]
-    for name in ("PortPlan", "BackgroundTaskRegression", "ObserverSession", "NetworkEnvironment", "PublicDeployment"):
+    for name in ("PortPlan", "BackgroundTaskRegression", "ObserverSession", "NetworkEnvironment", "PublicDeployment", "PublicSessionControl"):
         run_build_step("ci-test-" + name, [build.dotnet(), "run", "--project", ROOT / f"tests/{name}/{name}.csproj",
                   "-c", "Release", "--no-launch-profile"])
     cargo, env = build.native_env()
@@ -188,6 +188,7 @@ def windows_components(receipt: dict) -> None:
     with owned_server_test_env(env) as test_env:
         receipt["native_authentication_checks"] = required_native_tests(cargo, test_env, (
             "native_bridge_fixture_tests", "native_observer_fixture_tests", "auth_key_file",
+            "public_source", "lan_source_tests",
         ))
     for label, args in (
         ("hooks", ["-p", "hooks", "--lib", "--features", "patch-free,lan-goal-origin"]),
@@ -196,6 +197,13 @@ def windows_components(receipt: dict) -> None:
     ):
         run_build_step("ci-build-" + label, [cargo, "build", "--release", "--locked", *args], native, env)
     target = Path(env["CARGO_TARGET_DIR"])
+    version_log = run_build_step("ci-windows-resource-branding", [
+        "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-File", ROOT / "scripts/ci_windows_versions.ps1",
+        "-Launcher", launcher / "FifthFreedom.exe",
+        "-Hook", target / "i686-pc-windows-msvc/release/hooks.dll",
+        "-Server", target / "release/dedicated_server.exe",
+    ])
+    receipt["windows_version_resources"] = json.loads(version_log.with_suffix(".stdout.txt").read_text(encoding="utf-8-sig"))
     collect("windows-components", {
         "FifthFreedom.component-only.exe": launcher / "FifthFreedom.exe",
         "uplay_r1_loader.dll": target / "i686-pc-windows-msvc/release/hooks.dll",

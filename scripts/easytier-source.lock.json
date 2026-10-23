@@ -1,0 +1,207 @@
+{
+  "schema": 1,
+  "kind": "fifth-freedom-patched-easytier-linux-source-inputs",
+  "upstream": {
+    "repository": "https://github.com/EasyTier/EasyTier",
+    "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+    "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db",
+    "source_date_epoch": 1778588776
+  },
+  "archive": {
+    "format": "canonical git archive tar; not official release archive",
+    "bytes": 13066240,
+    "sha256": "fe41b78a040f77f7fb9c87028b5dca79bf71c582036d1f84f355e6b79935ffd3"
+  },
+  "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+  "patches": [
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-secure-session/contract-tests.patch",
+      "sha256": "5673d6b3f24dd44a263b7863a491ec0c482b61feadd77cfc2534973d3d8d31c4",
+      "bytes": 3140,
+      "role": "contract-tests"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-secure-session/require-encrypted-flag.patch",
+      "sha256": "06a16ca43e035eb1380c99ace8f19a8495bbd09b6413f0fe800752896aa3d2b3",
+      "bytes": 792,
+      "role": "production-guard"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/ingress-contract-tests.patch",
+      "sha256": "13a8719f4ff0679c3a0dcc56d1f61717f8659fcbf2337032656fd66889e072d9",
+      "bytes": 5365,
+      "role": "contract-tests"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/require-encrypted-data-ingress.patch",
+      "sha256": "676e9b9dbeaad45cab7e7b85f245091c5e0d2a683f1436e4a1955f2b6e4245a3",
+      "bytes": 637,
+      "role": "production-guard"
+    }
+  ],
+  "modified_files": [
+    {
+      "path": "easytier/src/peers/peer_session.rs",
+      "original_sha256": "b511a31db4d712c270be0f9ff3920e23aa7dc2345554db7da0df24af2d82d2a3",
+      "patched_sha256": "fd673e334c65c0cc1c4edd7654b02d37e180b9f71466f45eed4ac5f411e0024d"
+    },
+    {
+      "path": "easytier/src/peers/secure_datagram.rs",
+      "original_sha256": "ff1e5685bdd830386b153a57cb0e8eeb322c665e681e12ec6de3c1c46cd9dba5",
+      "patched_sha256": "74e372bff9c0578b07f8e08da5b56b3b8de7939976beb6017dd90357c12e8324"
+    },
+    {
+      "path": "easytier/src/peers/peer_conn.rs",
+      "original_sha256": "ac70462079f7f07edc6e024b5a0e833ec7411848c51d1d07dda5b4ce4616bc69",
+      "patched_sha256": "f3c1dd756e01975263d0cf5be5d7f3e6847bd6200616c7519f84dafd360304d0"
+    }
+  ],
+  "omitted_files": [
+    {
+      "path": "easytier-contrib/easytier-ohrs/ohpm_crypto.zip",
+      "bytes": 3478,
+      "sha256": "05a2a8f2189375ca0a3b86dd4184bebb4ca0203a878298308eb4268b8983068e",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier-gui/src-tauri/gen/android/gradle/wrapper/gradle-wrapper.jar",
+      "bytes": 43764,
+      "sha256": "7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/arm64/Packet.dll",
+      "bytes": 203136,
+      "sha256": "fe56bf638c1f05751a4f36377d71f48fb7f43446e92475eda32dc0f4f2ebd60c",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/arm64/Packet.lib",
+      "bytes": 9708,
+      "sha256": "0cf77885db5cbd8152dd23744843bf39220372c4e961a5df79875ccf54316387",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/arm64/WinDivert64.sys",
+      "bytes": 83,
+      "sha256": "19d4fc01593d6f9798c9e7de3d7dade906db97872ca1f281c96e40dd9ff85d50",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/arm64/wintun.dll",
+      "bytes": 222488,
+      "sha256": "f7ba89005544be9d85231a9e0d5f23b2d15b3311667e2dad0debd344918a3f80",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/i686/Packet.dll",
+      "bytes": 174456,
+      "sha256": "f0ab4f5457bd48958b72d6849148e1ece6dbc1059435dfe695051fc32b8cdc19",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/i686/Packet.lib",
+      "bytes": 10360,
+      "sha256": "ca4864813a4b2d4c21b6e4b33bcdcab55e307558528f71b3d4637e8a605375c6",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/i686/WinDivert32.sys",
+      "bytes": 79792,
+      "sha256": "2f43f4251be4d72dd56c91bf6cce475d379eb9ba6c4dda2be3022ea633d5e807",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/i686/wintun.dll",
+      "bytes": 550928,
+      "sha256": "d694fa46ab4cfebcb2632d094c7aa97278eef2f8052438621766d863ae98a931",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/x86_64/Packet.dll",
+      "bytes": 220032,
+      "sha256": "c7c03a87eac7243ccbe331554624b18803010b740e311fc8cfddb573096eacac",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/x86_64/Packet.lib",
+      "bytes": 8290,
+      "sha256": "5be8eb0ef57344cedc940fd81edbf7fc98680ba0c8337b577e7fdc448408130b",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/x86_64/WinDivert64.sys",
+      "bytes": 94144,
+      "sha256": "8da085332782708d8767bcace5327a6ec7283c17cfb85e40b03cd2323a90ddc2",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    },
+    {
+      "path": "easytier/third_party/x86_64/wintun.dll",
+      "bytes": 427552,
+      "sha256": "e5da8447dc2c320edc0fc52fa01885c103de8c118481f683643cacc3220dafce",
+      "reason": "non-Linux prebuilt input excluded; original retained separately"
+    }
+  ],
+  "materialized_links": [
+    {
+      "path": "easytier-rpc-build/LICENSE",
+      "target": "../LICENSE"
+    },
+    {
+      "path": "easytier/LICENSE",
+      "target": "../LICENSE"
+    },
+    {
+      "path": "easytier/README.md",
+      "target": "../README.md"
+    },
+    {
+      "path": "easytier/README_CN.md",
+      "target": "../README_CN.md"
+    },
+    {
+      "path": "easytier/assets",
+      "target": "../assets"
+    }
+  ],
+  "required_notices": [
+    {
+      "path": "LICENSE",
+      "bytes": 7652,
+      "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+    },
+    {
+      "path": "easytier/src/common/tracing_rolling_appender/LICENSE",
+      "bytes": 12388,
+      "sha256": "56808e11a09029613aecf966a70c8192b77eb691de8ee5d813d079ab9b1e87af"
+    },
+    {
+      "path": "easytier/src/tunnel/fake_tcp/LICENSE",
+      "bytes": 344,
+      "sha256": "f2ff6db400a0cd6fbfd894ba618772abcedb92c301055ad0840d971883730d83"
+    },
+    {
+      "path": "easytier/src/gateway/fast_socks5/LICENSE",
+      "bytes": 1075,
+      "sha256": "f80f0b4d28db4b51d16ae8485bce49265738e59df5e647ebc09467693e66e731"
+    }
+  ],
+  "build": {
+    "rust_toolchain": "1.95.0",
+    "target": "x86_64-unknown-linux-gnu",
+    "profile": "release",
+    "cargo_features": "default",
+    "crypto_backend": "ring; wireguard enabled; openssl-crypto/aes-gcm absent",
+    "bins": [
+      "easytier-core",
+      "easytier-cli"
+    ],
+    "official_musl_jemalloc_build_reproduction": false
+  },
+  "admission": {
+    "security_profile_id": null,
+    "readiness_adapter_version": null,
+    "runtime_publication_approved": false,
+    "runtime_admission_ready": false
+  }
+}
