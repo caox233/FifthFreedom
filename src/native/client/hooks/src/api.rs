@@ -156,35 +156,47 @@ impl<T: Clone> ConnectionCache<T> {
     }
 }
 
-static CONNECTION: std::sync::LazyLock<Mutex<ConnectionCache<tonic::transport::Channel>>> =
+#[derive(Clone)]
+struct BoundChannel { channel: tonic::transport::Channel, permit: source_transport::Permit }
+
+static CONNECTION: std::sync::LazyLock<Mutex<ConnectionCache<BoundChannel>>> =
     std::sync::LazyLock::new(|| Mutex::new(ConnectionCache::new()));
 
-async fn create_channel() -> std::result::Result<tonic::transport::Channel, Error> {
+async fn create_connection() -> std::result::Result<BoundChannel, Error> {
     loop {
         let (epoch, cached) = CONNECTION.lock().unwrap().snapshot();
         if let Some(channel) = cached {
-            tracing::debug!("Reusing connection {channel:?}");
-            return Ok(channel);
+            return Ok(channel.permit.with_live(|| channel.clone())?);
         }
 
         let Some(url) = crate::config::URL.get() else {
             return Err(Error::MissingUrl);
         };
-        tracing::debug!("Connecting to {url}");
-        let channel = tonic::transport::Channel::from_shared(url.as_str())
+        let permit = source_transport::Permit::capture(public_return::requested())?;
+        let endpoint = tonic::transport::Channel::from_shared(url.as_str())
             .unwrap()
             .connect_timeout(std::time::Duration::from_secs(1))
-            .timeout(std::time::Duration::from_secs(10))
-            .connect()
-            .await?;
-        let published = CONNECTION.lock().unwrap().publish(&epoch, channel);
+            .timeout(std::time::Duration::from_secs(10));
+        // Preserve LAN's connector and tonic transport error contract.
+        let channel = match &permit {
+            source_transport::Permit::Lan => endpoint.connect().await?,
+            source_transport::Permit::Public(_) => permit.connect(endpoint).await?,
+        };
+        let connection = BoundChannel { channel, permit: permit.clone() };
+        let published = permit.with_live(|| CONNECTION.lock().unwrap().publish(&epoch, connection))?;
         if let Some(channel) = published {
-            tracing::debug!("Connected to {url}");
             return Ok(channel);
         }
         // reset_connection won while connect was pending. Do not return or
         // cache the retired handle; reuse the new epoch or connect for it.
     }
+}
+
+fn invalidate_public_transport() {
+    *TOKEN.lock().unwrap_or_else(|poisoned| poisoned.into_inner()) = None;
+    clear_observer_admission();
+    CONNECTION.lock().unwrap_or_else(|poisoned| poisoned.into_inner()).reset();
+    public_return::stop();
 }
 
 pub fn reset_connection(reason: &str) {
@@ -196,20 +208,26 @@ pub fn reset_connection(reason: &str) {
 
 macro_rules! connect {
     ($client:ident) => {{
-        let channel = create_channel().await?;
-        $client::with_interceptor(channel, move |mut req: tonic::Request<_>| {
-            let guard = TOKEN.lock().unwrap();
-            if let Some(token) = (*guard).as_ref() {
-                tracing::debug!("Adding auth token");
-                req.metadata_mut().insert("authorization", token.clone());
-            }
-            Ok(req)
+        let connection = $crate::api::create_connection().await?;
+        connect!($client, connection)
+    }};
+    ($client:ident, $connection:expr) => {{
+        let connection = $connection;
+        $client::with_interceptor(connection.channel, move |mut req: tonic::Request<_>| {
+            connection.permit.with_live(|| {
+                let guard = $crate::api::TOKEN.lock().unwrap();
+                if let Some(token) = (*guard).as_ref() {
+                    req.metadata_mut().insert("authorization", token.clone());
+                }
+                req
+            }).map_err(|_| tonic::Status::unavailable("PUBLIC_TRANSPORT_REVOKED"))
         })
     }};
 }
 
 mod publication;
 mod public_return;
+mod source_transport;
 pub(crate) fn stop_public_return() { public_return::stop(); }
 pub use publication::{clear_game_session, publish_game_session};
 use publication::{republish_local_game_session, retry_pending_game_session};
@@ -405,7 +423,9 @@ async fn authenticate_async(username: &str, password: &str) -> Result<(), Error>
     clear_observer_admission();
     *CREDS.lock().unwrap() = Some((username.to_owned(), password.to_owned()));
     let result = async {
-        let mut client = connect!(UsersClient);
+        let connection = create_connection().await?;
+        let permit = connection.permit.clone();
+        let mut client = connect!(UsersClient, connection);
         let mode = hooks_config::get().ok_or(Error::LoginFailure)?.gameplay_mode;
         let release = crate::release_identity::declaration().map_err(Error::IO)?;
         let instance = current_game_instance()?;
@@ -423,30 +443,31 @@ async fn authenticate_async(username: &str, password: &str) -> Result<(), Error>
             Some(return_authentication(&response, username, mode, instance, &release, requested)?)
         } else { None };
         let token = login_response_token(response)?;
-        Ok((token,requested,publication))
+        Ok((token,requested,publication,permit))
     }.await;
     let mut publication = None;
     let result = match result {
-        Ok((token,observer,returned)) => {
-            *TOKEN.lock().unwrap() = Some(token);
-            OBSERVER_ADMITTED.store(observer,std::sync::atomic::Ordering::Release);
-            publication = returned;
-            info!("Game identity login acknowledged");
-            Ok(())
-        }
+        Ok((token,observer,returned,permit)) => permit.with_live(|| {
+                *TOKEN.lock().unwrap() = Some(token);
+                OBSERVER_ADMITTED.store(observer,std::sync::atomic::Ordering::Release);
+                publication = returned.map(|value| (value, permit.clone()));
+            }).map_err(Error::IO),
         Err(error) => {
             *TOKEN.lock().unwrap() = None;
             clear_observer_admission();
             Err(error)
         }
     };
+    if result.is_ok() { info!("Game identity login acknowledged"); }
     attempt.completed = true;
     let owner = attempt.publication.take();
     drop(attempt);
     drop(_login);
     // A newer login can now acquire the lock and advance the return generation.
     // Publication checks that exact attempt again; never await IPC here.
-    if let (Some(owner), Some(value)) = (owner, publication) { owner.publish(value); }
+    if let (Some(owner), Some((value, permit))) = (owner, publication) {
+        permit.with_live(|| owner.publish(value))?;
+    }
     result
 }
 

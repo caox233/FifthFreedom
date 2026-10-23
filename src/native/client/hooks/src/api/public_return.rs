@@ -18,6 +18,13 @@ use windows::Win32::System::Threading::{CreateEventW, WaitForSingleObject};
 
 static BRIDGE: OnceLock<Option<Arc<Bridge>>> = OnceLock::new();
 
+/// Presence selects the closed Public policy; it never grants a capability.
+/// Capture once so a mutable environment cannot switch an existing API epoch.
+pub(super) fn requested() -> bool {
+    static REQUESTED: OnceLock<bool> = OnceLock::new();
+    *REQUESTED.get_or_init(|| std::env::var_os(DESCRIPTOR_ENV).is_some())
+}
+
 fn invalid() -> io::Error { io::Error::new(io::ErrorKind::InvalidData, "PUBLIC_RETURN_UNAVAILABLE") }
 fn lock<T>(value: &Mutex<T>) -> std::sync::MutexGuard<'_, T> {
     value.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
