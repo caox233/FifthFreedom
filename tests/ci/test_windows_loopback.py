@@ -119,6 +119,56 @@ class WindowsLoopbackTests(unittest.TestCase):
             self.assertIs(result["native_interop_exercised"], False)
             self.assertNotIn("PRIVATE", path.read_text())
 
+    def test_owned_core_requires_all_seventeen_without_failure_or_skip(self):
+        valid = "\n".join([f"PASS case {i}" for i in range(17)] + ["RESULT 17 passed; 0 skipped"])
+        self.assertTrue(loopback.verified_output(valid, "OwnedCoreProcess"))
+        for text in (valid.replace("PASS case 16", "SKIP case 16"), valid.replace("17 passed", "5 passed"),
+                     valid.replace("0 skipped", "12 skipped"), valid + "\nRESULT 17 passed; 0 skipped",
+                     valid + "\nCI_OWNED_CORE_FAILURE case=17 phase=PARENT_DEATH code=OTHER"):
+            self.assertFalse(loopback.verified_output(text, "OwnedCoreProcess"))
+
+    def test_owned_core_executes_only_fixed_published_apphost_and_binds_its_hash(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            image = root / "ff-owned-core-tests/OwnedCoreProcess.exe"
+            image.parent.mkdir()
+            image.write_bytes(b"inert synthetic apphost bytes; never executed by this unit test")
+            report = root / "receipt.json"
+            output = "\n".join([f"PASS case {i}" for i in range(17)] + ["RESULT 17 passed; 0 skipped"])
+            with patch.object(sys, "argv", ["probe", "--suite", "OwnedCoreProcess", "--report", str(report)]), \
+                    patch.object(sys, "platform", "win32"), patch.dict("os.environ", {"RUNNER_ENVIRONMENT": "github-hosted", "RUNNER_TEMP": temporary}), \
+                    patch.object(loopback.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, output, "PRIVATE_TOKEN")) as invoke:
+                self.assertEqual(loopback.main(), 0)
+            self.assertEqual(invoke.call_args.args[0], [str(image)])
+            result = json.loads(report.read_text())
+            self.assertEqual(result["passed_checks"], 17)
+            self.assertEqual(result["test_apphost_sha256"], loopback.hashlib.sha256(image.read_bytes()).hexdigest())
+            self.assertTrue(result["test_apphost_unchanged"])
+            self.assertEqual(result["required_runtime"], "win-x86")
+            self.assertFalse(result["easytier_executed"])
+            self.assertFalse(result["driver_exercised"])
+            self.assertNotIn("PRIVATE", report.read_text())
+
+    def test_owned_core_mutated_or_removed_apphost_cannot_leave_success_receipt(self):
+        for remove in (False, True):
+            with self.subTest(remove=remove), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                image = root / "ff-owned-core-tests/OwnedCoreProcess.exe"
+                image.parent.mkdir(); image.write_bytes(b"inert original")
+                report = root / "receipt.json"
+                output = "\n".join([f"PASS case {i}" for i in range(17)] + ["RESULT 17 passed; 0 skipped"])
+                def child(*args, **kwargs):
+                    if remove:
+                        image.unlink()
+                    else:
+                        image.write_bytes(b"inert changed")
+                    return subprocess.CompletedProcess([], 0, output, "")
+                with patch.object(sys, "argv", ["probe", "--suite", "OwnedCoreProcess", "--report", str(report)]), \
+                        patch.object(sys, "platform", "win32"), patch.dict("os.environ", {"RUNNER_ENVIRONMENT": "github-hosted", "RUNNER_TEMP": temporary}), \
+                        patch.object(loopback.subprocess, "run", side_effect=child), redirect_stdout(io.StringIO()):
+                    self.assertEqual(loopback.main(), 1)
+                self.assertFalse(json.loads(report.read_text())["passed"])
+
 
 if __name__ == "__main__":
     unittest.main()

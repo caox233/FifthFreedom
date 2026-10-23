@@ -202,7 +202,7 @@ class AnnotationSafetyTests(unittest.TestCase):
 
     def test_all_managed_suites_enforce_their_own_public_case_bounds(self):
         for suite, count in (("PublicSessionControl", 15), ("PublicNativeReturn", 27),
-                             ("FinalLaunchPreparation", 9), ("NativeManagedInterop", 3)):
+                             ("FinalLaunchPreparation", 9), ("NativeManagedInterop", 3), ("OwnedCoreProcess", 17)):
             with self.subTest(suite=suite):
                 template = f"CI_MANAGED_FAILURE suite={suite} case={{case}} exception=Win32Exception"
                 for ordinal in (1, count):
@@ -219,6 +219,20 @@ class AnnotationSafetyTests(unittest.TestCase):
                             ("NativeManagedInterop", "SETUP_LISTENER")):
             marker = f"CI_MANAGED_FAILURE suite={suite} case={case} exception=IOException"
             self.assertEqual(diagnostics.diagnostic_details(marker)["managed_cases"], [])
+
+    def test_owned_core_phase_and_reason_are_fixed_and_case_bounded(self):
+        valid = "CI_OWNED_CORE_FAILURE case=17 phase=PARENT_DEATH code=OWNED_CORE_CLEANUP_FAILED"
+        self.assertEqual(diagnostics.diagnostic_details(valid)["owned_core_failures"],
+                         ["17:PARENT_DEATH:OWNED_CORE_CLEANUP_FAILED"])
+        invalid = (valid.replace("case=17", "case=18"), valid.replace("case=17", "case=00"),
+                   valid.replace("PARENT_DEATH", "PRIVATE_PATH"), valid.replace("OWNED_CORE_CLEANUP_FAILED", "PRIVATE_CODE"),
+                   valid + " token=PRIVATE_TOKEN", valid + "_PRIVATE_SUFFIX",
+                   "CI_MANAGED_FAILURE suite=OwnedCoreProcess case=SETUP_PACKAGE exception=Exception")
+        text = "\n".join(invalid)
+        details = diagnostics.diagnostic_details(text)
+        self.assertEqual(details["owned_core_failures"], [])
+        self.assertEqual(details["managed_cases"], [])
+        self.assertNotIn("PRIVATE", str(details))
 
     def test_return_phase_and_child_markers_keep_only_fixed_source_values(self):
         marker = "CI_RETURN_PHASE suite=PublicNativeReturn case=25 phase=CONFIG_ACK"

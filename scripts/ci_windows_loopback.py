@@ -1,6 +1,7 @@
 """Run the selected real Windows prerequisite suite with a sanitized receipt."""
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -22,6 +23,7 @@ SUITES = {
     "FinalLaunchPreparation": (9, "RESULT 9 final-login preparation checks passed; owned loopback HTTP2 only; no game, Public runtime or live-route admission."),
     "PublicNativeReturn": (27, "RESULT 27 passed, 0 skipped"),
     "DiagnosticTextStreaming": (12, "DIAGNOSTIC_STREAM_SUMMARY cases=12 linked_production=true source_unchanged=true full_zip_tested=false network=false game=false"),
+    "OwnedCoreProcess": (17, "RESULT 17 passed; 0 skipped"),
 }
 
 
@@ -33,7 +35,7 @@ def verified_output(text, suite="FinalLaunchPreparation"):
         actual = [line for line in lines if line.startswith(("DIAGNOSTIC_STREAM_", "PASS ", "RESULT ", "SKIP ", "FAIL ", "CI_MANAGED_FAILURE "))]
         return actual == expected
     return (len([line for line in lines if line.startswith("PASS ")]) == count
-            and not any(line.startswith(("SKIP ", "FAIL ", "CI_MANAGED_FAILURE ")) for line in lines)
+            and not any(line.startswith(("SKIP ", "FAIL ", "CI_MANAGED_FAILURE ", "CI_OWNED_CORE_FAILURE ")) for line in lines)
             and [line for line in lines if line.startswith("RESULT ")] == [summary])
 
 
@@ -51,12 +53,27 @@ def main():
               "full_diagnostic_zip_exercised": False,
               "services_changed": False, "raw_output_retained": False}
     try:
-        child = subprocess.run(["dotnet", "run", "--project",
+        command = ["dotnet", "run", "--project",
             str(ROOT / f"tests/{args.suite}/{args.suite}.csproj"),
-            "-c", "Release", "--no-launch-profile"], cwd=ROOT, capture_output=True,
+            "-c", "Release", "--no-launch-profile"]
+        image = None
+        if args.suite == "OwnedCoreProcess":
+            if not os.environ.get("RUNNER_TEMP"):
+                raise OSError("RUNNER_TEMP_REQUIRED")
+            image = Path(os.environ["RUNNER_TEMP"]) / "ff-owned-core-tests/OwnedCoreProcess.exe"
+            image_bytes = image.read_bytes()
+            image_sha = hashlib.sha256(image_bytes).hexdigest()
+            command = [str(image)]
+            result.update(required_runtime="win-x86", self_contained_test_apphost=True,
+                          test_apphost_sha256=image_sha, test_apphost_bytes=len(image_bytes),
+                          easytier_executed=False, driver_exercised=False)
+        child = subprocess.run(command, cwd=ROOT, capture_output=True,
             text=True, encoding="utf-8", errors="replace", timeout=240)
         text = (child.stdout + "\n" + child.stderr)[-ci_diagnostics.MAX_LOG_BYTES:]
         result["passed"] = child.returncode == 0 and verified_output(text, args.suite)
+        if image is not None:
+            result["test_apphost_unchanged"] = hashlib.sha256(image.read_bytes()).hexdigest() == image_sha
+            result["passed"] = result["passed"] and result["test_apphost_unchanged"]
         if result["passed"]:
             result.update(passed_checks=SUITES[args.suite][0], skipped_checks=0)
         result["process_succeeded"] = child.returncode == 0
@@ -65,9 +82,11 @@ def main():
             fields = [f"{key}=" + " | ".join(values) for key, values in result["diagnostics"].items() if values]
             ci_diagnostics.emit_error("suite=" + args.suite + "; " + "; ".join(fields or ["WINDOWS_MANAGED_SUITE_RESULT_INVALID"]))
     except subprocess.TimeoutExpired:
+        result["passed"] = False
         result["error"] = "WINDOWS_MANAGED_SUITE_TIMEOUT"
         ci_diagnostics.emit_error(result["error"])
     except OSError:
+        result["passed"] = False
         result["error"] = "WINDOWS_MANAGED_SUITE_PROCESS_FAILED"
         ci_diagnostics.emit_error(result["error"])
     try:

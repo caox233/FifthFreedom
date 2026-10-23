@@ -45,12 +45,13 @@ _PREPARATION_CODES = {"FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE", "FINAL_PREPAR
 # Case identities are public test source constants. Each suite has its own
 # bound so a valid ordinal from another suite cannot masquerade as evidence.
 _MANAGED_CASE_COUNTS = {"PublicSessionControl": 15, "PublicNativeReturn": 27,
-                        "FinalLaunchPreparation": 9, "NativeManagedInterop": 3}
+                        "FinalLaunchPreparation": 9, "NativeManagedInterop": 3, "OwnedCoreProcess": 17}
 _MANAGED_SETUP_CASES = {
     "PublicSessionControl": {"SETUP_PACKAGE", "SETUP_CERTIFICATES", "CLEANUP", "UNKNOWN_PHASE"},
     "PublicNativeReturn": {"SETUP_PACKAGE", "CLEANUP", "UNKNOWN_PHASE"},
     "FinalLaunchPreparation": {"SETUP_PACKAGE", "SETUP_LISTENER", "CLEANUP", "UNKNOWN_PHASE"},
     "NativeManagedInterop": {"SETUP_PACKAGE", "CLEANUP", "UNKNOWN_PHASE"},
+    "OwnedCoreProcess": set(),
 }
 _MANAGED_EXCEPTION_PATTERN = (
     r"AuthenticationException|CryptographicException|IOException|SocketException|"
@@ -61,7 +62,7 @@ _MANAGED_EXCEPTION_PATTERN = (
     r"JsonException|Exception|OtherException"
 )
 _MANAGED_FAILURE = re.compile(
-    r"CI_MANAGED_FAILURE suite=(PublicSessionControl|PublicNativeReturn|FinalLaunchPreparation|NativeManagedInterop) "
+    r"CI_MANAGED_FAILURE suite=(PublicSessionControl|PublicNativeReturn|FinalLaunchPreparation|NativeManagedInterop|OwnedCoreProcess) "
     r"case=([0-9]{2}|SETUP_PACKAGE|SETUP_CERTIFICATES|SETUP_LISTENER|CLEANUP|UNKNOWN_PHASE) "
     r"exception=(" + _MANAGED_EXCEPTION_PATTERN + r")\Z"
 )
@@ -82,6 +83,13 @@ _RETURN_DIRECTORY_FAILURE = re.compile(
     r"CI_RETURN_DIRECTORY_FAILURE suite=PublicNativeReturn case=(15|16|17) "
     r"exception=(" + _MANAGED_EXCEPTION_PATTERN + r") child_exited=(YES|NO|UNKNOWN) "
     r"process_disposed=(YES|NO) config_disposed=(YES|NO) readonly_files=(YES|NO|UNKNOWN)\Z"
+)
+_OWNED_CORE_FAILURE = re.compile(
+    r"CI_OWNED_CORE_FAILURE case=([0-9]{2}) phase=(INPUT|RESUME|STOP|CHILD_READY|PARENT_DEATH) "
+    r"code=(OWNED_CORE_INPUTS_INVALID|OWNED_CORE_WINDOWS_REQUIRED|OWNED_CORE_JOB_FAILED|"
+    r"OWNED_CORE_ATTRIBUTES_FAILED|OWNED_CORE_ENVIRONMENT_FAILED|OWNED_CORE_CREATE_FAILED|"
+    r"OWNED_CORE_MEMBERSHIP_FAILED|OWNED_CORE_CLEANUP_FAILED|OWNED_CORE_STATE_INVALID|"
+    r"OWNED_CORE_RESUME_FAILED|PUBLIC_RETURN_REJECTED|OTHER)\Z"
 )
 
 
@@ -230,6 +238,9 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
     directory_failures = sorted({"PublicNativeReturn:" + ":".join(match.groups())
                                 for line in text.splitlines()
                                 if (match := _RETURN_DIRECTORY_FAILURE.fullmatch(line))})[:MAX_ITEMS]
+    core_failures = sorted({":".join(match.groups()) for line in text.splitlines()
+                           if (match := _OWNED_CORE_FAILURE.fullmatch(line))
+                           and managed_case_allowed("OwnedCoreProcess", match[1])})[:MAX_ITEMS]
     tls = sorted({"PublicSessionControl:05:" + ":".join(match.groups())
                   for line in text.splitlines()
                   if (match := _TLS_FAILURE.fullmatch(line))})[:MAX_ITEMS]
@@ -246,6 +257,7 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
             "managed_cases": managed, "tls_cases": tls,
             "return_phases": return_phases, "return_child_failures": child_failures,
             "return_directory_failures": directory_failures,
+            "owned_core_failures": core_failures,
             "native_interop_codes": fixed_codes(_INTEROP_CODES),
             "native_failed_tests": native_tests,
             "final_preparation_codes": fixed_codes(_PREPARATION_CODES)}
