@@ -54,7 +54,7 @@ workspace = true
 diff = { workspace = true }
 
 [package.metadata.winres]
-ProductName = "5th Echelon Server"
-FileDescription = "https://github.com/unixoide/5th-echelon"
-OriginalFilename = "dedicated_server.exe"
+ProductName = "Fifth Freedom"
+FileDescription = "Fifth Freedom LAN server"
+OriginalFilename = "FifthFreedom.Server.exe"
 InternalName = "dedicated_server"

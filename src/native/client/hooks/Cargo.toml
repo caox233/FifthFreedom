@@ -75,8 +75,8 @@ features = [
 winres = { workspace = true }
 
 [package.metadata.winres]
-ProductName = "SCBL LAN Hooks"
-FileDescription = "SCBL LAN Official developer build"
+ProductName = "Fifth Freedom"
+FileDescription = "Fifth Freedom native client"
 OriginalFilename = "uplay_r1_loader.dll"
 InternalName = "hooks-cn"
 CompanyName = "5th Echelon CN"
