@@ -143,6 +143,14 @@ class VerifiedToolTests(unittest.TestCase):
 
 
 class RunnerReceiptTests(unittest.TestCase):
+    def test_fixed_native_ipc_selection_rejects_partial_or_duplicated_summaries(self):
+        valid = "test result: ok. 8 passed; 0 failed; 0 ignored; 20 filtered out;\n"
+        self.assertEqual(ci_candidate.required_native_test_count(valid, expected=8), 8)
+        for text in (valid.replace("8 passed", "7 passed"), valid + valid,
+                     valid.replace("8 passed", "9 passed")):
+            with self.subTest(text=text), self.assertRaisesRegex(RuntimeError, "expected exact count"):
+                ci_candidate.required_native_test_count(text, expected=8)
+
     def test_native_selection_cannot_pass_on_zero_or_ignored_cases(self):
         self.assertEqual(ci_candidate.required_native_test_count(
             "test result: ok. 3 passed; 0 failed; 0 ignored; 20 filtered out; finished in 0.01s\n"), 3)

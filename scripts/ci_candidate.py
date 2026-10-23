@@ -47,18 +47,20 @@ def parse_probe_report(text: str, flag: str) -> int:
     return passes
 
 
-def required_native_test_count(text: str) -> int:
+def required_native_test_count(text: str, expected: int | None = None) -> int:
     summaries = re.findall(r"^test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;", text, re.MULTILINE)
     passed = sum(int(row[0]) for row in summaries)
     if not passed or any(int(failed) or int(ignored) for _, failed, ignored in summaries):
         raise RuntimeError("Required native test selection did not execute nonzero passing checks")
+    if expected is not None and (len(summaries) != 1 or passed != expected):
+        raise RuntimeError("Required native test selection did not execute the expected exact count")
     return passed
 
 
 def required_native_tests(cargo: str, env: dict, filters: tuple[str, ...]) -> list[dict]:
     rows = []
     for selection in filters:
-        label = "ci-native-" + selection
+        label = "ci-native-" + selection.replace("::", "-")
         base = run_build_step(label, [cargo, "test", "--locked", "-p", "dedicated_server", selection], ROOT / "src/native", env)
         passed = required_native_test_count(base.with_suffix(".stdout.txt").read_text(encoding="utf-8", errors="replace"))
         rows.append({"filter": selection, "passed": passed, "failed": 0, "ignored": 0})
@@ -177,7 +179,7 @@ def windows_components(receipt: dict) -> None:
     run_build_step("ci-wpf-compile", [build.dotnet(), "publish", ROOT / "src/launcher/src/SplinterCellCNLauncher.csproj",
               "-c", "Release", "-r", "win-x86", "--self-contained", "true", "--nologo", "-o", launcher])
     receipt["launcher_probes"] = [run_launcher_probe(launcher, "--self-test", ART / "ci/windows-components/ui-smoke")]
-    for name in ("PortPlan", "BackgroundTaskRegression", "ObserverSession", "NetworkEnvironment", "PublicDeployment", "PublicSessionControl"):
+    for name in ("PortPlan", "BackgroundTaskRegression", "ObserverSession", "NetworkEnvironment", "PublicDeployment", "PublicSessionControl", "PublicNativeReturn"):
         run_build_step("ci-test-" + name, [build.dotnet(), "run", "--project", ROOT / f"tests/{name}/{name}.csproj",
                   "-c", "Release", "--no-launch-profile"])
     cargo, env = build.native_env()
@@ -189,7 +191,15 @@ def windows_components(receipt: dict) -> None:
         receipt["native_authentication_checks"] = required_native_tests(cargo, test_env, (
             "native_bridge_fixture_tests", "native_observer_fixture_tests", "auth_key_file",
             "public_source", "lan_source_tests",
+            "deployment_profile::tests",
         ))
+    ipc_log = run_build_step("ci-native-public-return", [cargo, "test", "--locked", "-p", "hooks", "--lib",
+        "--features", "patch-free,lan-goal-origin", "api::public_return::tests", "--", "--test-threads=1"], native, env)
+    receipt["native_public_return_checks"] = {
+        "passed": required_native_test_count(ipc_log.with_suffix(".stdout.txt").read_text(encoding="utf-8", errors="replace"), expected=8),
+        "failed": 0, "ignored": 0, "game_executed": False,
+        "scope": "owned synthetic Windows processes and production named-pipe contracts",
+    }
     for label, args in (
         ("hooks", ["-p", "hooks", "--lib", "--features", "patch-free,lan-goal-origin"]),
         ("gameplay", ["-p", "scbl-gameplay", "--lib", "--features", "goggle-feedback"]),

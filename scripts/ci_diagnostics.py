@@ -38,6 +38,15 @@ _OWNED_PROCESS_CODES = {
     "EXECUTABLE_IDENTITY_INVALID", "EXECUTABLE_CAPABILITIES_UNVERIFIED", "EXECUTABLE_CAPABILITIES_FORBIDDEN",
     "EXECUTABLE_ELF_INVALID", "EXECUTABLE_HASH_MISMATCH", "EXECUTABLE_CHANGED", "EXECUTABLE_UNAVAILABLE",
 }
+_MANAGED_FAILURE = re.compile(
+    r"CI_MANAGED_FAILURE suite=PublicSessionControl "
+    r"case=(0[1-9]|1[0-5]|SETUP_PACKAGE|SETUP_CERTIFICATES|CLEANUP|UNKNOWN_PHASE) "
+    r"exception=(AuthenticationException|CryptographicException|IOException|SocketException|"
+    r"HttpRequestException|OperationCanceledException|TaskCanceledException|TimeoutException|"
+    r"ArgumentException|InvalidOperationException|PlatformNotSupportedException|PublicControlException|"
+    r"EndOfStreamException|ObjectDisposedException|"
+    r"Exception|OtherException)\Z"
+)
 
 
 def owned_process_codes(text: str) -> list[str]:
@@ -139,9 +148,15 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
     # only its source-defined adapter codes; never echo suffixes, paths or values.
     preflight = sorted({code for code in _PREFLIGHT_CODES
                         if re.search(r"(?<![A-Za-z0-9_])" + code + r"(?![A-Za-z0-9_])", text)})[:MAX_ITEMS]
+    # Only the exact reviewed suite, fixed case ordinals/phases and class names
+    # can leave a managed probe log. Never publish its exception text or stack.
+    managed = sorted({"PublicSessionControl:" + match[1] + ":" + match[2]
+                      for line in text.splitlines()
+                      if (match := _MANAGED_FAILURE.fullmatch(line))})[:MAX_ITEMS]
     return {"compiler_codes": codes, "ui_checks": labels[:MAX_ITEMS],
             "categories": signatures[:MAX_ITEMS], "exception_types": exceptions,
-            "preflight_codes": preflight, "owned_process_codes": owned_process_codes(text)}
+            "preflight_codes": preflight, "owned_process_codes": owned_process_codes(text),
+            "managed_cases": managed}
 
 
 def read_bounded_logs(paths) -> str:

@@ -175,6 +175,31 @@ class AnnotationSafetyTests(unittest.TestCase):
             self.assertNotIn("PRIVATE_PREFIX", text)
             self.assertIn("CS0246", text)
 
+    def test_managed_failure_keeps_only_reviewed_suite_case_and_exception(self):
+        marker = "CI_MANAGED_FAILURE suite=PublicSessionControl case=05 exception=CryptographicException"
+        details = diagnostics.diagnostic_details(marker + "\r\n" + marker + "\n"
+            "CI_MANAGED_FAILURE suite=PublicSessionControl case=SETUP_PACKAGE exception=IOException\n")
+        self.assertEqual(details["managed_cases"], ["PublicSessionControl:05:CryptographicException",
+            "PublicSessionControl:SETUP_PACKAGE:IOException"])
+        output = io.StringIO()
+        with redirect_stdout(output), self.assertRaises(diagnostics.AnnotatedFailure):
+            with diagnostics.diagnostic_step("ci-test-PublicSessionControl"):
+                raise RuntimeError(marker + "\n/private/PRIVATE_PATH token=PRIVATE_TOKEN")
+        self.assertIn("managed_cases=PublicSessionControl:05:CryptographicException", output.getvalue())
+        self.assertNotIn("PRIVATE", output.getvalue())
+        self.assertNotIn("/private", output.getvalue())
+
+    def test_managed_unknown_values_suffixes_and_injected_fields_are_not_published(self):
+        template = "CI_MANAGED_FAILURE suite={suite} case={case} exception={kind}"
+        cases = [("PRIVATE_SUITE", "01", "Exception"), ("PublicSessionControl", "16", "Exception"),
+                 ("PublicSessionControl", "00", "Exception"), ("PublicSessionControl", "PRIVATE_CASE", "Exception"),
+                 ("PublicSessionControl", "01", "PRIVATE_TYPE"),
+                 ("PublicSessionControl", "01", "Exception token=PRIVATE_TOKEN"),
+                 ("PublicSessionControl", "01", "Exception_PRIVATE_SUFFIX")]
+        text = "\n".join(template.format(suite=suite, case=case, kind=kind) for suite, case, kind in cases)
+        self.assertEqual(diagnostics.diagnostic_details(text)["managed_cases"], [])
+        self.assertNotIn("PRIVATE", str(diagnostics.diagnostic_details(text)))
+
 
 if __name__ == "__main__":
     unittest.main()
