@@ -1,5 +1,12 @@
 # Cloud implementation evidence
 
+Current delivery status: later reviewed changes are committed only in the cloud
+workspace because GitHub API access now returns 401 and normal Git credentials
+are unavailable. The last verified remote source is `fe6e3cd`; environment
+draft19 still pins source `6954eea` and knowledge `b809b4a`. Earlier access and
+hosted successes below are historical. See the final checkpoint and
+[recovery task](tasks/cloud-authentication-recovery.md) for the exact boundaries.
+
 The cloud checkout fetched and verified handoff commit
 `fc8ef510b51be83c31f9f8233997f758b0477acc` before creating
 `codex/cloud-integration`. The original checkout branch and private local
@@ -1211,3 +1218,104 @@ not establish whole-process confinement. Ordinary Public admission, withheld
 resource/retail/Capture/ASI closure and live acceptance remain open. All six
 goals and accepted gameplay results are preserved; no game, capture, deployment
 or formal Release was started.
+
+## Reviewed offline continuation after managed GitHub access failed
+
+The official GitHub API returned HTTP401 and ordinary Git push/remote reads
+failed with exit128 because a username was unavailable. Official environment
+status and tool discovery expose no credential-refresh operation or GitHub
+connector. The existing network policy was preserved; credentials were not
+printed or copied, and no alternate route or retry loop was used. The last
+verified source branch remains `fe6e3cd5992888273bada9c7810a264cf8d54630`.
+The [recovery task](tasks/cloud-authentication-recovery.md) separates the required
+platform identity repair from already-authorized development work.
+
+The newly retrieved [432 combined-stack failure](evidence/hosted-owned-stack-4322658.json)
+was retained before authentication stopped working. Case A completed READY,
+five listeners, same-socket OPEN, lease revocation, exit92, port release and
+EOF/reset while the overlay remained alive. Case B failed at observe with
+QUERY_IMAGE_CHANGED before combined readiness was confirmed. Its worker reaped
+children; both pairs of namespaces and the private stage were removed. The
+official artifact SHA256 is
+c445d4e3d8a1e05b55d970c9abd0ce0e5bea77983fc4ede6aca7a72a21242a95.
+The earlier native5 success does not make this failed composition successful.
+
+Reviewed `4f2d980` fixes a separately reproduced query-exit race. A real owned
+child that exits normally between executable-identity and liveness reads is
+distinguished from a different image or a failed live procfs observation.
+Mismatch and unavailable evidence remain permanently rejected even after exit0;
+ordinary long-lived core/native identity rules remain unchanged. All83 checks
+passed independently, including the real different-inode negative controls.
+This establishes the demonstrated source fix, not the unique cause of432 or528.
+
+Reviewed `6c8686b` binds authenticated Data challenges to the actual Instance's
+Weak PeerMap, Peer and connection membership. Twelve new and59 retained contracts
+passed; removing the peer-pointer check produced the expected real failed
+assertion, and restoration passed. The independent `c2d1760` builder binds all
+701 source files and12 ordered patches;43 focused Python checks, actionlint and
+full source reconstruction passed independently. Older35/44/59 recipes remain
+unchanged. The new hosted71 build has not run. Sampled membership is not atomic
+revocation, complete process/NIC lifetime or a production admission lease.
+
+Reviewed `cb2d0b9` preserves optional TCP STUN configuration and avoids launching
+collector tasks when all three explicit server lists are empty. Thirteen new,
+21 retained config and one GlobalCtx check passed independently. The before
+4-pass/3-fail control and first after12-pass/1-fail fixture correction are retained.
+The single inert profile explicitly uses `/24`, matching the existing getter;
+normal omitted/default LAN behavior is unchanged. Combined and split patches
+reconstruct exactly753 files and reverse to752; no core or STUN network probe
+was run. Old twelve-patch binaries cannot run the new inert experiment.
+
+Reviewed `8912523` adds the independent thirteen-patch build and same-job
+Windows core/NIC workflow. Reviewed `507e93f` supplies the actual production-linked
+owner/read-channel runtime entry. Twenty-one Python adapter/builder controls and
+22 managed portable contracts passed, plus two real CLI rejection controls.
+Win-x86 cross-compilation passed with zero warnings/errors. Nineteen layout
+assertions passed independently against actual windows-sys declarations for
+both AMD64 and i686 MSVC targets, without executing Windows APIs.
+
+The probe requires a live owned NIC before EndReads and a new, timely
+NIC-absent/exact-core-alive observation afterwards. Exact job drain, final kernel
+restoration and released file pins are separate checks. A naturally exiting
+core can fail that stricter observation without proving a NIC leak. Reviewed
+negative controls reject pre-trigger absence, late samples and a recovery error
+that the initial adapter could incorrectly return as success. Temporary
+firewall blocks identify the staging application path, not a product PID policy;
+unknown drain keeps those blocks for the disposable VM. PowerShell was only
+source-reviewed here. The complete Windows build, firewall and actual core/NIC
+execution remain unverified. Dependency13 and owned-read22 also still await
+their own Windows runs; the earlier19/8/4 plus17 successes remain historical.
+
+Later results for runs39947362637,39947934755 and39947934694 were unavailable
+after authentication failed. They are not assumed stopped or successful; two
+attempted duplicate cancellations were not confirmed. The source and knowledge
+draft PRs have not been updated with these local-only commits. Environment
+draft19 remains unchanged and unpublished, with no verified fresh restoration
+or persistent Goal/scheduler interface. Original private evidence is preserved;
+the six milestones, held package resources, retail/Capture/ASI closure,
+whole-game network confinement and remaining live checks stay open.
+
+The first fresh aggregate at `507e93f` executed604 methods:601 passed, two
+platform cases skipped, and one server fixture failed. Its INTERFACE_RECHECK
+subcase encountered FDINFO_ENTRY_UNAVAILABLE earlier than intended. The complete
+failed log/report are retained; source-report SHA256:
+325fa580ed28f6c2944618040918395a1941c89f29248b2327cdb89d9268a390.
+Reviewed `8a694fac` changes only the synthetic fault fixture and its task record.
+A real owned child snapshots and closes fd200; the exact failed open is verified
+and the production monitor still rejects it. Selecting the same child's stable
+stdin only for the three later synthetic fault stages reaches their intended
+errors. The original disappeared-entry control is unchanged. The full server
+suite passed140 checks, and independent focused review passed both controls.
+The original507 descriptor and errno are not inferred from this reproduction;
+the production monitor remains byte-identical.
+
+Fresh detached `8a694fac1def93966ffc10ef2569783f6a92aa9b` then executed605 source
+methods:603 passed, two existing Windows skips, zero failures/errors, with
+unchanged tracked files. Complete packaging remains blocked. Source-report
+SHA256:542f3b2f981bf2864a6e0f86cf820352182c2b6c63cc7ed73af982eb19fce5cc.
+The canonical patch from the preserved handoff applies and reverses with exact
+bytes, modes and path sets:1312→1714→1312, clean. Its456 changed paths occupy
+4,176,870 patch bytes; SHA256:
+c99b637b560f4df4f920669932b4dcc5f958ebf0a9d986be8ce4210877bd8c0c.
+This is a verified local source checkpoint, not a GitHub push, a new hosted
+Windows result or a replacement for the original private four-role evidence.
