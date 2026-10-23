@@ -30,9 +30,9 @@ fn synthetic_file(role: &str, linux: bool) -> Vec<u8> {
     bytes
 }
 
-struct Fixture { root: PathBuf, package: PathBuf, configuration: PathBuf, key: PathBuf, data: PathBuf }
+pub(crate) struct Fixture { root: PathBuf, package: PathBuf, pub(crate) configuration: PathBuf, key: PathBuf, data: PathBuf }
 impl Fixture {
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         sodiumoxide::init().unwrap();
         let root = std::env::temp_dir().join(format!("fifth-public-preflight-synthetic-{}-{}",
             std::process::id(), NEXT.fetch_add(1, Ordering::Relaxed)));
@@ -71,11 +71,13 @@ impl Fixture {
         fs::write(&self.configuration, serde_json::to_vec(&value).unwrap()).unwrap();
         fs::set_permissions(&self.configuration, fs::Permissions::from_mode(0o600)).unwrap();
     }
-    fn edit(&self, update: impl FnOnce(&mut serde_json::Value)) {
+    pub(crate) fn edit(&self, update: impl FnOnce(&mut serde_json::Value)) {
         let mut value = serde_json::from_slice(&fs::read(&self.configuration).unwrap()).unwrap();
         update(&mut value); self.document(value);
     }
     fn check(&self) -> Result<serde_json::Value, &'static str> { check(&self.configuration, &self.package.join("bin/FifthFreedom.Server")) }
+    pub(crate) fn executable(&self) -> PathBuf { self.package.join("bin/FifthFreedom.Server") }
+    pub(crate) fn prepare(&self) -> ValidatedDeployment { prepare(&self.configuration, &self.executable()).unwrap() }
 }
 impl Drop for Fixture { fn drop(&mut self) { fs::remove_dir_all(&self.root).unwrap(); } }
 
@@ -108,6 +110,36 @@ fn actual_preflight_uses_both_identities_but_never_authorizes_startup_or_writes(
     let rendered = report.to_string();
     assert!(!rendered.contains("10.77.0.1")); assert!(!rendered.contains(fixture.root.to_str().unwrap()));
     assert!(!rendered.contains(&"75".repeat(32)));
+}
+
+#[test]
+fn public_observer_option_is_default_false_strict_bool_and_bound_to_raw_config() {
+    let fixture = Fixture::new();
+    let legacy = fixture.prepare();
+    assert!(!legacy.observer_allowed());
+    let mut previous_hash = legacy.configuration_sha256().to_owned();
+    for allowed in [false, true] {
+        fixture.edit(|value| value["observer_allowed"] = allowed.into());
+        let before = snapshot(&fixture.root);
+        let plan = fixture.prepare();
+        assert_eq!(plan.observer_allowed(), allowed);
+        assert_ne!(plan.configuration_sha256(), previous_hash);
+        assert_eq!(plan.configuration_sha256(), digest(&fs::read(&fixture.configuration).unwrap()));
+        previous_hash = plan.configuration_sha256().into();
+        assert_eq!(fixture.check().unwrap()["observer_enabled"], false);
+        assert_eq!(fixture.check().unwrap()["startup_allowed"], false);
+        assert_eq!(snapshot(&fixture.root), before);
+    }
+    for invalid in [serde_json::Value::Null, "true".into(), 1.into(), serde_json::json!({"allowed":true})] {
+        fixture.edit(|value| value["observer_allowed"] = invalid);
+        let before = snapshot(&fixture.root);
+        assert_eq!(fixture.check(), Err(CONFIG_INVALID));
+        assert_eq!(snapshot(&fixture.root), before);
+    }
+    fixture.edit(|value| value["observer_allowed"] = true.into());
+    let raw = String::from_utf8(fs::read(&fixture.configuration).unwrap()).unwrap();
+    fs::write(&fixture.configuration, raw.replacen("\"observer_allowed\":true", "\"observer_allowed\":true,\"observer_allowed\":false", 1)).unwrap();
+    assert_eq!(fixture.check(), Err(CONFIG_INVALID));
 }
 
 #[test]

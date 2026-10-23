@@ -20,6 +20,8 @@ struct DeploymentDocument {
     auth_key_file: PathBuf,
     data_directory: PathBuf,
     #[serde(default)]
+    observer_allowed: bool,
+    #[serde(default)]
     runtime_profile_sha256: Option<String>,
     #[serde(default)]
     runtime_executable_sha256: Option<String>,
@@ -183,6 +185,9 @@ pub(crate) struct ValidatedDeployment {
     service_manifest_sha256: String,
 }
 impl ValidatedDeployment {
+    pub(crate) fn observer_allowed(&self) -> bool { self.document.observer_allowed }
+    #[cfg(test)]
+    pub(crate) fn configuration_sha256(&self) -> &str { &self.config_sha256 }
     pub(crate) fn activation_binding(&self) -> Result<(crate::public_lease::Binding, quazal::socket_policy::SocketPolicy, quazal::source_policy::SourcePolicy), &'static str> {
         use std::os::unix::fs::MetadataExt;
         const INVALID: &str = "PUBLIC_ACTIVATION_BOUNDARY_INVALID";
@@ -235,4 +240,4 @@ pub(crate) fn arguments_valid(args: &crate::Args) -> Result<(), &'static str> {
 
 #[cfg(test)]
 #[path = "public_preflight_tests.rs"]
-mod tests;
+pub(crate) mod tests;

@@ -468,11 +468,14 @@ fn run_owned_public(args: &Args) -> Result<(), &'static str> {
     let boundary_current = move || public_lease::boundary_current(&boundary, &interface);
     if !boundary_current() { return Err("PUBLIC_ACTIVATION_BOUNDARY_INVALID"); }
     let reporter = active.activate(boundary_current).map_err(|_| "PUBLIC_OWNER_LEASE_INVALID")?;
+    // The raw private document (including this default-false option) is bound
+    // into ADMIT. Keep the policy local to this admitted server-process lifetime.
+    let _observer_policy = observer_policy::owned_public(plan.observer_allowed());
     lan_runtime::register_public_readiness(move |bit| reporter.bound(bit)).map_err(|_| "PUBLIC_ACTIVATION_READINESS_INVALID")?;
     if unsafe { libc::fchdir(plan.data.as_raw_fd()) } != 0 { return Err("PUBLIC_ACTIVATION_DATA_INVALID"); }
     let _instance_lock = instance_lock::acquire(Path::new(".")).map_err(|_| "PUBLIC_ACTIVATION_DATA_LOCK_INVALID")?;
     // All package/key/private data/interface/owner gates and the watchdog precede
-    // the first persistent mutation. No LAN stdin/OB/environment switch runs.
+    // the first persistent mutation. No LAN stdin/environment switch runs.
     let logger = Logger::root(slog::Discard, o!());
     let storage = Arc::new(Storage::init(logger.clone(), plan.admitted_client).map_err(|_| "PUBLIC_ACTIVATION_STORAGE_INVALID")?);
     lan_runtime::configure_ports(&plan.config);

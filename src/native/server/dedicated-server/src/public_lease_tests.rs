@@ -11,23 +11,31 @@ fn pair()->(OwnedFd,OwnedFd) {
     for fd in fds {let enabled=1_i32;assert_eq!(unsafe{libc::setsockopt(fd,libc::SOL_SOCKET,libc::SO_PASSCRED,(&enabled as *const i32).cast(),size_of::<i32>() as _)},0);}
     unsafe{(OwnedFd::from_raw_fd(fds[0]),OwnedFd::from_raw_fd(fds[1]))}
 }
-struct Worker {child:Child,socket:Option<LeaseSocket>,root:std::path::PathBuf}
+struct Worker {child:Child,socket:Option<LeaseSocket>,root:std::path::PathBuf,expected:Binding}
 impl Worker {
     fn start(mode:&str)->Self {
+        Self::with_deployment(mode,None)
+    }
+    fn with_deployment(mode:&str,deployment:Option<&crate::public_preflight::tests::Fixture>)->Self {
         let root=std::env::temp_dir().join(format!("ff-owned-lease-synthetic-{}-{}",std::process::id(),NEXT.fetch_add(1,Ordering::Relaxed)));
         fs::create_dir(&root).unwrap();fs::set_permissions(&root,fs::Permissions::from_mode(0o700)).unwrap();
         let (parent,childfd)=pair();let raw=childfd.as_raw_fd();
         let mut cmd=Command::new(std::env::current_exe().unwrap());
         cmd.args(["--exact",CHILD,"--nocapture"]).env("FF_LEASE_SYNTHETIC_MODE",mode).env("FF_LEASE_SYNTHETIC_FD",raw.to_string()).env("FF_LEASE_SYNTHETIC_ROOT",&root).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null());
+        let mut expected=binding();
+        if let Some(fixture)=deployment {
+            expected.config_sha256=fixture.prepare().configuration_sha256().into();
+            cmd.env("FF_LEASE_SYNTHETIC_CONFIG",&fixture.configuration).env("FF_LEASE_SYNTHETIC_EXECUTABLE",fixture.executable());
+        } else {cmd.env_remove("FF_LEASE_SYNTHETIC_CONFIG").env_remove("FF_LEASE_SYNTHETIC_EXECUTABLE");}
         // Only async-signal-safe fcntl in the post-fork hook.
         unsafe{cmd.pre_exec(move||{if libc::fcntl(raw,libc::F_SETFD,0)<0{return Err(std::io::Error::last_os_error());}Ok(())});}
         let child=cmd.spawn().unwrap();drop(childfd);
         let peer=libc::ucred{pid:child.id() as _,uid:unsafe{libc::geteuid()},gid:unsafe{libc::getegid()}};
-        Self{child,socket:Some(LeaseSocket{descriptor:parent,peer}),root}
+        Self{child,socket:Some(LeaseSocket{descriptor:parent,peer}),root,expected}
     }
     fn hello(&self)->Frame {
         let hello=self.socket.as_ref().unwrap().receive(None,Instant::now()+HANDSHAKE).unwrap();
-        assert_eq!(hello.version,VERSION);assert_eq!(hello.kind,"hello");assert_eq!(hello.sequence,0);assert!(digest_valid(&hello.nonce));assert!(hello.binding==binding());assert_eq!(hello.lease_ms,None);hello
+        assert_eq!(hello.version,VERSION);assert_eq!(hello.kind,"hello");assert_eq!(hello.sequence,0);assert!(digest_valid(&hello.nonce));assert!(hello.binding==self.expected);assert_eq!(hello.lease_ms,None);hello
     }
     fn grant(&self,hello:&Frame,ms:u32) {let mut frame=hello.clone();frame.kind="admit".into();frame.sequence=1;frame.lease_ms=Some(ms);self.socket.as_ref().unwrap().send(&frame).unwrap();}
     fn wait(&mut self,code:i32) {
@@ -42,11 +50,29 @@ fn owned_child_entry() {
     let Ok(mode)=std::env::var("FF_LEASE_SYNTHETIC_MODE") else{return;};sodiumoxide::init().unwrap();
     let fd=std::env::var("FF_LEASE_SYNTHETIC_FD").unwrap().parse().unwrap();
     let root=std::path::PathBuf::from(std::env::var_os("FF_LEASE_SYNTHETIC_ROOT").unwrap());
-    let result=UnadmittedLease::inherited(fd).and_then(|lease|lease.admit(binding()));
-    if mode=="reject" {assert!(result.is_err());assert_eq!(fs::read_dir(root).unwrap().count(),0);return;}
+    assert!(!crate::observer_policy::allowed());
+    let deployment=std::env::var_os("FF_LEASE_SYNTHETIC_CONFIG").map(|path| {
+        let executable=std::env::var_os("FF_LEASE_SYNTHETIC_EXECUTABLE").unwrap();
+        crate::public_preflight::prepare(std::path::Path::new(&path),std::path::Path::new(&executable)).unwrap()
+    });
+    let mut expected=binding();
+    if let Some(plan)=&deployment {expected.config_sha256=plan.configuration_sha256().into();}
+    assert!(!crate::observer_policy::allowed(),"static preparation cannot publish policy");
+    let result=UnadmittedLease::inherited(fd).and_then(|lease|lease.admit(expected));
+    if mode=="reject" || mode=="observer-reject" {assert!(result.is_err());assert!(!crate::observer_policy::allowed());assert_eq!(fs::read_dir(root).unwrap().count(),0);return;}
     let active=result.unwrap();if mode=="accept"{return;}
     if mode=="expired"{std::thread::sleep(Duration::from_millis(175));assert!(active.activate(||true).is_err());return;}
     let reporter=active.activate(||true).unwrap();
+    if mode=="observer" {
+        let plan=deployment.unwrap();let allowed=plan.observer_allowed();
+        let policy=crate::observer_policy::owned_public(allowed);
+        assert_eq!(crate::observer_policy::allowed(),allowed);
+        std::env::set_current_dir(&root).unwrap();
+        crate::api::public_observer_api_tests::exercise(plan.auth,allowed,policy);
+        let _policy=crate::observer_policy::owned_public(allowed);
+        fs::write(root.join("synthetic-observer-checked"),if allowed {b"true".as_slice()} else {b"false".as_slice()}).unwrap();
+        loop {std::thread::park();}
+    }
     if mode=="wait"{fs::write(root.join("synthetic-lease-active"),b"active").unwrap();loop{std::thread::park();}}
     if mode=="partial"{for bit in [1,2,4,8]{reporter.bound(bit);}loop{std::thread::park();}}
     if mode=="late-ready"{for bit in [1,2,4,8]{reporter.bound(bit);}std::thread::sleep(Duration::from_millis(9250));reporter.bound(16);loop{std::thread::park();}}
@@ -64,6 +90,32 @@ fn owned_child_entry() {
     for svc in config.quazal.service.values_mut(){let (addr,index)=match svc{quazal::Service::Config(s)=>(&mut s.listen,0),quazal::Service::Content(s)=>(&mut s.listen,1),quazal::Service::Authentication(s)=>(&mut s.listen,2),quazal::Service::Secure(s)=>(&mut s.listen,3)};*addr=(std::net::Ipv4Addr::LOCALHOST,ports[index]).into();}
     fs::write("synthetic-ports.json",serde_json::to_vec(&ports).unwrap()).unwrap();drop(tcp);drop(udp);
     crate::run_services(logger,storage,config,token,quazal::socket_policy::SocketPolicy::lan(),quazal::source_policy::SourcePolicy::lan()).unwrap();panic!("service unexpectedly returned");
+}
+
+#[test]
+fn public_observer_private_config_handlers_and_lease_exit_do_not_leak_into_next_run() {
+    let fixture=crate::public_preflight::tests::Fixture::new();
+    // Actual private JSON producer -> preflight -> config-hash-bound credential
+    // handshake -> policy -> real Users/SQLite/HMAC handlers. No public listener.
+    for allowed in [Some(true),None,Some(false)] {
+        fixture.edit(|value| {if let Some(allowed)=allowed {value["observer_allowed"]=allowed.into();} else {value.as_object_mut().unwrap().remove("observer_allowed");}});
+        let mut w=Worker::with_deployment("observer",Some(&fixture));let h=w.hello();w.grant(&h,5000);
+        let deadline=Instant::now()+Duration::from_secs(4);
+        let marker=w.root.join("synthetic-observer-checked");
+        while !marker.exists() {assert!(w.child.try_wait().unwrap().is_none(),"observer handler child failed");assert!(Instant::now()<deadline,"observer handler deadline");std::thread::sleep(Duration::from_millis(10));}
+        assert_eq!(fs::read(&marker).unwrap(),if allowed==Some(true) {b"true".as_slice()} else {b"false".as_slice()});
+        drop(w.socket.take());w.wait(REVOKED_EXIT);
+    }
+}
+
+#[test]
+fn public_observer_changed_option_cannot_reuse_previous_config_admission() {
+    let fixture=crate::public_preflight::tests::Fixture::new();
+    let previous=fixture.prepare().configuration_sha256().to_owned();
+    fixture.edit(|value| value["observer_allowed"]=true.into());
+    let mut w=Worker::with_deployment("observer-reject",Some(&fixture));let mut h=w.hello();
+    assert_ne!(h.binding.config_sha256,previous);h.binding.config_sha256=previous;
+    w.grant(&h,5000);w.wait(0);assert_eq!(fs::read_dir(&w.root).unwrap().count(),0);
 }
 #[test]
 fn actual_credential_handshake_accepts_exact_binding_without_state(){let mut w=Worker::start("accept");let h=w.hello();w.grant(&h,5000);w.wait(0);assert_eq!(fs::read_dir(&w.root).unwrap().count(),0);}

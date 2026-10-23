@@ -1,11 +1,27 @@
-//! Only the launcher's private stdin pipe changes this server-run policy.
-//! Never load it from service.toml, account data or a network request.
+//! LAN policy follows the launcher's private stdin pipe. Owned Linux Public
+//! startup installs its verified private deployment policy after lease ADMIT.
+//! Neither service.toml, account data nor a network request is an authority.
 use std::io::{self, BufRead, Read};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 static ALLOWED: AtomicBool = AtomicBool::new(false);
 pub const HEADER: &str = server_api::observer_contract::REQUEST_HEADER;
 pub fn allowed() -> bool { ALLOWED.load(Ordering::Acquire) }
+
+/// One owned server-process lifetime, installed only after the validated
+/// deployment's config hash is admitted and the lease watchdog is running.
+/// File edits do not change a running policy; lease loss exits the process.
+#[cfg(target_os = "linux")]
+pub(crate) struct OwnedPublicPolicy;
+#[cfg(target_os = "linux")]
+impl Drop for OwnedPublicPolicy {
+    fn drop(&mut self) { ALLOWED.store(false, Ordering::Release); }
+}
+#[cfg(target_os = "linux")]
+pub(crate) fn owned_public(value: bool) -> OwnedPublicPolicy {
+    ALLOWED.store(value, Ordering::Release);
+    OwnedPublicPolicy
+}
 
 fn command(line: &[u8]) -> Option<bool> {
     match line {

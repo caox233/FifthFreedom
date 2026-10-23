@@ -1406,6 +1406,8 @@ impl Users for MyUsers {
         if let Some(instance) = observer_instance {
             // Recheck after asynchronous storage work. No account/UI login can
             // receive this acknowledgment and a stale run cannot be substituted.
+            #[cfg(test)]
+            self.storage.run_login_checkpoint("observer-publication");
             crate::observer_policy::admit(Some("1"),true,crate::observer_policy::allowed())?;
             response.metadata_mut().insert(server_api::observer_contract::ADMITTED_RUN_HEADER,
                 instance.parse().map_err(|_|Status::internal("Invalid native run identity"))?);
@@ -2689,6 +2691,10 @@ fn test_package_identity() -> users::PackageIdentity {
 #[cfg(test)]
 #[path = "release_admission_tests.rs"]
 mod release_admission_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "public_observer_api_tests.rs"]
+pub(crate) mod public_observer_api_tests;
 
 #[cfg(test)]
 #[path = "login_reset_tests.rs"]
