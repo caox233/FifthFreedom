@@ -169,6 +169,37 @@ def inspect_member(content):
     return dict(coff_timestamp=stamp, version_resources=versions), resources
 
 
+def copy_notices(destination, root=ROOT):
+    """Carry pinned notice snapshots and their open provenance holds into a package.
+
+    This copies text only. It neither admits a binary nor resolves the source or
+    permission holds in the exact accompanying provenance record.
+    """
+    record_bytes = read_snapshot(root / "docs/fusionfix-provenance.json", 131072)
+    record = json.loads(record_bytes)
+    require(record["schema"] == "ff-fusionfix-provenance-v1"
+            and record["independent_permission_closure"] is False
+            and bool(record["unresolved_holds"]), "NOTICE_PROVENANCE_INVALID")
+    payloads = {"PROVENANCE.json": record_bytes}
+    require(len(record["notices"]) == 7, "NOTICE_SET_INVALID")
+    for item in record["notices"]:
+        relative = Path(item["notice_path"])
+        require(relative.parent.as_posix() == "docs/third-party"
+                and relative.suffix == ".txt" and relative.name not in payloads,
+                "NOTICE_PATH_INVALID")
+        content = pinned(read_snapshot(root / relative, 65536), item)
+        blob = hashlib.sha1(b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest()
+        require(blob == item["git_blob"], "NOTICE_GIT_BLOB_DIFFERS")
+        payloads[relative.name] = content
+    # Validate every source before creating output, and write those same bytes.
+    destination = Path(destination)
+    destination.mkdir(parents=True, exist_ok=False)
+    for name, content in payloads.items():
+        with (destination / name).open("xb") as output:
+            output.write(content)
+    return {name: identity(content) for name, content in sorted(payloads.items())}
+
+
 def verify(root=ROOT, upstream_zip=None):
     record = json.loads(read_snapshot(root / "docs/fusionfix-provenance.json", 131072))
     archive = pinned(read_snapshot(root / record["frozen_archive"]["path"], 2 * 1024 * 1024), record["frozen_archive"])

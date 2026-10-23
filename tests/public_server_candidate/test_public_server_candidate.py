@@ -15,6 +15,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 import public_server_candidate as candidate
+import ci_candidate
 
 
 def pe(machine, dll, marker):
@@ -49,6 +50,12 @@ class PublicServerCandidateTests(unittest.TestCase):
         (self.checkout / "release-identity.json").write_bytes(candidate.json_bytes(self.release))
         (self.checkout / "LICENSE").write_text("synthetic source license")
         (self.checkout / "THIRD_PARTY_NOTICES.txt").write_text("synthetic third-party notices")
+        # Real notice sources accompany only the inert synthetic component bytes.
+        provenance = json.loads((ROOT / "docs/fusionfix-provenance.json").read_bytes())
+        for name in ["docs/fusionfix-provenance.json", *(item["notice_path"] for item in provenance["notices"])]:
+            path = self.checkout / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes((ROOT / name).read_bytes())
         self.commit, self.run, self.attempt = "a" * 40, "123456789", "2"
         self.output = self.root / "output"
         self.windows, self.linux = self.root / "windows", self.root / "linux"
@@ -121,6 +128,29 @@ class PublicServerCandidateTests(unittest.TestCase):
         self.assertEqual(manifest["service"]["path"], "bin/FifthFreedom.Server")
         self.assertNotEqual(receipt["expected_native_result"]["service"]["manifest_sha256"], candidate.digest(client))
         self.assertNotIn("native_verification", receipt)
+        provenance = self.output / "licenses/FusionFix/PROVENANCE.json"
+        self.assertEqual(provenance.read_bytes(), (self.checkout / "docs/fusionfix-provenance.json").read_bytes())
+        self.assertFalse(json.loads(provenance.read_bytes())["independent_permission_closure"])
+        self.assertEqual(len([name for name in receipt["files"] if name.startswith("licenses/FusionFix/")]), 8)
+        for name, row in receipt["files"].items():
+            self.assertEqual(candidate.sha_file(self.output / name), row)
+
+    def test_collector_keeps_notice_checksums_outside_component_contract(self):
+        artifact = self.root / "collected"
+        receipt = self.receipt()
+        with patch.object(ci_candidate, "ROOT", self.checkout), patch.object(ci_candidate, "ART", artifact):
+            ci_candidate.collect("windows-components", {name: self.component(name) for name in candidate.WINDOWS}, receipt)
+        folder = artifact / "ci/windows-components"
+        (folder / "receipt.json").write_bytes(candidate.json_bytes(receipt))
+        paths, rows, _ = candidate.lane_inputs(artifact, "windows-components", candidate.WINDOWS,
+                                             self.commit, self.run, self.attempt)
+        self.assertEqual(set(paths), set(candidate.WINDOWS))
+        self.assertEqual(rows, receipt["components"])
+        self.assertEqual(len(receipt["fusionfix_notices"]["files"]), 8)
+        self.assertFalse(receipt["fusionfix_notices"]["permission_closure"])
+        for line in (folder / "components/FUSIONFIX-NOTICES-SHA256SUMS.txt").read_text().splitlines():
+            digest, name = line.split("  ", 1)
+            self.assertEqual(candidate.sha_file(folder / "components" / name)["sha256"], digest)
 
     def test_other_run_attempt_revision_or_dirty_failed_receipt_is_rejected_before_output(self):
         original = self.receipt()

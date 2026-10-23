@@ -23,6 +23,17 @@ notice texts. Three embedded DLLs also match the tagged binary inputs, but their
 independent redistribution terms remain unverified. These source notices do not
 relicense every archive member or establish an independent rebuild.
 
+The Windows component collector and complete-package builder copy those seven
+pinned texts plus the exact provenance JSON into `licenses/FusionFix`. They read
+and validate every notice before creating that directory, then copy the same
+byte snapshots. Component artifacts use a separate notice checksum list, keeping
+the existing four-component checksum contract unchanged. The assembled server
+candidate and complete-package manifests include the copied files as well.
+The JSON retains all unresolved source and permission holds;
+carrying notices is not approval of every embedded binary. The copy operation
+and real component collector were exercised with inert packaging inputs only;
+that check does not claim a complete Windows build.
+
 `docs/ASSET-PUBLICATION.json` lists default SAV/META inputs held locally pending
 privacy verification. No actual secret was identified, but opaque SAV buffer I/O
 and a SHA-256 manifest do not establish that player-specific fields are absent.

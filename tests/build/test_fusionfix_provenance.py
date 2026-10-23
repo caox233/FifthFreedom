@@ -108,6 +108,26 @@ class FusionFixProvenanceTests(unittest.TestCase):
                 fifo = Path(directory) / "fifo"; os.mkfifo(fifo)
                 with self.assertRaises(provenance.EvidenceError): provenance.read_snapshot(fifo, 32)
 
+    def test_package_notices_preserve_exact_bytes_and_reject_before_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = self.copied_root(Path(directory) / "source")
+            destination = Path(directory) / "licenses/FusionFix"
+            rows = provenance.copy_notices(destination, root)
+            self.assertEqual(len(rows), 8)
+            for name, expected in rows.items():
+                self.assertEqual(provenance.identity((destination / name).read_bytes()), expected)
+            self.assertEqual((destination / "PROVENANCE.json").read_bytes(),
+                             (root / "docs/fusionfix-provenance.json").read_bytes())
+            self.assertFalse(json.loads((destination / "PROVENANCE.json").read_bytes())["independent_permission_closure"])
+            with self.assertRaises(FileExistsError):
+                provenance.copy_notices(destination, root)
+            last = root / self.record["notices"][-1]["notice_path"]
+            last.write_bytes(last.read_bytes() + b"changed")
+            rejected = Path(directory) / "rejected"
+            with self.assertRaisesRegex(provenance.EvidenceError, "INPUT_HASH_MISMATCH"):
+                provenance.copy_notices(rejected, root)
+            self.assertFalse(rejected.exists())
+
 
 if __name__ == "__main__":
     unittest.main()

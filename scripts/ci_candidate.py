@@ -160,6 +160,14 @@ def collect(lane: str, files: dict[str, Path], receipt: dict) -> None:
     notices = ROOT / "src/launcher/src/ThirdPartyNotices"
     if lane == "windows-components" and notices.is_dir():
         shutil.copytree(notices, destination / "ThirdPartyNotices")
+    notice_rows = {}
+    if lane == "windows-components":
+        from fusionfix_provenance import copy_notices
+        notice_rows = {"licenses/FusionFix/" + name: row for name, row in
+                       copy_notices(destination / "licenses/FusionFix", ROOT).items()}
+        receipt["fusionfix_notices"] = {"files": notice_rows, "permission_closure": False}
+        (destination / "FUSIONFIX-NOTICES-SHA256SUMS.txt").write_text(
+            "".join(f"{row['sha256']}  {name}\n" for name, row in sorted(notice_rows.items())), encoding="ascii")
     (destination / "README.txt").write_text(
         "Fifth Freedom CI component compilation evidence.\n"
         "NOT a complete or runtime-validated game package. Do not install these files into a game.\n"

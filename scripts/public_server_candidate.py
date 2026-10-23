@@ -252,6 +252,8 @@ def assemble(windows_artifact, linux_artifact, output, checkout, commit, run_id,
     for path, row in notice_rows.items():
         name = path.name if path.parent == checkout else "ThirdPartyNotices/" + path.name
         checked_copy(path, output / name, row)
+    from fusionfix_provenance import copy_notices
+    copy_notices(output / "licenses/FusionFix", checkout)
     readme = ("Fifth Freedom component-only public-server integrity candidate.\n"
               "NOT a complete Windows client or installable game package.\n"
               "client/ contains the four unchanged Windows role bytes only as admission evidence.\n"
