@@ -1,7 +1,8 @@
 # Windows retained-session observation prerequisite
 
-Status: **source patches with six local lifetime tests and backend Windows typecheck;
-not an admitted or executed Windows runtime**. See [UI-09](../../tasks/ui-09.md).
+Status: **six local lifetime tests, backend Windows typecheck and actual hosted
+paired core/CLI MSVC Release build; not an admitted or executed Windows runtime**.
+See [UI-09](../../tasks/ui-09.md).
 
 The two patches apply to separate pinned repositories:
 
@@ -69,8 +70,9 @@ cargo check --locked --features async --target i686-pc-windows-msvc
 ```
 
 This command was actually successful locally; it does not link or execute a
-Windows program. The full EasyTier Windows feature was only parsed, not compiled.
-Future full builds must explicitly resolve the patched `tun-easytier` source in
+Windows program. The initial full-caller check was syntax-only; the separate
+hosted entry below has since compiled and linked the real Windows feature.
+Full builds must explicitly resolve the patched `tun-easytier` source in
 Cargo (for example a reviewed local `[patch]`), record the resulting lock and new
 binary identity, and combine the separately reviewed secure-peer patches. The
 existing Linux guard3 recipe, official archive/member hashes and runtime admission
@@ -104,5 +106,13 @@ library retained only in the private build workspace. It verifies that the only
 Cargo.lock edit is the tun path-source conversion, checks all prepared bytes before and after compilation, and inspects PE output
 without executing it. Held-input provenance remains open. Its artifact allowlist
 contains JSON receipts only, with no executable, DLL, driver, raw compiler log,
-source archive or dependency cache. Actual hosted compilation is required before
-claiming the entire feature builds; local metadata success does not replace it.
+source archive or dependency cache.
+
+Actual hosted run [39927010635](https://github.com/caox233/FifthFreedom/actions/runs/39927010635)
+passed all 14 source/receipt regressions, locked paired metadata and the full
+MSVC Release core/CLI build. The
+[verified receipt](../../evidence/hosted-windows-easytier-41fe262.json) binds
+branch source and PR merge checkout separately, all nine ordered patches,
+source/lock identities, the three-member artifact digest and both runner-reported
+AMD64 PE32+ identities. No runtime executable was uploaded or started, and no
+driver/session, secure-peer or production admission claim follows from compilation.
