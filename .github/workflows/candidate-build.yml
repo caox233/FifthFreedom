@@ -62,8 +62,29 @@ jobs:
         run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
       - name: Source, UI routing, server contracts and CI tests
         run: python -B scripts/ci_checks.py source
+      - name: Prepare the fixed loopback port only for the known default IIS site
+        id: iis_prepare
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "$env:RUNNER_TEMP/ff-windows-iis" -ErrorAction Stop | Out-Null
+          & ./scripts/ci_windows_iis.ps1 -Mode Prepare -State "$env:RUNNER_TEMP/ff-windows-iis/restore-plan.json" -Report "$env:RUNNER_TEMP/ff-windows-iis/prepare.json"
       - name: Compile, test and run isolated no-game UI checks without claiming complete-package admission
         run: python -B scripts/ci_candidate.py windows-components
+      - name: Restore only the recorded default IIS site state
+        if: ${{ always() && (steps.iis_prepare.outcome == 'success' || steps.iis_prepare.outcome == 'failure' || steps.iis_prepare.outcome == 'cancelled') }}
+        shell: pwsh
+        run: |
+          & ./scripts/ci_windows_iis.ps1 -Mode Restore -State "$env:RUNNER_TEMP/ff-windows-iis/restore-plan.json" -Report "$env:RUNNER_TEMP/ff-windows-iis/restore.json"
+      - name: Preserve sanitized fixed-port preparation and restoration evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-fixed-port-preparation-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/ff-windows-iis/prepare.json
+            ${{ runner.temp }}/ff-windows-iis/restore.json
+          if-no-files-found: warn
+          retention-days: 14
       - name: Preserve compile-only components, checksums and build evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
