@@ -83,9 +83,24 @@ README](https://github.com/WireGuard/wintun/blob/bfef136abfa1665c2592be09a7e383d
 and [COPYING](https://github.com/WireGuard/wintun/blob/bfef136abfa1665c2592be09a7e383d646cdbe6e/COPYING)
 were read. They explicitly distinguish GPLv2 source from a more permissive
 prebuilt-binary license contained in the official ZIP. The ordinary HTTPS request
-to `https://www.wintun.net/builds/wintun-0.14.1.zip` was denied by the environment's
-proxy (`CONNECT 403`). Thus the exact original binary ZIP and its terms are still
-unverified; the source GPL is not substituted for the missing binary license.
+to `https://www.wintun.net/builds/wintun-0.14.1.zip` was initially denied by the
+environment's proxy (`CONNECT 403`); that history remains in the lock. A later
+ordinary HTTPS request succeeded. The official ZIP is now pinned at 750540 bytes,
+SHA256 `07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51`.
+Its amd64/x86 DLLs match the existing EasyTier member hashes and lengths. The
+[original prebuilt license](../third-party/Wintun-0.14.1-Prebuilt-LICENSE.txt)
+is retained byte-for-byte with SHA256
+`183adac21e7d96c508c8fd34d394b7b6708bc81564ad1bad61ab66143a008cd2`.
+See the [static receipt](wintun-official-binary-evidence.json) and
+[bounded runtime proposal](wintun-retained-session-probe.md).
+
+This closes the missing official ZIP/terms input, not all package obligations.
+The binary license grants lawful use subject to its restrictions, defines the
+accompanying `wintun.h` API as the Permitted API, and permits redistribution with
+other software only under its stated conditions. Final API use, unchanged DLL
+and accompanying notices/redistribution conditions still require package review.
+No DLL was loaded or driver installed by this audit; the source GPL is not being
+substituted for the binary terms. Npcap and the overall publication gate remain.
 
 **Packet.dll / Npcap:** EasyTier's x86_64 package contains Npcap **1.79**, while its
 i686 package contains **1.81**, according to the PE version/copyright resources.
@@ -102,11 +117,11 @@ inspected Npcap files. They remain outside Git and candidate packaging until the
 specific rights or an independently reviewed replacement/distribution path is
 established.
 
-The two denied official hosts have been added through the formal environment
-configuration draft. The draft requires publication; the current network was not
-changed. No proxy, DNS, credentials or TLS checks were bypassed. Independent
-official GitHub source-license reads do not claim to retrieve the denied binary
-license or OEM page.
+The two originally denied official hosts were added through the formal environment
+configuration draft. This audit did not change the active policy or infer that a
+draft had been published. Wintun's later successful ordinary request is recorded
+separately above; the Npcap OEM page remains unverified here. No proxy, DNS,
+credentials or TLS checks were bypassed.
 
 ## Repeatable offline verification
 

@@ -86,7 +86,13 @@ class PublicNetworkDependenciesTests(unittest.TestCase):
     def test_locked_download_identity_has_no_latest_url_or_silent_digest_upgrade(self):
         lock = json.loads(audit.LOCK.read_text())
         for row in lock["artifacts"]:
-            self.assertIn("/releases/download/v" + row["version"] + "/", row["source_url"])
+            if row["id"] == "wintun-official-0.14.1":
+                self.assertEqual(row["source_url"], "https://www.wintun.net/builds/wintun-0.14.1.zip")
+                self.assertEqual(row["version"], "0.14.1")
+                self.assertIsNone(row["official_api_digest"])
+                self.assertIn("no_api_digest", row["verification_basis"])
+            else:
+                self.assertIn("/releases/download/v" + row["version"] + "/", row["source_url"])
             self.assertNotIn("latest", row["source_url"])
             self.assertFalse(row["runtime_executed"])
             self.assertFalse(row["redistribution_approved"])
@@ -100,9 +106,44 @@ class PublicNetworkDependenciesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             result, code = audit.verify(json.loads(audit.LOCK.read_text()), Path(folder))
         self.assertEqual(code, 2)
-        self.assertEqual(len(result["artifacts"]), 4)
+        self.assertEqual(len(result["artifacts"]), 5)
         self.assertTrue(all(row["status"] == "missing" for row in result["artifacts"]))
         self.assertTrue(all(row["verified"] for row in result["retained_notices"]))
+
+    def test_official_wintun_members_preserve_preexisting_dll_pins_and_holds(self):
+        lock = json.loads(audit.LOCK.read_text())
+        official = next(row for row in lock["artifacts"] if row["id"] == "wintun-official-0.14.1")
+        self.assertEqual(official["sha256"], "07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51")
+        self.assertEqual(official["bytes"], 750540)
+        for old_id, arch in (("easytier-windows-x86_64", "amd64"), ("easytier-windows-i686", "x86")):
+            old = next(row for row in lock["artifacts"] if row["id"] == old_id)
+            old_member = next(row for row in old["required_members"] if row["name"].endswith("/wintun.dll"))
+            member = next(row for row in official["required_members"] if row["name"] == f"wintun/bin/{arch}/wintun.dll")
+            self.assertEqual((member["bytes"], member["sha256"]), (old_member["bytes"], old_member["sha256"]))
+        for field in ("publication_approved", "installed", "runtime_executed"):
+            self.assertFalse(lock[field])
+        self.assertTrue(any("Npcap" in row for row in lock["closure_holds"]))
+        self.assertTrue(any("Wintun" in row and "package review" in row for row in lock["closure_holds"]))
+
+    def test_original_wintun_notice_is_checked_as_bytes_and_normalization_is_rejected(self):
+        real_lock = json.loads(audit.LOCK.read_text())
+        notice = next(row for row in real_lock["license_references"] if row["id"] == "wintun-prebuilt-0.14.1")
+        original = (audit.ROOT / notice["retained_notice"]).read_bytes()
+        self.assertIn(b"\r\n", original)
+        data, lock = fixture()
+        lock["license_references"] = [notice]
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "synthetic.zip").write_bytes(data)
+            path = root / notice["retained_notice"]
+            path.parent.mkdir(parents=True)
+            path.write_bytes(original)
+            self.assertEqual(audit.verify(lock, root, root)[1], 0)
+            path.write_bytes(original.replace(b"\r\n", b"\n"))
+            result, code = audit.verify(lock, root, root)
+            self.assertEqual(code, 1)
+            self.assertFalse(result["retained_notices"][0]["verified"])
+            self.assertFalse(result["publication_approved"])
 
 
 if __name__ == "__main__":
