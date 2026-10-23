@@ -1,6 +1,8 @@
 # Instance-owned Windows NIC read channel
 
-Status: implemented and independently reviewed; actual Windows pipe execution pending.
+Status: implemented and independently reviewed; actual Windows managed 19, native 8,
+interop 4 and retained owner 17 passed with zero skips. The [official run receipt](../evidence/hosted-owned-read-4b49da7.json)
+binds run `39944703650`, source `4b49da7` and both sanitized artifacts.
 This is a historical observation channel. It does not enable Public, construct a
 live overlay lease, authenticate a remote peer or run the full EasyTier core.
 
@@ -74,23 +76,25 @@ not valid evidence of current routing or an ongoing session after return.
 ## Verification and exact source composition
 
 - `tests/OwnedCoreRead` links the actual production classes. Eight portable cases
-  pass locally. Eleven further cases are explicitly Windows-only and remain pending:
+  pass locally. All 19 passed on hosted Windows, including eleven platform cases:
   actual owned pipe identity, unavailable response, nonce/replay rejection,
   pending cancellation, bounded timeout, EOF with a still-live child, process
-  exit, foreign same-image descendant rejection disposal of pending I/O and a throwing cancellation callback after exact job
+  exit, foreign same-image descendant rejection, disposal of pending I/O and a throwing cancellation callback after exact job
   cleanup.
 - `tests/native/windows-owned-read` links the exact two new production Rust
   modules. Eight real parser/duplex/cancellation tests pass. All library/test/helper
-  targets type-check for `x86_64-pc-windows-msvc`; this does not execute Windows.
+  targets type-check for `x86_64-pc-windows-msvc`. The same eight library cases
+  also executed successfully on hosted Windows.
 - The separate test-only Rust helper uses those real parent/pipe/serve modules
   with explicitly synthetic observations. Managed `--native-helper <exact exe>`
-  has four Windows-pending cases: positive exchange with a four-second idle and
+  passed all four hosted Windows cases: positive exchange with a four-second idle and
   explicit unavailable result, wrong parent birth, wrong actual image digest,
   and an incomplete prefix that must terminate after the real first-byte budget.
   It does not import EasyTier, load a driver, create a NIC or open a network socket.
 - The retained owned-process project still has 17 cases. Its ambient-environment
-  control now also covers the new descriptor. WPF cross-compilation passed; the
-  new optional branch has not yet received hosted execution evidence.
+  control now also covers the new descriptor; all 17 passed again on hosted Windows.
+  WPF cross-compilation passed. Apphost/helper hashes are actual runner measurements,
+  checked before and after execution; no executable was downloaded or published.
 
 The [independent patch receipt](../dependency-patches/easytier-2.6.4-windows-owned-read/receipt.json)
 binds the successful ten-patch input, four exact touched files and test inputs.
