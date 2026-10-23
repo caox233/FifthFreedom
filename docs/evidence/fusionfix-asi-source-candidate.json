@@ -1,0 +1,195 @@
+{
+  "schema": "ff-fusionfix-asi-source-candidate-v1",
+  "scope": "read-only historical source candidate investigation; no exact ASI attribution",
+  "original_asi": {
+    "path": "src/SYSTEM/scripts/SplinterCellBlacklist.FusionFix.asi",
+    "archive": "src/launcher/src/Assets/FusionFix.zip",
+    "archive_sha256": "b807d01b849ca7aead6c04a43eaa2924809d0741e7007b907e00da868f33a7ff",
+    "bytes": 1022976,
+    "sha256": "d5e63ea3ee00449ac6afcffd82a08d673a0bebc855a6d42b3b889ded9b8677c9"
+  },
+  "static_debug": {
+    "sha256": "d5e63ea3ee00449ac6afcffd82a08d673a0bebc855a6d42b3b889ded9b8677c9",
+    "machine": 332,
+    "coff_timestamp": 1774184932,
+    "debug_directory": [
+      {
+        "type": 2,
+        "bytes": 161,
+        "sha256": "faf435160e476efa0082b2a5a7e36893c10c31127911e1fec1c4073678ddb7e1",
+        "signature": "RSDS",
+        "guid": "19f94904-0580-49cb-b7a1-ab6bcf5ba43b",
+        "age": 1,
+        "pdb_basename": "SplinterCellBlacklist.FusionFix.pdb"
+      },
+      {
+        "type": 12,
+        "bytes": 20,
+        "sha256": "5196d0d34e0fe0989596016f594c0dc71aa9f47a4b9d33e5b43947fe62e0a67d"
+      },
+      {
+        "type": 13,
+        "bytes": 940,
+        "sha256": "c841d953827ebcf769d1df69b2bba9b2fcc7ddecf7c8f58b0c40acf6c82c51d4"
+      }
+    ],
+    "repro_debug_entry_present": false,
+    "runtime_executed": false
+  },
+  "candidate": {
+    "repository": "ThirteenAG/WidescreenFixesPack",
+    "commit": "2547fdeed707359e67bd4ac0d608de936d78186f",
+    "source_identity_for_frozen_asi_confirmed": false,
+    "time_correlation_only": true,
+    "coff_timestamp_as_utc": "2026-03-22T13:08:52Z",
+    "run_id": 23403476638,
+    "job_id": 68078412004,
+    "job_started_at": "2026-03-22T12:53:18Z",
+    "job_completed_at": "2026-03-22T13:22:02Z",
+    "run_url": "https://github.com/ThirteenAG/WidescreenFixesPack/actions/runs/23403476638",
+    "declared_runner": "windows-latest",
+    "compiler_exact_version_known": false,
+    "matching_build_artifact_obtained": false,
+    "matching_pdb_obtained": false
+  },
+  "candidate_source_files": [
+    {
+      "path": ".github/workflows/all.yml",
+      "bytes": 32152,
+      "sha256": "c465fe56b10cef75234338e5eff9cbbdc56c6813843ea838d7eefb3a96d0b28a",
+      "git_blob": "18103ec8ac381032fc4304e585b787b9b5a47228",
+      "url": "https://github.com/ThirteenAG/WidescreenFixesPack/blob/2547fdeed707359e67bd4ac0d608de936d78186f/.github/workflows/all.yml"
+    },
+    {
+      "path": ".github/workflows/tag.yml",
+      "bytes": 8153,
+      "sha256": "58b2ec0e2c54d3b1c88b383d4f142af574cc8d317028514e3fd71c445e1d0f0c",
+      "git_blob": "3165f04758c9a39e35764282d475eab3eb9c4ff6",
+      "url": "https://github.com/ThirteenAG/WidescreenFixesPack/blob/2547fdeed707359e67bd4ac0d608de936d78186f/.github/workflows/tag.yml"
+    },
+    {
+      "path": ".github/workflows/main.yml",
+      "bytes": 821,
+      "sha256": "a041bb43e2fb4e5901fa0a25c8d4dde9476b6847abf5b350f42b5d087c871fa7",
+      "git_blob": "cf48cd2a901f6bd5d2b74e481c10e1695a53747a",
+      "url": "https://github.com/ThirteenAG/WidescreenFixesPack/blob/2547fdeed707359e67bd4ac0d608de936d78186f/.github/workflows/main.yml"
+    },
+    {
+      "path": "premake5.lua",
+      "bytes": 38809,
+      "sha256": "8cce3dc45e04f20b80d5e78508fbe74661ec0e7ec7482df75f5c2d6b661b1f92",
+      "git_blob": "5a7be9193a46ff4520b1dfac717116c2eba7bde3",
+      "url": "https://github.com/ThirteenAG/WidescreenFixesPack/blob/2547fdeed707359e67bd4ac0d608de936d78186f/premake5.lua"
+    },
+    {
+      "path": "source/SplinterCellBlacklist.FusionFix/dllmain.cpp",
+      "bytes": 44106,
+      "sha256": "632c6f15dfc1cb3fe3869c03f99e29fe72ff462086130a8322ea750340850a8d",
+      "git_blob": "4e0c92155562f308b72de5a852b6a537af36bd02",
+      "url": "https://github.com/ThirteenAG/WidescreenFixesPack/blob/2547fdeed707359e67bd4ac0d608de936d78186f/source/SplinterCellBlacklist.FusionFix/dllmain.cpp"
+    },
+    {
+      "path": ".gitmodules",
+      "bytes": 1051,
+      "sha256": "608228229ec2d577c17544a7d1e10a80d613438f8e74afdf6203fcd07f29bf5a",
+      "git_blob": "b0f9ded6602285c9389e1b401f540d76fbbd3dfc",
+      "url": "https://github.com/ThirteenAG/WidescreenFixesPack/blob/2547fdeed707359e67bd4ac0d608de936d78186f/.gitmodules"
+    },
+    {
+      "path": "license",
+      "bytes": 1067,
+      "sha256": "389eef0fb81f8b3bc7aca2025da43cf007acfb390a70f49439d269e51de0b8dc",
+      "git_blob": "574d883cdb6ddc02823f907dcfa85e3990438b71",
+      "url": "https://github.com/ThirteenAG/WidescreenFixesPack/blob/2547fdeed707359e67bd4ac0d608de936d78186f/license"
+    },
+    {
+      "path": ".github/workflows/build_all/action.yml",
+      "bytes": 946,
+      "sha256": "a9e2dc69fc6c9c47a04a690867f21f42aa7becde230ba7b83785d5d757ee2786",
+      "git_blob": "5904dfbce95677855c1329561a18d94be9bc23a8",
+      "url": "https://github.com/ThirteenAG/WidescreenFixesPack/blob/2547fdeed707359e67bd4ac0d608de936d78186f/.github/workflows/build_all/action.yml"
+    },
+    {
+      "path": ".github/workflows/release_tag/action.yml",
+      "bytes": 7032,
+      "sha256": "2b3a5e769fd0c41e5287897123bd1213631eeb8981aaa451c13f8c6483c209ef",
+      "git_blob": "732f68fb18e2d8e57b76c84b7f0d40d480f4fb6a",
+      "url": "https://github.com/ThirteenAG/WidescreenFixesPack/blob/2547fdeed707359e67bd4ac0d608de936d78186f/.github/workflows/release_tag/action.yml"
+    },
+    {
+      "path": "includes/stdafx.h",
+      "bytes": 57611,
+      "sha256": "0e07b6866ddbf5f7f796a3007182c6e36a7c079eabf3140b88b99ddd5db65ae0",
+      "git_blob": "24e29312a6cbbdbd5c8374c67754a3065ffce4bd",
+      "url": "https://github.com/ThirteenAG/WidescreenFixesPack/blob/2547fdeed707359e67bd4ac0d608de936d78186f/includes/stdafx.h"
+    }
+  ],
+  "candidate_notice": {
+    "source_path": "license",
+    "retained_notice": "docs/third-party/WidescreenFixesPack-upstream-MIT.txt",
+    "sha256": "389eef0fb81f8b3bc7aca2025da43cf007acfb390a70f49439d269e51de0b8dc",
+    "exact_bytes_match": true,
+    "covers_all_frozen_inputs": false
+  },
+  "official_evidence_availability": {
+    "release_job_log_http_status": 410,
+    "release_run_artifact_count": 0,
+    "build_run_artifact_count": 0,
+    "build_run_id": 23402508840,
+    "rolling_release_updates_allowed_by_recipe": true,
+    "historical_archive_digest_obtained": false
+  },
+  "next_identity_input": "An authenticated historical release/build artifact with this exact ASI digest, or matching PDB GUID/age plus a trustworthy source/build record; a timestamp-near commit alone is insufficient.",
+  "raw_local_evidence": [
+    {
+      "path": ".local/evidence/cloud/fusionfix-asi-followup/same-day-runs.json",
+      "bytes": 85642,
+      "sha256": "024f08df290a017bd605028fbb52021fbddf7e953d87dad4bbbca049ae004bfd"
+    },
+    {
+      "path": ".local/evidence/cloud/fusionfix-asi-followup/nearby-commits.json",
+      "bytes": 13321,
+      "sha256": "8f2ca762239be5217036b3435c6d3b7558e16668a304b7bf0cf784442fbc65e7"
+    },
+    {
+      "path": ".local/evidence/cloud/fusionfix-asi-followup/release-tags-jobs.json",
+      "bytes": 169,
+      "sha256": "b026f28b711065c97d88ba1ffee5287e63250dfa88ca473c50a193d0ad5f36bf"
+    },
+    {
+      "path": ".local/evidence/cloud/fusionfix-asi-followup/release-tags-artifacts-current.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": ".local/evidence/cloud/fusionfix-asi-followup/build-artifacts-current.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": ".local/evidence/cloud/fusionfix-asi-followup/release-tags-job.log",
+      "bytes": 151,
+      "sha256": "22201cceb7f348a6396a0dfec6a1c690be23adcbb4d8f71be3d6aac2a416b795"
+    },
+    {
+      "path": ".local/evidence/cloud/fusionfix-asi-followup/release-tags-job.stderr",
+      "bytes": 28,
+      "sha256": "d4108102c2e115e0c615356b38538feedc5b9eb42d7a87af11b914111303413c"
+    },
+    {
+      "path": ".local/evidence/cloud/fusionfix-asi-followup/candidate-source-files.json",
+      "bytes": 2106,
+      "sha256": "cc9b906bc3fdb58a5e4d9a08736d1538f8fa9e01fe1a97e5846359ce7c65ff8b"
+    },
+    {
+      "path": ".local/evidence/cloud/fusionfix-asi-followup/static-debug.json",
+      "bytes": 785,
+      "sha256": "964c26978ca5019d4e950cd3ca9f1b9f434ad403e7549900025d76f9960846e2"
+    }
+  ],
+  "original_modified": false,
+  "binary_executed": false,
+  "candidate_built": false,
+  "exact_source_hold_closed": false,
+  "independent_permission_closure": false
+}

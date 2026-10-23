@@ -145,6 +145,45 @@ and lists all unresolved holds. The actual official-ZIP check and six focused
 tests passed; original downloads/raw evidence stay under ignored
 `.local/evidence/cloud/fusionfix-exact/`.
 
+## ASI historical source candidate: available, not identified as the frozen build
+
+A further static investigation recovered a concrete historical source candidate:
+[`2547fdeed707359e67bd4ac0d608de936d78186f`](https://github.com/ThirteenAG/WidescreenFixesPack/commit/2547fdeed707359e67bd4ac0d608de936d78186f).
+Its official `dllmain.cpp` is 44,106 bytes, Git blob
+`4e0c92155562f308b72de5a852b6a537af36bd02`. Ten official source/build/notice files
+were downloaded and checked against their Git blob identities. Its MIT notice
+matches the already retained upstream notice exactly. These are available
+historical sources, **not an established source identity for the frozen ASI**.
+
+The ASI's COFF timestamp, interpreted as UTC, is 2026-03-22 13:08:52. It falls
+within official [release run 23403476638](https://github.com/ThirteenAG/WidescreenFixesPack/actions/runs/23403476638),
+whose build job ran 12:53:18–13:22:02 at that commit. This is only a time
+correlation: a PE timestamp can be edited and cannot establish binary provenance.
+The candidate build recipe uses `windows-latest`, Premake and MSBuild; the exact
+historical compiler image/tool versions have not been recovered. The rolling
+release recipe permits updates to its release assets.
+
+The retained ASI additionally has a static CodeView RSDS identity:
+GUID `19f94904-0580-49cb-b7a1-ab6bcf5ba43b`, age 1, PDB basename
+`SplinterCellBlacklist.FusionFix.pdb`. No matching PDB was obtained. Its debug
+directory has no reproducible-build entry; that absence is not proof of a
+particular compiler invocation. The original DLL was never loaded or executed.
+
+The official historical job-log endpoint now returns HTTP 410. The release run
+and related build run 23402508840 both currently list zero retained artifacts.
+Thus neither an exact historical archive digest nor a matching binary/PDB has
+been recovered through those endpoints. A build made today from the candidate
+would be a new, separately identified candidate, not proof that it produced the
+frozen ASI. Closing this identity gap requires a trustworthy historical artifact
+containing the exact ASI digest, or a matching PDB plus an authenticated
+source/build record. The current archive, asset pins and exact-source hold remain
+unchanged; no broader license or redistribution conclusion follows from this
+candidate source's MIT notice.
+
+The bounded evidence, exact source links and availability results are recorded
+in [fusionfix-asi-source-candidate.json](evidence/fusionfix-asi-source-candidate.json).
+Raw downloads remain under ignored `.local/evidence/cloud/fusionfix-asi-followup/`.
+
 ## Capture helper: binary verified, reported source not received
 
 The existing `src/launcher/src/Assets/SCBL.LAN.Capture.exe` was independently
