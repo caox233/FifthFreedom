@@ -22,6 +22,7 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src/public"))
+sys.path.insert(0, str(ROOT / "scripts"))
 from fifth_freedom_control.easytier_profile import parse_profile, emit_private_toml, write_private_toml
 from fifth_freedom_control.owned_process import LifecycleError, VerifiedExecutable
 from fifth_freedom_control.overlay_supervisor import RuntimeCandidateIdentity

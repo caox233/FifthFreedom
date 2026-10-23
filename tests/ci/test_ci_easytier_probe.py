@@ -38,6 +38,52 @@ def readiness(tun_owned, authenticated):
         local_bind_kind="exact" if authenticated else None)
 
 
+class IsolatedEntryTests(unittest.TestCase):
+    def invoke(self, script, *arguments, directory):
+        # The workflow uses isolation. Neither CWD nor PYTHONPATH may supply
+        # imports; only explicitly anchored repository paths are available.
+        env = dict(os.environ, PYTHONPATH=str(directory), PYTHONHOME=str(directory / "absent-home"))
+        env.pop("GITHUB_ACTIONS", None)
+        env.pop("RUNNER_ENVIRONMENT", None)
+        return subprocess.run([sys.executable, "-I", "-B", str(ROOT / "scripts" / script), *arguments],
+            cwd=directory, env=env, capture_output=True, timeout=10)
+
+    def test_exact_isolated_probe_help_ignores_ambient_import_paths(self):
+        with tempfile.TemporaryDirectory() as name:
+            directory = Path(name)
+            (directory / "ci_socket_isolation.py").write_text("raise RuntimeError('ambient module must not run')\n")
+            result = self.invoke("ci_easytier_probe.py", "--help", directory=directory)
+        self.assertEqual(result.returncode, 0, result.stderr.decode())
+        self.assertIn(b"--containment-only", result.stdout)
+        self.assertEqual(result.stderr, b"")
+
+    def test_exact_isolated_probe_refuses_missing_hosted_authorization_before_namespace(self):
+        with tempfile.TemporaryDirectory() as name:
+            directory = Path(name)
+            output = directory / "public-receipt.json"
+            result = self.invoke("ci_easytier_probe.py", "--containment-only", "--output", str(output), directory=directory)
+            self.assertEqual(result.returncode, 1, result.stderr.decode())
+            receipt = json.loads(output.read_bytes())
+        self.assertEqual(result.stdout, b"EASYTIER_CONTAINMENT_FAILED\n")
+        self.assertEqual(result.stderr, b"")
+        self.assertEqual(receipt["schema"], probe.CONTAINMENT_SCHEMA)
+        self.assertEqual(receipt["transports"], [])
+        self.assertFalse(receipt["runtime_executed"])
+        self.assertFalse(receipt["production_admission"])
+        self.assertIn("GITHUB_HOSTED_REQUIRED" if sys.platform == "linux" else "LINUX_REQUIRED", receipt["precondition_failures"])
+
+    def test_exact_isolated_worker_missing_arguments_is_fixed_failure(self):
+        with tempfile.TemporaryDirectory() as name:
+            result = self.invoke("easytier_probe_worker.py", directory=Path(name))
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stderr, b"EASYTIER_DEVELOPMENT_WORKER_FAILED\n")
+        value = json.loads(result.stdout)
+        self.assertTrue(worker.valid_failure_record(value))
+        self.assertEqual(value["phase"], "arguments")
+        self.assertEqual(value["code"], "WORKER_ARGUMENTS_INVALID")
+        self.assertTrue(value["cleanup_reaped"])
+
+
 class ContainmentTests(unittest.TestCase):
     def test_rules_bind_three_drop_chains_and_only_exact_pair_interfaces_and_ports(self):
         for transport in probe.TRANSPORTS:
