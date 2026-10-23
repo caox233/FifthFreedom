@@ -16,6 +16,7 @@
 - [迁移范围与完成条件](docs/MIGRATION.md)
 - [保留结果及待验收边界](docs/ACCEPTANCE.md)
 - [云端交接](docs/CLOUD-HANDOFF.md)
+- [云端实际进展与验证记录](docs/CLOUD-PROGRESS.md)
 - [开发知识库](https://github.com/caox233/FifthFreedom-DevDocs)
 - [当前工作状态](PROJECT-STATE.json)
 
@@ -25,16 +26,22 @@
 ## 开发与验证
 
 ```sh
+python -m pip install --only-binary=:all: -r scripts/requirements-profile.txt
 python -B scripts/check_migration.py --require-fifth-freedom
-python -B -m unittest discover -s tests/build -v
+python -B scripts/ci_checks.py source
 ```
+
+建议在独立 Python 虚拟环境中执行。`source` 检查明确区分可运行的源码测试与
+资源门禁；`python -B scripts/ci_checks.py package-inputs` 保留严格完整输入校验，
+目前会因暂未公开的存档输入返回失败。
 
 完整 Windows 构建使用 `build.cmd`，需要 [构建说明](docs/BUILD.md) 中的
 .NET、Rust、MSVC 和明确列出的资源输入。本机工具链与证据放在被 Git 排除的
 `.local/`；不得依赖旧项目目录才能构建。Linux 云端能力和尚缺输入见交接文档。
 
 默认目标是由 GitHub Windows/Linux Actions 构建，不要求用户电脑保持开机。
-当前根工作流只有源码检查，完整候选构建仍需接通。部分默认存档暂留本地等待
+根工作流已接通源码检查、Windows/Linux 组件构建和独立隔离探测；具体提交的
+实际结果与失败见云端进展，工作流存在不等于构建通过。部分默认存档暂留本地等待
 隐私验证，因此公开 checkout 暂不能独立完成全包构建，见
 [资源门禁](docs/ASSET-PROVENANCE.md)；这不阻塞云端源码整合。
 

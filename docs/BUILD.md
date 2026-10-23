@@ -18,9 +18,23 @@ PR 和手动任务的候选检查只保存构建日志、校验和与 artifact�
 因这些缺失输入失败。云端在交接提交 `fc8ef510b51be83c31f9f8233997f758b0477acc`
 独立复现了 37 项测试、16 个资源子检查错误、2 项 Windows 跳过；这不是完整构建通过。
 
+源码开发可先在独立 Python 虚拟环境内执行：
+
+```sh
+python -m pip install --only-binary=:all: -r scripts/requirements-profile.txt
+python -B scripts/check_migration.py --require-fifth-freedom
+python -B scripts/ci_checks.py source
+python -B scripts/ci_checks.py package-inputs
+```
+
+配方密钥验证固定使用 `cryptography==50.0.0`，缺少依赖不会被当成测试通过。
+最后一条仍是明确会失败的完整输入门禁；不能用前面的源码检查替代它。
+新增 Windows IPC、真实服务生命周期和隔离加密网络检查的命令及平台要求见
+`tasks/ci-01.md`，完整测试集合与托管结果按提交记录在 `CLOUD-PROGRESS.md`。
+
 ## 最短流程
 
-1. 下载源码 ZIP 后完整解压，或 Git clone。建议使用短路径，例如 `C:\src\SCBL-LAN`。
+1. 下载源码 ZIP 后完整解压，或 Git clone。建议使用短路径，例如 `C:\src\FifthFreedom`。
 2. 首次安装下面的编译工具。先检查资源隐私门禁；目前公开源码缺少获准公开前必须保留在本地的存档输入，完整包不能只凭公开 checkout 构建。首次代码依赖恢复需要联网。
 3. 双击仓库根目录 **`build.cmd`**。无需管理员，也无需打开 Visual Studio。
 4. 等待 `BUILD_SUCCESS`，按输出路径取得完整 ZIP。运行时文件在 `artifacts/program`；最新结果在 `artifacts/BUILD-RESULT.json`。
