@@ -48,17 +48,18 @@ def git_archive(work, lock):
     checkout.mkdir()
     commands = (["git", "init", "--quiet"],
                 ["git", "remote", "add", "origin", lock["upstream"]["repository"]],
-                ["git", "fetch", "--depth=1", "origin", lock["upstream"]["commit"]],
-                ["git", "checkout", "--detach", "--quiet", "FETCH_HEAD"])
+                ["git", "fetch", "--depth=1", "origin", lock["upstream"]["commit"]])
     for args in commands:
         if subprocess.run(args, cwd=checkout, capture_output=True, timeout=600).returncode:
             raise BuildError("EASYTIER_FIXED_SOURCE_FETCH_FAILED")
-    for expression, expected in (("HEAD", lock["upstream"]["commit"]), ("HEAD^{tree}", lock["upstream"]["tree"])):
+    # Archive Git objects directly: checking out the held Windows inputs would
+    # needlessly invoke any installed Git LFS smudge filter on the runner.
+    for expression, expected in (("FETCH_HEAD", lock["upstream"]["commit"]), ("FETCH_HEAD^{tree}", lock["upstream"]["tree"])):
         actual = subprocess.check_output(["git", "rev-parse", expression], cwd=checkout, text=True).strip()
         if actual != expected:
             raise BuildError("EASYTIER_UPSTREAM_IDENTITY_MISMATCH")
     archive = work / "original.tar"
-    subprocess.run(["git", "archive", "--format=tar", "--output", str(archive), "HEAD"], cwd=checkout, check=True, capture_output=True)
+    subprocess.run(["git", "archive", "--format=tar", "--output", str(archive), "FETCH_HEAD"], cwd=checkout, check=True, capture_output=True)
     source.checked_bytes(archive, lock["archive"])
     return archive
 
