@@ -438,3 +438,67 @@ bytes; all four guard1/2 original ELFs and receipts were independently hashed
 before and after and retained. No original source or private four-role evidence
 was removed. Full package readiness and the complete six-milestone goal remain
 false; original SAV/META, Capture source and live-acceptance gates are unchanged.
+
+## Actual Windows diagnosis and owned runtime probe preparation
+
+The later [c3bac15 candidate](https://github.com/caox233/FifthFreedom/actions/runs/39908170962)
+again passed Linux LAN, donor, protected control and namespace isolation. Windows
+source checks passed, but UI05 stopped at its normal HTTPS session query, case05.
+The [a569ae7 diagnostic run](https://github.com/caox233/FifthFreedom/actions/runs/39909129801)
+then reported the bounded server-side classification
+`TLS:AuthenticationException:NO_CREDENTIALS`. This is an actual Schannel fixture
+failure, not a generic failed native build. The independent source run39909129706
+passed. Subsequent Windows native compilation, branding and dependent assembly
+were not reached; those results must not be inferred from earlier revisions.
+
+Commit4668f96 changes only the synthetic Windows leaf certificate: its private
+key is reloaded from a temporary in-memory PFX into a disposable user key
+container. PFX bytes are cleared and no certificate is installed or uploaded.
+Production TLS, chain trust and hostname verification are unchanged. Official
+.NET documentation and Windows loader source support this correction; local15
+TLS cases passed, but the correction still needs a real Windows run. A separate
+source review found the managed/native fixture's empty password violated the
+retained native validator. One shared nonempty synthetic TOML and an actual
+parser regression in ec4e403 fix that fixture without weakening the validator.
+
+[UI-07](tasks/ui-07.md) retains the actual final login response and verified
+package in one prepared configuration owner. Nine real loopback HTTP/2 checks
+passed, including original config bytes and transfer/failure cleanup. The
+recorded local/remote socket endpoints are historical observations, not a live
+overlay capability. The Rust/C# interoperability entry is now implemented with
+three owned synthetic-child cases; it still requires actual Windows execution
+and deliberately does not claim loaded-DLL or full-package admission.
+
+The distinct guard3 [local build receipt](evidence/easytier-clean-linux-build-guard3.json)
+now records35 passing finite checks and a successful GNU Release build. Its
+source tree is `60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181`;
+the original guard1/guard2 outputs remain separately preserved. The first hosted
+guard3 build39909129708 is still running at this checkpoint. Build-only jobs
+continue to upload bounded receipts only and do not execute the core runtime.
+
+[SERVER-11](tasks/server-11.md) adds five actual-main lifecycle cases to an owned
+isolated namespace harness. Twelve local guard/cleanup checks passed, including
+real subprocess failures, exact cleanup and retained unrelated processes.
+[SERVER-13](tasks/server-13.md) adds separate QUIC/WSS/TCP positive, wrong-key and
+restore probes using a same-job guard3 build, real TUN/peer observations and the
+native socket-policy echo helper. Seventeen local guard/cleanup tests passed.
+Both actual entrypoints refused this cloud container's missing privileges and
+started no namespace/runtime. Their positive results remain pending dedicated
+GitHub execution; the ordinary production Public provider remains closed.
+
+A supplemental cloud patch from the original fc8ef510 handoff to
+`1c1bf67b0d30d7865a839c34c5aae531c8f2b06b` was actually applied and reversed.
+It matched all1312 original Git paths, all1467 target paths, then restored1312
+paths with clean Git status, comparing every canonical blob byte and file mode.
+Patch SHA256 is `b243b83921fdb043a289b702f31812716bfdea4eeeb0e18ca6f2d508240a41c9`.
+The first ordinary checkout comparison exposed238 attribute-driven CRLF
+expansions; every mismatch was explained and the original failure was retained.
+The exact proof materializes canonical Git blobs; it does not claim ordinary
+CRLF checkout bytes or the private PC four-role originals were replaced.
+
+The updated environment installer was actually executed successfully with both
+Rust toolchains, .NET, protoc and the isolated pinned Python crypto provider.
+It and updated startup instructions are saved in the official environment draft.
+Saving does not publish/apply that draft or prove fresh snapshot restoration.
+No official Goal/scheduler or environment-publish tool is available. The full
+six milestones remain active; this checkpoint is not completed migration.

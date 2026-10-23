@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Hosted guard2 source build39905205148 succeeded (finite26 +GNU Release, receipts only). Source39906263839 at8389cb6 passed; candidate39906263847 Linux LAN/donor/control/namespace passed, Windows failed specifically in UI05 PublicSessionControl (after source success), dualidentity/fullpackage skipped and privacy gate failed. Later local SERVER10 dedicated367, native UI06 API54, parentlease10 and launcher UI06 portable14 passed; Windows IPC25/8 and cross-language combination await hosted evidence. Full six-milestone migration remains incomplete.",
-  "NEXT_EXECUTABLE_ACTION": "Resolve actual Windows UI05 failing case using bounded diagnostics; then validate native/managed UI06 return IPC and final-login observation with real hosted owned synthetic children. Run actual same-run-component native lifecycle in owned isolated GitHub namespaces, and independent guard3 EasyTier profile/TUN/traffic probes with negative pin controls. Keep production Public admission closed until genuine owned Windows/Linux runtime and route evidence is composed. Continue all six ordered goals, preserve accepted gameplay scope and original evidence. Capture source absent; SAV/META privacy and exact third-party provenance gates remain. No persistent Goal/scheduler API.",
+  "LAST_CONFIRMED_RESULT": "Hosted source39909129706 passed; candidate39909129801 Windows UI05 case05 reported TLS AuthenticationException/NO_CREDENTIALS. Reviewed synthetic-only Schannel key fix4668f96 and actual-parser interop fixture fixec4e403 await Windows execution. Local guard3 clean GNU Release and35 finite checks passed; first guard3 hosted build39909129708 is running. Native lifecycle12 and isolated overlay probe17 local guard/cleanup checks passed; genuine hosted namespace/main/TUN positives remain pending. Full six-milestone migration remains incomplete.",
+  "NEXT_EXECUTABLE_ACTION": "Run the committed synthetic Schannel correction on actual Windows, then require managed25/native8/cross-language3 and final-login9 plus component branding. Execute same-run native lifecycle five-case isolated job and separately built guard3 QUIC/WSS/TCP positive/wrong-pin/restore probes; diagnose actual failures and preserve receipts. Compose genuine runtime/source-route owners only after this evidence, keeping ordinary Public startup closed. Continue all six goals; held SAV/META, absent Capture source, exact third-party provenance and outstanding live evidence remain separate. No persistent Goal/scheduler API.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -23,12 +23,12 @@
     {
       "id": 2,
       "name": "SCBL3 UI with retained LAN behavior",
-      "status": "production_lan_and_credential_isolation_hosted_passed_protected_session_client_locally_tested_owned_token_return_in_progress"
+      "status": "production_lan_and_credentials_integrated_final_login_owned_return_implemented_actual_windows_new_paths_pending"
     },
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "hosted_native_preflight_and_ingress_isolation_passed_source_admission_and_owned_lifecycle_implemented_controlled_activation_in_progress"
+      "status": "native_controlled_lease_and_isolated_runtime_harness_implemented_actual_hosted_composition_pending"
     },
     {
       "id": 4,
@@ -81,7 +81,7 @@
     "personal_data_excluded": true
   },
   "cloud": {
-    "thread_title": "FifthFreedom\u4e91\u7aef",
+    "thread_title": "FifthFreedom云端",
     "repository": "caox233/FifthFreedom",
     "verified": "running connected Linux x86_64; Git HTTPS fetch/push and official gh repository/PR APIs succeeded",
     "environment_display_name": "not independently exposed by status API",
@@ -92,7 +92,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Official gh API initially denied, later succeeded under existing configuration. Actions log/artifact redirect hosts still denied; narrow official environment draft additions saved. No bypass; draft publication unconfirmed.",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39906263847",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39909129801",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -181,13 +181,22 @@
         "linux_lan_donor_control_namespace": "success",
         "cross_platform_assembly": "skipped_windows_dependency_failed",
         "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39908170962,
+        "commit": "c3bac153fbe45642fb86f6eaac4efc5b069fe4c5",
+        "overall": "failure",
+        "windows": "source_passed_UI05_case05_PublicControlException",
+        "linux_lan_donor_control_namespace": "success",
+        "cross_platform_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "passed_on8389cb6; later_UI05_PublicSessionControl_runtime_failure",
+    "candidate_windows_source": "a569ae7_source_passed; UI05_case05_TLS_NO_CREDENTIALS; synthetic_certificate_fix4668f96_not_yet_hosted",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "all_Linux_components_and_namespace_passed_on8389cb6",
+    "candidate_linux_matrix": "all_Linux_components_and_namespace_passed_on_c3bac15; a569ae7_ongoing_when_recorded",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "Latest8389 candidate preserves Windows UI05 failure and skipped dualidentity; previous2b66f30 all-component/static-preflight success remains revision-specific."
+    "candidate_component_result": "Latest Windows synthetic TLS handshake failure retained; previous all-component success remains revision-specific; no complete package."
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -195,7 +204,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T05:47:44.879659+00:00",
+  "updated_utc": "2026-10-23T06:14:14.911866+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -393,7 +402,7 @@
       "explicit_peer_pin_before": "2_pass_1_fail_wrong_key_with_valid_PSK_accepted",
       "explicit_peer_pin_after": "3_pass_wrong_key_explicitly_identity_rejected",
       "guard3_regression_checks": 35,
-      "guard3_clean_release": "in_progress_distinct_candidate"
+      "guard3_clean_release": "passed_local35_and_GNU_Release; exact_source_and_output_hashes_in_docs/evidence/easytier-clean-linux-build-guard3.json; first_hosted39909129708_pending"
     },
     "windows_branding_metadata": {
       "implementation_commit": "b171d4d",
@@ -423,7 +432,7 @@
       "windows_native_pending": 8,
       "wpf_crosscompile_warnings": 0,
       "wpf_crosscompile_errors": 0,
-      "cross_language_windows_runtime": "pending",
+      "cross_language_windows_runtime": "three_actual_owned_child_cases_implemented; actual_shared_TOML_parser_fixec4e403_passed; Windows_pending",
       "public_enabled": false
     },
     "hosted_overlay_guard2_build": {
@@ -440,6 +449,41 @@
       "freed_bytes": 2052317184,
       "scope": "only owned reproducible guard-build incremental cache; guard1/2 four original ELFs and receipts retained with before/after matching hashes",
       "receipt": ".local/cloud-receipts/cache-cleanup-guard-incremental/receipt.json"
+    },
+    "cloud_ui_final_login": {
+      "implementation_commit": "90fde12",
+      "passed": 9,
+      "wpf_crosscompile_warnings": 0,
+      "wpf_crosscompile_errors": 0,
+      "scope": "actual final HTTP2 login and historical kernel socket observation; no live overlay lease or Public startup",
+      "hosted": "pending"
+    },
+    "cloud_native_lifecycle_harness": {
+      "implementation_commit": "92945e3dd043e1ee1dae21afdb73f5265b0f2c1f",
+      "receipt_fix_commit": "49b66bf64b25bc2a8bf033ec01301ac4810be084",
+      "local_checks_passed": 12,
+      "actual_local_preflight_exit": 1,
+      "actual_local_namespaces_created": 0,
+      "actual_hosted": "pending",
+      "scope": "five owned isolated main-process activation/revocation cases; no ordinary production admission"
+    },
+    "cloud_overlay_probe_harness": {
+      "implementation_commit": "26adec5",
+      "local_checks_passed": 17,
+      "actual_local_preflight_exit": 1,
+      "actual_local_runtime_started": false,
+      "actual_hosted": "pending",
+      "scope": "owned QUIC/WSS/TCP positives, wrong configured key with same PSK, restore; native SocketPolicy traffic and cleanup; not production admission"
+    },
+    "cloud_canonical_patch_proof": {
+      "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "target": "1c1bf67b0d30d7865a839c34c5aae531c8f2b06b",
+      "patch_sha256": "b243b83921fdb043a289b702f31812716bfdea4eeeb0e18ca6f2d508240a41c9",
+      "original_paths": 1312,
+      "forward_paths": 1467,
+      "reverse_paths": 1312,
+      "reverse_git_clean": true,
+      "scope": "exact canonical Git blob bytes, modes and pathsets; checkout CRLF expansion is separate; original private four-role evidence not changed"
     }
   }
 }
