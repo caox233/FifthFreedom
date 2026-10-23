@@ -60,3 +60,80 @@ explicit overall startup budget can be at most60s; each owned exec bootstrap
 remains bounded30s. A real delayed synthetic peer tests both successful3.1s
 preparation and a shorter budget's refusal. With this additional case, the
 parent suite has10 methods; no package result is inferred from the delay model.
+
+## Actual Python/Rust composition and isolated main harness
+
+A later local composition used the production `NativeOwnerLease` with the real
+Rust lease test peer and all five retained services on ephemeral loopback ports.
+Both directions carried kernel credentials; READY, renewals, endpoint revocation,
+exit92, exact-child reaping and private fixture removal passed. This fixture
+immediately pinned handles for its own raw `Popen` before wrapping them in
+`OwnedChild`; it does **not** claim to exercise the production bootstrap or the
+actual Public main path. Its receipt is
+`.local/evidence/cloud/server10/python-native-composition.json` and the initial
+local command-path error is retained separately.
+
+`scripts/ci_native_lifecycle.py` supplies the separate privileged main test. Its
+input must be the **same run/attempt/commit** component-only candidate already
+verified by the native dual-identity reader. It checks every source hash and
+scope, copies into a fresh root-owned private tree, and runs the copied real
+native verifier. Original downloaded files are never chmodded, chowned or
+rewritten. Root's private-key ancestry rules require a trusted temporary parent;
+`/tmp` is the root-owned sticky parent and every fresh test directory is0700.
+The runner-owned checkout/`RUNNER_TEMP` ancestors are not relaxed or changed.
+Only the sanitized result is written to the requested artifact report location.
+
+The harness reuses SERVER-06's exact owned namespace handles. Server, admitted
+peer and wrong-interface peer have only the private veth topology and no default
+routes; no host link, route, firewall or sysctl is changed. The Python parent
+runs inside the server namespace and uses actual `OwnedChild.spawn` and
+`NativeOwnerLease`. Runtime/profile digest values are deliberately synthetic
+native-protocol test inputs. No EasyTier, encrypted peer, game or production
+admission provider is started or claimed.
+
+Five bounded cases cover withheld admission and mismatched admission before
+state creation, followed by actual startup with endpoint EOF, lease expiry and
+parent death. READY must follow all five retained listener callbacks; the parent
+also matches their kernel socket inodes to its exact child. The admitted peer
+performs real configuration/content HTTP and API TCP connections. The wrong
+interface cannot complete the three TCP connections. A real established TCP
+connection carrying an HTTP/2 preface must close on revocation (no HTTP/2
+handshake or account RPC is claimed), and all three TCP/two UDP ports must be
+released afterward. Timeouts do not count as a closed established connection.
+The parent-death case uses an isolated subreaper and the exact pinned native
+pidfd so the adopted child is reaped, without PID scans or process-group kills.
+Image validation takes place after confirmed worker-child ownership transfers
+the pidfd to outer cleanup, so an image mismatch cannot abandon that child.
+CI SIGTERM triggers bounded finally cleanup; repeated SIGTERM is ignored during
+cleanup. SIGKILL or loss of the whole runner cannot run userspace cleanup.
+
+Example for the dedicated isolated GitHub-hosted Linux job:
+
+```sh
+sudo python3 scripts/ci_native_lifecycle.py \
+  --package "$CANDIDATE" \
+  --candidate-receipt "$CANDIDATE/CANDIDATE-RECEIPT.json" \
+  --runner-temp /tmp --report "$RUNNER_TEMP/native-lifecycle/receipt.json" \
+  --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+  --run-attempt "$GITHUB_RUN_ATTEMPT"
+```
+
+Successful output requires private-tree removal, unchanged source/copy package
+bytes, all owned children reaped, all three owned namespace handles removed,
+and all five cases passing. The receipt keeps `encrypted_overlay_verified`,
+`production_provider_open`, `game_executed`, `complete_windows_client`,
+`deployed` and `published` false. No raw worker logs, configuration, key, database,
+private path or private config hash is uploaded.
+
+Current local harness evidence is **8 portable input/copy/privacy guard tests**,
+plus **3 Linux owned-interpreter cleanup fault tests** covering image mismatch
+after child pinning, unconfirmed parent rejection without signalling unrelated
+processes, and repeated SIGTERM through finally cleanup. All11 passed locally;
+the three Linux-only methods are explicitly platform-skipped on Windows. These
+tests do not create namespaces or native listeners. There is also an actual
+isolated-Python entrypoint refusal with
+`ROOT_NAMESPACE_PRIVILEGES_REQUIRED`, before any report or namespace creation.
+This cloud session has not run the privileged main topology. A hosted positive
+receipt is required; missing privileges are a failure, never a passing skip.
+The earlier Python synthetic-child tests and local Rust loopback composition
+remain distinct from that pending hosted result.
