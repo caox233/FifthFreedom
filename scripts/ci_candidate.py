@@ -19,6 +19,7 @@ import ci_diagnostics
 import ci_checks
 import ci_public_preflight
 import ci_native_interop
+import ci_windows_loopback
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / "artifacts"
@@ -197,6 +198,12 @@ def windows_components(receipt: dict) -> None:
     for name in ("PortPlan", "BackgroundTaskRegression", "ObserverSession", "NetworkEnvironment", "PublicDeployment", "PublicSessionControl", "PublicNativeReturn", "FinalLaunchPreparation"):
         run_build_step("ci-test-" + name, [build.dotnet(), "run", "--project", ROOT / f"tests/{name}/{name}.csproj",
                   "-c", "Release", "--no-launch-profile"])
+    stream_log = run_build_step("ci-test-DiagnosticTextStreaming", [build.dotnet(), "run", "--project",
+        ROOT / "tests/DiagnosticTextStreaming/DiagnosticTextStreaming.csproj", "-c", "Release", "--no-launch-profile"])
+    if not ci_windows_loopback.verified_output(stream_log.with_suffix(".stdout.txt").read_text(encoding="utf-8", errors="replace"), "DiagnosticTextStreaming"):
+        raise RuntimeError("Diagnostic streaming checks did not execute the exact required cases")
+    receipt["diagnostic_stream_checks"] = {"passed": 12, "failed": 0, "skipped": 0,
+        "linked_production": True, "full_diagnostic_zip_exercised": False}
     cargo, env = build.native_env()
     env["CARGO_BUILD_JOBS"] = "2"
     env["CARGO_NET_GIT_FETCH_WITH_CLI"] = "true"

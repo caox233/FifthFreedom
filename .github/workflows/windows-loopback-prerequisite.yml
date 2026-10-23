@@ -9,6 +9,9 @@ on:
       - 'tests/FinalLaunchPreparation/**'
       - 'tests/PublicNativeReturn/**'
       - 'tests/PublicSessionControl/Fixtures.cs'
+      - 'tests/DiagnosticTextStreaming/**'
+      - 'src/launcher/src/Services/DiagnosticTextStream.cs'
+      - 'src/launcher/src/Services/DiagnosticTextSanitizer.cs'
   workflow_dispatch:
 
 permissions:
@@ -19,6 +22,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  diagnostic-stream:
+    name: Linked diagnostic stream boundaries without game or full ZIP export
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Require all 12 linked-production streaming cases and exact summary
+        run: python -B scripts/ci_windows_loopback.py --suite DiagnosticTextStreaming --report "${{ runner.temp }}/diagnostic-stream.json"
+      - name: Preserve only the sanitized streaming receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-diagnostic-stream-${{ github.sha }}
+          path: ${{ runner.temp }}/diagnostic-stream.json
+          if-no-files-found: error
+          retention-days: 14
   loopback-prerequisite:
     runs-on: windows-2022
     timeout-minutes: 15

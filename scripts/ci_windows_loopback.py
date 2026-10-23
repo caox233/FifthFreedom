@@ -10,15 +10,28 @@ import sys
 import ci_diagnostics
 
 ROOT = Path(__file__).resolve().parents[1]
+STREAM_CASES = (
+    "utf8-crosses-real-read-boundary", "json-secret-crosses-read-boundary",
+    "crlf-split-and-no-final-newline", "server-dump-after-chunk-boundary",
+    "line-limit-includes-newline", "invalid-utf8-straddles-read",
+    "truncated-snapshot-does-not-succeed", "snapshot-length-does-not-read-appended-tail",
+    "malformed-final-json-remains-fatal", "json-depth-and-node-limits-remain-fatal",
+    "cancellation-before-read-and-before-line", "output-failure-stops-before-next-read",
+)
 SUITES = {
     "FinalLaunchPreparation": (9, "RESULT 9 final-login preparation checks passed; owned loopback HTTP2 only; no game, Public runtime or live-route admission."),
     "PublicNativeReturn": (27, "RESULT 27 passed, 0 skipped"),
+    "DiagnosticTextStreaming": (12, "DIAGNOSTIC_STREAM_SUMMARY cases=12 linked_production=true source_unchanged=true full_zip_tested=false network=false game=false"),
 }
 
 
 def verified_output(text, suite="FinalLaunchPreparation"):
     count, summary = SUITES[suite]
     lines = text.splitlines()
+    if suite == "DiagnosticTextStreaming":
+        expected = ["DIAGNOSTIC_STREAM_PASS " + case for case in STREAM_CASES] + [summary]
+        actual = [line for line in lines if line.startswith(("DIAGNOSTIC_STREAM_", "PASS ", "RESULT ", "SKIP ", "FAIL ", "CI_MANAGED_FAILURE "))]
+        return actual == expected
     return (len([line for line in lines if line.startswith("PASS ")]) == count
             and not any(line.startswith(("SKIP ", "FAIL ", "CI_MANAGED_FAILURE ")) for line in lines)
             and [line for line in lines if line.startswith("RESULT ")] == [summary])
@@ -35,6 +48,7 @@ def main():
     result = {"schema": 1, "suite": args.suite, "passed": False,
               "required_checks": SUITES[args.suite][0], "passed_checks": None, "skipped_checks": None,
               "game_executed": False, "native_interop_exercised": False,
+              "full_diagnostic_zip_exercised": False,
               "services_changed": False, "raw_output_retained": False}
     try:
         child = subprocess.run(["dotnet", "run", "--project",

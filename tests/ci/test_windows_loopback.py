@@ -82,6 +82,43 @@ class WindowsLoopbackTests(unittest.TestCase):
             self.assertIs(receipt["native_interop_exercised"], False)
             self.assertNotIn("PRIVATE", path.read_text())
 
+    def test_stream_suite_requires_every_distinct_source_case_and_exact_scope(self):
+        lines = ["DIAGNOSTIC_STREAM_PASS " + name for name in loopback.STREAM_CASES]
+        summary = loopback.SUITES["DiagnosticTextStreaming"][1]
+        valid = "\n".join(lines + [summary])
+        self.assertTrue(loopback.verified_output(valid, "DiagnosticTextStreaming"))
+        invalid = (
+            "\n".join(lines[:-1] + [lines[0], summary]),
+            "\n".join(list(reversed(lines)) + [summary]),
+            valid.replace(lines[0], "DIAGNOSTIC_STREAM_PASS unknown-case"),
+            valid.replace("full_zip_tested=false", "full_zip_tested=true"),
+            valid.replace("cases=12", "cases=0"),
+            valid + "\n" + summary,
+            valid + "\nSKIP synthetic-case",
+            valid + "\nDIAGNOSTIC_STREAM_SOURCE_CHANGED",
+        )
+        for output in invalid:
+            self.assertFalse(loopback.verified_output(output, "DiagnosticTextStreaming"))
+        self.assertFalse(loopback.verified_output(valid, "PublicNativeReturn"))
+
+    def test_stream_command_uses_fixed_project_and_keeps_raw_output_private(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "receipt.json"
+            stdout = "\n".join(["DIAGNOSTIC_STREAM_PASS " + name for name in loopback.STREAM_CASES]
+                + [loopback.SUITES["DiagnosticTextStreaming"][1]])
+            child = subprocess.CompletedProcess([], 0, stdout, "PRIVATE_PATH_TOKEN")
+            with patch.object(sys, "argv", ["probe", "--suite", "DiagnosticTextStreaming", "--report", str(path)]), \
+                    patch.object(sys, "platform", "win32"), patch.dict("os.environ", {"RUNNER_ENVIRONMENT": "github-hosted"}), \
+                    patch.object(loopback.subprocess, "run", return_value=child) as invoke:
+                self.assertEqual(loopback.main(), 0)
+            self.assertIn("DiagnosticTextStreaming.csproj", " ".join(invoke.call_args.args[0]))
+            result = json.loads(path.read_text())
+            self.assertEqual(result["passed_checks"], 12)
+            self.assertEqual(result["skipped_checks"], 0)
+            self.assertIs(result["full_diagnostic_zip_exercised"], False)
+            self.assertIs(result["native_interop_exercised"], False)
+            self.assertNotIn("PRIVATE", path.read_text())
+
 
 if __name__ == "__main__":
     unittest.main()
