@@ -15,7 +15,7 @@ import ci_diagnostics
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = "x86_64-pc-windows-msvc"
 BINARY = "ff-windows-owned-read-contract"
-NORMAL_SUMMARY = "RESULT 19 passed; 0 skipped"
+NORMAL_SUMMARY = "RESULT 22 passed; 0 skipped"
 INTEROP_SUMMARY = "OWNED_CORE_READ_INTEROP_OK 4"
 NATIVE_CASES = (
     "explicit_descriptor_identity_and_bounds", "duplicate_fields_are_not_last_wins",
@@ -32,7 +32,7 @@ _FAILURE_CODES = frozenset(("OWNED_READ_CARGO_ARTIFACT_INVALID", "OWNED_READ_IMA
 
 def managed_output(text: str, *, interop=False) -> bool:
     lines = text.splitlines()
-    summary, count = (INTEROP_SUMMARY, 4) if interop else (NORMAL_SUMMARY, 19)
+    summary, count = (INTEROP_SUMMARY, 4) if interop else (NORMAL_SUMMARY, 22)
     return (sum(line.startswith("PASS ") for line in lines) == count
             and [line for line in lines if line.startswith(("RESULT ", "OWNED_CORE_READ_INTEROP_OK"))] == [summary]
             and not any(line.startswith(("FAIL", "SKIP", "CI_MANAGED_FAILURE", "CI_OWNED_CORE_FAILURE")) for line in lines))
@@ -142,7 +142,7 @@ def run_contracts(root: Path, temporary: Path, result: dict) -> None:
         # Check both actual images after each execution, including missing files.
         if image_identity(image) != original or image_identity(helper) != helper_original:
             raise ValueError("OWNED_READ_IMAGE_CHANGED")
-        result["interop_passed_checks" if interop else "managed_passed_checks"] = 4 if interop else 19
+        result["interop_passed_checks" if interop else "managed_passed_checks"] = 4 if interop else 22
     result.update(stage="COMPLETE", passed=True, skipped_checks=0, images_unchanged=True)
 
 
@@ -154,7 +154,7 @@ def main():
         ci_diagnostics.emit_error("OWNED_READ_WINDOWS_HOSTED_REQUIRED")
         return 1
     result = {"schema": 1, "suite": "OwnedCoreRead", "passed": False, "stage": "INPUT",
-              "required_managed_checks": 19, "required_native_checks": 8, "required_interop_checks": 4,
+              "required_managed_checks": 22, "required_native_checks": 8, "required_interop_checks": 4,
               "managed_passed_checks": 0, "native_passed_checks": 0, "interop_passed_checks": 0,
               "required_managed_runtime": "win-x86", "required_native_target": TARGET,
               "self_contained_test_apphost": True, "skipped_checks": None,

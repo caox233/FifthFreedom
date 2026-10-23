@@ -46,7 +46,7 @@ _PREPARATION_CODES = {"FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE", "FINAL_PREPAR
 # bound so a valid ordinal from another suite cannot masquerade as evidence.
 _MANAGED_CASE_COUNTS = {"PublicSessionControl": 15, "PublicNativeReturn": 27,
                         "FinalLaunchPreparation": 9, "NativeManagedInterop": 3, "OwnedCoreProcess": 17,
-                        "OwnedCoreRead": 19, "OwnedCoreReadInterop": 4}
+                        "OwnedCoreRead": 22, "OwnedCoreReadInterop": 4, "OwnedCoreDependencies": 13}
 _MANAGED_SETUP_CASES = {
     "PublicSessionControl": {"SETUP_PACKAGE", "SETUP_CERTIFICATES", "CLEANUP", "UNKNOWN_PHASE"},
     "PublicNativeReturn": {"SETUP_PACKAGE", "CLEANUP", "UNKNOWN_PHASE"},
@@ -55,7 +55,10 @@ _MANAGED_SETUP_CASES = {
     "OwnedCoreProcess": set(),
     "OwnedCoreRead": set(),
     "OwnedCoreReadInterop": set(),
+    "OwnedCoreDependencies": {"SETUP_OR_CLEANUP"},
 }
+_DEPENDENCY_EXCEPTIONS = frozenset(("UnauthorizedAccessException", "IOException", "OperationCanceledException",
+    "TimeoutException", "InvalidOperationException", "OtherException"))
 _MANAGED_EXCEPTION_PATTERN = (
     r"AuthenticationException|CryptographicException|IOException|SocketException|"
     r"HttpRequestException|OperationCanceledException|TaskCanceledException|TimeoutException|"
@@ -65,8 +68,8 @@ _MANAGED_EXCEPTION_PATTERN = (
     r"JsonException|Exception|OtherException"
 )
 _MANAGED_FAILURE = re.compile(
-    r"CI_MANAGED_FAILURE suite=(PublicSessionControl|PublicNativeReturn|FinalLaunchPreparation|NativeManagedInterop|OwnedCoreProcess|OwnedCoreRead|OwnedCoreReadInterop) "
-    r"case=([0-9]{2}|SETUP_PACKAGE|SETUP_CERTIFICATES|SETUP_LISTENER|CLEANUP|UNKNOWN_PHASE) "
+    r"CI_MANAGED_FAILURE suite=(PublicSessionControl|PublicNativeReturn|FinalLaunchPreparation|NativeManagedInterop|OwnedCoreProcess|OwnedCoreRead|OwnedCoreReadInterop|OwnedCoreDependencies) "
+    r"case=([0-9]{2}|SETUP_PACKAGE|SETUP_CERTIFICATES|SETUP_LISTENER|CLEANUP|UNKNOWN_PHASE|SETUP_OR_CLEANUP) "
     r"exception=(" + _MANAGED_EXCEPTION_PATTERN + r")\Z"
 )
 _RETURN_PHASE_PATTERN = (
@@ -230,7 +233,8 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
     managed = sorted({":".join(match.groups())
                       for line in text.splitlines()
                       if (match := _MANAGED_FAILURE.fullmatch(line))
-                      and managed_case_allowed(match[1], match[2])})[:MAX_ITEMS]
+                      and managed_case_allowed(match[1], match[2])
+                      and (match[1] != "OwnedCoreDependencies" or match[3] in _DEPENDENCY_EXCEPTIONS)})[:MAX_ITEMS]
     return_phases = sorted({":".join(match.groups())
                             for line in text.splitlines()
                             if (match := _RETURN_PHASE.fullmatch(line))

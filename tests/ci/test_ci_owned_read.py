@@ -16,7 +16,7 @@ import ci_diagnostics
 
 
 def managed(interop=False):
-    count = 4 if interop else 19
+    count = 4 if interop else 22
     return "\n".join([f"PASS case {i}" for i in range(count)] + [probe.INTEROP_SUMMARY if interop else probe.NORMAL_SUMMARY])
 
 
@@ -38,9 +38,9 @@ class OwnedReadAdapterTests(unittest.TestCase):
             self.assertTrue(probe.managed_output(text, interop=interop))
             for bad in (text.replace("PASS case 0", "SKIP case 0"), text + "\nFAIL hidden",
                         text + "\n" + (probe.INTEROP_SUMMARY if interop else probe.NORMAL_SUMMARY),
-                        text + "\nCI_MANAGED_FAILURE suite=OwnedCoreRead case=19 exception=IOException",
+                        text + "\nCI_MANAGED_FAILURE suite=OwnedCoreRead case=22 exception=IOException",
                         text.replace("PASS case 0\n", ""), text.replace("0 skipped", "1 skipped"),
-                        managed(not interop)):
+                        managed(not interop), text.replace("22 passed", "19 passed")):
                 if bad == text:
                     continue
                 self.assertFalse(probe.managed_output(bad, interop=interop))
@@ -129,7 +129,7 @@ class OwnedReadAdapterTests(unittest.TestCase):
             self.assertEqual(calls[2], [str(image)])
             self.assertEqual(calls[3], [str(image), "--native-helper", str(helper.resolve())])
             self.assertTrue(result["passed"] and result["images_unchanged"])
-            self.assertEqual((result["native_passed_checks"], result["managed_passed_checks"], result["interop_passed_checks"]), (8, 19, 4))
+            self.assertEqual((result["native_passed_checks"], result["managed_passed_checks"], result["interop_passed_checks"]), (8, 22, 4))
 
     def test_missing_or_changed_actual_images_fail_before_interop(self):
         for change in (lambda image, helper: image.unlink(), lambda image, helper: helper.unlink(),
@@ -147,9 +147,9 @@ class OwnedReadAdapterTests(unittest.TestCase):
             result = {"passed": False}
             with self.assertRaisesRegex(ValueError, "OWNED_READ_MANAGED_RESULT_INVALID"):
                 self.exercise(Path(temporary), result,
-                              stderr="CI_MANAGED_FAILURE suite=OwnedCoreRead case=19 exception=IOException")
+                              stderr="CI_MANAGED_FAILURE suite=OwnedCoreRead case=22 exception=IOException")
             self.assertFalse(result["passed"])
-            self.assertIn("OwnedCoreRead:19:IOException", result["diagnostics"]["managed_cases"])
+            self.assertIn("OwnedCoreRead:22:IOException", result["diagnostics"]["managed_cases"])
 
     def test_nonzero_exit_cannot_be_overridden_by_complete_success_text(self):
         for stage in range(1, 5):
@@ -187,13 +187,13 @@ class OwnedReadAdapterTests(unittest.TestCase):
             self.assertFalse(json.loads(text)["passed"])
 
     def test_managed_diagnostics_enforce_each_new_suite_range_and_no_setup(self):
-        valid = ["CI_MANAGED_FAILURE suite=OwnedCoreRead case=19 exception=IOException",
+        valid = ["CI_MANAGED_FAILURE suite=OwnedCoreRead case=22 exception=IOException",
                  "CI_MANAGED_FAILURE suite=OwnedCoreReadInterop case=04 exception=TimeoutException"]
-        invalid = [valid[0].replace("case=19", "case=20"), valid[1].replace("case=04", "case=05"),
-                   valid[0] + " PRIVATE_VALUE", valid[0].replace("case=19", "case=SETUP_PACKAGE"),
+        invalid = [valid[0].replace("case=22", "case=23"), valid[1].replace("case=04", "case=05"),
+                   valid[0] + " PRIVATE_VALUE", valid[0].replace("case=22", "case=SETUP_PACKAGE"),
                    valid[1].replace("TimeoutException", "PRIVATE_EXCEPTION")]
         details = ci_diagnostics.diagnostic_details("\n".join(valid + invalid))
-        self.assertEqual(details["managed_cases"], ["OwnedCoreRead:19:IOException", "OwnedCoreReadInterop:04:TimeoutException"])
+        self.assertEqual(details["managed_cases"], ["OwnedCoreRead:22:IOException", "OwnedCoreReadInterop:04:TimeoutException"])
         self.assertNotIn("PRIVATE", str(details))
 
 
