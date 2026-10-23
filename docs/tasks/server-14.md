@@ -235,3 +235,42 @@ combined-stack tests, with zero skips. They do not reproduce the unspecified
 4b49 errno or identify its cause. The next actual hosted failure must supply the
 new details before any broader runtime change is justified. Evidence remains in
 `.local/evidence/cloud/kernel-query-details/`.
+
+## Short-lived query completion and image identity
+
+The first combined run containing OPEN, [39943233020](https://github.com/caox233/FifthFreedom/actions/runs/39943233020),
+job 120389777286, completed case A: actual five-listener READY, the held TCP
+connection, lease revocation, exit 92, port release and EOF/reset while the
+overlay remained alive. Case B then failed at `observe / QUERY_IMAGE_CHANGED`
+before combined readiness was confirmed. Its worker reported reaped children;
+both namespace pairs and private staging were removed, with unchanged source
+inputs. That code does not distinguish a changed executable from an exit between
+the old guard's separate liveness and `/proc/exe` observations. It does not
+identify the cause of the earlier 528 unclassified failure either.
+
+A deterministic control now releases an actual owned interpreter child to exit
+normally immediately after the kernel returns the expected executable identity.
+The exact pidfd confirms its exit before the old guard rechecks liveness. The
+old reader rejects this case; the revised query reader drains the complete,
+bounded stdout and requires the actual exit status to be zero.
+
+Only `OwnedQueryChild` uses the new MATCH/MISMATCH/EXITED/UNAVAILABLE distinction.
+It is available after the existing hash acknowledgment, owner release and
+CLOEXEC barrier. An observed different executable or live procfs failure is
+permanent for that child, including when it subsequently exits with zero.
+An absent `exe` link is treated as exit only when that same pinned pidfd already
+signals termination. Other procfs errors remain failures even if termination
+then occurs. Spawn and output reading use the same distinction; the ordinary
+long-lived core/native image rule, deadlines, output bounds, callbacks and exact
+cleanup remain unchanged. EXITED alone is never successful query output.
+
+The regressions use real executable transitions to a different interpreter inode
+and real exit barriers, plus explicitly injected procfs errors. They reject a
+different-image/exit-zero sequence both at spawn and during output reading,
+preserve failure after later exit, and retain the failed-exec/nonzero/overflow/
+timeout/cancellation controls. Local results pass 23 owned-overlay, 23 supervisor,
+10 native-lease and 27 combined-stack tests, with zero skips. No EasyTier, game,
+driver or privileged namespace is started. Evidence is retained in
+`.local/evidence/cloud/query-exit-observation/`. This fixes the demonstrated
+query-exit race; another actual hosted composition must determine its runtime
+result, without assigning it as the uniquely established cause of 432.

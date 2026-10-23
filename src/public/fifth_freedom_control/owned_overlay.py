@@ -18,7 +18,7 @@ import time
 from .easytier_profile import (MAX_PEERS, ProfileError, core_arguments,
                               parse_peer_observation, parse_profile, peer_query_arguments)
 from .native_lease import LeaseBinding
-from .owned_process import LifecycleError, OwnedChild, OwnedQueryChild, VerifiedExecutable
+from .owned_process import LifecycleError, OwnedChild, OwnedQueryChild, QueryImageState, VerifiedExecutable
 from .overlay_supervisor import ChildSpec, KernelTunMonitor
 
 
@@ -39,7 +39,7 @@ async def _read_output(child, maximum):
     fd = child.output_fd
     os.set_blocking(fd, False)
     while True:
-        if child.alive and not child.image_matches():
+        if child.query_image_state() not in (QueryImageState.MATCH, QueryImageState.EXITED):
             raise LifecycleError("QUERY_IMAGE_CHANGED")
         future = loop.create_future()
 

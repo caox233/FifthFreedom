@@ -6,6 +6,7 @@ the parent releases it to execute the already verified ELF descriptor.
 """
 import asyncio
 from dataclasses import dataclass, field
+from enum import Enum
 import errno
 import hashlib
 import os
@@ -267,16 +268,23 @@ class OwnedChild:
             # CLOEXEC on ready_write gives EOF only at image transition/exit.
             if await _pipe_byte(ready_read, max(0.001, deadline - asyncio.get_running_loop().time())) != b"":
                 raise LifecycleError("CHILD_EXEC_FAILED")
-            if not child.image_matches():
+            if _query_output:
                 # Only the separate short-lived query type permits completion
                 # before the parent's post-exec /proc observation. Its verified
                 # bootstrap acknowledged the hash, was explicitly released, and
                 # closed its CLOEXEC status pipe. Every bootstrap failure exits
                 # nonzero (71..79); exit0 here is the verified target completing,
                 # not a fallback for an unobserved or failed bootstrap.
-                if not _query_output or child.alive or await child.wait() != 0:
+                child._exec_confirmed = True
+                observation = child.query_image_state()
+                if observation is QueryImageState.MATCH:
+                    pass
+                elif observation is QueryImageState.EXITED and await child.wait() == 0:
+                    program.check_unchanged()
+                else:
                     raise LifecycleError("CHILD_EXEC_FAILED")
-                program.check_unchanged()
+            elif not child.image_matches():
+                raise LifecycleError("CHILD_EXEC_FAILED")
             return child
         except BaseException as error:
             if _query_failure is not None:
@@ -368,12 +376,52 @@ class OwnedChild:
         self.closed = True
 
 
+class QueryImageState(Enum):
+    MATCH = "match"
+    MISMATCH = "mismatch"
+    EXITED = "exited"
+    UNAVAILABLE = "unavailable"
+
+
 class OwnedQueryChild(OwnedChild):
     """Internal short-lived CLI handle; never a native/core activation child.
 
     Used only by the bounded observation reader. No stdin, stderr or lease FD is
     captured/inherited. Ordinary OwnedChild.spawn retains its live-image rule.
     """
+    def __init__(self, process, pidfd, procfd, identity):
+        super().__init__(process, pidfd, procfd, identity)
+        self._exec_confirmed = False
+        self._image_failure = None
+
+    def query_image_state(self):
+        """Keep observed identity failure distinct from exact child completion.
+
+        EXITED is only a pidfd observation after the verified exec barrier, not
+        success. The caller must still drain bounded stdout and require exit0.
+        Mismatch and live procfs failure cannot be cleared by a later exit.
+        """
+        if self._image_failure is not None:
+            return self._image_failure
+        if self.closed or not self._exec_confirmed:
+            self._image_failure = QueryImageState.UNAVAILABLE
+            return self._image_failure
+        if not self.alive:
+            return QueryImageState.EXITED
+        try:
+            info = os.stat("exe", dir_fd=self.procfd)
+        except OSError as error:
+            # The exe link disappears on exit. Only that precise condition,
+            # with this exact pinned child's exit already signalled, is EOF.
+            if error.errno == errno.ENOENT and not self.alive:
+                return QueryImageState.EXITED
+            self._image_failure = QueryImageState.UNAVAILABLE
+            return self._image_failure
+        if (info.st_dev, info.st_ino, info.st_size) != (self.image.device, self.image.inode, self.image.size):
+            self._image_failure = QueryImageState.MISMATCH
+            return self._image_failure
+        return QueryImageState.MATCH if self.alive else QueryImageState.EXITED
+
     @classmethod
     async def spawn(cls, program, arguments, *, on_failure, on_owned, startup_timeout=2.0):
         if (type(startup_timeout) not in (int, float) or not 0.1 <= startup_timeout <= 2

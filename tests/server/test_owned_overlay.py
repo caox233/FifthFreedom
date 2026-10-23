@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import select
 import shutil
 import signal
 import socket
@@ -20,7 +21,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src/public"))
 from fifth_freedom_control import owned_overlay as owned
 from fifth_freedom_control.native_lease import LeaseBinding, NativeOwnerLease
-from fifth_freedom_control.owned_process import LifecycleError, OwnedChild, OwnedQueryChild, VerifiedExecutable
+from fifth_freedom_control.owned_process import (LifecycleError, OwnedChild, OwnedQueryChild,
+                                                QueryImageState, VerifiedExecutable)
 from fifth_freedom_control.overlay_supervisor import (ChildSpec, LifecycleLimits, OverlayObservation,
     OwnedSupervisor, State, create_public_supervisor)
 from fifth_freedom_control.easytier_profile import ProfileError, parse_profile
@@ -179,6 +181,171 @@ class OwnedOverlayTests(unittest.IsolatedAsyncioTestCase):
                 self.assertIsNone(query._child)
             finally:
                 await query.close()
+
+    async def test_query_normal_exit_between_real_image_stat_and_liveness_is_completion(self):
+        release, ready = self.directory / "exit-release", self.directory / "exit-ready"
+        code = """import os,sys,time
+from pathlib import Path
+os.write(1,b'verified-cli-output')
+Path(sys.argv[1]).touch()
+while not Path(sys.argv[2]).exists(): time.sleep(.001)
+"""
+        original_read, original_stat = owned._read_output, os.stat
+        children, observed = [], []
+        async def read_at_exit(child, maximum):
+            children.append(child)
+            async with asyncio.timeout(1):
+                while not ready.exists():
+                    await asyncio.sleep(.001)
+            def stat_then_exit(path, *args, **kwargs):
+                info = original_stat(path, *args, **kwargs)
+                if path == "exe" and kwargs.get("dir_fd") == child.procfd:
+                    self.assertEqual((info.st_dev, info.st_ino, info.st_size),
+                        (child.image.device, child.image.inode, child.image.size))
+                    observed.append(True)
+                    release.touch()
+                    # The exact child really exits after a successful image
+                    # stat, before the production guard's liveness recheck.
+                    self.assertTrue(select.select([child.pidfd], [], [], 1)[0])
+                return info
+            with mock.patch("os.stat", side_effect=stat_then_exit):
+                return await original_read(child, maximum)
+        query = self.query(timeout=2)
+        with mock.patch.object(owned, "_read_output", side_effect=read_at_exit):
+            result = await query.run(("-I", "-S", "-c", code, str(ready), str(release)),
+                on_failure=lambda: self.revocations.append("revoked"))
+        self.assertEqual(result, b"verified-cli-output")
+        self.assertEqual(observed, [True])
+        self.assertEqual(self.revocations, [])
+        self.assertEqual(len(children), 1)
+        self.assertTrue(children[0].closed)
+        self.assertEqual(children[0]._process.returncode, 0)
+
+    async def test_query_actual_other_image_stays_rejected_even_after_exit_zero(self):
+        transition, release = self.directory / "exec-release", self.directory / "exit-release"
+        original_image = Path(sys.executable).resolve()
+        final = """import os,sys,time
+from pathlib import Path
+os.write(1,b'foreign-image-output')
+while not Path(sys.argv[1]).exists(): time.sleep(.001)
+"""
+        first = """import os,sys,time
+from pathlib import Path
+while not Path(sys.argv[1]).exists(): time.sleep(.001)
+os.execv(sys.argv[2], [sys.argv[2], '-I', '-S', '-c', sys.argv[3], sys.argv[4]])
+"""
+        child = await OwnedQueryChild.spawn(self.program,
+            ("-I", "-S", "-c", first, str(transition), str(original_image), final, str(release)),
+            on_failure=lambda: None, on_owned=lambda child: None)
+        self.addAsyncCleanup(child.stop)
+        self.assertEqual(child.query_image_state(), QueryImageState.MATCH)
+        transition.touch()
+        async with asyncio.timeout(1):
+            while os.stat("exe", dir_fd=child.procfd).st_ino == child.image.inode:
+                await asyncio.sleep(.001)
+        original_stat = os.stat
+        observed = []
+        def foreign_stat_then_exit(path, *args, **kwargs):
+            info = original_stat(path, *args, **kwargs)
+            if path == "exe" and kwargs.get("dir_fd") == child.procfd:
+                self.assertNotEqual((info.st_dev, info.st_ino), (child.image.device, child.image.inode))
+                observed.append(True)
+                release.touch()
+                self.assertTrue(select.select([child.pidfd], [], [], 1)[0])
+            return info
+        with mock.patch("os.stat", side_effect=foreign_stat_then_exit):
+            with self.assertRaisesRegex(LifecycleError, "^QUERY_IMAGE_CHANGED$"):
+                await owned._read_output(child, 128)
+        self.assertEqual(observed, [True])
+        self.assertEqual(await child.wait(), 0)
+        self.assertEqual(child.query_image_state(), QueryImageState.MISMATCH)
+        with self.assertRaisesRegex(LifecycleError, "^QUERY_IMAGE_CHANGED$"):
+            await owned._read_output(child, 128)
+        self.program.check_unchanged()
+
+    async def test_query_procfs_error_needs_exact_exit_and_never_clears_known_failure(self):
+        import errno
+        original_stat = os.stat
+        code = """import os,sys,time
+from pathlib import Path
+os.write(1,b'exact-output')
+while not Path(sys.argv[1]).exists(): time.sleep(.001)
+"""
+        for number, exit_during_stat in ((errno.EACCES, False), (errno.EACCES, True),
+                                       (errno.ENOENT, False), (errno.ENOENT, True)):
+            with self.subTest(errno=number, exited=exit_during_stat):
+                release = self.directory / (str(number) + str(exit_during_stat))
+                child = await OwnedQueryChild.spawn(self.program,
+                    ("-I", "-S", "-c", code, str(release)), on_failure=lambda: None,
+                    on_owned=lambda child: None)
+                self.addAsyncCleanup(child.stop)
+                def injected_error(path, *args, **kwargs):
+                    if path == "exe" and kwargs.get("dir_fd") == child.procfd:
+                        self.assertTrue(child.alive)
+                        if exit_during_stat:
+                            release.touch()
+                            self.assertTrue(select.select([child.pidfd], [], [], 1)[0])
+                        raise OSError(number, "PRIVATE PROCFS SENTINEL")
+                    return original_stat(path, *args, **kwargs)
+                with mock.patch("os.stat", side_effect=injected_error):
+                    state = child.query_image_state()
+                if number == errno.ENOENT and exit_during_stat:
+                    self.assertEqual(state, QueryImageState.EXITED)
+                    self.assertEqual(await owned._read_output(child, 128), b"exact-output")
+                else:
+                    self.assertEqual(state, QueryImageState.UNAVAILABLE)
+                    release.touch()
+                    self.assertEqual(await asyncio.wait_for(child.wait(), 1), 0)
+                    self.assertEqual(child.query_image_state(), QueryImageState.UNAVAILABLE)
+                    with self.assertRaisesRegex(LifecycleError, "^QUERY_IMAGE_CHANGED$"):
+                        await owned._read_output(child, 128)
+                await child.stop()
+                self.assertTrue(child.closed)
+
+    async def test_query_spawn_cannot_accept_observed_foreign_image_by_later_exit_zero(self):
+        from fifth_freedom_control import owned_process
+        transition, release = self.directory / "exec-release", self.directory / "exit-release"
+        final = """import os,sys,time
+from pathlib import Path
+os.write(1,b'foreign-output')
+while not Path(sys.argv[1]).exists(): time.sleep(.001)
+"""
+        first = """import os,sys,time
+from pathlib import Path
+while not Path(sys.argv[1]).exists(): time.sleep(.001)
+os.execv(sys.argv[2], [sys.argv[2], '-I', '-S', '-c', sys.argv[3], sys.argv[4]])
+"""
+        original_byte, original_stat = owned_process._pipe_byte, os.stat
+        children, at_image_check, revoked = [], False, []
+        async def transition_after_exec(*arguments):
+            nonlocal at_image_check
+            value = await original_byte(*arguments)
+            if value == b"":
+                transition.touch()
+                child = children[0]
+                async with asyncio.timeout(1):
+                    while original_stat("exe", dir_fd=child.procfd).st_ino == child.image.inode:
+                        await asyncio.sleep(.001)
+                at_image_check = True
+            return value
+        def stat_then_exit(path, *args, **kwargs):
+            info = original_stat(path, *args, **kwargs)
+            if at_image_check and path == "exe" and kwargs.get("dir_fd") == children[0].procfd:
+                self.assertNotEqual(info.st_ino, children[0].image.inode)
+                release.touch()
+                self.assertTrue(select.select([children[0].pidfd], [], [], 1)[0])
+            return info
+        with mock.patch.object(owned_process, "_pipe_byte", side_effect=transition_after_exec), \
+                mock.patch("os.stat", side_effect=stat_then_exit):
+            with self.assertRaisesRegex(LifecycleError, "^CHILD_EXEC_FAILED$"):
+                await OwnedQueryChild.spawn(self.program,
+                    ("-I", "-S", "-c", first, str(transition), str(Path(sys.executable).resolve()),
+                     final, str(release)), on_failure=lambda: revoked.append(True), on_owned=children.append)
+        self.assertEqual(revoked, [True])
+        self.assertEqual(len(children), 1)
+        self.assertTrue(children[0].closed)
+        self.assertEqual(children[0]._process.returncode, 0)
+        self.assertEqual(children[0].query_image_state(), QueryImageState.MISMATCH)
 
     async def test_nonzero_overflow_timeout_revoke_before_cleanup_without_raw_output(self):
         original_stop, stopped = OwnedChild.stop, []
