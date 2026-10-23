@@ -3,6 +3,14 @@ name: Windows managed launch prerequisites
 on:
   pull_request:
     paths:
+      - 'scripts/ci_owned_read.py'
+      - 'scripts/ci_diagnostics.py'
+      - 'global.json'
+      - 'tests/ci/test_ci_owned_read.py'
+      - 'tests/OwnedCoreRead/**'
+      - 'tests/native/windows-owned-read/**'
+      - 'src/launcher/src/Services/OwnedCoreRead*.cs'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-owned-read/**'
       - '.github/workflows/windows-loopback-prerequisite.yml'
       - 'scripts/ci_windows_loopback.*'
       - 'scripts/ci_windows_iis.ps1'
@@ -26,6 +34,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  owned-core-read:
+    name: Owned x86 read channel and same-invocation Rust helper (no runtime admission)
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install the reviewed Rust toolchain for the finite native helper
+        run: rustup toolchain install 1.95.0 --profile minimal --target x86_64-pc-windows-msvc
+      - name: Publish only the fixed owned-read test apphost with its x86 runtime
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "$env:RUNNER_TEMP/ff-owned-read-tests" -ErrorAction Stop | Out-Null
+          dotnet publish tests/OwnedCoreRead/OwnedCoreRead.csproj -c Release --runtime win-x86 --self-contained true --output "$env:RUNNER_TEMP/ff-owned-read-tests" --nologo
+      - name: Require native 8, x86 managed 19 and cross-language 4 with no skips
+        run: python -B scripts/ci_owned_read.py --report "${{ runner.temp }}/owned-core-read.json"
+      - name: Preserve only the sanitized owned-read contract receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-owned-core-read-${{ github.sha }}
+          path: ${{ runner.temp }}/owned-core-read.json
+          if-no-files-found: error
+          retention-days: 14
+
   owned-core-process:
     name: Actual x86 owned process contracts with synthetic children only
     runs-on: windows-2022

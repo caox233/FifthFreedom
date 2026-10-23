@@ -45,13 +45,16 @@ _PREPARATION_CODES = {"FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE", "FINAL_PREPAR
 # Case identities are public test source constants. Each suite has its own
 # bound so a valid ordinal from another suite cannot masquerade as evidence.
 _MANAGED_CASE_COUNTS = {"PublicSessionControl": 15, "PublicNativeReturn": 27,
-                        "FinalLaunchPreparation": 9, "NativeManagedInterop": 3, "OwnedCoreProcess": 17}
+                        "FinalLaunchPreparation": 9, "NativeManagedInterop": 3, "OwnedCoreProcess": 17,
+                        "OwnedCoreRead": 19, "OwnedCoreReadInterop": 4}
 _MANAGED_SETUP_CASES = {
     "PublicSessionControl": {"SETUP_PACKAGE", "SETUP_CERTIFICATES", "CLEANUP", "UNKNOWN_PHASE"},
     "PublicNativeReturn": {"SETUP_PACKAGE", "CLEANUP", "UNKNOWN_PHASE"},
     "FinalLaunchPreparation": {"SETUP_PACKAGE", "SETUP_LISTENER", "CLEANUP", "UNKNOWN_PHASE"},
     "NativeManagedInterop": {"SETUP_PACKAGE", "CLEANUP", "UNKNOWN_PHASE"},
     "OwnedCoreProcess": set(),
+    "OwnedCoreRead": set(),
+    "OwnedCoreReadInterop": set(),
 }
 _MANAGED_EXCEPTION_PATTERN = (
     r"AuthenticationException|CryptographicException|IOException|SocketException|"
@@ -62,7 +65,7 @@ _MANAGED_EXCEPTION_PATTERN = (
     r"JsonException|Exception|OtherException"
 )
 _MANAGED_FAILURE = re.compile(
-    r"CI_MANAGED_FAILURE suite=(PublicSessionControl|PublicNativeReturn|FinalLaunchPreparation|NativeManagedInterop|OwnedCoreProcess) "
+    r"CI_MANAGED_FAILURE suite=(PublicSessionControl|PublicNativeReturn|FinalLaunchPreparation|NativeManagedInterop|OwnedCoreProcess|OwnedCoreRead|OwnedCoreReadInterop) "
     r"case=([0-9]{2}|SETUP_PACKAGE|SETUP_CERTIFICATES|SETUP_LISTENER|CLEANUP|UNKNOWN_PHASE) "
     r"exception=(" + _MANAGED_EXCEPTION_PATTERN + r")\Z"
 )
