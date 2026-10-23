@@ -42,15 +42,49 @@ _INTEROP_CODES = {"NATIVE_INTEROP_CARGO_ARTIFACT_INVALID", "NATIVE_INTEROP_RESUL
                   "NATIVE_INTEROP_TEST_EXECUTABLE_CHANGED", "NATIVE_MANAGED_INTEROP_FAILED"}
 _PREPARATION_CODES = {"FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE", "FINAL_PREPARATION_LOOPBACK_PERMISSION_DENIED",
                       "FINAL_PREPARATION_LOOPBACK_START_FAILED"}
-_MANAGED_FAILURE = re.compile(
-    r"CI_MANAGED_FAILURE suite=PublicSessionControl "
-    r"case=(0[1-9]|1[0-5]|SETUP_PACKAGE|SETUP_CERTIFICATES|CLEANUP|UNKNOWN_PHASE) "
-    r"exception=(AuthenticationException|CryptographicException|IOException|SocketException|"
+# Case identities are public test source constants. Each suite has its own
+# bound so a valid ordinal from another suite cannot masquerade as evidence.
+_MANAGED_CASE_COUNTS = {"PublicSessionControl": 15, "PublicNativeReturn": 25,
+                        "FinalLaunchPreparation": 9, "NativeManagedInterop": 3}
+_MANAGED_SETUP_CASES = {
+    "PublicSessionControl": {"SETUP_PACKAGE", "SETUP_CERTIFICATES", "CLEANUP", "UNKNOWN_PHASE"},
+    "PublicNativeReturn": {"SETUP_PACKAGE", "CLEANUP", "UNKNOWN_PHASE"},
+    "FinalLaunchPreparation": {"SETUP_PACKAGE", "SETUP_LISTENER", "CLEANUP", "UNKNOWN_PHASE"},
+    "NativeManagedInterop": {"SETUP_PACKAGE", "CLEANUP", "UNKNOWN_PHASE"},
+}
+_MANAGED_EXCEPTION_PATTERN = (
+    r"AuthenticationException|CryptographicException|IOException|SocketException|"
     r"HttpRequestException|OperationCanceledException|TaskCanceledException|TimeoutException|"
     r"ArgumentException|InvalidOperationException|PlatformNotSupportedException|PublicControlException|"
-    r"EndOfStreamException|ObjectDisposedException|"
-    r"Exception|OtherException)\Z"
+    r"EndOfStreamException|ObjectDisposedException|Win32Exception|FileNotFoundException|"
+    r"DirectoryNotFoundException|UnauthorizedAccessException|InvalidDataException|MissingMethodException|"
+    r"JsonException|Exception|OtherException"
 )
+_MANAGED_FAILURE = re.compile(
+    r"CI_MANAGED_FAILURE suite=(PublicSessionControl|PublicNativeReturn|FinalLaunchPreparation|NativeManagedInterop) "
+    r"case=([0-9]{2}|SETUP_PACKAGE|SETUP_CERTIFICATES|SETUP_LISTENER|CLEANUP|UNKNOWN_PHASE) "
+    r"exception=(" + _MANAGED_EXCEPTION_PATTERN + r")\Z"
+)
+_RETURN_PHASE_PATTERN = (
+    r"RUN_CASE|CHILD_START|WAIT_IDLE|WAIT_FRAME|WAIT_CONNECT|WAIT_AUTH|WAIT_DISCONNECT|"
+    r"WAIT_REJECT|CONFIG_DELIVERY|CONFIG_ACK|OWNER_CAPTURE|STATE_WAIT|"
+    r"PIPE_CONNECT|PIPE_READ|CHILD_EXIT|CLEANUP"
+)
+_RETURN_PHASE = re.compile(
+    r"CI_RETURN_PHASE suite=(PublicNativeReturn|NativeManagedInterop) case=([0-9]{2}) "
+    r"phase=(" + _RETURN_PHASE_PATTERN + r")\Z"
+)
+_RETURN_CHILD_FAILURE = re.compile(
+    r"CI_RETURN_CHILD_FAILURE phase=(" + _RETURN_PHASE_PATTERN + r") "
+    r"exception=(" + _MANAGED_EXCEPTION_PATTERN + r")\Z"
+)
+
+
+def managed_case_allowed(suite: str, case: str) -> bool:
+    return (case in _MANAGED_SETUP_CASES[suite]
+            or (case.isascii() and case.isdigit() and 1 <= int(case) <= _MANAGED_CASE_COUNTS[suite]))
+
+
 _TLS_FAILURE = re.compile(
     r"CI_TLS_FAILURE suite=PublicSessionControl case=05 "
     r"client=(REQUEST_REJECTED|RESPONSE_INVALID|TRANSPORT_FAILED|TIMEOUT|OTHER) "
@@ -163,9 +197,17 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
                         if re.search(r"(?<![A-Za-z0-9_])" + code + r"(?![A-Za-z0-9_])", text)})[:MAX_ITEMS]
     # Only the exact reviewed suite, fixed case ordinals/phases and class names
     # can leave a managed probe log. Never publish its exception text or stack.
-    managed = sorted({"PublicSessionControl:" + match[1] + ":" + match[2]
+    managed = sorted({":".join(match.groups())
                       for line in text.splitlines()
-                      if (match := _MANAGED_FAILURE.fullmatch(line))})[:MAX_ITEMS]
+                      if (match := _MANAGED_FAILURE.fullmatch(line))
+                      and managed_case_allowed(match[1], match[2])})[:MAX_ITEMS]
+    return_phases = sorted({":".join(match.groups())
+                            for line in text.splitlines()
+                            if (match := _RETURN_PHASE.fullmatch(line))
+                            and managed_case_allowed(match[1], match[2])})[:MAX_ITEMS]
+    child_failures = sorted({":".join(match.groups())
+                             for line in text.splitlines()
+                             if (match := _RETURN_CHILD_FAILURE.fullmatch(line))})[:MAX_ITEMS]
     tls = sorted({"PublicSessionControl:05:" + ":".join(match.groups())
                   for line in text.splitlines()
                   if (match := _TLS_FAILURE.fullmatch(line))})[:MAX_ITEMS]
@@ -176,6 +218,7 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
             "categories": signatures[:MAX_ITEMS], "exception_types": exceptions,
             "preflight_codes": preflight, "owned_process_codes": owned_process_codes(text),
             "managed_cases": managed, "tls_cases": tls,
+            "return_phases": return_phases, "return_child_failures": child_failures,
             "native_interop_codes": fixed_codes(_INTEROP_CODES),
             "final_preparation_codes": fixed_codes(_PREPARATION_CODES)}
 

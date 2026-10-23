@@ -200,6 +200,56 @@ class AnnotationSafetyTests(unittest.TestCase):
         self.assertEqual(diagnostics.diagnostic_details(text)["managed_cases"], [])
         self.assertNotIn("PRIVATE", str(diagnostics.diagnostic_details(text)))
 
+    def test_all_managed_suites_enforce_their_own_public_case_bounds(self):
+        for suite, count in (("PublicSessionControl", 15), ("PublicNativeReturn", 25),
+                             ("FinalLaunchPreparation", 9), ("NativeManagedInterop", 3)):
+            with self.subTest(suite=suite):
+                template = f"CI_MANAGED_FAILURE suite={suite} case={{case}} exception=Win32Exception"
+                for ordinal in (1, count):
+                    marker = template.format(case=f"{ordinal:02d}")
+                    self.assertEqual(diagnostics.diagnostic_details(marker)["managed_cases"],
+                                     [f"{suite}:{ordinal:02d}:Win32Exception"])
+                for case in ("00", f"{count + 1:02d}", "99", "1", "PRIVATE_CASE"):
+                    self.assertEqual(diagnostics.diagnostic_details(template.format(case=case))["managed_cases"], [])
+        self.assertEqual(diagnostics.diagnostic_details(
+            "CI_MANAGED_FAILURE suite=FinalLaunchPreparation case=SETUP_LISTENER exception=IOException"
+        )["managed_cases"], ["FinalLaunchPreparation:SETUP_LISTENER:IOException"])
+        for suite, case in (("PublicNativeReturn", "SETUP_CERTIFICATES"),
+                            ("FinalLaunchPreparation", "SETUP_CERTIFICATES"),
+                            ("NativeManagedInterop", "SETUP_LISTENER")):
+            marker = f"CI_MANAGED_FAILURE suite={suite} case={case} exception=IOException"
+            self.assertEqual(diagnostics.diagnostic_details(marker)["managed_cases"], [])
+
+    def test_return_phase_and_child_markers_keep_only_fixed_source_values(self):
+        marker = "CI_RETURN_PHASE suite=PublicNativeReturn case=25 phase=CONFIG_ACK"
+        child = "CI_RETURN_CHILD_FAILURE phase=PIPE_READ exception=InvalidDataException"
+        interop = "CI_RETURN_PHASE suite=NativeManagedInterop case=03 phase=WAIT_DISCONNECT"
+        details = diagnostics.diagnostic_details(marker + "\r\n" + child + "\n" + interop)
+        self.assertEqual(details["return_phases"], ["NativeManagedInterop:03:WAIT_DISCONNECT",
+                                                   "PublicNativeReturn:25:CONFIG_ACK"])
+        self.assertEqual(details["return_child_failures"], ["PIPE_READ:InvalidDataException"])
+        bad = (marker + " token=PRIVATE_TOKEN", marker.replace("25", "26"),
+               marker.replace("PublicNativeReturn", "PublicSessionControl"),
+               marker.replace("CONFIG_ACK", "PRIVATE_PHASE"),
+               marker.replace("CONFIG_ACK", "CONFIG_READ"),
+               interop.replace("03", "04"),
+               child + " path=/PRIVATE_PATH", child.replace("PIPE_READ", "PRIVATE_PHASE"),
+               child.replace("InvalidDataException", "PRIVATE_TYPE"),
+               child.replace("InvalidDataException", "InvalidDataException_PRIVATE_SUFFIX"))
+        for text in bad:
+            with self.subTest(marker=text):
+                details = diagnostics.diagnostic_details(text)
+                self.assertEqual(details["return_phases"], [])
+                self.assertEqual(details["return_child_failures"], [])
+                self.assertNotIn("PRIVATE", str(details))
+        output = io.StringIO()
+        with redirect_stdout(output), self.assertRaises(diagnostics.AnnotatedFailure):
+            with diagnostics.diagnostic_step("ci-test-PublicNativeReturn"):
+                raise RuntimeError(marker + "\n" + child + "\nPRIVATE_RAW_FRAME")
+        self.assertIn("return_phases=PublicNativeReturn:25:CONFIG_ACK", output.getvalue())
+        self.assertIn("return_child_failures=PIPE_READ:InvalidDataException", output.getvalue())
+        self.assertNotIn("PRIVATE", output.getvalue())
+
     def test_tls_failure_exposes_only_exact_case_stage_and_native_classification(self):
         marker = ("CI_TLS_FAILURE suite=PublicSessionControl case=05 client=TRANSPORT_FAILED "
                   "server_stage=TLS server_exception=AuthenticationException native=NO_CREDENTIALS")
