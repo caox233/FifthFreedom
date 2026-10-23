@@ -207,3 +207,50 @@ that closed before any revocation. It does not identify a hosted failure's
 cause, establish authenticated traffic freshness, or prove that a close between
 the two observation points was caused exclusively by revocation. The existing
 native process exit, port-release and overlay-survival evidence remains required.
+
+## Preserve fixed failure reasons across the supervisor boundary
+
+The official528 run39932526946/job120355233682 completed case A's native READY,
+five listeners, exit92, released ports and held-TCP close checks. Case B failed
+at `observe:WORKER_UNCLASSIFIED_ERROR` before combined readiness was confirmed.
+That does not prove the background native process never reached READY. Both
+cases removed their two namespaces; source-package and private-stage cleanup
+checks passed. This run predates the LISTEN correction and OPEN barrier. Its
+unknown reason cannot be reconstructed from a later source fix, and the cases
+use separate fresh namespaces, so case A's TIME_WAIT rows do not carry into B.
+
+Two diagnostic losses were confirmed in source and controlled execution. The
+shared worker did not recognize the native checker's separate exception type
+or many fixed observer reasons. Also, the production supervisor intentionally
+keeps only its fixed failure reason, discarding an exception context before
+`start()` reports failure. Adding outer reason names alone cannot recover that
+discarded detail.
+
+The stack now adapts only exact known exception classes with a single explicit
+allowlisted string argument. The native checker's type accepts only its three
+listener/image/table reasons. At most four context nodes are examined, only
+through named lifecycle wrappers, with cycle protection. Unknown exception
+strings, subclasses, context chains and arbitrary uppercase text are not
+published. A lightweight stack-local wrapper around the actual monitor and
+readiness provider records only a fixed code and existing phase when the current
+call fails, then rethrows the original exception. It stores no exception or
+runtime output. Successful calls and new attempts clear the corresponding role's
+record. Only a matching final supervisor wrapper may use that same role's
+capture; other failures retain their own code. Normal stop/control completion
+does not emit a new failure record.
+
+A real verified Python child with no listening sockets triggers the actual
+native ownership checker, then the actual supervisor's monitor-failure and
+reason-only path. Without the adapter, the retained regression reports only
+`OVERLAY_MONITOR_FAILED`; with it, the frame preserves
+`NATIVE_LISTENER_OWNERSHIP_INVALID`, and the exact child is reaped. The positive
+owned-child/SCM lease composition also runs through the new wrappers. Four
+additional portable checks cover unknown text, foreign `str()` hooks, exact
+types, bounded/cyclic contexts, phase/cleanup retention, role mismatch, and
+clearing stale captures. The complete stack suite passes27/27 locally.
+
+The wire schema and fail-closed runtime behavior are unchanged. Missing captures,
+unknown causes, contexts beyond the four-node limit, and failures outside these
+wrappers can still be reported only at wrapper or unclassified level. These
+controls start no EasyTier/native artifact, namespace, TUN or game. Only a new
+hosted run can establish the actual reason for a future failure.

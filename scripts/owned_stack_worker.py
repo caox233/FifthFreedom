@@ -15,14 +15,111 @@ sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "src/public"))
 import ci_native_lifecycle as native
 from ci_easytier_probe import encoded, json_bytes, sha
-from easytier_probe_worker import ProbeError, WorkerFailure, failure_record, fail
-from fifth_freedom_control.easytier_profile import parse_profile
+from easytier_probe_worker import (FAILURE_CODES, ProbeError, WorkerFailure,
+    failure_record as base_failure_record, valid_failure_record, fail)
+from fifth_freedom_control.easytier_profile import ProfileError, parse_profile
 from fifth_freedom_control.native_lease import NativeOwnerLease
 from fifth_freedom_control.owned_overlay import OwnedOverlayMonitor
 from fifth_freedom_control.owned_process import LifecycleError, OwnedChild, VerifiedExecutable
 from fifth_freedom_control.overlay_supervisor import (ChildSpec, KernelTunMonitor,
     LifecycleLimits, OwnedSupervisor, State)
-from fifth_freedom_control.secure_config import read_private
+from fifth_freedom_control.secure_config import AdmissionError, read_private
+
+
+_NATIVE_CODES = frozenset(('NATIVE_IMAGE_CHANGED', 'NATIVE_LISTENER_OWNERSHIP_INVALID',
+                          'NAMESPACE_SOCKET_TABLE_TOO_LARGE'))
+_CONTEXT_WRAPPERS = frozenset(('OWNED_OVERLAY_OBSERVATION_FAILED', 'OWNED_QUERY_FAILED',
+    'OVERLAY_PREPARATION_FAILED', 'OVERLAY_LEASE_BINDING_INVALID', 'PUBLIC_OWNER_LEASE_INVALID',
+    'OVERLAY_MONITOR_FAILED', 'NATIVE_MONITOR_FAILED'))
+
+
+def _literal_code(error):
+    # Never call an unknown exception's str(), args object's str(), or subclass
+    # hooks. These exact local exception classes carry one fixed string only.
+    if type(error) not in (ProbeError, LifecycleError, ProfileError, AdmissionError, native.ProbeError):
+        return None
+    if len(error.args) != 1 or type(error.args[0]) is not str or len(error.args[0]) > 96:
+        return None
+    code = error.args[0]
+    if code not in FAILURE_CODES or type(error) is native.ProbeError and code not in _NATIVE_CODES:
+        return None
+    return code
+
+
+def fixed_stack_code(error):
+    """At most four existing typed wrapper/context nodes; no raw text escapes."""
+    code, seen = None, set()
+    for _ in range(4):
+        if id(error) in seen:
+            break
+        seen.add(id(error))
+        current = _literal_code(error)
+        if current is None:
+            break
+        code = current
+        if type(error) is not LifecycleError or current not in _CONTEXT_WRAPPERS:
+            break
+        error = error.__context__
+    return code or 'WORKER_UNCLASSIFIED_ERROR'
+
+
+class DiagnosticObservation:
+    """Keep only this provider's current fixed failure before reason-only loss.
+
+    The real provider still runs unchanged and its original exception propagates.
+    Never retain an exception, output, config or path in the shared state.
+    """
+    def __init__(self, provider, state, role):
+        if role not in ('overlay', 'native'):
+            raise ValueError('invalid diagnostic role')
+        self.provider, self.state, self.role = provider, state, role
+        self.key = '_diagnostic_' + role
+        state[self.key] = None
+
+    async def _call(self, method, *arguments):
+        self.state[self.key] = None
+        try:
+            return await getattr(self.provider, method)(*arguments)
+        except BaseException as error:
+            wrapper = ('OVERLAY_PREPARATION_FAILED' if method == 'prepare'
+                       else 'OVERLAY_MONITOR_FAILED' if self.role == 'overlay' else 'NATIVE_MONITOR_FAILED')
+            self.state[self.key] = (wrapper, fixed_stack_code(error),
+                                   'monitor-prepare' if method == 'prepare' else 'observe')
+            raise
+
+    async def prepare(self):
+        return await self._call('prepare')
+
+    async def observe(self, child):
+        return await self._call('observe', child)
+
+    def revoke(self):
+        return self.provider.revoke()
+
+
+def failure_record(error, state):
+    if type(error) is WorkerFailure and valid_failure_record(error.record):
+        return error.record
+    code = fixed_stack_code(error)
+    outer = _literal_code(error)
+    if type(error) is LifecycleError and code == outer:
+        role = {'OVERLAY_PREPARATION_FAILED': 'overlay', 'OVERLAY_MONITOR_FAILED': 'overlay',
+                'NATIVE_MONITOR_FAILED': 'native'}.get(outer)
+        captured = state.get('_diagnostic_' + role) if role else None
+        if (type(captured) is tuple and len(captured) == 3
+                and all(type(value) is str for value in captured) and captured[0] == outer
+                and captured[1] in FAILURE_CODES
+                and captured[1] != 'WORKER_UNCLASSIFIED_ERROR'
+                and captured[2] in ('monitor-prepare', 'observe')):
+            code = captured[1]
+            state = dict(state, phase=captured[2])
+    if code == 'WORKER_UNCLASSIFIED_ERROR':
+        # Generic categories disclose no exception text. Subclasses of our
+        # source-specific exceptions remain unclassified, even with spoofed args.
+        if isinstance(error, OSError): code = 'WORKER_OS_ERROR'
+        elif type(error) in (ValueError, TypeError, KeyError): code = 'WORKER_INPUT_ERROR'
+        elif type(error) in (KeyboardInterrupt, asyncio.CancelledError): code = 'WORKER_CANCELLED'
+    return base_failure_record(ProbeError(code), state)
 
 
 def reply(event, **values):
@@ -189,6 +286,7 @@ async def cleanup_stack(*, held, owner, pause, supervisor, startup, core, monito
 
 
 async def serve(document, namespace_fd, state):
+    state['_diagnostic_overlay'] = state['_diagnostic_native'] = None
     state["phase"] = "profile"
     profile = parse_profile(encoded(document["profile"]))
     if profile.transport != "tcp": fail("STACK_ONLY_TCP_DEVELOPMENT")
@@ -220,8 +318,10 @@ async def serve(document, namespace_fd, state):
                 admitted_client_storage_key=identity["admitted_client"]["storage_key"]), hello_timeout=60)
             native_spec = ChildSpec(images["native"], owner.arguments(document["native_config"]), owner.child_socket)
             pause = PauseAfterObservation(monitor) if document["case"] == "lease-revoke" else None
-            supervisor = OwnedSupervisor(monitor.core_spec(document["config"]), native_spec, pause or monitor,
-                owner, LifecycleLimits(startup=60, observation=2, interval=.05, terminate=.5, kill=2))
+            supervisor = OwnedSupervisor(monitor.core_spec(document["config"]), native_spec,
+                DiagnosticObservation(pause or monitor, state, 'overlay'),
+                DiagnosticObservation(owner, state, 'native'),
+                LifecycleLimits(startup=60, observation=2, interval=.05, terminate=.5, kill=2))
             state["phase"] = "core-start"
             startup = asyncio.create_task(supervisor.start())
             await asyncio.sleep(0)
@@ -343,7 +443,7 @@ if __name__ == "__main__":
         # Reuse the already-reviewed strict whitelist and schema. Unknown
         # runtime failures stay unclassified; never echo a path or exception.
         try:
-            record = error.record if isinstance(error, WorkerFailure) else failure_record(error, state)
+            record = failure_record(error, state)
             print(json.dumps(record, separators=(",", ":")), flush=True)
         except BaseException:
             pass

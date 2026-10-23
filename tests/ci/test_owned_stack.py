@@ -322,9 +322,121 @@ class HeldConnectionWorkerTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(events[3], dict(event='closed', actual_eof_or_reset=True, client_core_alive=True))
 
 
+class StackDiagnosticTests(unittest.IsolatedAsyncioTestCase):
+    def state(self):
+        return dict(phase='observe', cleanup_code=None)
+
+    def test_context_is_bounded_exact_typed_and_never_calls_foreign_str(self):
+        leaf = worker.LifecycleError('QUERY_OUTPUT_LIMIT')
+        inner = worker.LifecycleError('OWNED_QUERY_FAILED'); inner.__context__ = leaf
+        outer = worker.LifecycleError('OWNED_OVERLAY_OBSERVATION_FAILED'); outer.__context__ = inner
+        self.assertEqual(worker.failure_record(outer, self.state())['code'], 'QUERY_OUTPUT_LIMIT')
+        class ForeignError(Exception):
+            def __str__(self): raise AssertionError('foreign str was called')
+        class SpoofedLifecycle(worker.LifecycleError):
+            def __str__(self): raise AssertionError('subclass str was called')
+        for error in (ForeignError('QUERY_OUTPUT_LIMIT'), SpoofedLifecycle('QUERY_OUTPUT_LIMIT'),
+                      worker.LifecycleError('PRIVATE_SECRET_SENTINEL'), worker.LifecycleError(ForeignError())):
+            with self.subTest(type=type(error).__name__):
+                record = worker.failure_record(error, self.state())
+                self.assertEqual(record['code'], 'WORKER_UNCLASSIFIED_ERROR')
+                self.assertNotIn('PRIVATE_SECRET_SENTINEL', json.dumps(record))
+        foreign = ForeignError(); foreign.__context__ = leaf; outer.__context__ = foreign
+        self.assertEqual(worker.fixed_stack_code(outer), 'OWNED_OVERLAY_OBSERVATION_FAILED')
+        outer.__context__ = inner; inner.__context__ = outer
+        self.assertEqual(worker.fixed_stack_code(outer), 'OWNED_QUERY_FAILED')
+        chain = leaf
+        for _ in range(4):
+            value = worker.LifecycleError('OWNED_QUERY_FAILED'); value.__context__ = chain; chain = value
+        self.assertEqual(worker.fixed_stack_code(chain), 'OWNED_QUERY_FAILED')
+        self.assertEqual(worker.fixed_stack_code(worker.native.ProbeError('PUBLIC_OWNER_LEASE_INVALID')),
+                         'WORKER_UNCLASSIFIED_ERROR')
+
+    async def test_current_failed_observation_matches_only_its_role_and_clears_on_success(self):
+        state = self.state()
+        provider = Mock(); provider.observe = AsyncMock(side_effect=worker.LifecycleError('OVERLAY_RPC_LOST'))
+        observed = worker.DiagnosticObservation(provider, state, 'overlay')
+        with self.assertRaisesRegex(worker.LifecycleError, 'OVERLAY_RPC_LOST'):
+            await observed.observe(None)
+        record = worker.failure_record(worker.LifecycleError('OVERLAY_MONITOR_FAILED'), state)
+        self.assertEqual(record['code'], 'OVERLAY_RPC_LOST')
+        self.assertEqual(worker.failure_record(worker.LifecycleError('NATIVE_MONITOR_FAILED'), state)['code'],
+                         'NATIVE_MONITOR_FAILED')
+        self.assertEqual(worker.failure_record(worker.LifecycleError('NATIVE_EXITED'), state)['code'], 'NATIVE_EXITED')
+        provider.observe.side_effect = None; provider.observe.return_value = None
+        await observed.observe(None)
+        self.assertIsNone(state['_diagnostic_overlay'])
+        self.assertEqual(worker.failure_record(worker.LifecycleError('OVERLAY_MONITOR_FAILED'), state)['code'],
+                         'OVERLAY_MONITOR_FAILED')
+        state['_diagnostic_native'] = ('NATIVE_MONITOR_FAILED', 'PUBLIC_OWNER_LEASE_INVALID', 'observe')
+        worker.DiagnosticObservation(provider, state, 'native')
+        self.assertIsNone(state['_diagnostic_native'])
+
+    async def test_prepare_failure_keeps_controlled_phase_and_cleanup_status(self):
+        state = dict(phase='parent-command', cleanup_code='WORKER_CHILD_CLEANUP_FAILED')
+        provider = Mock(); provider.prepare = AsyncMock(side_effect=worker.LifecycleError('OVERLAY_NAMESPACE_CHANGED'))
+        observed = worker.DiagnosticObservation(provider, state, 'overlay')
+        with self.assertRaises(worker.LifecycleError): await observed.prepare()
+        record = worker.failure_record(worker.LifecycleError('OVERLAY_PREPARATION_FAILED'), state)
+        self.assertEqual((record['phase'], record['code']), ('monitor-prepare', 'OVERLAY_NAMESPACE_CHANGED'))
+        self.assertFalse(record['cleanup_reaped'])
+        self.assertEqual(record['cleanup_code'], 'WORKER_CHILD_CLEANUP_FAILED')
+        self.assertEqual(worker.failure_record(worker.LifecycleError('OVERLAY_MONITOR_FAILED'), state)['code'],
+                         'OVERLAY_MONITOR_FAILED')
+
+    async def test_unknown_provider_failure_retains_only_wrapper_level(self):
+        state = self.state()
+        provider = Mock(); provider.observe = AsyncMock(side_effect=RuntimeError('PRIVATE_SECRET_SENTINEL'))
+        observed = worker.DiagnosticObservation(provider, state, 'native')
+        with self.assertRaises(RuntimeError): await observed.observe(None)
+        self.assertEqual(state['_diagnostic_native'], ('NATIVE_MONITOR_FAILED', 'WORKER_UNCLASSIFIED_ERROR', 'observe'))
+        record = worker.failure_record(worker.LifecycleError('NATIVE_MONITOR_FAILED'), state)
+        self.assertEqual(record['code'], 'NATIVE_MONITOR_FAILED')
+        self.assertNotIn('PRIVATE_SECRET_SENTINEL', json.dumps(record))
+
+
 @unittest.skipUnless(sys.platform == "linux" and hasattr(os, "pidfd_open") and hasattr(signal, "pidfd_send_signal"),
                      "Linux verified ELF/pidfd lifecycle")
 class RealChildCompositionTests(unittest.IsolatedAsyncioTestCase):
+    async def test_real_owned_socket_failure_survives_supervisor_reason_only_boundary(self):
+        with tempfile.TemporaryDirectory() as directory:
+            directory = Path(directory)
+            executable = directory / 'synthetic-python'
+            shutil.copyfile(Path(sys.executable).resolve(), executable); executable.chmod(0o700)
+            (directory / 'pyvenv.cfg').write_text(
+                f'home = {Path(sys.executable).resolve().parent}\ninclude-system-site-packages = false\n')
+            with worker.VerifiedExecutable(executable, hashlib.sha256(executable.read_bytes()).hexdigest(),
+                                           executable.stat().st_size) as image:
+                state = dict(phase='observe', cleanup_code=None)
+                direct = []
+                class RealSocketMonitor:
+                    async def prepare(self): pass
+                    async def observe(self, child):
+                        try:
+                            # Real verified child/procfd/socket table. This child
+                            # deliberately owns no native sockets at any port.
+                            worker.native.listener_ownership(child, '127.0.0.1')
+                        except worker.native.ProbeError as error:
+                            direct.append(worker.failure_record(error, state)['code'])
+                            raise
+                spec = worker.ChildSpec(image, ('-I', '-S', '-c', 'import time; time.sleep(30)'))
+                supervisor = worker.OwnedSupervisor(spec, spec,
+                    worker.DiagnosticObservation(RealSocketMonitor(), state, 'overlay'), Mock(),
+                    worker.LifecycleLimits(startup=3, observation=1, interval=.01))
+                try:
+                    with self.assertRaisesRegex(worker.LifecycleError, '^OVERLAY_MONITOR_FAILED$') as caught:
+                        await supervisor.start()
+                    self.assertIsNone(caught.exception.__context__)
+                    self.assertEqual(worker.failure_record(caught.exception, state)['code'],
+                                     'NATIVE_LISTENER_OWNERSHIP_INVALID')
+                    self.assertEqual(direct, ['NATIVE_LISTENER_OWNERSHIP_INVALID'])
+                    self.assertTrue(supervisor.overlay.closed)
+                    self.assertIsNone(supervisor.native)
+                    self.assertEqual(state['_diagnostic_overlay'],
+                        ('OVERLAY_MONITOR_FAILED', 'NATIVE_LISTENER_OWNERSHIP_INVALID', 'observe'))
+                finally:
+                    await supervisor.stop()
+
     async def test_barrier_holds_actual_supervisor_core_until_real_native_lease_eof(self):
         # Same production supervisor/SCM parent as hosted. Only peer/native wire
         # and TUN observations are synthetic; no public server is started here.
@@ -355,14 +467,19 @@ class RealChildCompositionTests(unittest.IsolatedAsyncioTestCase):
                 owner = worker.NativeOwnerLease(lambda: BINDING)
                 proxy = worker.PauseAfterObservation(SyntheticMonitor(), 1.5)
                 proxy.kernel = SyntheticTun()
+                diagnostic_state = dict(phase='observe', cleanup_code=None)
                 supervisor = worker.OwnedSupervisor(
                     worker.ChildSpec(image, ("-I", "-S", "-c", "import time;time.sleep(60)")),
                     worker.ChildSpec(image, ("-I", "-S", "-c", CHILD, str(owner.child_socket.fileno()),
                         json.dumps(asdict(BINDING)), "valid"), owner.child_socket),
-                    proxy, owner, worker.LifecycleLimits(startup=4, observation=2, interval=.01))
+                    worker.DiagnosticObservation(proxy, diagnostic_state, 'overlay'),
+                    worker.DiagnosticObservation(owner, diagnostic_state, 'native'),
+                    worker.LifecycleLimits(startup=4, observation=2, interval=.01))
                 try:
                     await supervisor.start()
                     self.assertTrue(supervisor.ready)
+                    self.assertIsNone(diagnostic_state['_diagnostic_overlay'])
+                    self.assertIsNone(diagnostic_state['_diagnostic_native'])
                     await proxy.pause()
                     self.assertTrue(supervisor.overlay.image_matches())
                     owner.revoke()
