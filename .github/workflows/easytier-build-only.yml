@@ -48,3 +48,41 @@ jobs:
             artifacts/ci/easytier-build-only/receipt.json
           if-no-files-found: error
           retention-days: 14
+
+  authenticated-receive-source:
+    name: Authenticated receive GNU candidate, 15 new + 29 retained checks (build only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install signed compiler and bindgen dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends build-essential pkg-config cmake libssl-dev clang libclang-dev
+      - name: Install reviewed stable Rust and explicit GNU target
+        run: rustup toolchain install 1.95.0 --profile minimal --target x86_64-unknown-linux-gnu
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Verify synthetic archive, patch and build-receipt regressions
+        run: |
+          python -B -m unittest discover -s tests/ci -p test_ci_prepare_easytier_source.py -v
+          python -B -m unittest discover -s tests/ci -p test_ci_easytier_build.py -v
+          python -B -m unittest discover -s tests/ci -p test_ci_easytier_authenticated_receive_build.py -v
+      - name: Prepare exact reviewed sources, execute finite contracts and compile only
+        run: python -B scripts/ci_easytier_authenticated_receive_build.py
+      - name: Preserve receipts only; no original archive, dependency cache or executables
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: easytier-authenticated-receive-build-only-receipts-${{ github.sha }}
+          path: |
+            artifacts/ci/easytier-authenticated-receive-build-only-run.json
+            artifacts/ci/easytier-authenticated-receive-build-only/source-receipt.json
+            artifacts/ci/easytier-authenticated-receive-build-only/receipt.json
+          if-no-files-found: error
+          retention-days: 14

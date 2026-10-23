@@ -39,7 +39,9 @@ def require_source(directory, lock):
             or receipt["patches"] != lock["patches"] or receipt["upstream"] != lock["upstream"]
             or receipt["original_archive"] != lock["archive"]
             or receipt["patch_manifest_sha256"] != source.sha(source.encoded(lock["patches"]))
-            or receipt["cargo_lock_sha256"] != lock["cargo_lock_sha256"]):
+            or receipt["cargo_lock_sha256"] != lock["cargo_lock_sha256"]
+            or ("expected_source_tree_sha256" in lock
+                and receipt["source_tree_sha256"] != lock["expected_source_tree_sha256"])):
         raise BuildError("EASYTIER_PREPARED_SOURCE_CHANGED")
     return receipt
 
@@ -65,7 +67,7 @@ def git_archive(work, lock):
     return archive
 
 
-def build_source(directory, target, output, lock, cargo="cargo", environment=None):
+def build_source(directory, target, output, lock, cargo="cargo", environment=None, *, checks=CHECKS):
     prepared = require_source(directory, lock)
     if target.resolve().is_relative_to(directory.resolve()):
         raise BuildError("EASYTIER_TARGET_INSIDE_SOURCE")
@@ -84,7 +86,7 @@ def build_source(directory, target, output, lock, cargo="cargo", environment=Non
     base = [cargo, "+" + lock["build"]["rust_toolchain"]]
     common = ["--locked", "--target", lock["build"]["target"], "-p", "easytier"]
     commands = [(selection, base + ["test", *common, "--lib", selection, "--", "--test-threads=1", *(["--exact"] if exact else [])], count)
-                for selection, count, exact in CHECKS]
+                for selection, count, exact in checks]
     commands.append(("release-build", base + ["build", *common, "--release", "--bin", "easytier-core", "--bin", "easytier-cli"], None))
     # Raw compiler logs stay beside the temporary target and are not uploaded.
     logs = target.parent / (target.name + "-logs-" + prepared["source_tree_sha256"][:12])
@@ -121,21 +123,22 @@ def build_source(directory, target, output, lock, cargo="cargo", environment=Non
         (output / "receipt.json").write_bytes(source.encoded(receipt))
 
 
-def main():
+def hosted_build(lock_path, profile, *, checks=CHECKS):
     if sys.platform != "linux" or os.environ.get("GITHUB_ACTIONS") != "true":
         raise BuildError("EASYTIER_HOSTED_LINUX_REQUIRED")
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     if commit != os.environ.get("GITHUB_SHA") or subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT):
         raise BuildError("EASYTIER_CHECKOUT_IDENTITY_MISMATCH")
-    lock = json.loads(source.LOCK.read_bytes())
-    work = Path(os.environ["RUNNER_TEMP"]) / "fifth-easytier-build-only"
+    lock_bytes = lock_path.read_bytes()
+    lock = json.loads(lock_bytes)
+    work = Path(os.environ["RUNNER_TEMP"]) / ("fifth-" + profile)
     work.mkdir(exist_ok=False)
-    output = ROOT / "artifacts/ci/easytier-build-only"
-    run_path = output.parent / "easytier-build-only-run.json"
+    output = ROOT / "artifacts/ci" / profile
+    run_path = output.parent / (profile + "-run.json")
     run_path.parent.mkdir(parents=True, exist_ok=True)
     run = {"schema": 1, "checkout_commit": commit, "run_id": os.environ.get("GITHUB_RUN_ID"),
            "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"), "status": "running",
-           "source_lock_sha256": source.sha(source.LOCK.read_bytes()), "runtime_executed": False,
+           "source_lock_sha256": source.sha(lock_bytes), "runtime_executed": False,
            "runtime_binary_uploaded": False, "public_startup_allowed": False}
     with run_path.open("xb") as handle:
         handle.write(source.encoded(run))
@@ -143,7 +146,7 @@ def main():
         archive = git_archive(work, lock)
         directory = work / "source"
         source.prepare(archive, directory, lock)
-        result = build_source(directory, work / "target", output, lock)
+        result = build_source(directory, work / "target", output, lock, checks=checks)
         result.update(checkout_commit=commit, run_id=run["run_id"], run_attempt=run["run_attempt"])
         (output / "receipt.json").write_bytes(source.encoded(result))
         run["status"] = "build_only_verified"
@@ -153,6 +156,10 @@ def main():
     finally:
         run_path.write_bytes(source.encoded(run))
     print("EASYTIER_BUILD_ONLY_VERIFIED_NO_RUNTIME_PUBLICATION", flush=True)
+
+
+def main():
+    hosted_build(source.LOCK, "easytier-build-only")
 
 
 if __name__ == "__main__":
