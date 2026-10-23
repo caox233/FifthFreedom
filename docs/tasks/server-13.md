@@ -357,3 +357,5 @@ cleanup regression now verifies all nine codes survive independent cleanup and
 that a simultaneous cleanup failure cannot erase the original observation code.
 The focused probe suite remains 31 tests; monitor diagnosis and the actual
 runtime matrix require their own results.
+
+The combined-owner failure adapter now admits 71 additional, individually enumerated existing production failure codes from its monitor, lease, supervisor and worker. This changes diagnostics only: unknown prefix matches remain masked, and successful stop/control paths do not emit failures. The worker protocol and runtime gates are unchanged.
