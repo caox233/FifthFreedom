@@ -781,3 +781,78 @@ separate hold and actual driver behavior remain unresolved. The finite
 implemented for a clean disposable hosted VM only; it has not executed a driver,
 configured a peer or enabled Public. DevDocs38f5efc has meanwhile been pushed and
 verified, binding135 files, including133 exact source mirrors, to source0604651.
+
+## Paired Windows build and finite Wintun lifecycle verified
+
+The [paired Windows build39927010635](https://github.com/caox233/FifthFreedom/actions/runs/39927010635)
+at41fe262 succeeded:14 focused regressions, locked metadata, and the complete
+MSVC Release core/CLI compile and link passed. The official ZIP digest and its
+three allowed JSON members were independently checked against the exact source,
+nine patches and transformed Cargo lock. The runner inspected both AMD64 PE32+
+outputs; no core/CLI binary ran or was published. The first failed1a6b2e6 build
+is retained. The canonical archive correction preserved all original pins.
+See the [source-bound receipt](evidence/hosted-windows-easytier-41fe262.json).
+
+The separate [Wintun run39930667783](https://github.com/caox233/FifthFreedom/actions/runs/39930667783)
+at319bf44 passed two actual driver/session lifecycle cases on a clean disposable
+GitHub Windows2025 VM. Owner drop and async shutdown revoked retained observers;
+the receive worker reached EOF and both owned adapters disappeared. The seven
+unrelated PnP devices and kernel adapter identities remained unchanged. The
+official driver package/service/file remain in that disposable VM: there was no
+global driver uninstall and no claim of restoration to a driver-free machine.
+The harness configured no addresses/routes/peers and sent no packets. The
+[verified receipt](evidence/hosted-wintun-319bf44.json) includes the official ZIP
+digest and exact source/lock/DLL identities. The earlier HOST rejection remains
+recorded; its fix accepts only the two exact official Windows2025 image aliases,
+with all clean-host and owned-device gates retained. Fifteen portable checks and
+independent receipt review passed. This closes a finite backend prerequisite,
+not the actual EasyTier owner/source-route/secure-peer/IPC chain or Public lease.
+
+The [41fe262 candidate](evidence/hosted-candidate-41fe262.json) completed with
+Windows/Linux component, namespace and same-run identity/static jobs successful
+at official job-metadata level. Its stack job failed before runtime compilation
+with the exact missing module ci_socket_isolation, matching the local isolated
+Python reproduction. The reviewed1f62862 fix keeps -I and adds only the trusted
+checkout scripts path. Its separate native lifecycle failure remained
+UNCLASSIFIED_PROBE_FAILURE even after the scoped Git trust correction; no causal
+claim is inferred. Both strict withheld-input gates stayed red and full packaging
+was skipped. These checks are prerequisites, not a completed runtime stack.
+
+A real production QUIC loopback reproduced an IPv4-mapped IPv6 resolved form
+rejected at the same parser boundary as45e879b; that older run did not retain
+its raw endpoint. Reviewed54a62c4 allows only the
+canonical equivalent of the configured IPv4 address and port in the QUIC
+initiator resolved-remote field. Wrong IP/port, other roles and other fields
+remain strict. Its14 profile,30 probe and38 retained monitor/stack tests passed.
+Separately, source inspection found that handshake authentication/key fields and
+plaintext Ping/Pong do not establish fresh authenticated traffic. The existing
+monitor's age is the time of its local CLI/kernel observation. A new separate
+production decrypt-boundary observation is being implemented; no ordinary
+Public factory has been opened on the strength of handshake history.
+
+A fresh detachedb613861 checkout passed451 methods:449 passed and two existing
+Windows-only skips, with tracked files unchanged. Report SHA256 is
+bf11040886ac5c85097c6ee0148843f13abcc02fa6a311833a0370ff05699dd3.
+The canonical patch fromfc8ef510 applied and reversed with exact bytes/modes/
+pathsets:1312→1574→1312 and clean status. Its SHA256 is
+0397607c72be9856fba38542a4c7b9ccddb1e483af84bf1e9c4f1c7ce260a639.
+These receipts bindb613861, not later untested work. Original private four-role
+evidence remains unchanged. Environment draft16 was saved and read back with
+source319bf445 and DevDocs38f5efc after a complete workspace inventory; setup,
+network selection and requirements were preserved. It still requires manual
+publication in the environment UI. No Goal/scheduler or publish API is exposed,
+and fresh snapshot restoration has not been verified.
+
+The next actualb613 Linux matrix39929836302/job120335089272 passed its build
+stages but stopped at worker observe/OVERLAY_OBSERVATION_UNAVAILABLE, with zero
+completed transport phases. Its official receipt ZIP matches SHA256
+e38d93d4ad3a3395b5aeea910c9b6884a0c535c10517e8c68bde568e0941197d.
+The worker explicitly reports cleanup_reaped=true, both created namespaces were
+removed and no cleanup errors were recorded. This different failure establishes
+neither a positive matrix nor an authentication failure. The319 candidate
+separately stopped in two new Windows isolated-entry tests before Windows
+components or downstream native lifecycle jobs could run. Reviewed528668e fixes
+their actual CRLF line comparison and unavailable Win32 fchmod call, preserving
+all three isolated CLI checks and POSIX file modes;31 focused checks passed.
+Both actual failures remain recorded and the fixes require hosted verification;
+Linux-only source success is not Windows success.
