@@ -195,7 +195,7 @@ internal static partial class Program
             throw new Exception("Missing handoff queried");
         });
         if (OperatingSystem.IsWindows()) await WindowsCases();
-        else { skipped = 11; Console.WriteLine("SKIP 11 Windows-only actual named-pipe and owned-child process cases"); }
+        else { skipped = 13; Console.WriteLine("SKIP 13 Windows-only actual named-pipe, owned-child process and directory-lock cases"); }
         setup = "CLEANUP"; Console.WriteLine($"RESULT {passed} passed, {skipped} skipped");
     }
     private static async Task Eventually(Func<bool> condition)
@@ -314,6 +314,37 @@ internal static partial class Program
                 await Eventually(() => old.Lifetime.IsCancellationRequested && server.Current == null); await server.DisposeAsync();
             } finally { await End(child); }
         });
+        await Case("owned directory cleanup retries a real Windows file lock until its handle closes", async () => {
+            string root = Path.Combine(Path.GetTempPath(), "ff-cleanup-release-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+            var held = new FileStream(Path.Combine(root, "synthetic.bin"), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
+            try
+            {
+                Task<int> cleanup = DeleteOwnedDirectoryAsync(root, () => true);
+                await Task.Delay(150); Check(!cleanup.IsCompleted);
+                held.Dispose();
+                Check(await cleanup > 1 && !Directory.Exists(root));
+            }
+            finally { held.Dispose(); if (Directory.Exists(root)) await DeleteOwnedDirectoryAsync(root, () => true); }
+        });
+        await Case("persistent Windows file lock fails within one deadline and unreleased owner is never retried", async () => {
+            string root = Path.Combine(Path.GetTempPath(), "ff-cleanup-denied-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+            string file = Path.Combine(root, "synthetic.bin");
+            var held = new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
+            try
+            {
+                var elapsed = Stopwatch.StartNew();
+                bool rejected = false;
+                try { await DeleteOwnedDirectoryAsync(root, () => true, TimeSpan.FromMilliseconds(200)); }
+                catch (Exception error) when (RetryableDirectoryFailure(error)) { rejected = true; }
+                Check(rejected && elapsed.Elapsed >= TimeSpan.FromMilliseconds(150) && elapsed.Elapsed < TimeSpan.FromSeconds(2));
+                Check(Directory.Exists(root) && File.Exists(file));
+                int ownershipChecks = 0; rejected = false;
+                try { await DeleteOwnedDirectoryAsync(root, () => { ownershipChecks++; return false; }); }
+                catch (Exception error) when (RetryableDirectoryFailure(error)) { rejected = true; }
+                Check(rejected && ownershipChecks == 1 && File.Exists(file));
+            }
+            finally { held.Dispose(); if (Directory.Exists(root)) await DeleteOwnedDirectoryAsync(root, () => true); }
+        });
     }
     private static async Task ConfigAckCase(int reply)
     {
@@ -377,7 +408,7 @@ internal static partial class Program
             if (directoryCreated)
             {
                 phase = Phase.OWNED_DIRECTORY_CLEANUP;
-                try { Directory.Delete(root, recursive: true); }
+                try { await DeleteOwnedDirectoryAsync(root, () => childExited == "YES" && processDisposed && configDisposed); }
                 catch (Exception error)
                 {
                     Remember(error);
