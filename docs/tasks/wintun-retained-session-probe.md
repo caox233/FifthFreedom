@@ -1,7 +1,7 @@
 # Official Wintun input and bounded retained-session probe
 
-Status: official input and license retrieved; finite development probe implemented
-and cross-checked, **Windows driver execution pending**. Ordinary Public stays disabled.
+Status: official input and license retrieved; **two real retained-session cases
+passed on a clean disposable hosted Windows 2025 VM**. Ordinary Public stays disabled.
 
 ## Actual input evidence
 
@@ -21,8 +21,9 @@ the EasyTier audit; those earlier DLL pins were not changed.
 
 The [receipt](wintun-official-binary-evidence.json) records all seven ZIP members
 and the two previous DLL matches. The archive, original header/README and license
-are retained in ignored `.local/evidence/cloud/ui09-runtime-inspection/`; no
-binary is added to Git or executed. The [published notice](../third-party/Wintun-0.14.1-Prebuilt-LICENSE.txt)
+are retained in ignored `.local/evidence/cloud/ui09-runtime-inspection/`. Retrieval
+executed no binary and added none to Git; the later authorized hosted run is
+recorded separately below. The [published notice](../third-party/Wintun-0.14.1-Prebuilt-LICENSE.txt)
 keeps the archive's original CRLF bytes, with an exact-path `-text` Git attribute.
 
 The license defines the exact downloaded DLLs as the Software, grants lawful use
@@ -43,11 +44,11 @@ a user-mode probe. Their exact read hashes are in the receipt. The project's
 earlier disposable-runner IIS setup also exercised elevated configuration, but
 that is not a Wintun load test.
 
-No current receipt proves Wintun driver installation, kernel policy acceptance,
-session startup or teardown on this runner. Missing privilege, unknown device
-inventory, rejected signature or blocked driver load must produce a nonzero
-result, not a successful skip. This Linux cloud workspace cannot substitute for
-that Windows execution.
+Before the probe below, no receipt proved driver installation, session startup
+or teardown on this runner. The first successful run now supplies that narrow
+evidence. Missing privilege, unknown device inventory, rejected signature or
+blocked driver load still produce a nonzero result, never a successful skip.
+Linux checks cannot substitute for this Windows execution.
 
 ## Approved minimal next execution
 
@@ -160,7 +161,8 @@ Actual local commands/results before hosted execution:
   second-reader startup failure, immutable destinations, and paired resolution.
   They do not simulate or claim an actual driver session.
 
-Next concrete action: run the reviewed workflow on the exact pushed revision,
+The next action after those local checks was to run the reviewed workflow on the
+exact pushed revision,
 retain its run/job IDs and sanitized receipt, and inspect the actual first
 nonzero stage if any. Driver success cannot be inferred from these local results.
 
@@ -180,5 +182,40 @@ processes remain rejected. No driver result is inferred from this failure.
 The follow-up portable suite has 15 tests including both accepted official
 aliases and negative host boundaries. The receive buffer also holds a full
 65536-byte maximum packet: unexpected nonempty input still fails, without a
-one-byte-buffer panic obscuring the reason. No packet has been observed in a
-runtime probe yet. Next action remains the first actual driver/session run.
+one-byte-buffer panic obscuring the reason. At that point no runtime packet had been observed; the next action was the first
+actual driver/session run.
+
+### Actual hosted result: both retained-session cases passed
+
+[Run 39930667783](https://github.com/caox233/FifthFreedom/actions/runs/39930667783),
+job `120337826134`, completed **successfully** for source `319bf445` and PR merge
+checkout `1723ec2ad34b69a18ca5f9260ed9594488bd977a`. The
+[success receipt](../evidence/hosted-wintun-319bf44.json) preserves the full bounded
+JSON. Its downloaded ZIP SHA256 matches GitHub's official artifact digest
+`ec4547d5eeb018122309f346de54ef3b447db8655d9bbe6b24ef9b141f485fd1`.
+The source recipe/Cargo lock hashes also match that exact source revision.
+
+This run compiled and linked the tiny consumer for AMD64 MSVC, passed all 15
+portable boundary tests, performed the clean-device/driver preflight, and then
+executed **both real lifecycle cases** through the patched production backend.
+The official DLL matched the retained pin; normal signature/signer checks and
+actual session creation succeeded. Both owner-drop and async-shutdown cases
+returned the required revocation/cleanup results; the async worker released its
+sender and returned EOF. There is no claim of an explicit worker join.
+
+Before execution there were no Wintun devices (including nonpresent devices),
+packages, services, registry entry or system driver file. Afterwards there were
+zero Wintun devices, and one installed driver package/service plus the normal
+registry/file state. That state was preserved; no global uninstall ran. The
+seven unrelated PnP identities had the same digest before and after, and the
+Rust kernel GUID/LUID/index/alias set also matched exactly. Both owned adapters
+had disappeared within the finite cleanup interval.
+
+The harness made no IP/route/DNS configuration or packet send, and published only
+its sanitized receipt. This does not prove there were no normal Windows device
+initialization effects. The result remains specific to a clean disposable VM and
+the two owned session lifetimes. No encrypted peer, live source/route admission,
+owner IPC chain, Public launch, game, Npcap runtime or final redistribution closure
+is established here. The next useful implementation is the separate retained
+session address/route and current-process/secure-peer capability chain; it must
+consume this real lifetime without treating this receipt as a Public lease.
