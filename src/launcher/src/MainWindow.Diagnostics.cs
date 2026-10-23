@@ -266,6 +266,36 @@ public partial class MainWindow
                     "replacement session unlocks only after its own cleanup completes");
             }
             finally { await _gameLaunchService.StopAsync(); }
+            var syntheticPins = new PublicDeploymentRuntimePins("synthetic-not-installed", Enum.GetValues<PublicRuntimeRole>()
+                .Select(role => new PublicRuntimePin(role, 1, new string('a', 64))));
+            CredentialEnvironmentContext PublicContext(string id) => CredentialEnvironmentContext.ForPublic(new PublicDeploymentProfile(
+                id, "https://control.example.invalid", "10.66.0.0/24", "10.66.0.1", PublicTransport.Fast,
+                "quic://relay.example.invalid:11010", syntheticPins));
+            txtServer.Text = "10.66.0.1:50051"; txtUsername.Text = "fixture";
+            txtPassword.Password = "synthetic-manual-password";
+            recoveryCode.Password = "synthetic-recovery-code"; recoveryPassword.Password = "synthetic-recovery-password";
+            _recoveryCredentialIdentity = CurrentCredentialIdentity(txtServer.Text, txtUsername.Text);
+            _recoveryServer = txtServer.Text; _recoveryUser = txtUsername.Text;
+            var capturedLan = _credentialEnvironment;
+            SetCredentialEnvironment(PublicContext("synthetic-a"));
+            Check(txtPassword.Password.Length == 0 && _autoPasswordScope is null && recoveryCode.Password.Length == 0
+                && recoveryPassword.Password.Length == 0 && _recoveryCredentialIdentity is null && _recoveryServer.Length == 0,
+                "credential context change clears manual password and recovery ownership");
+            Check(!CanUseCapturedPassword(null, txtServer.Text, txtUsername.Text, capturedLan),
+                "captured manual LAN password cannot cross into a Public deployment");
+            _restoringPassword = true;
+            try { txtPassword.Password = "synthetic-autofill-password"; _autoPasswordScope = CurrentCredentialIdentity(txtServer.Text, txtUsername.Text).ScopeValue; }
+            finally { _restoringPassword = false; }
+            string publicScope = _autoPasswordScope!;
+            SetCredentialEnvironment(PublicContext("synthetic-b"));
+            Check(txtPassword.Password.Length == 0 && _autoPasswordScope is null && !CanUseCapturedPassword(publicScope, txtServer.Text, txtUsername.Text),
+                "same overlay address in another deployment cannot reuse Public autofill");
+            SetCredentialEnvironment(CredentialEnvironmentContext.Lan);
+            Check(CurrentCredentialIdentity(txtServer.Text, txtUsername.Text).ScopeValue == CredentialStore.Scope(txtServer.Text, txtUsername.Text)
+                && !CanUseCapturedPassword(publicScope, txtServer.Text, txtUsername.Text),
+                "returning to LAN preserves legacy scope and rejects Public credentials");
+            Check(cmbNetworkEnvironment.Items.OfType<System.Windows.Controls.ListBoxItem>().Single(x => Equals(x.Tag, "Public")).IsEnabled == false,
+                "credential namespace support does not enable the Public network adapter");
 
         }
         finally

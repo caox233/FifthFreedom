@@ -2314,6 +2314,7 @@ public partial class MainWindow : Window
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Password;
             string? passwordScope = _autoPasswordScope;
+            var passwordEnvironment = _credentialEnvironment;
             string server = txtServer.Text.Trim();
             bool hostMode = IsHostMode();
 
@@ -2383,7 +2384,7 @@ public partial class MainWindow : Window
             SetBusy(true, "连接服务器...");
             // The host endpoint can change during network readiness. Never reuse another
             // endpoint's auto-filled credential captured before that asynchronous work.
-            if (!CanUseCapturedPassword(passwordScope, server, username))
+            if (!CanUseCapturedPassword(passwordScope, server, username, passwordEnvironment))
                 throw new IOException(L("服务器地址已变化，请确认账号和密码后重新启动。", "The server address changed. Confirm your credentials and start again."));
             var login = await _authService.LoginAsync(server, username, password, _settings.BindOverride);
 
@@ -2417,7 +2418,7 @@ public partial class MainWindow : Window
                 throw new Exception(login.Message);
 
             LogService.Info("Server authentication succeeded.");
-            await RememberSuccessfulLoginAsync(server,username,password);
+            await RememberSuccessfulLoginAsync(server,username,password,passwordEnvironment);
 
             SetBusy(true, "写入配置...");
             string accountId=login.AccountId;
