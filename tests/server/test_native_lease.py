@@ -31,6 +31,7 @@ CHILD = r'''
 import array,json,os,socket,sys,time
 peer=socket.socket(fileno=int(sys.argv[1]));peer.settimeout(3)
 binding=json.loads(sys.argv[2]);mode=sys.argv[3]
+if mode=='slow_preflight':time.sleep(3.1)
 frame={'version':'ff-public-owner-lease-v1','kind':'hello','nonce':'e'*64,'sequence':0,'binding':binding}
 if mode=='wrong_binding':frame['binding']['interface_index']+=1
 if mode=='ready_first':frame['kind']='ready';frame['sequence']=1
@@ -169,6 +170,24 @@ class NativeLeaseTests(unittest.IsolatedAsyncioTestCase):
             await asyncio.sleep(.02)
         self.assertIsNotNone(owner._nonce)
         self.assertFalse(owner._ready)
+        owner.revoke()
+        self.assertFalse(owner._ready)
+
+    async def test_preflight_budget_is_distinct_from_native_post_hello_deadline(self):
+        owner = self.owner(hello_timeout=5)
+        child = await self.child(owner, "slow_preflight")
+        async with asyncio.timeout(5):
+            while not await owner.observe(child):
+                await asyncio.sleep(.02)
+        owner.revoke()
+        self.assertEqual(await asyncio.wait_for(child.wait(), 2), 0)
+        owner = self.owner(hello_timeout=.1)
+        child = await self.child(owner, "slow_preflight")
+        async with asyncio.timeout(1):
+            with self.assertRaisesRegex(LifecycleError, "^PUBLIC_OWNER_LEASE_INVALID$"):
+                while True:
+                    await owner.observe(child)
+                    await asyncio.sleep(.02)
         owner.revoke()
         self.assertFalse(owner._ready)
 

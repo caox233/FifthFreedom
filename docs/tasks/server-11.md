@@ -50,3 +50,13 @@ Actual Linux cloud validation:
 No game, EasyTier core, TUN, old deployment or production service was started.
 Python/Rust positive composition and privileged isolated native startup require
 their own receipts. The nine methods do not establish either result.
+
+The actual SERVER-10 composition exposed a distinct preparation clock: native
+hashes the real service/client package before sending HELLO. A Debug build can
+take longer than three seconds there. The parent's pre-HELLO budget is therefore
+separate (default30s, explicit maximum60s), while native's post-HELLO three-second
+ADMIT deadline and all lease/READY limits stay unchanged. The supervisor's
+explicit overall startup budget can be at most60s; each owned exec bootstrap
+remains bounded30s. A real delayed synthetic peer tests both successful3.1s
+preparation and a shorter budget's refusal. With this additional case, the
+parent suite has10 methods; no package result is inferred from the delay model.

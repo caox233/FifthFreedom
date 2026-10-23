@@ -96,13 +96,17 @@ class NativeOwnerLease:
     pinned on HELLO and must remain identical on each renewal. The production
     Public factory remains closed until it can supply real admission evidence.
     """
-    def __init__(self, binding, *, lease_ms=2000, renew_seconds=0.5):
+    def __init__(self, binding, *, lease_ms=2000, renew_seconds=0.5, hello_timeout=30.0):
         if (not callable(binding) or type(lease_ms) is not int or not 100 <= lease_ms <= 5000
                 or type(renew_seconds) not in (int, float)
-                or not 0.01 <= renew_seconds <= min(1.0, lease_ms / 2000)):
+                or not 0.01 <= renew_seconds <= min(1.0, lease_ms / 2000)
+                or type(hello_timeout) not in (int, float) or not 0.1 <= hello_timeout <= 60):
             _invalid()
         self._binding_provider = binding
         self._lease_ms, self._renew_seconds = lease_ms, renew_seconds
+        # Native verifies real package bytes before HELLO. Its own three-second
+        # ADMIT deadline begins at HELLO, not at process creation.
+        self._hello_timeout = hello_timeout
         self._socket = self.child_socket = None
         self._child = self._binding = self._nonce = None
         self._started = self._admitted = self._expires = self._renewed = None
@@ -192,7 +196,7 @@ class NativeOwnerLease:
             # Only the spawned process retains its endpoint after this point.
             self.child_socket.close()
         if (self._child is not child or self._expires is not None and now >= self._expires
-                or self._nonce is None and now - self._started >= 3
+                or self._nonce is None and now - self._started >= self._hello_timeout
                 or self._admitted is not None and not self._ready and now - self._admitted >= 10):
             _invalid()
         binding = self._binding_provider()
@@ -202,7 +206,7 @@ class NativeOwnerLease:
         # remain only consistency checks, never independent runtime admission.
         LeaseBinding(**asdict(binding))
         if (not child.image_matches() or self._expires is not None and time.monotonic() >= self._expires
-                or self._nonce is None and time.monotonic() - self._started >= 3):
+                or self._nonce is None and time.monotonic() - self._started >= self._hello_timeout):
             _invalid()
         for _ in range(3):
             received = self._receive(child)

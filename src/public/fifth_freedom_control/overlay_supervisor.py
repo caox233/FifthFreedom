@@ -80,7 +80,7 @@ class LifecycleLimits:
     def __post_init__(self):
         values = (self.startup, self.observation, self.interval, self.terminate, self.kill)
         if (any(type(value) not in (int, float) for value in values)
-                or not 0.1 <= self.startup <= 30 or not 0.01 <= self.observation <= 2
+                or not 0.1 <= self.startup <= 60 or not 0.01 <= self.observation <= 2
                 or not 0.01 <= self.interval <= 1 or not 0.01 <= self.terminate <= 10
                 or not 0.01 <= self.kill <= 10):
             raise LifecycleError("LIFECYCLE_LIMITS_INVALID")
@@ -194,7 +194,7 @@ class OwnedSupervisor:
             if self._stop_requested.is_set():
                 raise LifecycleError("STOP_REQUESTED")
             self.overlay = await OwnedChild.spawn(self.overlay_spec.executable, self.overlay_spec.arguments,
-                                                 startup_timeout=self.limits.startup)
+                                                 startup_timeout=min(30.0, self.limits.startup))
             while self._observation is None:
                 self._observation = await self._observe()
                 if asyncio.get_running_loop().time() >= deadline:
@@ -206,7 +206,7 @@ class OwnedSupervisor:
             self.state = State.STARTING_NATIVE
             try:
                 self.native = await OwnedChild.spawn(self.native_spec.executable, self.native_spec.arguments,
-                    startup_timeout=max(0.1, deadline - asyncio.get_running_loop().time()),
+                    startup_timeout=min(30.0, max(0.1, deadline - asyncio.get_running_loop().time())),
                     lease_socket=self.native_spec.lease_socket)
             finally:
                 if self.native_spec.lease_socket is not None:
