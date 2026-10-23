@@ -65,3 +65,9 @@ The missing input is a reviewed, portable replay of the relevant native
 create/bind/tick behavior. The seven passing Rust policy tests cannot supply that
 behavior. Until a genuine failure is obtained, no product fix is proposed and no
 new user acceptance is requested.
+
+The [2026-10-23 uploaded-source closure audit](vss-replay-closure.md) verified all
+13 historical listings against their recorded hashes. It identifies the exact
+missing native inputs and explains why the existing entry and EMF fixtures do
+not cover late geometry or the create/release lifecycle. No historical script or
+native replay was executed during that audit.
