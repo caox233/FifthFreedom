@@ -15,6 +15,7 @@ import tomllib
 
 import ci_easytier_build as linux_build
 import ci_prepare_easytier_source as source
+from pe_imports import pe_imports
 
 ROOT = source.ROOT
 LOCK = ROOT / "scripts/easytier-windows-source.lock.json"
@@ -24,6 +25,7 @@ TUN_SOURCE = "git+https://github.com/EasyTier/rust-tun#12378839e7985283df0e4fb53
 
 # Reviewed fixed diagnostics from the three local producer modules.
 SAFE_ERROR_CODES = frozenset({
+    'PE_IMPORTS_INVALID',
     'EASYTIER_BUILD_COMMAND_FAILED',
     'EASYTIER_CHECKOUT_IDENTITY_MISMATCH',
     'EASYTIER_COMPILED_PLATFORM_MISMATCH',
@@ -342,6 +344,15 @@ def pe_identity(data):
     return {"bytes": len(data), "sha256": source.sha(data), "machine": "AMD64", "format": "PE32+"}
 
 
+def inspect_executable(data):
+    identity = pe_identity(data)
+    try:
+        identity["imports"] = pe_imports(data)
+    except ValueError:
+        raise BuildError("PE_IMPORTS_INVALID") from None
+    return identity
+
+
 def safe_diagnostics(data, known_files=None):
     text = data.decode("utf-8", "replace")
     locations = []
@@ -404,7 +415,7 @@ def build(work, output, prepared, lock, environment=None, cargo="cargo", reposit
                 require_prepared(work, prepared, lock)
             (output / "receipt.json").write_bytes(source.encoded(receipt))
         require_prepared(work, prepared, lock)
-        receipt["built_executables"] = {name: pe_identity((work / "target" / lock["build"]["target"] / "release" / name).read_bytes())
+        receipt["built_executables"] = {name: inspect_executable((work / "target" / lock["build"]["target"] / "release" / name).read_bytes())
                                          for name in lock["build"]["bins"]}
         receipt["status"] = "paired_windows_core_cli_built_not_executed"
         return receipt

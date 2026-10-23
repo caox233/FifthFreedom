@@ -99,7 +99,10 @@ class WindowsPairedSourceTests(unittest.TestCase):
         return subprocess.CompletedProcess(command, 0)
 
     def run_build(self, prepared, compiler=None):
-        with patch.object(build.subprocess, "run", side_effect=compiler or self.fake_compile):
+        # Synthetic headers exercise build orchestration; the real parser has its
+        # own actual-PE and malformed-image suite.
+        with patch.object(build.subprocess, "run", side_effect=compiler or self.fake_compile), \
+             patch.object(build, "pe_imports", return_value={"schema": 1, "normal": [], "delay": []}):
             return build.build(self.work, self.output, prepared, self.lock, environment={}, repository=self.root)
 
     def add_read_recipe(self):
@@ -239,6 +242,30 @@ class WindowsPairedSourceTests(unittest.TestCase):
         self.assertEqual(set(path.name for path in self.output.iterdir()), {"receipt.json", "source-receipt.json"})
         for flag in ("runtime_executed", "runtime_binary_uploaded", "public_startup_allowed", "driver_loaded"):
             self.assertFalse(result[flag])
+        for executable in result["built_executables"].values():
+            self.assertEqual(executable["imports"], {"schema": 1, "normal": [], "delay": []})
+
+    def test_inspection_adds_static_imports_from_the_same_binary_bytes(self):
+        data = bytearray(256)
+        data[:2], data[60:64] = b"MZ", (128).to_bytes(4, "little")
+        data[128:132], data[132:134], data[152:154] = b"PE\0\0", b"\x64\x86", b"\x0b\x02"
+        data = bytes(data)
+        inventory = {"schema": 1, "normal": ["kernel32.dll"], "delay": ["packet.dll"]}
+        with patch.object(build, "pe_imports", return_value=inventory) as inspect:
+            actual = build.inspect_executable(data)
+        inspect.assert_called_once_with(data)
+        self.assertEqual(actual, {**build.pe_identity(data), "imports": inventory})
+
+    def test_static_import_failure_cannot_become_a_successful_receipt(self):
+        prepared = self.prepare()
+        with patch.object(build.subprocess, "run", side_effect=self.fake_compile), \
+             patch.object(build, "pe_imports", side_effect=ValueError("PE_IMPORTS_INVALID")), \
+             self.assertRaisesRegex(ValueError, "PE_IMPORTS_INVALID"):
+            build.build(self.work, self.output, prepared, self.lock, environment={}, repository=self.root)
+        receipt = json.loads((self.output / "receipt.json").read_bytes())
+        self.assertEqual(receipt["status"], "failed")
+        self.assertEqual(receipt["error_code"], "PE_IMPORTS_INVALID")
+        self.assertNotIn("built_executables", receipt)
 
     def test_changed_prepared_backend_prevents_any_cargo_command(self):
         prepared = self.prepare()
