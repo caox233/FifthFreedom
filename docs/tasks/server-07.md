@@ -1,8 +1,8 @@
 # SERVER-07 — encrypted overlay and owned lifecycle prerequisites
 
 Status: **needs-triage** — the bounded upstream-source audit and finite local
-secure-session contract test are complete, with a tested six-line candidate
-guard. Remaining ingress paths and production overlay ownership are not yet
+secure-session and Data-ingress contract tests are complete, with two tested
+candidate guards. Selected Public-profile integration and production ownership are not yet
 ready for a trustworthy runtime probe. No EasyTier core/CLI runtime was started
 and no native Public gate was changed. SERVER-06's real interface-bound socket
 tests remain a separate, useful prerequisite.
@@ -138,6 +138,26 @@ filter/pass-through, routing, allowed-peer or owned-lifecycle contracts. The
 GNU/default-feature test binary is not the official musl/jemalloc release binary.
 No patched runtime has been distributed or adopted, and the official artifact
 lock still identifies the original unmodified bytes.
+
+The follow-up [secure Data ingress candidate](../dependency-patches/easytier-2.6.4-ingress-data/README.md)
+closes a separate, bounded filter condition. With the first guard retained and
+the production filter unchanged, ten real filter tests returned **6 passed /
+4 failed**: plaintext Data passed through sender-zero, sender-mismatch,
+missing-peer and missing-session paths. The manager's secure-mode local receive
+branch only invokes relay session decryption for packets still marked encrypted;
+ACL and NIC checks do not replace that missing step. A six-line filter guard
+now rejects plaintext Data before those early returns; **10/10 tests passed**.
+The previous **4+9+2** units remain passing, and one existing exact **in-memory
+Noise/PeerConn/Data round-trip** test passed with a mock STUN collector.
+
+Encrypted mismatched-sender frames retain legitimate relay semantics: the filter
+passes them unchanged for downstream end-to-end session authentication. Existing
+`disable_relay_data` is a forwarding restriction, not strict direct-peer ingress.
+The new patch neither prohibits every relay nor introduces a new configuration
+flag. Both candidate patch identities, before/after evidence and original source
+hashes are separate; a built candidate must explicitly list which patches it
+contains. These local results do not claim a remotely reachable exploit or real
+overlay acceptance, and do not change the official binary lock or Public gate.
 
 ## Production ownership needed before a lifecycle claim
 
