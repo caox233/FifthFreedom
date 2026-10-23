@@ -211,10 +211,15 @@ def containment_rules(profile):
         interface_key = "iifname" if chain == "input" else "oifname"
         expr = [_match({"meta": {"key": interface_key}}, interface),
                 _match({"payload": {"protocol": "ip", "field": "saddr"}}, source),
-                _match({"payload": {"protocol": "ip", "field": "daddr"}}, destination),
-                _match({"meta": {"key": "l4proto"}}, protocol)]
+                _match({"payload": {"protocol": "ip", "field": "daddr"}}, destination)]
         if field is not None:
+            # Typed tcp/udp payloads require that transport protocol. nft
+            # establishes the dependency and omits a redundant explicit meta
+            # l4proto predicate in its canonical readback (hosted evidence).
             expr.append(_match({"payload": {"protocol": protocol, "field": field}}, port))
+        else:
+            # Portless overlay rules still need their explicit L4 restriction.
+            expr.append(_match({"meta": {"key": "l4proto"}}, protocol))
         if established:
             expr.append(_match({"ct": {"key": "state"}}, "established"))
         rule(chain, expr + [{"accept": None}])

@@ -185,7 +185,41 @@ printed. The equality decision is unchanged. Possible nft canonicalization is
 still a hypothesis until the next real readback supplies evidence; no expression
 or operator is ignored to obtain a pass.
 
-No hosted positive is recorded yet. The next executable action is the quick
-privileged containment preflight and inspection of its fixed diagnostics, then a
-narrow reviewed correction if the actual representation warrants one. Source
-tests or this preflight cannot replace the full transport run.
+Two subsequent real preflights,
+[39913525945](https://github.com/caox233/FifthFreedom/actions/runs/39913525945) and
+[39914866601](https://github.com/caox233/FifthFreedom/actions/runs/39914866601),
+reported the same first-rule difference: `NFT_I5_RULE_EXPR_COUNT_6_TO_5`, followed
+by `META_MISSING_KEY`, `PAYLOAD_EXTRA_KEY` and `RIGHT_TYPE_STRING_TO_INTEGER` at
+expression index 3. Normalized item 5 is the first input loopback TCP sport rule:
+its explicit `meta l4proto tcp` preceded a typed `tcp sport` payload match.
+
+The generator now omits that explicit redundant L4 predicate **only** in rules
+which already contain a typed `tcp`/`udp` `sport`/`dport` expression. The typed
+header selector still requires its transport protocol. Portless overlay rules
+retain their explicit `meta l4proto` match. The full readback comparator,
+normalizer, IP/interface/port constraints and default-drop policies are unchanged.
+Tests mutate the typed protocol, port field and port value and continue to reject
+each difference, as well as extra accepts and changed policies.
+
+The protocol dependency was also checked in the actual
+[Ubuntu-hosted nftables 1.0.9 source archive](https://archive.ubuntu.com/ubuntu/pool/main/n/nftables/nftables_1.0.9.orig.tar.xz):
+971,968 bytes, observed SHA256
+`a3c304cd9ba061239ee0474f9afb938a9bb99d89b960246f66f0c3a0a85e14cd`.
+This is a recorded source download, not a claim to have independently reproduced
+or pinned the runner's nft binary. `src/parser_json.c:628` resolves the named
+protocol/header field into a non-raw payload expression;
+`src/evaluate.c:771` generates and prepends a missing protocol dependency;
+`src/payload.c:401` constructs the required protocol equality, with
+`payload_gen_dependency` at line 544 selecting the lower-layer dependency.
+On readback, `src/netlink_delinearize.c:2069` and `src/payload.c:925` remove a
+redundant displayed dependency when a higher-layer payload implies it. The
+archive and selected original source files/hashes are retained privately under
+`.local/dependencies/nftables_1.0.9.orig.tar.xz` and
+`.local/evidence/cloud/server13-nft-source/`; no downloaded source or binary is
+added to the project runtime.
+
+The focused probe suite now has 20 passing tests. No hosted positive is recorded
+yet: the next executable action is the quick privileged preflight with this
+narrow generator change, followed by the complete runtime matrix. Any remaining
+readback difference still fails. Source tests or a preflight pass cannot replace
+the full transport run.

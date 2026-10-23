@@ -133,6 +133,44 @@ class ContainmentTests(unittest.TestCase):
         self.assertEqual(receipt["transports"][0]["fixed_diagnostics"], ["NFT_I6_RULE_EXPR_COUNT_6_TO_5"])
         worker.assert_not_called(); load.assert_not_called()
 
+    def test_typed_ports_keep_protocol_and_exact_fields_while_portless_rules_keep_meta(self):
+        for transport in probe.TRANSPORTS:
+            for profile in profiles(transport):
+                rules = probe.containment_rules(profile)
+                port_rules, portless_rules = [], []
+                for wrapper in rules:
+                    if "rule" not in wrapper or wrapper["rule"]["expr"][-1] != {"accept": None}:
+                        continue
+                    expressions = wrapper["rule"]["expr"]
+                    port_matches = [item["match"] for item in expressions if "match" in item
+                        and item["match"]["left"].get("payload", {}).get("protocol") in ("tcp", "udp")]
+                    meta = [item["match"] for item in expressions if "match" in item
+                        and item["match"]["left"].get("meta", {}).get("key") == "l4proto"]
+                    if port_matches:
+                        self.assertEqual(len(port_matches), 1)
+                        self.assertEqual(meta, [])
+                        selector = port_matches[0]
+                        self.assertIn(selector["left"]["payload"]["field"], ("sport", "dport"))
+                        self.assertIs(type(selector["right"]), int)
+                        port_rules.append(wrapper)
+                    else:
+                        self.assertEqual(len(meta), 1)
+                        self.assertIn(meta[0]["right"], ("tcp", "udp"))
+                        portless_rules.append(wrapper)
+                self.assertEqual((len(port_rules), len(portless_rules)), (6, 4))
+                normalized = probe.normalize_nft(rules)[0]
+                # A changed protocol, field or exact port is never accepted as
+                # presentation normalization; no generic predicate is ignored.
+                for mutation in ("protocol", "field", "port"):
+                    changed = copy.deepcopy(rules)
+                    selector = next(item["match"] for row in changed if "rule" in row
+                        for item in row["rule"]["expr"] if "match" in item
+                        and item["match"]["left"].get("payload", {}).get("protocol") == "tcp")
+                    if mutation == "protocol": selector["left"]["payload"]["protocol"] = "udp"
+                    elif mutation == "field": selector["left"]["payload"]["field"] = "dport" if selector["left"]["payload"]["field"] == "sport" else "sport"
+                    else: selector["right"] += 1
+                    self.assertNotEqual(probe.normalize_nft(changed)[0], normalized)
+
 
 class ReceiptAndControlTests(unittest.TestCase):
     def test_real_guard3_receipt_and_older_or_incomplete_identity(self):
