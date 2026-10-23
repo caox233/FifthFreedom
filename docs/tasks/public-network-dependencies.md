@@ -144,3 +144,51 @@ configuration into a reviewed Public adapter and Linux service, satisfy the
 remaining third-party notice/rights gates, then perform the separately authorized
 Windows driver and real network acceptance. A pinned download alone does not
 establish tunnel compatibility, game behavior or a completed public server.
+
+## Windows Packet.dll is a loader dependency of the pinned cores
+
+A follow-up read-only audit verified each locked Windows ZIP and executable
+member again, then inspected `objdump -p` output without executing the PE files.
+The [machine-readable receipt](public-network-windows-imports.json) records the
+exact archive/member identities, normal imports, source identities and raw-output
+hashes. Files and full inspection output remain ignored.
+
+| Pinned member | Normal `packet.dll` import | Delay-import directory |
+| --- | --- | --- |
+| Windows x86_64 `easytier-core.exe` | Yes, 11 Packet API symbols | Zero |
+| Windows i686 `easytier-core.exe` | Yes, 11 Packet API symbols | Zero |
+| Both `easytier-cli.exe` members | No | Zero |
+
+The required core therefore needs that DLL resolved by the Windows loader before
+configuration chooses TUN, secure mode, QUIC or WSS. Removing a donor package
+check or disabling a runtime feature does not remove the existing executable's
+normal import. This audit did not run a Windows missing-DLL experiment; the
+conclusion is based on the verified PE import table and source linkage.
+
+The exact source explains two retained call paths:
+
+- [`common/network.rs`](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/common/network.rs#L293)
+  prefers the Windows `network-interface` API but falls back to
+  `pnet::datalink::interfaces()` on error. This fallback is independent of
+  selecting fake-TCP as the transport.
+- Default features include `faketcp`. Its Windows
+  [`netfilter`](https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/tunnel/fake_tcp/netfilter/mod.rs#L61)
+  tries WinDivert and falls back to the pnet capture channel. The locked
+  [`pnet_datalink` 0.35.0 bindings](https://docs.rs/crate/pnet_datalink/0.35.0/source/src/bindings/winpcap.rs)
+  use `#[link(name = "Packet")]`; the downloaded crate's checksum was verified
+  against `Cargo.lock`. The core imports include `PacketGetAdapterNames` as well
+  as open/receive/send functions, consistent with both paths.
+
+A future separately identified Windows build could remove unwanted capture
+paths and replace the interface-enumeration fallback. It must then prove the
+new core has no normal/delayed Packet import and pass Windows loader and selected
+TUN-profile tests before package requirements change. Merely building without
+`faketcp` does not eliminate the independent enumeration fallback. No such new
+binary or altered dependency requirement is claimed here.
+
+Wintun is a different dependency: the locked
+[`rust-tun` Windows device constructor](https://github.com/EasyTier/rust-tun/blob/12378839e7985283df0e4fb536b7137230356db5/src/platform/windows/device.rs#L35)
+verifies the DLL's signature/signer, dynamically loads Wintun, then opens or
+creates its adapter. Its absence from the normal PE import list is not evidence
+that a Windows TUN profile can omit it. The exact precompiled Wintun and Npcap
+rights/notice holds above remain unchanged.

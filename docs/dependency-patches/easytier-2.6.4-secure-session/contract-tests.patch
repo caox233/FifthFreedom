@@ -1,0 +1,78 @@
+diff --git a/easytier/src/peers/peer_session.rs b/easytier/src/peers/peer_session.rs
+index 34599ea..7204c18 100644
+--- a/easytier/src/peers/peer_session.rs
++++ b/easytier/src/peers/peer_session.rs
+@@ -366,6 +366,73 @@ impl PeerSession {
+     }
+ }
+ 
++// Fifth Freedom's bounded local secure-profile contract investigation. These
++// synthetic sessions exercise the production API called by the post-handshake
++// PeerSessionTunnelFilter; they do not establish a network/Noise handshake.
++#[cfg(test)]
++mod fifth_freedom_secure_profile_contract {
++    use super::*;
++    use crate::tunnel::packet_def::{PacketType, StandardAeadTail};
++
++    const A: PeerId = 10;
++    const B: PeerId = 20;
++    const PLAINTEXT: &[u8] = b"fifth-freedom-synthetic-secure-profile-data";
++
++    fn session(peer: PeerId) -> PeerSession {
++        PeerSession::new(peer, [0x5a; 32], 1, 0,
++            "aes-256-gcm".to_string(), "aes-256-gcm".to_string(), Some([0x33; 32]))
++    }
++
++    fn encrypted() -> (PeerSession, ZCPacket) {
++        let sender = session(B);
++        let receiver = session(A);
++        let mut packet = ZCPacket::new_with_payload(PLAINTEXT);
++        packet.fill_peer_manager_hdr(A, B, PacketType::Data as u8);
++        sender.encrypt_payload(A, B, &mut packet).unwrap();
++        assert!(packet.peer_manager_header().unwrap().is_encrypted());
++        assert_ne!(packet.payload(), PLAINTEXT);
++        (receiver, packet)
++    }
++
++    #[test]
++    fn valid_encrypted_data_round_trips() {
++        let (receiver, mut packet) = encrypted();
++        receiver.decrypt_payload(A, B, &mut packet).unwrap();
++        assert_eq!(packet.payload(), PLAINTEXT);
++        assert!(!packet.peer_manager_header().unwrap().is_encrypted());
++    }
++
++    #[test]
++    fn cleared_encrypted_flag_is_rejected_without_consuming_sequence() {
++        let (receiver, mut original) = encrypted();
++        let mut changed = original.clone();
++        changed.mut_peer_manager_header().unwrap().set_encrypted(false);
++        assert!(receiver.decrypt_payload(A, B, &mut changed).is_err(),
++            "secure profile accepted an encrypted frame with its encrypted flag cleared");
++        receiver.decrypt_payload(A, B, &mut original).unwrap();
++        assert_eq!(original.payload(), PLAINTEXT);
++    }
++
++    #[test]
++    fn tampered_tag_is_rejected_without_consuming_sequence() {
++        let (receiver, mut original) = encrypted();
++        let mut changed = original.clone();
++        let tag_offset = changed.payload().len() - StandardAeadTail::SIZE;
++        changed.mut_payload()[tag_offset] ^= 1;
++        assert!(receiver.decrypt_payload(A, B, &mut changed).is_err());
++        receiver.decrypt_payload(A, B, &mut original).unwrap();
++        assert_eq!(original.payload(), PLAINTEXT);
++    }
++
++    #[test]
++    fn authenticated_frame_replay_is_rejected() {
++        let (receiver, mut original) = encrypted();
++        let mut replay = original.clone();
++        receiver.decrypt_payload(A, B, &mut original).unwrap();
++        assert!(receiver.decrypt_payload(A, B, &mut replay).is_err());
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
