@@ -328,3 +328,15 @@ this is expected refusal evidence. Source/command/log hashes are retained in
 `docs/dependency-patches/easytier-2.6.4-profile/quic-resolved-receipt.json`.
 The full QUIC/WSS/TCP correct-pin, wrong-pin, recovery and cleanup matrix remains
 required; the loopback reproduction and entry tests do not replace it.
+
+Windows source job `120340008464` subsequently exposed two portability errors
+in these entry tests: the refusal receipt was empty, and the fixed worker stderr
+used Windows CRLF rather than LF. The public receipt writer called the Unix-only
+`os.fchmod` before writing; a local missing-API control reproduces the empty file
+and `AttributeError`, then verifies valid JSON after the correction. The writer
+now applies mode 0644 on POSIX only; Windows still returns `LINUX_REQUIRED` before
+any namespace/runtime work. Private-file handling is unchanged. Actual CLI tests
+use subprocess text mode to normalize platform line endings while retaining
+strict fixed output, JSON, exit-code and error checks; none are skipped. The
+focused suite passes 31 tests locally, including a Windows API-absence branch
+and exclusive-create regression. A fresh hosted Windows result is still needed.

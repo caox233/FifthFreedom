@@ -855,7 +855,10 @@ def write_receipt(path, receipt):
     # The unprivileged runner pre-creates its own artifact parent. Never chmod
     # shared ancestry; only this new sanitized public file gets readable mode.
     with path.open("xb") as stream:
-        os.fchmod(stream.fileno(), 0o644)
+        # Windows only emits the Linux-required refusal; POSIX file modes are
+        # unavailable there. This never changes private-input file handling.
+        if sys.platform != "win32":
+            os.fchmod(stream.fileno(), 0o644)
         stream.write(encoded(receipt))
 
 

@@ -46,26 +46,26 @@ class IsolatedEntryTests(unittest.TestCase):
         env.pop("GITHUB_ACTIONS", None)
         env.pop("RUNNER_ENVIRONMENT", None)
         return subprocess.run([sys.executable, "-I", "-B", str(ROOT / "scripts" / script), *arguments],
-            cwd=directory, env=env, capture_output=True, timeout=10)
+            cwd=directory, env=env, capture_output=True, text=True, timeout=10)
 
     def test_exact_isolated_probe_help_ignores_ambient_import_paths(self):
         with tempfile.TemporaryDirectory() as name:
             directory = Path(name)
             (directory / "ci_socket_isolation.py").write_text("raise RuntimeError('ambient module must not run')\n")
             result = self.invoke("ci_easytier_probe.py", "--help", directory=directory)
-        self.assertEqual(result.returncode, 0, result.stderr.decode())
-        self.assertIn(b"--containment-only", result.stdout)
-        self.assertEqual(result.stderr, b"")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("--containment-only", result.stdout)
+        self.assertEqual(result.stderr, "")
 
     def test_exact_isolated_probe_refuses_missing_hosted_authorization_before_namespace(self):
         with tempfile.TemporaryDirectory() as name:
             directory = Path(name)
             output = directory / "public-receipt.json"
             result = self.invoke("ci_easytier_probe.py", "--containment-only", "--output", str(output), directory=directory)
-            self.assertEqual(result.returncode, 1, result.stderr.decode())
+            self.assertEqual(result.returncode, 1, result.stderr)
+            self.assertEqual(result.stderr, "")
             receipt = json.loads(output.read_bytes())
-        self.assertEqual(result.stdout, b"EASYTIER_CONTAINMENT_FAILED\n")
-        self.assertEqual(result.stderr, b"")
+        self.assertEqual(result.stdout, "EASYTIER_CONTAINMENT_FAILED\n")
         self.assertEqual(receipt["schema"], probe.CONTAINMENT_SCHEMA)
         self.assertEqual(receipt["transports"], [])
         self.assertFalse(receipt["runtime_executed"])
@@ -76,12 +76,23 @@ class IsolatedEntryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as name:
             result = self.invoke("easytier_probe_worker.py", directory=Path(name))
         self.assertEqual(result.returncode, 1)
-        self.assertEqual(result.stderr, b"EASYTIER_DEVELOPMENT_WORKER_FAILED\n")
+        self.assertEqual(result.stderr, "EASYTIER_DEVELOPMENT_WORKER_FAILED\n")
         value = json.loads(result.stdout)
         self.assertTrue(worker.valid_failure_record(value))
         self.assertEqual(value["phase"], "arguments")
         self.assertEqual(value["code"], "WORKER_ARGUMENTS_INVALID")
         self.assertTrue(value["cleanup_reaped"])
+
+    def test_windows_refusal_receipt_needs_no_posix_mode_api(self):
+        with tempfile.TemporaryDirectory() as name:
+            output = Path(name) / "refusal.json"
+            receipt = {"status": "failed", "precondition_failures": ["LINUX_REQUIRED"]}
+            with patch.object(probe.sys, "platform", "win32"), patch.object(probe.os, "fchmod", create=True) as mode:
+                probe.write_receipt(output, receipt)
+                mode.assert_not_called()
+            self.assertEqual(json.loads(output.read_bytes()), receipt)
+            with self.assertRaises(FileExistsError):
+                probe.write_receipt(output, {"overwrite": "forbidden"})
 
 
 class ContainmentTests(unittest.TestCase):
