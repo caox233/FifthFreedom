@@ -2147,7 +2147,9 @@ pub async fn start_server(
         builder
     };
 
-    builder.serve_with_incoming(source_filtered_incoming(api_incoming(&socket_policy, server_addr)?, overlay_network)).await?;
+    let incoming = api_incoming(&socket_policy, server_addr)?;
+    crate::lan_runtime::mark_api_ready();
+    builder.serve_with_incoming(source_filtered_incoming(incoming, overlay_network)).await?;
     Ok(())
 }
 

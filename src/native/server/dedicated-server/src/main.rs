@@ -53,6 +53,8 @@ mod auth_key_file;
 mod instance_lock;
 #[cfg(target_os = "linux")]
 mod public_preflight;
+#[cfg(target_os = "linux")]
+mod public_lease;
 mod challenge;
 mod clan;
 mod config;
@@ -264,6 +266,12 @@ struct Args {
     /// read-only Linux public deployment check; never starts any service
     #[argh(option)]
     check_public_deployment: Option<PathBuf>,
+    /// inherited trusted owner lease; valid only with explicit public deployment config
+    #[argh(option)]
+    owned_public_lease_fd: Option<i32>,
+    /// private Linux public deployment config for inherited owner lease startup
+    #[argh(option)]
+    public_deployment_config: Option<PathBuf>,
     /// path to config file (default: service.toml)
     #[argh(option, short = 'c', long = "config")]
     config_path: Option<PathBuf>,
@@ -318,6 +326,12 @@ fn main() -> color_eyre::Result<()> {
             let _ = path;
             return Err(eyre::eyre!("PUBLIC_PREFLIGHT_LINUX_REQUIRED"));
         }
+    }
+    if args.owned_public_lease_fd.is_some() || args.public_deployment_config.is_some() {
+        #[cfg(target_os = "linux")]
+        { return run_owned_public(&args).map_err(|code| eyre::eyre!(code)); }
+        #[cfg(not(target_os = "linux"))]
+        { return Err(eyre::eyre!("PUBLIC_ACTIVATION_LINUX_REQUIRED")); }
     }
     // Resolve deployment before any persistent state or LAN-only startup action.
     // Public deliberately has no startup plan until its secure adapters exist.
@@ -376,15 +390,16 @@ fn main() -> color_eyre::Result<()> {
     warn!(logger, "Clearing stale sessions");
     storage.invalidate_sessions()?;
 
+    run_services(logger, storage, config, token_config, SocketPolicy::lan(), SourcePolicy::lan())
+}
+
+fn run_services(logger: Logger, storage: Arc<Storage>, config: Config, token_config: api::AuthTokenConfig,
+    socket_policy: SocketPolicy, source_policy: SourcePolicy) -> color_eyre::Result<()> {
     let (service_exit_sender, service_exit_receiver) = mpsc::channel();
     let mut threads = Vec::new();
-    // Public remains gated above. All retained LAN sockets use the explicit LAN
-    // policy; an unverified interface configuration cannot activate public I/O.
-    let socket_policy = SocketPolicy::lan();
-    let source_policy = SourcePolicy::lan();
     for (name, svc) in config.quazal.into_services()? {
         let logger = logger.new(o!("service" => name.clone()));
-        info!(logger, "Loaded LAN service {}", name);
+        info!(logger, "Loaded service {}", name);
         let storage = Arc::clone(&storage);
         let socket_policy = socket_policy.clone();
         let handle = match svc {
@@ -424,6 +439,47 @@ fn main() -> color_eyre::Result<()> {
         .recv()
         .map_err(|error| eyre::eyre!("required service supervision channel failed: {error}"))?;
     Err(eyre::eyre!("required service {} exited: {}", exit.name, exit.reason))
+}
+
+/// This narrow path trusts an explicitly inherited local-owner capability, not
+/// a CLI flag, environment value or network name. The production supervisor's
+/// admission provider remains closed pending actual runtime/profile proof.
+#[cfg(target_os = "linux")]
+fn run_owned_public(args: &Args) -> Result<(), &'static str> {
+    use std::os::fd::AsRawFd;
+    const INVALID: &str = "PUBLIC_ACTIVATION_ARGUMENT_INVALID";
+    if args.deployment_profile != DeploymentProfile::Public || args.init_lan.is_some()
+        || args.auth_key_file.is_some() || args.config_path.is_some() || args.data_dir.is_some()
+        || args.check_public_deployment.is_some() || args.smoke_ports || args.launcher {
+        return Err(INVALID);
+    }
+    let fd = args.owned_public_lease_fd.ok_or(INVALID)?;
+    let path = args.public_deployment_config.as_ref().ok_or(INVALID)?;
+    let lease = public_lease::UnadmittedLease::inherited(fd).map_err(|_| "PUBLIC_OWNER_LEASE_INVALID")?;
+    let executable = std::env::current_exe().map_err(|_| "PUBLIC_PREFLIGHT_PACKAGE_INVALID")?;
+    let plan = public_preflight::prepare(path, &executable)?;
+    let (binding, socket_policy, source_policy) = plan.activation_binding()?;
+    let interface = plan.interface_name();
+    let boundary = binding.clone();
+    let active = lease.admit(binding).map_err(|_| "PUBLIC_OWNER_LEASE_INVALID")?;
+    // Recheck after the bounded handshake and on every renewal. Each socket
+    // independently enforces device/index/address at bind; the owner supervises
+    // actual encrypted runtime health and revokes this lease when it changes.
+    let boundary_current = move || public_lease::boundary_current(&boundary, &interface);
+    if !boundary_current() { return Err("PUBLIC_ACTIVATION_BOUNDARY_INVALID"); }
+    let reporter = active.activate(boundary_current).map_err(|_| "PUBLIC_OWNER_LEASE_INVALID")?;
+    lan_runtime::register_public_readiness(move |bit| reporter.bound(bit)).map_err(|_| "PUBLIC_ACTIVATION_READINESS_INVALID")?;
+    if unsafe { libc::fchdir(plan.data.as_raw_fd()) } != 0 { return Err("PUBLIC_ACTIVATION_DATA_INVALID"); }
+    let _instance_lock = instance_lock::acquire(Path::new(".")).map_err(|_| "PUBLIC_ACTIVATION_DATA_LOCK_INVALID")?;
+    // All package/key/private data/interface/owner gates and the watchdog precede
+    // the first persistent mutation. No LAN stdin/OB/environment switch runs.
+    let logger = Logger::root(slog::Discard, o!());
+    let storage = Arc::new(Storage::init(logger.clone(), plan.admitted_client).map_err(|_| "PUBLIC_ACTIVATION_STORAGE_INVALID")?);
+    lan_runtime::configure_ports(&plan.config);
+    ensure_data_dir().map_err(|_| "PUBLIC_ACTIVATION_DATA_INVALID")?;
+    storage.invalidate_sessions().map_err(|_| "PUBLIC_ACTIVATION_STORAGE_INVALID")?;
+    run_services(logger, storage, plan.config, plan.auth, socket_policy, source_policy)
+        .map_err(|_| "PUBLIC_REQUIRED_SERVICE_EXITED")
 }
 
 #[cfg(test)]

@@ -4,8 +4,33 @@ use std::net::Ipv4Addr;
 use crate::config::Config;
 static READY: AtomicU8 = AtomicU8::new(0);
 static PORTS: OnceLock<[u16;4]> = OnceLock::new();
-pub fn mark_ready(bit:u8) { READY.fetch_or(bit,Ordering::SeqCst); }
-pub fn is_ready()->bool { READY.load(Ordering::SeqCst)==15 }
+#[cfg(target_os = "linux")]
+static PUBLIC_READY: OnceLock<Box<dyn Fn(u8) + Send + Sync>> = OnceLock::new();
+#[cfg(target_os = "linux")]
+static API_READY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+#[cfg(target_os = "linux")]
+pub(crate) fn register_public_readiness(callback: impl Fn(u8) + Send + Sync + 'static) -> Result<(), ()> {
+    if READY.load(Ordering::SeqCst) != 0 || API_READY.load(Ordering::SeqCst) { return Err(()); }
+    PUBLIC_READY.set(Box::new(callback)).map_err(|_| ())
+}
+pub fn mark_ready(bit:u8) {
+    READY.fetch_or(bit,Ordering::SeqCst);
+    #[cfg(target_os = "linux")]
+    if let Some(callback) = PUBLIC_READY.get() { callback(bit); }
+}
+pub(crate) fn mark_api_ready() {
+    #[cfg(target_os = "linux")]
+    {
+        API_READY.store(true, Ordering::SeqCst);
+        if let Some(callback) = PUBLIC_READY.get() { callback(16); }
+    }
+}
+pub fn is_ready()->bool {
+    let ready = READY.load(Ordering::SeqCst)==15;
+    #[cfg(target_os = "linux")]
+    if PUBLIC_READY.get().is_some() { return ready && API_READY.load(Ordering::SeqCst); }
+    ready
+}
 pub fn ports()->[u16;4] { *PORTS.get().unwrap_or(&[80,8000,21126,21127]) }
 pub fn configure_ports(c:&Config) {
     let mut ports=[80,8000,21126,21127];

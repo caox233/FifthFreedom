@@ -231,3 +231,66 @@ fn explicit_check_arguments_cannot_be_mixed_with_lan_initialization_or_other_con
     }
     assert_eq!(crate::DeploymentProfile::Public.startup_plan(), Err(crate::deployment_profile::ProfileError::PublicNotIntegrated));
 }
+
+#[test]
+fn runtime_hashes_are_optional_for_inspection_but_never_permission_to_activate() {
+    let fixture=Fixture::new();let original=snapshot(&fixture.root);
+    let plan=prepare(&fixture.configuration,&fixture.package.join("bin/FifthFreedom.Server")).unwrap();
+    assert!(plan.activation_binding().is_err());assert_eq!(snapshot(&fixture.root),original);
+    fixture.edit(|value|{value["runtime_profile_sha256"]="a".repeat(64).into();value["runtime_executable_sha256"]="b".repeat(64).into();});
+    let before=snapshot(&fixture.root);
+    let plan=prepare(&fixture.configuration,&fixture.package.join("bin/FifthFreedom.Server")).unwrap();
+    assert_eq!(plan.report()["startup_allowed"],false);
+    assert!(plan.activation_binding().is_err()); // no verified ffpublic0 interface
+    assert_eq!(snapshot(&fixture.root),before);
+    for field in ["runtime_profile_sha256","runtime_executable_sha256"] {
+        fixture.edit(|value|value[field]="PRIVATE-INVALID-CANARY".into());
+        assert_eq!(fixture.check(),Err(CONFIG_INVALID));
+        fixture.edit(|value|value[field]="a".repeat(64).into());
+    }
+}
+
+#[test]
+fn inherited_activation_and_static_inspection_cannot_mix_authorities() {
+    for extra in [vec!["--owned-public-lease-fd","3"],vec!["--public-deployment-config","/private/second"]] {
+        let mut args=vec!["--deployment-profile","public","--check-public-deployment","/private/first"];args.extend(extra);
+        let args=crate::Args::from_args(&["FifthFreedom.Server"],&args).unwrap();
+        assert_eq!(arguments_valid(&args),Err(ARGUMENT_INVALID));
+    }
+    for args in [vec!["--owned-public-lease-fd","3"],vec!["--deployment-profile","public","--owned-public-lease-fd","3"],vec!["--deployment-profile","public","--public-deployment-config","/private/one"]] {
+        let args=crate::Args::from_args(&["FifthFreedom.Server"],&args).unwrap();
+        assert_eq!(crate::run_owned_public(&args),Err("PUBLIC_ACTIVATION_ARGUMENT_INVALID"));
+    }
+}
+
+#[test]
+fn existing_state_aliases_are_rejected_before_lock_database_or_content_writes() {
+    for case in 0..5 {
+        let fixture=Fixture::new();let outside=fixture.root.join("preserved-original");
+        fs::write(&outside,b"preserve unique evidence").unwrap();
+        let database=fixture.data.join("5th-echelon.db");
+        match case {
+            0=>symlink(&outside,&database).unwrap(),
+            1=>fs::hard_link(&outside,&database).unwrap(),
+            2=>{fs::write(&database,b"owned synthetic file").unwrap();fs::set_permissions(&database,fs::Permissions::from_mode(0o666)).unwrap();},
+            3=>symlink(&fixture.root,fixture.data.join("data")).unwrap(),
+            _=>{fs::create_dir(fixture.data.join("data")).unwrap();symlink(&outside,fixture.data.join("data/mp_balancing.ini")).unwrap();},
+        }
+        assert_eq!(fixture.check(),Err("PUBLIC_PREFLIGHT_DATA_DIRECTORY_INVALID"));
+        assert_eq!(fs::read(&outside).unwrap(),b"preserve unique evidence");
+        assert!(!fixture.data.join("server.lock").exists());
+    }
+}
+
+#[test]
+fn ordinary_existing_owned_state_is_inspected_without_opening_database_or_rewriting_content() {
+    let fixture=Fixture::new();
+    for name in ["5th-echelon.db","5th-echelon.db-wal","5th-echelon.db-shm","5th-echelon.db-journal","server.lock"] {
+        let file=fixture.data.join(name);fs::write(&file,b"").unwrap();
+        fs::set_permissions(&file,fs::Permissions::from_mode(0o600)).unwrap();
+    }
+    let content=fixture.data.join("data");fs::create_dir(&content).unwrap();
+    fs::write(content.join("mp_balancing.ini"),b"synthetic existing retained content").unwrap();
+    let before=snapshot(&fixture.root);assert_eq!(fixture.check().unwrap()["startup_allowed"],false);
+    assert_eq!(snapshot(&fixture.root),before);
+}
