@@ -1,0 +1,91 @@
+--- a/easytier/src/peers/peer_conn.rs
++++ b/easytier/src/peers/peer_conn.rs
+@@ -2652,4 +2652,88 @@
+         assert!(s_ret.is_err(), "server should reject revoked credential");
+         let _ = c_ret;
+     }
++
++    mod ff_explicit_pin_contract {
++        use super::*;
++
++        #[derive(Clone, Copy)]
++        enum Pin { Correct, Wrong, Absent }
++
++        async fn handshake(pin: Pin) {
++            let (c, s) = create_ring_tunnel_pair();
++            let remote_uri: url::Url = c.info().unwrap().remote_addr.unwrap().url.parse().unwrap();
++            let c_ctx = get_mock_global_ctx();
++            let s_ctx = get_mock_global_ctx();
++            let network = format!("ff-pin-test-{}", uuid::Uuid::new_v4());
++            let secret = uuid::Uuid::new_v4().to_string();
++            for ctx in [&c_ctx, &s_ctx] {
++                ctx.config.set_network_identity(NetworkIdentity::new(network.clone(), secret.clone()));
++                set_secure_mode_cfg(ctx, true);
++            }
++            let server_key = s_ctx.config.get_secure_mode().unwrap().local_public_key.unwrap();
++            let configured_key = match pin {
++                Pin::Correct => Some(server_key.clone()),
++                Pin::Wrong => {
++                    let other_secret = x25519_dalek::StaticSecret::random_from_rng(OsRng);
++                    let other_public = x25519_dalek::PublicKey::from(&other_secret);
++                    let other_key = BASE64_STANDARD.encode(other_public.as_bytes());
++                    assert_ne!(other_key, server_key);
++                    Some(other_key)
++                }
++                Pin::Absent => None,
++            };
++            c_ctx.config.set_peers(vec![PeerConfig {
++                uri: remote_uri,
++                peer_public_key: configured_key.clone(),
++            }]);
++            let sessions = Arc::new(PeerSessionStore::new());
++            let mut client = PeerConn::new(new_peer_id(), c_ctx, Box::new(c), sessions.clone());
++            let mut server = PeerConn::new(new_peer_id(), s_ctx, Box::new(s), sessions);
++            // Prove this configured URI is the one the real handshake looks up.
++            assert_eq!(client.get_pinned_remote_static_pubkey_b64(), configured_key);
++            let mut server_task = tokio::spawn(async move {
++                let result = server.do_handshake_as_server().await;
++                (result, server)
++            });
++            let client_result = tokio::time::timeout(Duration::from_secs(3), client.do_handshake_as_client()).await;
++            if matches!(pin, Pin::Wrong) {
++                // The negative result must already exist before exact-task cleanup.
++                // An abort/timeout is never accepted as identity rejection.
++                server_task.abort();
++                let _ = server_task.await;
++                let result = client_result.expect("client did not finish the authentication decision");
++                let decision = match result {
++                    Ok(()) => "accepted",
++                    Err(Error::WaitRespError(ref message))
++                        if message == "pinned remote static pubkey mismatch" => "identity-rejected",
++                    Err(_) => "other-error",
++                };
++                assert_eq!(decision, "identity-rejected",
++                    "correct PSK must not override an explicit server-key mismatch");
++            } else {
++                let server_result = tokio::time::timeout(Duration::from_secs(3), &mut server_task).await;
++                if server_result.is_err() {
++                    server_task.abort();
++                    let _ = server_task.await;
++                    panic!("server did not finish the positive handshake");
++                }
++                let (result, server) = server_result.unwrap().expect("server task failed");
++                assert!(client_result.expect("client handshake timeout").is_ok());
++                assert!(result.is_ok());
++                assert_eq!(client.get_conn_info().secure_auth_level, SecureAuthLevel::NetworkSecretConfirmed as i32);
++                assert_eq!(server.get_conn_info().secure_auth_level, SecureAuthLevel::NetworkSecretConfirmed as i32);
++                assert_eq!(client.get_conn_info().noise_remote_static_pubkey,
++                           BASE64_STANDARD.decode(server_key).unwrap());
++            }
++        }
++
++        #[tokio::test]
++        async fn configured_key_and_psk_authenticate() { handshake(Pin::Correct).await; }
++
++        #[tokio::test]
++        async fn wrong_configured_key_rejected_despite_valid_psk() { handshake(Pin::Wrong).await; }
++
++        #[tokio::test]
++        async fn unpinned_psk_group_behavior_is_unchanged() { handshake(Pin::Absent).await; }
++    }
+ }

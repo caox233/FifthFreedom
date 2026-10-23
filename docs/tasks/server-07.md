@@ -226,3 +226,21 @@ Independent source review confirmed the same-network secure-mode rejection and
 the unresolved receive-policy distinction. This task ends with this bounded
 source/design evidence, not a runtime pass, new vulnerability claim, deployment
 or completion of the Linux public-server milestone.
+
+## Explicit configured server-key contract
+
+The subsequent fixed-profile integration exposed one finite authentication
+requirement: a configured server key must not be overridden by a valid group
+PSK. `docs/dependency-patches/easytier-2.6.4-explicit-pin/` records three fresh,
+real in-memory Noise handshakes using the exact configured tunnel URI. Before,
+correct pin and no pin passed, but wrong pin plus correct PSK was **accepted**
+(2/3 contract pass). Moving the existing optional mismatch rejection before PSK
+acceptance produced 3/3 pass with explicit identity rejection. The existing
+handshake/session/ingress selections also passed: 35 unique after checks total.
+
+This is a third separately identified production source guard; unpinned/group
+defaults and responder client-list policy are retained. The original official
+pins and earlier guard2 runtime candidate are unchanged. A newly built candidate
+must bind this patch before claiming the configured server-key behavior. The
+tests use mocked STUN and memory rings, send no account/game data and do not
+replace the isolated real transport, TUN, native socket or owner-lease checks.

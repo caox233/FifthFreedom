@@ -107,7 +107,11 @@ before optional `peer_public_key` checking. A configured key plus this observati
 is not a handshake pin. The fixed two-node development probe additionally needs
 its fresh dedicated PSK and exact peer-only kernel containment. Before product
 clients send credentials, the expected server key must be authenticated during
-handshake; a finite explicit-pin contract/patch is the next separate task.
+handshake. The separate
+`docs/dependency-patches/easytier-2.6.4-explicit-pin/` contract now records a real
+in-memory before acceptance and a minimum source guard producing explicit
+identity rejection. The earlier guard2 candidate is unchanged; adopting this
+behavior requires a new candidate identity and the remaining owner integration.
 
 ## Owner/provider integration still required
 

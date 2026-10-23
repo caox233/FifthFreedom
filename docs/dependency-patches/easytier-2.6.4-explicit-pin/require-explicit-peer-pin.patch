@@ -1,0 +1,40 @@
+--- a/easytier/src/peers/peer_conn.rs
++++ b/easytier/src/peers/peer_conn.rs
+@@ -827,6 +827,7 @@
+     /// | Credential | Credential | should reject | handshake reject | handshake reject | unknown | unknown |
+     ///
+     /// Logic (in priority order):
++    /// 0. **Reject**: an explicitly configured remote pubkey does not match
+     /// 1. **NetworkSecretConfirmed**: proof verification succeeds
+     /// 2. **PeerVerified**: pinned_pubkey matches and is in trusted list
+     ///    (if no network_secret, pinned_pubkey must be in trusted list)
+@@ -844,6 +845,13 @@
+         is_initiator: bool,
+         remote_network_name: &str,
+     ) -> Result<SecureAuthLevel, Error> {
++        // An explicit peer identity constraint also applies to shared-secret peers.
++        if pinned_pubkey.is_some_and(|pinned| pinned != remote_pubkey) {
++            return Err(Error::WaitRespError(
++                "pinned remote static pubkey mismatch".to_owned(),
++            ));
++        }
++
+         // 1. Verify proof
+         if let Some(proof) = proof
+             && let Some(mac) = self.global_ctx.get_secret_proof(handshake_hash)
+@@ -852,13 +860,8 @@
+             return Ok(SecureAuthLevel::NetworkSecretConfirmed);
+         }
+ 
+-        // 2. Check pinned pubkey
+-        if let Some(pinned) = pinned_pubkey {
+-            if pinned != remote_pubkey {
+-                return Err(Error::WaitRespError(
+-                    "pinned remote static pubkey mismatch".to_owned(),
+-                ));
+-            }
++        // 2. The configured pinned pubkey has already matched.
++        if pinned_pubkey.is_some() {
+             // If no network_secret, pinned key must be in trusted list
+             if !has_network_secret
+                 && !self

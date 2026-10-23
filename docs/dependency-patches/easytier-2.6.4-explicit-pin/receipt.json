@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "kind": "fifth-freedom-explicit-easytier-peer-pin-contract",
+  "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+  "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+  "baseline": "prior secure-session and secure-Data ingress production guards plus their reviewed tests",
+  "baseline_peer_conn_sha256": "f3c1dd756e01975263d0cf5be5d7f3e6847bd6200616c7519f84dafd360304d0",
+  "tests_before_peer_conn_sha256": "f715270d1f47d8a5f24c619f8fa9cdd415dc325b1c9d16ffeacbc1fb49ef9cff",
+  "tests_after_peer_conn_sha256": "55be4e5f00acd548a9977e5d34874396a84888a7f00f08bbd8b43ab7d6cf85cc",
+  "new_guard_only_on_baseline_peer_conn_sha256": "8a71de7d3c77221e36db56105622911ee9cdf437980b217c8d44ac765ff13716",
+  "patches": [
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/explicit-pin-contract-tests.patch",
+      "bytes": 4765,
+      "sha256": "9a3d13a08259acbe11352ccb084a565e04df465f42dc6d16f4a805429705b7cb"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/require-explicit-peer-pin.patch",
+      "bytes": 1744,
+      "sha256": "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328"
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "easytier",
+        "--lib",
+        "ff_explicit_pin_contract",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 101,
+      "passed": 2,
+      "failed": 1,
+      "ignored": 0,
+      "log": {
+        "path": ".local/evidence/cloud/server07-explicit-pin/before.log",
+        "bytes": 1370,
+        "sha256": "5f171f5466550f1c27eec02ebfa2b33b4e0395dd4fcab6b6ce21779be2162bfc"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "easytier",
+        "--lib",
+        "ff_explicit_pin_contract",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".local/evidence/cloud/server07-explicit-pin/after.log",
+        "bytes": 673,
+        "sha256": "7de03819a817ce75f19cfcf5d0017187c2d2557ac74a59f323c2b2a850c592df"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "easytier",
+        "--lib",
+        "peer_conn_secure_mode_",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".local/evidence/cloud/server07-explicit-pin/existing-secure-handshake.log",
+        "bytes": 857,
+        "sha256": "3842c9c5ca1a8d2787981f22ac38ec1323d98945ffa94b5dd5b57f92812657f7"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "easytier",
+        "--lib",
+        "peers::peer_session::",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".local/evidence/cloud/server07-explicit-pin/peer-session.log",
+        "bytes": 909,
+        "sha256": "ddc5b45c672b0cc3f137c10c9e1251cce3a31f650de38896cd827527a49b7d1a"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "easytier",
+        "--lib",
+        "peers::secure_datagram::tests::",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".local/evidence/cloud/server07-explicit-pin/secure-datagram.log",
+        "bytes": 1095,
+        "sha256": "a00ad15f1be70ad0a9ba74c9b223f40f8326fb117d4c0f233f8b4a26fb55b3bb"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "easytier",
+        "--lib",
+        "fifth_freedom_ingress_contract",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".local/evidence/cloud/server07-explicit-pin/ingress.log",
+        "bytes": 1387,
+        "sha256": "69f6ed6fb9615504a84802b225b66dc6a37adbceca04c836855fe7f7ce55bdfd"
+      }
+    }
+  ],
+  "initial_diagnostic_log": {
+    "path": ".local/evidence/cloud/server07-explicit-pin/before-initial.log",
+    "bytes": 1289,
+    "sha256": "0f1e40e91da3a3abda22e42ddb68f5c018258b7c0fa4fef9262ddf53f020624b"
+  },
+  "initial_diagnostic_note": "The initial 2/1 failure used a boolean assertion. Kept unchanged; authoritative before.log rerun maps the actual decision to fixed accepted/identity-rejected/other-error words. No production change occurred between the two before runs.",
+  "authoritative_before_wrong_pin_decision": "accepted",
+  "authoritative_after_wrong_pin_decision": "identity-rejected",
+  "after_unique_checks_passed": 35,
+  "verification": {
+    "new_patches_forward_match_tested_after": true,
+    "new_patches_reverse_restore_guard2_baseline": true,
+    "all_six_patches_forward_match_three_tested_sources": true,
+    "all_six_patches_reverse_restore_exact_upstream": true
+  },
+  "scope": {
+    "real_noise_handshake": true,
+    "synthetic_in_memory_ring_only": true,
+    "mock_stun_collector": true,
+    "core_started": false,
+    "tun_created": false,
+    "external_network_tested": false,
+    "official_binary_pins_changed": false,
+    "candidate_rebuilt_with_new_guard": false,
+    "production_admission": false,
+    "runtime_publication_approved": false
+  },
+  "selected_build": {
+    "rust": "1.95.0",
+    "target": "x86_64-unknown-linux-gnu",
+    "features": "default; ring AES-256-GCM backend; not official musl/jemalloc reproduction"
+  }
+}
