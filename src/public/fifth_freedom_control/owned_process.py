@@ -192,6 +192,14 @@ class OwnedChild:
 
     @classmethod
     async def spawn(cls, program, arguments, *, startup_timeout=10.0, lease_socket=None):
+        return await cls._spawn(program, arguments, startup_timeout=startup_timeout,
+                                lease_socket=lease_socket)
+
+    @classmethod
+    async def _spawn(cls, program, arguments, *, startup_timeout, lease_socket=None,
+                     _query_output=False, _query_failure=None, _query_owned=None):
+        if _query_output and (lease_socket is not None or cls is not OwnedQueryChild):
+            raise LifecycleError("CHILD_SPEC_INVALID")
         if not isinstance(program, VerifiedExecutable) or not 0.1 <= startup_timeout <= 30:
             raise LifecycleError("CHILD_SPEC_INVALID")
         if (not isinstance(arguments, tuple) or len(arguments) > 32
@@ -225,7 +233,8 @@ class OwnedChild:
             process = subprocess.Popen([sys.executable, "-I", "-S", "-c", _BOOTSTRAP,
                 str(os.getpid()), str(program.fd), str(ready_write), str(release_read), str(program.identity.size),
                 program.identity.sha256, str(program.path), *arguments],
-                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                stdin=subprocess.DEVNULL, stdout=subprocess.PIPE if _query_output else subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
                 env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "TZ": "UTC"},
                 close_fds=True, pass_fds=(program.fd, ready_write, release_read, *inherited))
             # Do not poll/wait/reap before pinning the PID. The bootstrap cannot
@@ -242,6 +251,10 @@ class OwnedChild:
                     os.close(pidfd)
                 raise
             child = cls(process, pidfd, procfd, program.identity)
+            if _query_owned is not None:
+                # Transfer cleanup ownership before the first await; this is
+                # not a declaration that exec/readiness has succeeded.
+                _query_owned(child)
             os.close(ready_write)
             ready_write = -1
             os.close(release_read)
@@ -252,12 +265,33 @@ class OwnedChild:
                 raise LifecycleError("CHILD_EXITED_DURING_START")
             os.write(release_write, b"X")
             # CLOEXEC on ready_write gives EOF only at image transition/exit.
-            if await _pipe_byte(ready_read, max(0.001, deadline - asyncio.get_running_loop().time())) != b"" or not child.image_matches():
+            if await _pipe_byte(ready_read, max(0.001, deadline - asyncio.get_running_loop().time())) != b"":
                 raise LifecycleError("CHILD_EXEC_FAILED")
+            if not child.image_matches():
+                # Only the separate short-lived query type permits completion
+                # before the parent's post-exec /proc observation. Its verified
+                # bootstrap acknowledged the hash, was explicitly released, and
+                # closed its CLOEXEC status pipe. Every bootstrap failure exits
+                # nonzero (71..79); exit0 here is the verified target completing,
+                # not a fallback for an unobserved or failed bootstrap.
+                if not _query_output or child.alive or await child.wait() != 0:
+                    raise LifecycleError("CHILD_EXEC_FAILED")
+                program.check_unchanged()
             return child
         except BaseException as error:
+            if _query_failure is not None:
+                try:
+                    _query_failure()
+                except BaseException:
+                    pass
             if child is not None:
-                await asyncio.shield(child.stop(0.2, 2.0))
+                cleanup = asyncio.create_task(child.stop(0.2, 2.0))
+                try:
+                    await asyncio.shield(cleanup)
+                except asyncio.CancelledError:
+                    # A second cancellation during bootstrap unwind must not
+                    # orphan the pinned child before ownership can be returned.
+                    await asyncio.shield(cleanup)
             elif process is not None:
                 # No exec release occurred. EOF wakes the bounded bootstrap; no
                 # PID signal is needed or permitted without an acquired pidfd.
@@ -267,6 +301,9 @@ class OwnedChild:
                     await asyncio.to_thread(process.wait, timeout=12)
                 except subprocess.TimeoutExpired:
                     raise LifecycleError("CHILD_BOOTSTRAP_CLEANUP_FAILED") from None
+                finally:
+                    if process.stdout is not None:
+                        process.stdout.close()
             if isinstance(error, asyncio.CancelledError):
                 raise
             if isinstance(error, LifecycleError):
@@ -326,4 +363,27 @@ class OwnedChild:
             raise LifecycleError("CHILD_STOP_TIMEOUT")
         os.close(self.procfd)
         os.close(self.pidfd)
+        if self._process.stdout is not None:
+            self._process.stdout.close()
         self.closed = True
+
+
+class OwnedQueryChild(OwnedChild):
+    """Internal short-lived CLI handle; never a native/core activation child.
+
+    Used only by the bounded observation reader. No stdin, stderr or lease FD is
+    captured/inherited. Ordinary OwnedChild.spawn retains its live-image rule.
+    """
+    @classmethod
+    async def spawn(cls, program, arguments, *, on_failure, on_owned, startup_timeout=2.0):
+        if (type(startup_timeout) not in (int, float) or not 0.1 <= startup_timeout <= 2
+                or not callable(on_failure) or not callable(on_owned)):
+            raise LifecycleError("QUERY_BUDGET_INVALID")
+        return await cls._spawn(program, arguments, startup_timeout=startup_timeout,
+                                _query_output=True, _query_failure=on_failure, _query_owned=on_owned)
+
+    @property
+    def output_fd(self):
+        if self.closed or self._process.stdout is None:
+            raise LifecycleError("QUERY_OUTPUT_UNAVAILABLE")
+        return self._process.stdout.fileno()
