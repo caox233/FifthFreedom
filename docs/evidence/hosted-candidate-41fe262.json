@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official completed run/job/check metadata only; no new artifact-content validation claimed",
+  "run_id": 39927010569,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39927010569",
+  "source_head": "41fe262cc1e279b7cb44c3dcfba5b6a696ff60b7",
+  "checkout_commit": null,
+  "checkout_identity_limit": "Actual PR merge checkout not recovered from an artifact in this follow-up",
+  "status": "completed",
+  "conclusion": "failure",
+  "jobs": [
+    {
+      "id": 120330026263,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120330026529,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120330026582,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120330026632,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120330026659,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120330026691,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120330026720,
+      "name": "Strict retained native replay input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120330079273,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120339338980,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120339549059,
+      "name": "Same-run native owned lifecycle in synthetic namespaces",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120339549093,
+      "name": "Same-run owned overlay and native development composition",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "native_lifecycle": {
+    "job_id": 120339549059,
+    "result": "failed",
+    "fixed_codes": [
+      "UNCLASSIFIED_PROBE_FAILURE"
+    ],
+    "underlying_cause_verified": false
+  },
+  "owned_stack": {
+    "job_id": 120339549093,
+    "result": "failed_before_runtime_compilation",
+    "fixed_codes": [
+      "UNCLASSIFIED_PROBE_FAILURE"
+    ],
+    "exception_types": [
+      "ModuleNotFoundError"
+    ],
+    "missing_modules": [
+      "ci_socket_isolation"
+    ],
+    "local_reproduction": "The same -I entry failed before namespace/runtime; minimal explicit trusted-script import anchor in 1f62862 has actual CLI regression coverage",
+    "repair_hosted_verified": false
+  },
+  "newer_run": {
+    "run_id": 39930668418,
+    "source_head": "319bf445073b362acf8129a80ff0bf68f19e53a5",
+    "state_when_recorded": "in_progress",
+    "scope": "Includes import anchor and expanded fixed native diagnostics; no runtime pass inferred"
+  },
+  "limits": [
+    "Windows components and same-run assembly/static preflight passed at job level; this metadata follow-up does not re-verify component bytes",
+    "Both strict held-input gates failed and complete Windows packaging was skipped",
+    "Native lifecycle and owned overlay/native composition remain unverified",
+    "No Release, deployment, game execution or public runtime activation is claimed"
+  ]
+}
