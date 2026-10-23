@@ -92,7 +92,9 @@ mod probe {
         require(observer.identity().is_err() && cloned.identity().is_err(), "SHUTDOWN_NOT_REVOKED")?;
         // EOF proves the production receive worker released its sender. Merely
         // observing revoked state would not prove that its blocking wait ended.
-        let mut byte = [0u8; 1];
+        // The real backend copies a complete packet in poll_read. Allow its
+        // maximum size so unsolicited input is a fixed failure, not a panic.
+        let mut byte = [0u8; 65536];
         let read = tokio::time::timeout(Duration::from_secs(5), device.read(&mut byte)).await
             .map_err(|_| "WORKER_TIMEOUT")?.map_err(|_| "WORKER_READ")?;
         require(read == 0, "UNEXPECTED_PACKET")?;

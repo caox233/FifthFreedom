@@ -117,7 +117,8 @@ features; default DNS support, EasyTier and pcap dependencies are rejected. The
 The binary is bound to the same-run build by SHA256 before and after execution.
 
 The [read-only environment script](../../scripts/ci_wintun_session_environment.ps1)
-requires the official `win25` hosted image and an elevated process. It enumerates
+requires the official `win25` or `win25-vs2026` hosted image and an elevated
+process. Both exact aliases designate Windows Server 2025. It enumerates
 all PnP devices without `-PresentOnly`, reads Net-device hardware/service
 properties, the driver store, system drivers, the Wintun service registry key and
 system driver file. The original official INF names HardwareID `Wintun`, service
@@ -162,3 +163,22 @@ Actual local commands/results before hosted execution:
 Next concrete action: run the reviewed workflow on the exact pushed revision,
 retain its run/job IDs and sanitized receipt, and inspect the actual first
 nonzero stage if any. Driver success cannot be inferred from these local results.
+
+### First hosted result: exact 2025 image alias
+
+[Run 39929836621](https://github.com/caox233/FifthFreedom/actions/runs/39929836621),
+job `120335090572`, passed all 14 portable harness tests, then failed **before
+source/build/driver activity** with `stage=HOST code=HOST`. Its
+[official receipt](../evidence/hosted-wintun-b613861.json) is preserved with the
+matching artifact ZIP digest. The job reports Windows Server 2025 and image
+`windows-2025-vs2026`. GitHub's official image generator explicitly assigns that
+image the `win25-vs2026` ImageOS value, whereas the first probe admitted only
+`win25`. The exact two-value allowlist corrects this documented image distinction;
+other Windows versions, unknown suffixes, self-hosted runners and non-elevated
+processes remain rejected. No driver result is inferred from this failure.
+
+The follow-up portable suite has 15 tests including both accepted official
+aliases and negative host boundaries. The receive buffer also holds a full
+65536-byte maximum packet: unexpected nonempty input still fails, without a
+one-byte-buffer panic obscuring the reason. No packet has been observed in a
+runtime probe yet. Next action remains the first actual driver/session run.

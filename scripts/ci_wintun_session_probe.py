@@ -208,14 +208,21 @@ def extract_dll(data, directory, lock):
     return path
 
 
+def require_host(platform, environment):
+    # Official runner-images GenerateResourcesAndImage.ps1 defines both exact
+    # Windows Server 2025 aliases; windows-2025 now also selects VS2026 images.
+    require(platform == 'win32' and environment.get('GITHUB_ACTIONS') == 'true'
+            and environment.get('RUNNER_ENVIRONMENT') == 'github-hosted'
+            and environment.get('ImageOS') in {'win25','win25-vs2026'}, 'HOST')
+
+
 def main():
     receipt = {'schema':1,'status':'failed','stage':'HOST','public_admission':False,'runtime_executed':False,
                'binary_uploaded':False,'network_configured':False,'packets_sent':False}
     output = ROOT/'artifacts/ci/wintun-session-probe.json'
     output.parent.mkdir(parents=True,exist_ok=True)
     try:
-        require(sys.platform == 'win32' and os.environ.get('GITHUB_ACTIONS') == 'true'
-                and os.environ.get('RUNNER_ENVIRONMENT') == 'github-hosted' and os.environ.get('ImageOS') == 'win25','HOST')
+        require_host(sys.platform, os.environ)
         commit = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True,timeout=10).strip()
         require(commit == os.environ.get('GITHUB_SHA') and not subprocess.check_output(
             ['git','status','--porcelain','--untracked-files=no'],cwd=ROOT,timeout=10),'CHECKOUT')

@@ -28,6 +28,15 @@ def good_environment(phase='Before'):
 
 
 class WintunProbeBoundaryTests(unittest.TestCase):
+    def test_exact_official_2025_aliases_keep_host_boundary_closed(self):
+        base={'GITHUB_ACTIONS':'true','RUNNER_ENVIRONMENT':'github-hosted','ImageOS':'win25'}
+        for alias in ('win25','win25-vs2026'):
+            probe.require_host('win32',{**base,'ImageOS':alias})
+        for change in ({'ImageOS':'win22'},{'ImageOS':'win25-unknown'},{'ImageOS':''},
+                       {'RUNNER_ENVIRONMENT':'self-hosted'},{'GITHUB_ACTIONS':'false'}):
+            with self.assertRaisesRegex(probe.ProbeError,'HOST'):probe.require_host('win32',{**base,**change})
+        with self.assertRaisesRegex(probe.ProbeError,'HOST'):probe.require_host('linux',base)
+
     def test_exact_success_and_observed_failure_are_distinct(self):
         row=good_result()
         self.assertEqual(probe.validate_probe(json.dumps(row).encode(),0),row)

@@ -4,7 +4,7 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 $stage = 'HOST'
 try {
-    if ($env:GITHUB_ACTIONS -cne 'true' -or $env:RUNNER_ENVIRONMENT -cne 'github-hosted' -or $env:ImageOS -cne 'win25') { throw 'HOST' }
+    if ($env:GITHUB_ACTIONS -cne 'true' -or $env:RUNNER_ENVIRONMENT -cne 'github-hosted' -or $env:ImageOS -cnotin @('win25','win25-vs2026')) { throw 'HOST' }
     $principal = [Security.Principal.WindowsPrincipal]::new([Security.Principal.WindowsIdentity]::GetCurrent())
     if (!$principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'HOST' }
     $stage = 'PNP'

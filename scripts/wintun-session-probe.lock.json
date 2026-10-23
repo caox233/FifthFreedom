@@ -49,8 +49,8 @@
     {
       "path": "tests/native/wintun-session-probe/src/main.rs",
       "destination": "src/main.rs",
-      "bytes": 8073,
-      "sha256": "be764b3e245c70ea43b73b90dcfd5c7a5af3a53dd66dcabba829003c7b7904ad"
+      "bytes": 8232,
+      "sha256": "c784133b24c84460988833572de6659d293b9afa420840843724723ecda76870"
     }
   ],
   "public_admission": false
