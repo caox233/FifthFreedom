@@ -1,0 +1,53 @@
+name: Paired EasyTier Windows source build only
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fifth-easytier-windows-build-only-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  paired-windows-source:
+    name: Paired session backend and full core/CLI (no runtime execution)
+    runs-on: windows-2025
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install reviewed Rust and explicit Windows target
+        run: rustup toolchain install 1.95.0 --profile minimal --target x86_64-pc-windows-msvc
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Require hosted MSVC SDK and LLVM for native dependency compilation
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (!$vs) { throw 'WINDOWS_MSVC_TOOLCHAIN_REQUIRED' }
+          $clang = 'C:\Program Files\LLVM\bin'
+          if (!(Test-Path "$clang\libclang.dll")) { throw 'WINDOWS_LIBCLANG_REQUIRED' }
+          "LIBCLANG_PATH=$clang" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Verify source pairing, locked resolution and bounded receipt regressions
+        run: python -B -m unittest discover -s tests/ci -p test_ci_easytier_windows_build.py -v
+      - name: Compile exact paired backend and core/CLI without running them
+        run: python -B scripts/ci_easytier_windows_build.py
+      - name: Preserve bounded source/build receipts only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: easytier-windows-build-only-receipts-${{ github.sha }}
+          path: |
+            artifacts/ci/easytier-windows-build-run.json
+            artifacts/ci/easytier-windows-build/source-receipt.json
+            artifacts/ci/easytier-windows-build/receipt.json
+          if-no-files-found: error
+          retention-days: 14

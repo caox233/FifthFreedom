@@ -80,3 +80,29 @@ The [receipt](receipt.json) binds patch/source/log hashes and evidence boundarie
 Retain the tun-easytier WTFPL notice and EasyTier LGPL-3.0 corresponding-source
 obligations. These source patches do not resolve Wintun binary redistribution
 provenance or substitute a source license for the bundled DLL's terms.
+
+## Separate full Windows build entry
+
+[ci_easytier_windows_build.py](../../../scripts/ci_easytier_windows_build.py) and
+its [independent workflow](../../../.github/workflows/easytier-windows-build-only.yml)
+now assemble both source trees with the six existing secure-session/ingress/pin
+patches, verify Cargo's actual local tun resolution and feature activation, and
+build both real core/CLI targets. The
+[Windows source lock](../../../scripts/easytier-windows-source.lock.json) records
+all additional identities without altering the Linux lock or the earlier
+two-patch receipt above.
+
+[modern-windows-build.patch](modern-windows-build.patch) is a distinct additional
+build-profile patch. Under `ff-windows-session-observer` only, it skips upstream's
+Win7 thunk call, whose pinned implementation downloads compatibility archives
+using `curl -k` without a digest. It does not alter normal upstream builds or
+claim all build dependencies are source-closed. The candidate uses modern MSVC
+and the installed Windows SDK; Win7 compatibility is outside this profile.
+
+The builder restores only the hash-pinned x64 `Packet.lib` as an internal import
+library retained only in the private build workspace. It verifies that the only
+Cargo.lock edit is the tun path-source conversion, checks all prepared bytes before and after compilation, and inspects PE output
+without executing it. Held-input provenance remains open. Its artifact allowlist
+contains JSON receipts only, with no executable, DLL, driver, raw compiler log,
+source archive or dependency cache. Actual hosted compilation is required before
+claiming the entire feature builds; local metadata success does not replace it.
