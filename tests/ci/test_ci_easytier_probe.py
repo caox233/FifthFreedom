@@ -295,7 +295,12 @@ class ReceiptAndControlTests(unittest.TestCase):
     def test_source_failure_survives_successful_or_failed_independent_cleanup(self):
         from unittest.mock import Mock, AsyncMock
         profile = profiles()[1]
-        for cleanup_fails in (False, True):
+        codes = ("OVERLAY_TUN_NOT_OWNED", "OVERLAY_NAMESPACE_OBSERVATION_UNAVAILABLE",
+            "OVERLAY_LINK_QUERY_UNAVAILABLE", "OVERLAY_ADDRESS_QUERY_UNAVAILABLE",
+            "OVERLAY_FDINFO_DIRECTORY_UNAVAILABLE", "OVERLAY_FDINFO_LIST_UNAVAILABLE",
+            "OVERLAY_FDINFO_ENTRY_UNAVAILABLE", "OVERLAY_FDINFO_READ_UNAVAILABLE",
+            "OVERLAY_TUN_DESCRIPTOR_UNAVAILABLE", "OVERLAY_INTERFACE_RECHECK_UNAVAILABLE")
+        for code, cleanup_fails in [(code, False) for code in codes] + [(codes[0], True), (codes[6], True)]:
             state = dict(phase="arguments", cleanup_code=None)
             handles = [Mock(), Mock(), Mock()]
             handles[0].identity.sha256 = profile.candidate.executable_sha256
@@ -305,7 +310,7 @@ class ReceiptAndControlTests(unittest.TestCase):
             core.stop = AsyncMock(side_effect=worker.LifecycleError("CHILD_STOP_TIMEOUT") if cleanup_fails else None)
             monitor = Mock()
             monitor.prepare = AsyncMock()
-            monitor.observe = AsyncMock(side_effect=worker.LifecycleError("OVERLAY_TUN_NOT_OWNED"))
+            monitor.observe = AsyncMock(side_effect=worker.LifecycleError(code))
             document = dict(profile=asdict(profile), config="/tmp/synthetic-private-config",
                 **{role: dict(path="/tmp/synthetic-" + role, sha256="1" * 64, bytes=64) for role in ("core", "cli", "probe")})
             stdin = Mock(buffer=io.BytesIO(b'{"action":"observe"}\n'))
@@ -313,7 +318,7 @@ class ReceiptAndControlTests(unittest.TestCase):
                 with self.assertRaises(worker.WorkerFailure) as raised:
                     asyncio.run(worker.serve(document, state))
             record = raised.exception.record
-            self.assertEqual((record["phase"], record["code"]), ("observe", "OVERLAY_TUN_NOT_OWNED"))
+            self.assertEqual((record["phase"], record["code"]), ("observe", code))
             self.assertEqual(record["cleanup_reaped"], not cleanup_fails)
             self.assertEqual(record["cleanup_code"], "WORKER_CHILD_CLEANUP_FAILED" if cleanup_fails else None)
             self.assertTrue(worker.valid_failure_record(record))

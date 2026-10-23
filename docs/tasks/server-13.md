@@ -340,3 +340,20 @@ use subprocess text mode to normalize platform line endings while retaining
 strict fixed output, JSON, exit-code and error checks; none are skipped. The
 focused suite passes 31 tests locally, including a Windows API-absence branch
 and exclusive-create regression. A fresh hosted Windows result is still needed.
+
+The actual `b613861` full run `39929836302`, job `120335089272`, failed at
+`observe / OVERLAY_OBSERVATION_UNAVAILABLE`, with the worker reporting its owned
+children reaped. Its QUIC row has no completed traffic phases; both namespaces
+and the private stage were removed, with no cleanup errors. This generic code
+does not distinguish an address-query failure, changing file descriptor, or
+another observation error. No cause or readiness success is assigned from it.
+
+The next worker protocol accepts nine fixed observation-location codes from the
+production monitor: namespace, link flags, address, fdinfo directory/list/entry/
+read, TUN descriptor, and final interface recheck. The generic fallback remains.
+These codes expose neither errno text nor interface, descriptor, address or path
+values, and every such error still fails the worker and matrix. The existing
+cleanup regression now verifies all nine codes survive independent cleanup and
+that a simultaneous cleanup failure cannot erase the original observation code.
+The focused probe suite remains 31 tests; monitor diagnosis and the actual
+runtime matrix require their own results.
