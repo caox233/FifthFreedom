@@ -174,6 +174,12 @@ def collect(lane: str, files: dict[str, Path], receipt: dict) -> None:
 def windows_components(receipt: dict) -> None:
     if os.name != "nt":
         raise RuntimeError("Windows component compilation requires a Windows runner")
+    receipt["native_replay_admission"] = {
+        "required_feature": "native-replay-fixtures", "held_checks": 13, "executed_checks": 0,
+        "status": "held_missing_external_input", "full_native_replay_verified": False,
+        "source_sha256": "a0942f34386a90b7dfbfa95d634e98b0211e4248fc4c18d87ca98dce8552e679",
+        "scope": "targeted IPC and socket tests do not certify all hooks/native instruction replays",
+    }
     # No asset insertion or MSBuild resource removal. The project wildcards omit
     # privacy-held SAV/META; this remains incomplete-package component evidence.
     launcher = ART / "ci/windows-launcher-compile"
