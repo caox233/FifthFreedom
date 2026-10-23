@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Net;
+using System.Net.Sockets;
 using Google.Protobuf;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -42,7 +43,26 @@ internal sealed class LoopbackApi : IAsyncDisposable
                 .Single(address => new Uri(address).Port != 80)).Authority;
             return server;
         }
-        catch { await app.DisposeAsync(); throw; }
+        catch (Exception error)
+        {
+            string code = "FINAL_PREPARATION_LOOPBACK_START_FAILED";
+            for (int depth = 0; depth < 4; depth++)
+            {
+                if (error is SocketException socket)
+                {
+                    code = socket.SocketErrorCode switch {
+                        SocketError.AddressAlreadyInUse => "FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE",
+                        SocketError.AccessDenied => "FINAL_PREPARATION_LOOPBACK_PERMISSION_DENIED",
+                        _ => "FINAL_PREPARATION_LOOPBACK_START_FAILED"
+                    };
+                    break;
+                }
+                if (error.InnerException is not { } inner) break;
+                error = inner;
+            }
+            Console.WriteLine(code); // Fixed classification only; no raw error or address.
+            await app.DisposeAsync(); throw;
+        }
     }
     private async Task Handle(HttpContext context)
     {
