@@ -61,3 +61,30 @@ fn io_errors_are_not_reinterpreted_as_valid_lines() {
     }
     assert_eq!(read_request_line(&mut Broken).unwrap_err().kind(), ErrorKind::ConnectionReset);
 }
+
+#[test]
+fn public_peer_rejected_before_http_request_bytes_are_consumed() {
+    let listener=std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let mut client=TcpStream::connect(listener.local_addr().unwrap()).unwrap();
+    let(mut stream,_)=listener.accept().unwrap();
+    let bytes=b"GET / HTTP/1.1\r\nX-Forwarded-For: 10.77.0.2\r\n\r\n";
+    client.write_all(bytes).unwrap();
+    let logger=slog::Logger::root(slog::Discard,slog::o!());
+    let policy=SourcePolicy::public_overlay("10.77.0.1".parse().unwrap(),24).unwrap();
+    assert!(receive_admitted_request(&logger,&mut stream,policy).is_none());
+    stream.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
+    let mut retained=vec![0;bytes.len()];stream.read_exact(&mut retained).unwrap();
+    assert_eq!(retained,bytes);
+    client.set_nonblocking(true).unwrap();
+    assert_eq!(client.read(&mut [0;1]).unwrap_err().kind(),std::io::ErrorKind::WouldBlock);
+}
+
+#[test]
+fn lan_admitted_http_request_preserves_existing_request_line() {
+    let listener=std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let mut client=TcpStream::connect(listener.local_addr().unwrap()).unwrap();
+    let(mut stream,_)=listener.accept().unwrap();
+    client.write_all(b"GET /mp_balancing.ini HTTP/1.1\r\n").unwrap();
+    let logger=slog::Logger::root(slog::Discard,slog::o!());
+    assert_eq!(receive_admitted_request(&logger,&mut stream,SourcePolicy::lan()).unwrap(),"GET /mp_balancing.ini HTTP/1.1\r\n");
+}

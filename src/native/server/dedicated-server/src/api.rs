@@ -64,18 +64,28 @@ const MIN_AUTH_TOKEN_TTL_SECONDS: i64 = 5 * 60;
 const MAX_AUTH_TOKEN_TTL_SECONDS: i64 = 7 * 24 * 60 * 60;
 const MAX_AUTH_TOKEN_FUTURE_SKEW_SECONDS: i64 = 60;
 const MAX_AUTH_TOKEN_LENGTH: usize = 4096;
-// SCBL LAN: address family validation, never a provider or subnet identity.
+use quazal::source_policy::SourcePolicy;
+#[cfg(test)]
+#[path = "public_source_api_tests.rs"]
+mod public_source_api_tests;
+// Preserve existing LAN fixtures without changing their signed bytes.
+#[cfg(test)]
+#[allow(non_upper_case_globals)]
+const LanClientNetwork: SourcePolicy = SourcePolicy::lan();
+
+// Created only after kernel peer, token, identity and current-run verification.
+// A header or payload cannot populate this private typed extension.
 #[derive(Clone, Copy)]
-struct LanClientNetwork;
-impl LanClientNetwork {
-    fn from_env() -> Result<Self, std::io::Error> { Ok(Self) }
-    fn contains_client(self, ip: IpAddr) -> bool {
-        match ip {
-            IpAddr::V4(ip) => ip.octets()[0] != 0 && ip.octets()[0] < 224 && !ip.is_broadcast(),
-            IpAddr::V6(_) => false,
-        }
-    }
+struct VerifiedSource { policy: SourcePolicy, ip: IpAddr }
+
+fn verified_source<T>(request: &Request<T>) -> Result<IpAddr, Status> {
+    let proof = request.extensions().get::<VerifiedSource>()
+        .ok_or_else(|| Status::unauthenticated("Missing verified client source"))?;
+    let observed = request_source_ip(request, proof.policy)?;
+    if observed != proof.ip { return Err(Status::unauthenticated("Invalid client source address")); }
+    Ok(observed)
 }
+
 #[cfg(test)]
 mod lan_source_tests {
     use super::*;
@@ -178,7 +188,7 @@ async fn authenticated_game_mode<T>(storage:&Storage,request:&Request<T>)->Resul
     let mode=crate::gameplay_modes::mode_code(&run.product).ok_or_else(||Status::unauthenticated("Invalid native mode"))?;
     // Recheck after taking the handler's generation lock. A new game may have
     // logged in between the interceptor and this handler acquiring that lock.
-    let source=request_source_ip(request,LanClientNetwork)?;
+    let source=verified_source(request)?;
     if !storage.game_run_is_current(authenticated_user_id(request)?,&run.instance,mode,source,release).await.map_err(|_|Status::internal("Game identity lookup failed"))? {
         return Err(Status::unauthenticated("Game instance has been superseded"));
     }
@@ -321,7 +331,7 @@ fn unix_time_seconds() -> Result<i64, Status> {
     i64::try_from(seconds).map_err(|_| Status::internal("System clock is out of range"))
 }
 
-fn request_source_ip<T>(request: &Request<T>, overlay_network: LanClientNetwork) -> Result<IpAddr, Status> {
+fn request_source_ip<T>(request: &Request<T>, overlay_network: SourcePolicy) -> Result<IpAddr, Status> {
     let ip = request
         .remote_addr()
         .map(|address| address.ip())
@@ -1255,7 +1265,7 @@ async fn check_token<T>(
     logger: &Logger,
     config: &AuthTokenConfig,
     storage: &Arc<Storage>,
-    overlay_network: LanClientNetwork,
+    overlay_network: SourcePolicy,
     mut req: Request<T>,
 ) -> Result<Request<T>, Status> {
     let source_ip = request_source_ip(&req, overlay_network)?;
@@ -1277,6 +1287,7 @@ async fn check_token<T>(
         storage.touch_api_presence_async(claims.user_id).await.map_err(|error|Status::internal(format!("Presence heartbeat failed: {error}")))?;
     }
     apply_verified_identity(&mut req, &claims);
+    req.extensions_mut().insert(VerifiedSource { policy: overlay_network, ip: source_ip });
 
     Ok(req)
 }
@@ -1286,7 +1297,7 @@ pub struct MyUsers {
     logger: Logger,
     token_config: AuthTokenConfig,
     storage: Arc<Storage>,
-    overlay_network: LanClientNetwork,
+    overlay_network: SourcePolicy,
 }
 
 // LAN users choose their own password. Only nonempty input and transport capacity
@@ -1312,7 +1323,8 @@ impl Users for MyUsers {
     /// Handles user login requests.
     ///
     /// Authenticates the user against the storage and generates an authorization token upon successful login.
-    async fn get_capabilities(&self, _request: Request<users::CapabilitiesRequest>) -> Result<Response<users::CapabilitiesResponse>, Status> {
+    async fn get_capabilities(&self, request: Request<users::CapabilitiesRequest>) -> Result<Response<users::CapabilitiesResponse>, Status> {
+        if self.overlay_network.is_public() { request_source_ip(&request, self.overlay_network)?; }
         let ports = crate::lan_runtime::ports();
         Ok(Response::new(users::CapabilitiesResponse {
             product: "SCBL LAN".into(), protocol_version: 1, version: "0.1.0-dev".into(),
@@ -1446,6 +1458,7 @@ impl Users for MyUsers {
     /// Resets a password using a one-time recovery code. A successful reset
     /// rotates the code so replaying a leaked or previously used code fails.
     async fn reset_password(&self, request: Request<users::ResetPasswordRequest>) -> Result<Response<users::ResetPasswordResponse>, Status> {
+        if self.overlay_network.is_public() { request_source_ip(&request, self.overlay_network)?; }
         let request = request.into_inner();
         let username = request.username.trim();
         let normalized_code = normalize_recovery_code(&request.recovery_code);
@@ -1757,8 +1770,9 @@ impl Misc for MyMisc {
     ///
     /// Attempts to establish a UDP connection with the client and exchanges a challenge.
     async fn test_p2p(&self, request: Request<misc::TestP2pRequest>) -> Result<Response<misc::TestP2pResponse>, Status> {
-        let mut client_addr = request.remote_addr().ok_or(Status::failed_precondition("no client address"))?;
-        client_addr.set_port(13_000);
+        // The destination IP is the same verified kernel TCP peer, never a
+        // request field or forwarded header. The diagnostic port stays fixed.
+        let client_addr = SocketAddr::new(verified_source(&request)?, 13_000);
         let request = request.into_inner();
         let mut resp_data = b"P2P Test - ".to_vec();
         resp_data.extend(request.challenge);
@@ -1966,7 +1980,7 @@ fn authenticated<S>(
     logger: Logger,
     token_config: AuthTokenConfig,
     storage: Arc<Storage>,
-    overlay_network: LanClientNetwork,
+    overlay_network: SourcePolicy,
 ) -> tonic_async_interceptor::AsyncInterceptedService<S, impl tonic_async_interceptor::AsyncInterceptor<Future = impl Future<Output = Result<Request<()>, Status>> + Send> + Clone>
 {
     tonic_async_interceptor::AsyncInterceptedService::new(service, move |req: Request<()>| {
@@ -2039,6 +2053,17 @@ fn api_incoming(socket_policy: &quazal::socket_policy::SocketPolicy, address: So
     Ok(tonic::transport::server::TcpIncoming::from(listener).with_nodelay(Some(true)))
 }
 
+// Covers every API service, including reflection and optional admin methods,
+// before HTTP/2 request parsing. LAN leaves the accepted transport unchanged.
+fn source_filtered_incoming(incoming: tonic::transport::server::TcpIncoming, policy: SourcePolicy)
+    -> impl tokio_stream::Stream<Item = std::io::Result<tokio::net::TcpStream>> + Unpin {
+    use tokio_stream::StreamExt;
+    incoming.filter(move |result| match result {
+        Ok(stream) => !policy.is_public() || stream.peer_addr().is_ok_and(|peer| policy.admits_transport(peer.ip())),
+        Err(_) => true,
+    })
+}
+
 /// Starts the gRPC server, binding to the specified address and registering services.
 ///
 /// This function initializes the server, sets up reflection services, and registers
@@ -2052,8 +2077,8 @@ pub async fn start_server(
     enable_admin_services: bool,
     token_config: AuthTokenConfig,
     socket_policy: quazal::socket_policy::SocketPolicy,
+    overlay_network: SourcePolicy,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let overlay_network = LanClientNetwork::from_env()?;
     let uplay_game_sessions = Arc::new(RwLock::new(UplayGameSessionRegistry::default()));
     info!(logger, "Listening on {server_addr}");
     let builder = Server::builder()
@@ -2122,7 +2147,7 @@ pub async fn start_server(
         builder
     };
 
-    builder.serve_with_incoming(api_incoming(&socket_policy, server_addr)?).await?;
+    builder.serve_with_incoming(source_filtered_incoming(api_incoming(&socket_policy, server_addr)?, overlay_network)).await?;
     Ok(())
 }
 
@@ -2367,7 +2392,8 @@ mod lan_follow_readiness_tests {
         let verified=verify_auth_token(&config,&token,"127.0.0.1".parse().unwrap(),now).unwrap();
         let mut r=Request::new(value);
         r.extensions_mut().insert(tonic::transport::server::TcpConnectInfo{local_addr:Some("127.0.0.1:50051".parse().unwrap()),remote_addr:Some("127.0.0.1:30500".parse().unwrap())});
-        apply_verified_identity(&mut r,&verified);r
+        apply_verified_identity(&mut r,&verified);
+        r.extensions_mut().insert(VerifiedSource { policy: SourcePolicy::lan(), ip: "127.0.0.1".parse().unwrap() });r
     }
     fn fixture(private:bool,members:u32)->(MyMisc,Arc<Storage>,u32,u32,tokio::runtime::Runtime){
         let (storage,lobby,room)=Storage::lan_readiness_fixture(if private{PRIVATE}else{PUBLIC},members);

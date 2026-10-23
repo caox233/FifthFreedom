@@ -35,17 +35,7 @@ fn parse_document(raw: &[u8]) -> Result<DeploymentDocument, &'static str> {
 }
 
 fn valid_overlay(address: Ipv4Addr, prefix: u8) -> bool {
-    if !(8..=30).contains(&prefix) { return false; }
-    let value = u32::from(address);
-    let mask = u32::MAX << (32 - prefix);
-    let network = value & mask;
-    let broadcast = network | !mask;
-    if value == network || value == broadcast { return false; }
-    // The entire declared client network must remain in private/shared space.
-    // This is configuration validation, not evidence it is an encrypted tunnel.
-    [(0x0a00_0000, 8), (0xac10_0000, 12), (0xc0a8_0000, 16), (0x6440_0000, 10)]
-        .iter().any(|&(base, parent_prefix)| prefix >= parent_prefix
-            && network & (u32::MAX << (32 - parent_prefix)) == base)
+    quazal::source_policy::SourcePolicy::public_overlay(address, prefix).is_ok()
 }
 
 fn endpoint(address: Ipv4Addr, port: u16) -> SocketAddr { SocketAddr::from((address, port)) }

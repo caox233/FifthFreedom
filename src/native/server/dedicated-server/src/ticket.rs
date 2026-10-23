@@ -16,9 +16,14 @@ use crate::protocols::ubi_authentication::types::UbiAuthenticationLoginCustomDat
 use crate::storage::{AuthIdentity, Storage};
 use crate::SERVER_PID;
 
+#[cfg(test)]
+#[path = "public_source_ticket_tests.rs"]
+mod public_source_ticket_tests;
+
 /// Implementation of the `TicketGrantingProtocolServerTrait` for handling ticket-granting requests.
 struct TicketGrantingProtocolServerImpl {
     storage: Arc<Storage>,
+    source_policy: quazal::source_policy::SourcePolicy,
 }
 
 // A failed key/store operation must not advertise an unauthenticated request
@@ -163,8 +168,8 @@ impl<T> TicketGrantingProtocolServerTrait<T> for TicketGrantingProtocolServerImp
 ///
 /// This function is typically used to register the ticket-granting protocol
 /// with the server's protocol dispatcher.
-pub fn new_protocol<T: 'static>(storage: Arc<Storage>) -> Box<dyn Protocol<T>> {
-    Box::new(TicketGrantingProtocolServer::new(TicketGrantingProtocolServerImpl { storage }))
+pub fn new_protocol_with_source_policy<T: 'static>(storage: Arc<Storage>, source_policy: quazal::source_policy::SourcePolicy) -> Box<dyn Protocol<T>> {
+    Box::new(TicketGrantingProtocolServer::new(TicketGrantingProtocolServerImpl { storage, source_policy }))
 }
 
 #[cfg(test)]
@@ -226,7 +231,7 @@ mod ticket_binding_commit_tests {
         let ctx = quazal::Context::splinter_cell_blacklist();
         let clients = quazal::prudp::ClientRegistry::<()>::default();
         let socket = std::net::UdpSocket::bind("127.0.0.1:0").unwrap();
-        let service = TicketGrantingProtocolServerImpl { storage };
+        let service = TicketGrantingProtocolServerImpl { storage, source_policy: quazal::source_policy::SourcePolicy::lan() };
         let mut ci = quazal::ClientInfo::<()>::new("127.0.0.1:30500".parse().unwrap());
         let login_ex = |name: &str| {
             let data = UbiAuthenticationLoginCustomData {
@@ -270,6 +275,7 @@ mod ticket_binding_commit_tests {
 
 impl TicketGrantingProtocolServerImpl {
     fn login_core<T>(&self, logger: &slog::Logger, ctx: &Context, ci: &mut quazal::ClientInfo<T>, request: LoginRequest) -> Result<LoginResponse, quazal::rmc::Error> {
+        if !self.source_policy.admits_transport(ci.address().ip()) { return Err(quazal::rmc::Error::AccessDenied); }
         let Some(user_id) = self.get_pid_by_username(logger, &request.str_user_name)? else {
             warn!(logger, "Native login account not found");
             return Err(quazal::rmc::Error::AccessDenied);
@@ -314,6 +320,7 @@ impl TicketGrantingProtocolServerImpl {
         })
     }
     fn login_ex_core<T>(&self, logger: &slog::Logger, ctx: &Context, ci: &mut quazal::ClientInfo<T>, request: LoginExRequest) -> Result<LoginExResponse, quazal::rmc::Error> {
+        if !self.source_policy.admits_transport(ci.address().ip()) { return Err(quazal::rmc::Error::AccessDenied); }
         let _username = request.str_user_name;
         let mut registry = quazal::rmc::types::ClassRegistry::default();
         registry.register_class::<UbiAuthenticationLoginCustomData>("UbiAuthenticationLoginCustomData");
@@ -361,6 +368,7 @@ impl TicketGrantingProtocolServerImpl {
         })
     }
     fn request_ticket_core<T>(&self, logger: &slog::Logger, ctx: &Context, ci: &mut quazal::ClientInfo<T>, request: RequestTicketRequest) -> Result<RequestTicketResponse, quazal::rmc::Error> {
+        if !self.source_policy.admits_transport(ci.address().ip()) { return Err(quazal::rmc::Error::AccessDenied); }
         let user_id = request.id_source;
         let server_id = request.id_target;
         if !matches!(ci.user_id, Some(uid) if uid == user_id) {
@@ -392,7 +400,7 @@ pub(crate) fn maintenance_ticket_core(
 ) -> (quazal::rmc::Result<()>, Option<u32>) {
     use quazal::rmc::basic::ToStream;
     use quazal::rmc::types::{Any, Data};
-    let service = TicketGrantingProtocolServerImpl { storage };
+    let service = TicketGrantingProtocolServerImpl { storage, source_policy: quazal::source_policy::SourcePolicy::lan() };
     let logger = slog::Logger::root(slog::Discard, slog::o!());
     let ctx = Context::splinter_cell_blacklist();
     let mut ci = quazal::ClientInfo::<()>::new("127.0.0.1:30500".parse().unwrap());
@@ -412,3 +420,9 @@ pub(crate) fn maintenance_ticket_core(
 #[cfg(test)]
 #[path = "native_identity_producer_tests.rs"]
 pub(crate) mod native_identity_producer_tests;
+
+// Existing LAN protocol fixtures continue through the same production handler.
+#[cfg(test)]
+pub fn new_protocol<T: 'static>(storage: Arc<Storage>) -> Box<dyn Protocol<T>> {
+    new_protocol_with_source_policy(storage, quazal::source_policy::SourcePolicy::lan())
+}

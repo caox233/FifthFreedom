@@ -20,6 +20,7 @@ use quazal::prudp::packet::QPacket;
 use quazal::ClientInfo;
 use quazal::Context;
 use quazal::socket_policy::SocketPolicy;
+use quazal::source_policy::SourcePolicy;
 use sc_bl_protocols as protocols;
 use slog::Drain;
 use slog::Logger;
@@ -110,7 +111,7 @@ mod secure_close_retry_tests;
 ///
 /// This function sets up the necessary protocols and handlers for the server
 /// and then enters the server loop.
-fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is_secure: bool, socket_policy: &SocketPolicy) -> io::Result<()> {
+fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is_secure: bool, socket_policy: &SocketPolicy, source_policy: SourcePolicy) -> io::Result<()> {
     use quazal::prudp::packet::StreamHandlerRegistry;
     use quazal::prudp::packet::StreamType;
     use quazal::prudp::packet::VPort;
@@ -139,7 +140,7 @@ fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is
         handler.register_protocol(uplay_win::new_protocol());
         handler.register_protocol(user_storage::new_protocol());
     } else {
-        handler.register_protocol(ticket::new_protocol(Arc::clone(storage)));
+        handler.register_protocol(ticket::new_protocol_with_source_policy(Arc::clone(storage), source_policy));
     }
 
     let mut registry = StreamHandlerRegistry::new(logger.clone());
@@ -151,7 +152,7 @@ fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is
         Box::new(handler),
     );
 
-    let mut server: NativeServer<'_> = Server::new(logger.clone(), ctx, registry);
+    let mut server: NativeServer<'_> = Server::new_with_source_policy(logger.clone(), ctx, registry, source_policy);
     if is_secure {
         // Only the secure/game connection owns online presence and room state.
         // The short-lived authentication connection must not clear an active
@@ -380,6 +381,7 @@ fn main() -> color_eyre::Result<()> {
     // Public remains gated above. All retained LAN sockets use the explicit LAN
     // policy; an unverified interface configuration cannot activate public I/O.
     let socket_policy = SocketPolicy::lan();
+    let source_policy = SourcePolicy::lan();
     for (name, svc) in config.quazal.into_services()? {
         let logger = logger.new(o!("service" => name.clone()));
         info!(logger, "Loaded LAN service {}", name);
@@ -387,10 +389,10 @@ fn main() -> color_eyre::Result<()> {
         let socket_policy = socket_policy.clone();
         let handle = match svc {
             quazal::Service::Authentication(ctx) => spawn_required_service(name, service_exit_sender.clone(), move || {
-                start_server(&logger, &ctx, &storage, false, &socket_policy).map_err(|error| format!("authentication server failed: {error}"))
+                start_server(&logger, &ctx, &storage, false, &socket_policy, source_policy).map_err(|error| format!("authentication server failed: {error}"))
             }),
             quazal::Service::Secure(ctx) => spawn_required_service(name, service_exit_sender.clone(), move || {
-                start_server(&logger, &ctx, &storage, true, &socket_policy).map_err(|error| format!("secure server failed: {error}"))
+                start_server(&logger, &ctx, &storage, true, &socket_policy, source_policy).map_err(|error| format!("secure server failed: {error}"))
             }),
             quazal::Service::Config(cfg) => spawn_required_service(name, service_exit_sender.clone(), move || {
                 if cfg.listen.port() != 80 {
@@ -400,10 +402,10 @@ fn main() -> color_eyre::Result<()> {
                         cfg.listen.port()
                     );
                 }
-                simple_http::serve(&logger, cfg.listen, &cfg.content(), &socket_policy).map_err(|error| format!("config server failed: {error}"))
+                simple_http::serve(&logger, cfg.listen, &cfg.content(), &socket_policy, source_policy).map_err(|error| format!("config server failed: {error}"))
             }),
             quazal::Service::Content(srv) => spawn_required_service(name, service_exit_sender.clone(), move || {
-                simple_http::serve_many(&logger, srv.listen, &srv.files, &socket_policy).map_err(|error| format!("content server failed: {error}"))
+                simple_http::serve_many(&logger, srv.listen, &srv.files, &socket_policy, source_policy).map_err(|error| format!("content server failed: {error}"))
             }),
         };
         threads.push(handle?);
@@ -413,7 +415,7 @@ fn main() -> color_eyre::Result<()> {
         let logger = logger.new(o!("service" => "api"));
         let runtime = tokio::runtime::Runtime::new().map_err(|error| format!("API runtime creation failed: {error}"))?;
         runtime
-            .block_on(api::start_server(logger, storage, config.api_server, Arc::new(config.debug), false, token_config, socket_policy))
+            .block_on(api::start_server(logger, storage, config.api_server, Arc::new(config.debug), false, token_config, socket_policy, source_policy))
             .map_err(|error| format!("API server failed: {error:?}"))
     })?);
 

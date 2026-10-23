@@ -223,6 +223,7 @@ where
     logger: slog::Logger,
     registry: StreamHandlerRegistry<T>,
     socket: Option<net::UdpSocket>,
+    source_policy: crate::source_policy::SourcePolicy,
     ctx: &'a Context,
     new_clients: HashMap<u32, ClientInfo<T>>,
     client_registry: ClientRegistry<T>,
@@ -247,6 +248,14 @@ where
     /// Creates a new PRUDP server.
     #[must_use]
     pub fn new(logger: slog::Logger, ctx: &Context, registry: StreamHandlerRegistry<T>) -> Server<'_, ECH, DH, T> {
+        Self::new_with_source_policy(logger, ctx, registry, crate::source_policy::SourcePolicy::lan())
+    }
+
+    /// Explicit immutable source admission; changing socket binding does not
+    /// silently enable a Public network or replace this policy.
+    #[must_use]
+    pub fn new_with_source_policy(logger: slog::Logger, ctx: &Context, registry: StreamHandlerRegistry<T>,
+        source_policy: crate::source_policy::SourcePolicy) -> Server<'_, ECH, DH, T> {
         let client_registry = ClientRegistry {
             clients: HashMap::default(),
             connection_id_session_ids: HashMap::default(),
@@ -256,6 +265,7 @@ where
             logger,
             registry,
             socket: None,
+            source_policy,
             ctx,
             new_clients: HashMap::default(),
             client_registry,
@@ -293,7 +303,7 @@ where
         socket.set_read_timeout(Some(CLIENT_CLEANUP_INTERVAL)).expect("error setting read timeout");
         let mut buf = vec![0u8; 1024];
         let mut last_cleanup = Instant::now();
-        'outer: loop {
+        loop {
             // Other clients' traffic must not postpone stale connection cleanup.
             if last_cleanup.elapsed() >= CLIENT_CLEANUP_INTERVAL {
                 self.clear_clients();
@@ -308,34 +318,38 @@ where
                     continue;
                 }
             };
-            let logger = self.logger.new(o!("client" => client));
-            let mut data = &buf[..nread];
+            self.handle_datagram(&buf[..nread], client);
+        }
+    }
 
-            while !data.is_empty() {
-                let (packet, nparsed) = match QPacket::from_bytes(self.ctx, data) {
-                    Ok(p) => p,
-                    Err(e) => {
-                        error!(logger, "Invalid packet received"; "error" =>  %e);
-                        continue 'outer;
-                    }
-                };
-                #[allow(clippy::cast_possible_truncation)]
-                let (packet_data, next_data) = data.split_at(nparsed as usize);
-                data = next_data;
-                trace!(logger, "-> {:02x?}", packet_data);
-
-                if let Err(e) = packet.validate(self.ctx, packet_data) {
-                    error!(logger, "Invalid packet received: {:?}", packet; "error" =>  %e);
-                    continue;
+    // Kernel recv_from supplies client. Reject before parsing, diagnostics,
+    // SYN allocation, ACK, liveness/fragment state or application callbacks.
+    fn handle_datagram(&mut self, mut data: &[u8], client: SocketAddr) {
+        if !self.source_policy.admits_transport(client.ip()) { return; }
+        let logger = self.logger.new(o!("client" => client));
+        while !data.is_empty() {
+            let (packet, nparsed) = match QPacket::from_bytes(self.ctx, data) {
+                Ok(packet) => packet,
+                Err(error) => {
+                    error!(logger, "Invalid packet received"; "error" => %error);
+                    return;
                 }
-
-                self.handle_packet(&logger.new(o!("seq" => packet.sequence, "session" => packet.session_id)), packet, client);
+            };
+            #[allow(clippy::cast_possible_truncation)]
+            let (packet_data, next_data) = data.split_at(nparsed as usize);
+            data = next_data;
+            trace!(logger, "-> {:02x?}", packet_data);
+            if let Err(error) = packet.validate(self.ctx, packet_data) {
+                error!(logger, "Invalid packet received: {:?}", packet; "error" => %error);
+                continue;
             }
+            self.handle_packet(&logger.new(o!("seq" => packet.sequence, "session" => packet.session_id)), packet, client);
         }
     }
 
     /// Handles a received packet.
     fn handle_packet(&mut self, logger: &Logger, packet: QPacket, client: SocketAddr) {
+        if !self.source_policy.admits_transport(client.ip()) { return; }
         debug!(logger, "packet: {:?}", packet);
         if packet.flags.contains(PacketFlag::Ack) {
             debug!(logger, "Received ACK");
@@ -1202,3 +1216,7 @@ mod maintenance_peer_ownership;
 #[cfg(feature = "maintenance-test-seams")]
 #[path = "prudp/fragment_boundary_capture.rs"]
 pub mod fragment_boundary_capture;
+
+#[cfg(test)]
+#[path = "source_admission_tests.rs"]
+mod source_admission_tests;
