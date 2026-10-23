@@ -1037,6 +1037,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "api",
+ "base64",
  "crossbeam-channel",
  "dll-syringe",
  "goblin",
@@ -1049,6 +1050,7 @@ dependencies = [
  "region",
  "retour",
  "serde",
+ "serde_json",
  "sha2",
  "thiserror 2.0.17",
  "tokio",

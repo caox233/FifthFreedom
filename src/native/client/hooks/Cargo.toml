@@ -79,6 +79,10 @@ features = [
 [build-dependencies]
 winres = { workspace = true }
 
+[dev-dependencies]
+base64 = "0.22"
+serde_json = { workspace = true }
+
 [package.metadata.winres]
 ProductName = "Fifth Freedom"
 FileDescription = "Fifth Freedom native client"

@@ -84,3 +84,45 @@ cross-language owned-process probe if needed. The separate managed suite and the
 Rust suite are complementary; neither alone proves their live interoperation.
 Public deployment admission, private SAV/META resources and real-game acceptance
 remain gated independently.
+
+## Native / managed interoperability seam
+
+The test-only `public_return_interop.rs` reuses the existing synthetic child test
+entry, so the eight-function native suite count does not change. A managed test
+owns and starts a copy of that exact test executable under an allowed game
+basename; it remains a test executable and loads no game. The child reads the
+original configuration reference through production `hooks_config::get_or_load`,
+which performs the real configuration-pipe read / ACK and retains its actual
+server handle. The managed side uses the real LaunchPipe ACK and exact owned
+Process.Start handle before its production PublicReturnPipe admits the child.
+
+When a Public descriptor exists, the original configuration pipe now explicitly
+opens with `SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION`, including when that
+descriptor later fails validation. This prevents an unknown pipe server from
+impersonating the client before owner admission. LAN open flags and all frame /
+ACK bytes remain unchanged. The return pipe already used this restriction.
+
+The fixture JSON `FF_SYNTHETIC_RETURN_INTEROP_V1` has exactly launcher_path,
+launcher_sha256, release_id, compat_id and manifest_sha256. These are nonsecret
+fixture identities, separate from the launch descriptor. The helper validates
+the actual observed launcher path / SHA / creation identity, then supplies a
+synthetic response with account `synthetic-account`, user `synthetic-client`,
+source `10.66.0.10`, mod product and the actual native `current_game_instance()`
+GUID to production `return_authentication`. Its synthetic signature is all zero
+bytes; only context screening and transport are tested, not server authority.
+The bearer exists only in child memory and the return pipe.
+
+The test executable intentionally bypasses `prepare` and its loaded-DLL /
+whole-package verification; fixture image consistency is **not** a package
+admission proof. It then calls the exact production worker, queue and pipe code.
+The child accepts only bounded stdin commands AUTH / INVALIDATE / EXIT, or EOF;
+stdout emits fixed READY / AUTHENTICATED / INVALIDATED / STOPPED markers. Queue
+markers are not remote-delivery acknowledgments. The managed receiver must wait
+for its actual context / cancellation. Worker cleanup is bounded and a separate
+45-second helper lifetime bound covers a broken test parent. No bearer, raw
+frame, descriptor or diagnostic is printed.
+
+This seam has passed i686 Windows **type-checking only** locally. Actual managed
+invocation `--native-interop <exact hooks test executable>` and hosted evidence
+are pending; the existing separate native and managed results cannot substitute
+for that run.

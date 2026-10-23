@@ -65,6 +65,10 @@ pub(super) fn prepare() {
 #[path = "public_return_tests.rs"]
 mod tests;
 
+#[cfg(test)]
+#[path = "public_return_interop.rs"]
+mod interop;
+
 pub(super) struct AuthenticationPublication {
     bridge: Arc<Bridge>,
     owner: Attempt,

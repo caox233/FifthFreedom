@@ -116,9 +116,17 @@ pub(super) fn receive(content: &str) -> anyhow::Result<String> {
         anyhow::bail!("Invalid LAN launch pipe");
     }
     let path = format!(r"\\.\pipe\{}", reference.launch_pipe);
+    let public_return = std::env::var_os("FF_PUBLIC_RETURN_V1").is_some();
+    // Public observes this server before independent owner admission. Restrict
+    // impersonation even when the descriptor later proves malformed. Existing
+    // LAN open flags and the configuration wire remain unchanged.
+    let flags = FILE_FLAG_OVERLAPPED.0 | if public_return {
+        windows::Win32::Storage::FileSystem::SECURITY_SQOS_PRESENT.0
+            | windows::Win32::Storage::FileSystem::SECURITY_IDENTIFICATION.0
+    } else { 0 };
     let deadline = Instant::now() + TIMEOUT;
     let file = loop {
-        match std::fs::OpenOptions::new().read(true).write(true).custom_flags(FILE_FLAG_OVERLAPPED.0).open(&path) {
+        match std::fs::OpenOptions::new().read(true).write(true).custom_flags(flags).open(&path) {
             Ok(file) => break file,
             Err(_) if Instant::now() < deadline => std::thread::sleep(Duration::from_millis(50).min(deadline.saturating_duration_since(Instant::now()))),
             Err(error) => return Err(error.into()),
@@ -128,7 +136,7 @@ pub(super) fn receive(content: &str) -> anyhow::Result<String> {
     // Observe kernel identity before reading any declarations from the frame.
     // Missing rights/observation does not change LAN. Public return later fails
     // closed unless this observation matches its independent launch anchor.
-    let owner = if std::env::var_os("FF_PUBLIC_RETURN_V1").is_some() {
+    let owner = if public_return {
         super::launch_owner::observe(pipe.handle())
     } else { None };
     let mut length = [0u8; 4];

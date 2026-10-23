@@ -87,6 +87,13 @@ fn spawn_owned_child(name: &str) -> OwnedTestChild {
 
 #[test]
 fn owned_pipe_server() {
+    if let Ok(raw) = std::env::var("FF_SYNTHETIC_RETURN_INTEROP_V1") {
+        if super::interop::run(&raw).is_err() {
+            println!("\nNATIVE_INTEROP_REJECTED");
+            panic!("synthetic interop rejected");
+        }
+        return;
+    }
     let Ok(name) = std::env::var(CHILD_ENV) else { return; };
     assert!(name.starts_with("ff-public-return-"));
     let server = server(&name);
