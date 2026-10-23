@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "kind": "production-diagnostic-text-stream-extraction",
+  "changes": [
+    "src/launcher/src/Services/DiagnosticTextSanitizer.cs",
+    "src/launcher/src/Services/DiagnosticTextStream.cs",
+    "tests/DiagnosticTextStreaming/DiagnosticTextStreaming.csproj",
+    "tests/DiagnosticTextStreaming/Program.cs",
+    "docs/tasks/diagnostic-streaming.md"
+  ],
+  "source_inputs": [
+    {
+      "path": "src/launcher/src/Services/DiagnosticTextSanitizer.cs",
+      "bytes": 2256,
+      "sha256": "778150a3c3ea59cee125c30af5ee3ab23155e8a1a2b89fc217a0280e8372cb4f"
+    },
+    {
+      "path": "src/launcher/src/Services/DiagnosticTextStream.cs",
+      "bytes": 6927,
+      "sha256": "9c2a731de5cb3805803c5818389c593ea95fd905ae8665111aad2ee9c265ada3"
+    },
+    {
+      "path": "tests/DiagnosticTextStreaming/DiagnosticTextStreaming.csproj",
+      "bytes": 426,
+      "sha256": "e342dab3823dee1f141f33a23a16cd4491119028a73a68506e62cb83ad95bb12"
+    },
+    {
+      "path": "tests/DiagnosticTextStreaming/Program.cs",
+      "bytes": 7973,
+      "sha256": "0854e150d17ae7c06ab9cc6aea21bbf36823423cad98f8469b1cae504c26aaa7"
+    },
+    {
+      "path": "docs/tasks/diagnostic-streaming.md",
+      "bytes": 5355,
+      "sha256": "229717d3c03cde7a2d4724875c8ae7456c00b77d016b5a69fcd2a4745a0f6ff1"
+    }
+  ],
+  "tests": {
+    "sdk": "10.0.302",
+    "command": [
+      "dotnet",
+      "run",
+      "--project",
+      "tests/DiagnosticTextStreaming/DiagnosticTextStreaming.csproj",
+      "--configuration",
+      "Release",
+      "--no-launch-profile"
+    ],
+    "exit_code": 0,
+    "cases": 12,
+    "skipped": 0,
+    "linked_production": true,
+    "original_sources_unchanged_per_case": true,
+    "full_zip_executed": false
+  },
+  "mechanical": {
+    "line_scrub_write_equal_after_parameter_renames": true,
+    "baseline_git_blob": "8e205dbc3b828de0a1346bbe427a68ec445b953c",
+    "baseline_sha256": "d77a49bc1d5031fc559723fa88a07b894dd9e8cd27c0afb45f1e3b5ef2621dbf"
+  },
+  "cross_target_wpf": {
+    "exit_code": 0,
+    "warnings": 0,
+    "errors": 0,
+    "enable_windows_targeting": true,
+    "execution_platform": "Linux",
+    "windows_execution": false,
+    "package_validation": false,
+    "full_export_24_rerun": false
+  },
+  "logs": [
+    {
+      "path": ".local/evidence/cloud/diagnostic-stream/portable.stdout",
+      "bytes": 824,
+      "sha256": "bb88669b814152777693c72b32498c2d1d230c181c43913e7959a047ac08eb5c"
+    },
+    {
+      "path": ".local/evidence/cloud/diagnostic-stream/portable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/evidence/cloud/diagnostic-stream/wpf-compile.stdout",
+      "bytes": 326,
+      "sha256": "89e2a8e2fd72955f844eda629a95bf183b08ac2795d9a1de032007ccb12ffc81"
+    },
+    {
+      "path": ".local/evidence/cloud/diagnostic-stream/wpf-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "chat_audit": {
+    "inspected": [
+      {
+        "path": "src/native/client/hooks/gameplay/src/chat_relay.rs",
+        "bytes": 8198,
+        "sha256": "2808343ea7fdc5ae9c1f023d3382888771219543d814b5899d799180187038a2"
+      },
+      {
+        "path": "src/native/client/hooks/gameplay/src/goggle_feedback_native.rs",
+        "bytes": 24701,
+        "sha256": "2bc0f3f251a25715c77e7ef97b963e38b2f8aaeca2780cb8fbf3fcd50d159540"
+      },
+      {
+        "path": "docs/development-reference/historical-replays/multiplayer/vss-agent/chat/probe.cpp.txt",
+        "bytes": 15853,
+        "sha256": "3e15c81f5bc9cf4d798d28032709664956e59ca41acab514034c200f314e580a"
+      },
+      {
+        "path": "docs/development-reference/historical-replays/multiplayer/vss-agent/chat/run.py.txt",
+        "bytes": 6088,
+        "sha256": "3e6752dd8425348aeb95be14e5482c1c22fbc27c1a665d720d5cd95e305aaa77"
+      }
+    ],
+    "historical_checks": 391,
+    "historical_checks_rerun": false,
+    "historical_transport": "SIMULATED",
+    "historical_serialization_and_sockets": "NOT_TESTED",
+    "tracked_missing_basenames": [
+      "Blacklist_DX11_game.exe",
+      "Blacklist_game.exe",
+      "native-code.h",
+      "NATIVE-PINS.json"
+    ],
+    "expected_retail_image_sha256": "c6b9f330fac1412f19f32a6fd86edb4c66291a6902611e9433b9b0ea659eb4bc",
+    "expected_retail_image_verified": false,
+    "three_client_network_test_executed": false
+  },
+  "game_launched": false,
+  "capture_started": false,
+  "acceptance_reclassified": false
+}
