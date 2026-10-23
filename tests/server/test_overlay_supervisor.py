@@ -142,7 +142,20 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
         self.temporary = tempfile.TemporaryDirectory(prefix="ff-owned-lifecycle-")
         self.addCleanup(self.temporary.cleanup)
         self.directory = Path(self.temporary.name)
-        self.program = image()
+        # Hosted Python tool caches may have shared writable ancestors. Keep the
+        # production installation policy strict: the synthetic fixture owns an
+        # exact private copy of the actual interpreter ELF it will execute.
+        owned_image = self.directory / "synthetic-python"
+        shutil.copyfile(Path(sys.executable).resolve(), owned_image)
+        owned_image.chmod(0o700)
+        # A relocated CPython ELF still needs its installed standard library.
+        # Explicit venv home uses that existing host runtime without inheriting
+        # PYTHONHOME/PYTHONPATH or weakening any executable ownership checks.
+        runtime_home = Path(sys.executable).resolve().parent
+        runtime_config = self.directory / "pyvenv.cfg"
+        runtime_config.write_text(f"home = {runtime_home}\ninclude-system-site-packages = false\n")
+        runtime_config.chmod(0o600)
+        self.program = image(owned_image)
         self.addCleanup(self.program.close)
         self.monitor = SyntheticMonitor()
         self.service = SyntheticTcpReadiness(self.directory / "synthetic-ready.json")
@@ -407,14 +420,14 @@ from pathlib import Path
 sys.path.insert(0,sys.argv[1])
 from fifth_freedom_control.owned_process import OwnedChild,VerifiedExecutable
 async def main():
-    p=Path(sys.executable).resolve()
+    p=Path(sys.argv[4])
     with VerifiedExecutable(p,hashlib.sha256(p.read_bytes()).hexdigest(),p.stat().st_size) as image:
         child=await OwnedChild.spawn(image,('-I','-S','-c',sys.argv[3],sys.argv[2]))
         await child.wait()
 asyncio.run(main())
 """
         parent = subprocess.Popen([sys.executable, "-I", "-S", "-c", script,
-            str(ROOT / "src/public"), str(report), NATIVE], stdin=subprocess.DEVNULL,
+            str(ROOT / "src/public"), str(report), NATIVE, str(self.program.path)], stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True,
             env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8"})
         parentfd = os.pidfd_open(parent.pid)

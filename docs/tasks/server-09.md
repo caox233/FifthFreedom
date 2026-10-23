@@ -140,6 +140,21 @@ TCP only. They verify:
   encrypted overlay, game connectivity, native Public launch or live deployment
   is represented by these tests.
 
+The subsequent hosted Linux source run `39905205058` and candidate control job
+reported 14 lifecycle setup errors. Those fixtures initially tried to admit the
+hosted system Python installation directly; a shared tool-cache installation is
+not an owned private runtime fixture. The tests now copy the actual interpreter
+ELF into their own private temporary directory, set mode 0700, and verify its
+exact hash and size through the unchanged production reader. The parent-death
+fixture uses that same owned image. A private `pyvenv.cfg` points the relocated
+CPython to the existing host standard library; no Python loader environment is
+inherited. The first local copy-only attempt exposed that required runtime
+dependency and failed before this configuration was added. The corrected focused
+suite passed 16/16, zero skipped, locally in 4.005 seconds. No production
+permission, symlink, hardlink or capability check is relaxed. The original hosted
+failure is retained; its exact setup rejection still needs the full hosted log,
+and this fixture correction still requires a new hosted run.
+
 Next: review this implementation, bind the patched runtime/profile evidence and
 native activation contract, then run owned isolated-namespace integration only
 where authorized NET_ADMIN/TUN capabilities are actually available. Preserve all
