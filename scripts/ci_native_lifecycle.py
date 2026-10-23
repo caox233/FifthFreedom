@@ -210,8 +210,13 @@ def listener_ownership(child, address):
     for protocol, ports in PORTS.items():
         lines = Path(f"/proc/net/{protocol}").read_text().splitlines()[1:]
         require(len(lines) <= 256, "NAMESPACE_SOCKET_TABLE_TOO_LARGE")
+        # Accepted connections and TIME_WAIT share the listening local tuple.
+        # Uniqueness is a property of TCP LISTEN sockets, not all TCP states.
+        rows = [line.split() for line in lines]
+        if protocol == "tcp":
+            rows = [fields for fields in rows if fields[3] == "0A"]
         for port in ports:
-            matches = [row.split() for row in lines if row.split()[1] == f"{encoded}:{port:04X}"]
+            matches = [fields for fields in rows if fields[1] == f"{encoded}:{port:04X}"]
             require(len(matches) == 1 and matches[0][9] in owned
                     and matches[0][3] == ("0A" if protocol == "tcp" else "07"), "NATIVE_LISTENER_OWNERSHIP_INVALID")
             count += 1

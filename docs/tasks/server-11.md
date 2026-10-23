@@ -175,3 +175,33 @@ raw configuration digest, owner credentials, READY sequence1, five actual bind
 callbacks and EOF/expiry/parent-death cleanup agree with the harness inputs.
 No additional definite startup blocker was identified in that source review;
 actual hosted execution remains the deciding evidence.
+
+## TCP listener ownership: established and retired connections
+
+The actual hosted native lifecycle run39932526946/job120355233722 at source
+528668e failed with `WORKER_NATIVE_LISTENER_OWNERSHIP_INVALID`. Its public log
+does not identify the failing case, port or socket rows. That failure remains
+historical evidence; the local reproduction below does not establish those
+missing details.
+
+Review found a concrete error in the shared native/stack observer: it counted
+every TCP row with a matching local address and port before requiring LISTEN.
+An accepted connection (ESTABLISHED), or a retired connection (TIME_WAIT), can
+legitimately share that tuple with the one owned listener. The check now selects
+TCP LISTEN rows before requiring exactly one row and an inode held by the exact
+pinned child. Exact IP/port, image checks, the socket-table size bound, and UDP's
+existing state07 and uniqueness requirements remain unchanged.
+
+Three Linux regressions use a verified private copy of the Python interpreter,
+an exact owned child, three TCP and two UDP sockets on ephemeral loopback ports,
+and actual kernel socket tables. The old checker rejects both a real held
+ESTABLISHED connection and a subsequent real TIME_WAIT connection alongside the
+owned listener; the corrected checker accepts both. A remaining accepted socket
+without its listener, a different process's listener, and two simultaneous
+LISTEN rows still fail. The duplicate-listener control uses SO_REUSEPORT only
+inside the test child; no production socket option changed.
+
+The full local harness suite passes 16/16, including all prior input and cleanup
+tests. These controls do not execute the native artifact or create namespaces,
+TUNs, game processes or a production provider. A new isolated hosted native and
+combined-stack run is still required to determine their actual result.

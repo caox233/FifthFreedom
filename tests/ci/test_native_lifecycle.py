@@ -1,15 +1,19 @@
 """Portable input guards and Linux owned-interpreter cleanup fault injections.
 
-Synthetic package bytes are never executed; no native service/network is started.
+Synthetic package bytes are never executed; socket controls use owned Python
+children on ephemeral loopback ports, never native services or namespaces.
 """
+import asyncio
 import copy
 from contextlib import redirect_stderr
+import hashlib
 import io
 import json
 import os
 from pathlib import Path
 import signal
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
@@ -207,6 +211,128 @@ class NativeLifecycleInputTests(unittest.TestCase):
         for name in ('encrypted_overlay_verified', 'production_provider_open', 'game_executed',
                      'complete_windows_client', 'deployed', 'published'):
             self.assertIs(probe.SCOPE[name], False)
+
+
+@unittest.skipUnless(sys.platform == 'linux', 'Linux pidfds and real procfs socket states')
+class NativeListenerOwnershipTests(unittest.IsolatedAsyncioTestCase):
+    """Actual five owned sockets and TCP state transitions, no native process."""
+
+    async def asyncSetUp(self):
+        temporary = tempfile.TemporaryDirectory(prefix='ff-listener-ownership-')
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        executable = self.root / 'synthetic-python'
+        shutil.copyfile(Path(sys.executable).resolve(), executable)
+        executable.chmod(0o700)
+        (self.root / 'pyvenv.cfg').write_text(
+            f'home = {Path(sys.executable).resolve().parent}\ninclude-system-site-packages = false\n')
+        image = probe.VerifiedExecutable(executable, hashlib.sha256(executable.read_bytes()).hexdigest(),
+                                         executable.stat().st_size)
+        self.addCleanup(image.close)
+        program = textwrap.dedent('''
+            import json, os, socket, sys, time
+            from pathlib import Path
+            sockets = []
+            ports = {'tcp': [], 'udp': []}
+            for protocol, kind, count in [('tcp', socket.SOCK_STREAM, 3), ('udp', socket.SOCK_DGRAM, 2)]:
+                for _ in range(count):
+                    descriptor = socket.socket(socket.AF_INET, kind)
+                    if protocol == 'tcp':
+                        descriptor.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                        descriptor.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+                    descriptor.bind(('127.0.0.1', 0))
+                    if protocol == 'tcp':
+                        descriptor.listen(2)
+                    sockets.append(descriptor)
+                    ports[protocol].append(descriptor.getsockname()[1])
+            path = Path(sys.argv[1])
+            path.with_suffix('.tmp').write_text(json.dumps(ports))
+            os.replace(path.with_suffix('.tmp'), path)
+            stream, _ = sockets[0].accept()
+            stream.sendall(b'R')
+            command = stream.recv(1)
+            if command == b'D':
+                sockets[0].close()
+                stream.sendall(b'D')
+                command = stream.recv(1)
+            if command == b'C':
+                stream.shutdown(socket.SHUT_WR)
+                while stream.recv(1):
+                    pass
+            stream.close()
+            time.sleep(30)
+        ''')
+        ready = self.root / 'ports.json'
+        self.child = await probe.OwnedChild.spawn(image, ('-I', '-S', '-c', program, str(ready)))
+        self.addAsyncCleanup(self.child.stop)
+        deadline = asyncio.get_running_loop().time() + 3
+        while not ready.exists():
+            self.assertTrue(self.child.alive)
+            self.assertLess(asyncio.get_running_loop().time(), deadline, 'owned sockets not ready')
+            await asyncio.sleep(.01)
+        self.ports = json.loads(ready.read_text())
+        patch = mock.patch.object(probe, 'PORTS', self.ports)
+        patch.start()
+        self.addCleanup(patch.stop)
+
+    def check(self):
+        probe.listener_ownership(self.child, '127.0.0.1')
+
+    def connect(self):
+        stream = socket.create_connection(('127.0.0.1', self.ports['tcp'][0]), 2)
+        self.addCleanup(stream.close)
+        self.assertEqual(stream.recv(1), b'R')
+        return stream
+
+    def tcp_states(self):
+        local = f'0100007F:{self.ports["tcp"][0]:04X}'
+        return [fields[3] for line in Path('/proc/net/tcp').read_text().splitlines()[1:]
+                if (fields := line.split())[1] == local]
+
+    async def test_owned_listener_stays_valid_with_established_and_time_wait_rows(self):
+        self.check()
+        stream = self.connect()
+        self.assertCountEqual(self.tcp_states(), ['0A', '01'])
+        with self.subTest(state='ESTABLISHED'):
+            self.check()
+        stream.sendall(b'C')
+        self.assertEqual(stream.recv(1), b'')
+        stream.shutdown(socket.SHUT_WR)
+        stream.close()
+        deadline = asyncio.get_running_loop().time() + 3
+        while '06' not in self.tcp_states():
+            self.assertLess(asyncio.get_running_loop().time(), deadline, 'real TIME_WAIT not observed')
+            await asyncio.sleep(.01)
+        self.assertCountEqual(self.tcp_states(), ['0A', '06'])
+        with self.subTest(state='TIME_WAIT'):
+            self.check()
+
+    async def test_owned_accepted_connection_without_listener_is_rejected(self):
+        stream = self.connect()
+        stream.sendall(b'D')
+        self.assertEqual(stream.recv(1), b'D')
+        self.assertEqual(self.tcp_states(), ['01'])
+        with self.assertRaisesRegex(probe.ProbeError, '^NATIVE_LISTENER_OWNERSHIP_INVALID$'):
+            self.check()
+
+    async def test_foreign_listener_and_two_listen_rows_are_rejected(self):
+        self.check()
+        with socket.socket() as foreign:
+            foreign.bind(('127.0.0.1', 0))
+            foreign.listen(1)
+            wrong_owner = {**self.ports, 'tcp': [foreign.getsockname()[1], *self.ports['tcp'][1:]]}
+            with mock.patch.object(probe, 'PORTS', wrong_owner):
+                with self.assertRaisesRegex(probe.ProbeError, '^NATIVE_LISTENER_OWNERSHIP_INVALID$'):
+                    self.check()
+        with socket.socket() as duplicate:
+            duplicate.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            duplicate.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+            duplicate.bind(('127.0.0.1', self.ports['tcp'][0]))
+            duplicate.listen(1)
+            self.assertEqual(self.tcp_states().count('0A'), 2)
+            with self.assertRaisesRegex(probe.ProbeError, '^NATIVE_LISTENER_OWNERSHIP_INVALID$'):
+                self.check()
+        self.check()
 
 
 @unittest.skipUnless(sys.platform == 'linux', 'Linux pidfds, subreaper and signals')
