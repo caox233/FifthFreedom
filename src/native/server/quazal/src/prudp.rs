@@ -275,7 +275,14 @@ where
 
     /// Binds the server to a socket address.
     pub fn bind<A: net::ToSocketAddrs>(&mut self, addrs: A) -> io::Result<()> {
-        self.socket = Some(net::UdpSocket::bind(addrs)?);
+        self.socket = Some(crate::socket_policy::bind_lan_udp(addrs)?);
+        info!(self.logger, "Listening on {}", self.socket.as_ref().unwrap().local_addr().unwrap());
+        Ok(())
+    }
+
+    /// Production startup selects a concrete, immutable policy for this socket.
+    pub fn bind_with_policy(&mut self, address: SocketAddr, policy: &crate::socket_policy::SocketPolicy) -> io::Result<()> {
+        self.socket = Some(policy.bind_udp(address)?);
         info!(self.logger, "Listening on {}", self.socket.as_ref().unwrap().local_addr().unwrap());
         Ok(())
     }

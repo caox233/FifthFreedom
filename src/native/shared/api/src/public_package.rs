@@ -12,7 +12,7 @@ use std::path::{Component, Path};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 
-use crate::release_catalog::{self, COMPAT_ID, RELEASE_ID, ROLE_PATHS, SERVER_MARKER};
+use crate::release_catalog::{self, COMPAT_ID, RELEASE_ID, ROLE_PATHS};
 use crate::release_contract::ReleaseIdentity;
 
 pub const MANIFEST_PATH: &str = "package/PUBLIC-SERVER-CATALOG.json";
@@ -295,13 +295,13 @@ pub fn verify_public_package(root: &Path) -> Result<VerifiedPublicPackage, Publi
 }
 
 /// Bind future native startup to the fixed executable position. No upward
-/// catalog search or alternate role/path is accepted. Public main does not call
-/// this yet; its existing readiness gate remains in place.
+/// catalog search or alternate role/path is accepted. The explicit static
+/// preflight uses this; ordinary Public startup remains gated.
 pub fn verify_public_server_package(executable: &Path) -> Result<VerifiedPublicPackage, PublicPackageError> {
     if !normalized_absolute(executable) { return Err(PublicPackageError::InvalidPath); }
     let root = executable.ancestors().nth(2).ok_or(PublicPackageError::InvalidPath)?;
     if executable != root.join(SERVICE_PATH) { return Err(PublicPackageError::InvalidPath); }
-    std::hint::black_box(SERVER_MARKER);
+    release_catalog::retain_server_marker();
     verify_public_package(root)
 }
 

@@ -31,63 +31,100 @@ pub(crate) fn load(_path: &Path) -> Result<hmacsha256::Key, KeyFileError> {
 }
 
 #[cfg(target_os = "linux")]
-pub(crate) fn load(path: &Path) -> Result<hmacsha256::Key, KeyFileError> {
+fn normalized_absolute(path: &Path) -> bool {
+    use std::os::unix::ffi::OsStrExt;
+    path.is_absolute() && !path.as_os_str().as_bytes().split(|byte| *byte == b'/').skip(1)
+        .any(|part| part.is_empty() || part == b"." || part == b"..")
+}
+
+/// Open an existing owner-only directory without following any path component.
+/// Shared by key loading and the read-only public deployment preflight.
+#[cfg(target_os = "linux")]
+pub(crate) fn private_directory(path: &Path) -> Result<std::fs::File, KeyFileError> {
     use std::ffi::CString;
     use std::fs::File;
-    use std::io::Read;
     use std::os::fd::{AsRawFd, FromRawFd};
     use std::os::unix::ffi::OsStrExt;
     use std::os::unix::fs::MetadataExt;
     use std::path::Component;
-
-    fn invalid<E>(_: E) -> KeyFileError { KeyFileError::Invalid }
-    if path.as_os_str().as_bytes().split(|byte| *byte == b'/').skip(1)
-        .any(|part| part.is_empty() || part == b"." || part == b"..") {
-        return Err(KeyFileError::Invalid);
-    }
-    let mut components = path.components();
-    if components.next() != Some(Component::RootDir) { return Err(KeyFileError::Invalid); }
-    let parts: Vec<_> = components.map(|part| match part {
-        Component::Normal(value) => CString::new(value.as_bytes()).map_err(invalid),
-        _ => Err(KeyFileError::Invalid),
-    }).collect::<Result<_, _>>()?;
-    if parts.is_empty() { return Err(KeyFileError::Invalid); }
-    let mut directory = File::open("/").map_err(invalid)?;
+    if !normalized_absolute(path) { return Err(KeyFileError::Invalid); }
+    let mut directory = File::open("/").map_err(|_| KeyFileError::Invalid)?;
     let owner = unsafe { libc::geteuid() };
-    for part in &parts[..parts.len() - 1] {
-        let ancestor = directory.metadata().map_err(invalid)?;
+    for component in path.components().skip(1) {
+        let Component::Normal(part) = component else { return Err(KeyFileError::Invalid); };
+        let part = CString::new(part.as_bytes()).map_err(|_| KeyFileError::Invalid)?;
+        let ancestor = directory.metadata().map_err(|_| KeyFileError::Invalid)?;
         if !trusted_ancestor(ancestor.uid(), ancestor.mode(), owner) { return Err(KeyFileError::Invalid); }
-        // SAFETY: the borrowed parent FD stays live during openat and the CString
-        // is NUL terminated. A nonnegative returned FD is uniquely owned below.
+        // SAFETY: parent FD remains live and CString is NUL terminated. Only a
+        // nonnegative uniquely owned descriptor is transferred to File below.
         let fd = unsafe { libc::openat(directory.as_raw_fd(), part.as_ptr(),
             libc::O_RDONLY | libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC) };
         if fd < 0 { return Err(KeyFileError::Invalid); }
         directory = unsafe { File::from_raw_fd(fd) };
     }
-    let parent = directory.metadata().map_err(invalid)?;
-    if parent.uid() != owner || !matches!(parent.mode() & 0o7777, 0o500 | 0o700) {
+    let metadata = directory.metadata().map_err(|_| KeyFileError::Invalid)?;
+    if metadata.uid() != owner || !matches!(metadata.mode() & 0o7777, 0o500 | 0o700) {
         return Err(KeyFileError::Invalid);
     }
-    let fd = unsafe { libc::openat(directory.as_raw_fd(), parts.last().unwrap().as_ptr(),
+    Ok(directory)
+}
+
+#[cfg(target_os = "linux")]
+fn open_private(path: &Path, maximum: u64) -> Result<(std::fs::File, std::fs::Metadata), KeyFileError> {
+    use std::ffi::CString;
+    use std::fs::File;
+    use std::os::fd::{AsRawFd, FromRawFd};
+    use std::os::unix::ffi::OsStrExt;
+    use std::os::unix::fs::MetadataExt;
+    if !normalized_absolute(path) { return Err(KeyFileError::Invalid); }
+    let directory = private_directory(path.parent().ok_or(KeyFileError::Invalid)?)?;
+    let name = CString::new(path.file_name().ok_or(KeyFileError::Invalid)?.as_bytes()).map_err(|_| KeyFileError::Invalid)?;
+    let fd = unsafe { libc::openat(directory.as_raw_fd(), name.as_ptr(),
         libc::O_RDONLY | libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC) };
     if fd < 0 { return Err(KeyFileError::Invalid); }
-    let mut file = unsafe { File::from_raw_fd(fd) };
-    let before = file.metadata().map_err(invalid)?;
-    if !before.is_file() || before.uid() != owner || before.nlink() != 1
-        || !matches!(before.mode() & 0o7777, 0o400 | 0o600) || before.len() != 32 {
+    let file = unsafe { File::from_raw_fd(fd) };
+    let before = file.metadata().map_err(|_| KeyFileError::Invalid)?;
+    if !before.is_file() || before.uid() != unsafe { libc::geteuid() } || before.nlink() != 1
+        || !matches!(before.mode() & 0o7777, 0o400 | 0o600) || before.len() == 0 || before.len() > maximum {
         return Err(KeyFileError::Invalid);
     }
-    // Read directly into the sodium key wrapper, whose Drop implementation
-    // zeroes the bytes. A bounded extra read rejects growth during startup.
-    let mut key = hmacsha256::Key([0; 32]);
-    file.read_exact(&mut key.0).map_err(invalid)?;
-    let mut extra = [0; 1];
-    if file.read(&mut extra).map_err(invalid)? != 0 { return Err(KeyFileError::Invalid); }
-    let after = file.metadata().map_err(invalid)?;
-    if (before.dev(), before.ino(), before.len(), before.uid(), before.gid(), before.mode(), before.nlink(),
+    Ok((file, before))
+}
+
+#[cfg(target_os = "linux")]
+fn unchanged(before: &std::fs::Metadata, after: &std::fs::Metadata) -> bool {
+    use std::os::unix::fs::MetadataExt;
+    (before.dev(), before.ino(), before.len(), before.uid(), before.gid(), before.mode(), before.nlink(),
         before.mtime(), before.mtime_nsec(), before.ctime(), before.ctime_nsec())
-        != (after.dev(), after.ino(), after.len(), after.uid(), after.gid(), after.mode(), after.nlink(),
-            after.mtime(), after.mtime_nsec(), after.ctime(), after.ctime_nsec()) {
+        == (after.dev(), after.ino(), after.len(), after.uid(), after.gid(), after.mode(), after.nlink(),
+            after.mtime(), after.mtime_nsec(), after.ctime(), after.ctime_nsec())
+}
+
+/// Bounded operator document read using the exact same file/ancestor policy as
+/// the signing key. This is not used for key bytes, which retain sodium wiping.
+#[cfg(target_os = "linux")]
+pub(crate) fn read_private_document(path: &Path, maximum: u64) -> Result<Vec<u8>, KeyFileError> {
+    use std::io::Read;
+    let (mut file, before) = open_private(path, maximum)?;
+    let mut bytes = Vec::with_capacity(before.len() as usize);
+    (&mut file).take(maximum + 1).read_to_end(&mut bytes).map_err(|_| KeyFileError::Invalid)?;
+    if bytes.len() as u64 != before.len() || !unchanged(&before, &file.metadata().map_err(|_| KeyFileError::Invalid)?) {
+        return Err(KeyFileError::Invalid);
+    }
+    Ok(bytes)
+}
+
+#[cfg(target_os = "linux")]
+pub(crate) fn load(path: &Path) -> Result<hmacsha256::Key, KeyFileError> {
+    use std::io::Read;
+    let (mut file, before) = open_private(path, 32)?;
+    if before.len() != 32 { return Err(KeyFileError::Invalid); }
+    // Read directly into the sodium key wrapper, whose Drop clears the bytes.
+    let mut key = hmacsha256::Key([0; 32]);
+    file.read_exact(&mut key.0).map_err(|_| KeyFileError::Invalid)?;
+    let mut extra = [0; 1];
+    if file.read(&mut extra).map_err(|_| KeyFileError::Invalid)? != 0
+        || !unchanged(&before, &file.metadata().map_err(|_| KeyFileError::Invalid)?) {
         return Err(KeyFileError::Invalid);
     }
     Ok(key)

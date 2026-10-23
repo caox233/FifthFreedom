@@ -1,6 +1,7 @@
 //! Synthetic inert file fixtures only. No real catalog, executable, DLL or save
 //! is fabricated/published as a production candidate; these files are never run.
 use super::*;
+use crate::release_catalog::SERVER_MARKER;
 use std::path::PathBuf;
 use std::os::unix::fs::symlink;
 use std::sync::atomic::{AtomicU64, Ordering};

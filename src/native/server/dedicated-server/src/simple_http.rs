@@ -2,7 +2,8 @@ use std::collections::HashMap;
 use std::io::{BufRead, Read};
 use std::io::Write;
 use std::net::SocketAddr;
-use std::net::{TcpListener, TcpStream};
+use std::net::TcpStream;
+use quazal::socket_policy::SocketPolicy;
 use std::time::{Duration, Instant};
 use std::path::PathBuf;
 
@@ -70,8 +71,8 @@ fn receive_request(logger: &slog::Logger, stream: &mut TcpStream) -> Option<Stri
 ///
 /// This function binds to the given address and serves the provided content
 /// to any incoming HTTP request.
-pub fn serve(logger: &slog::Logger, addr: SocketAddr, content: &str) -> std::io::Result<()> {
-    let listener = TcpListener::bind(addr)?;
+pub fn serve(logger: &slog::Logger, addr: SocketAddr, content: &str, socket_policy: &SocketPolicy) -> std::io::Result<()> {
+    let listener = socket_policy.bind_tcp(addr)?;
     crate::lan_runtime::mark_ready(1);
     let resp = format!(
         "HTTP/1.0 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {}\r\n\r\n{}",
@@ -94,8 +95,8 @@ pub fn serve(logger: &slog::Logger, addr: SocketAddr, content: &str) -> std::io:
 /// This function binds to the given address and serves files from the provided
 /// `files` map. The keys of the map are the request paths, and the values are
 /// the paths to the files on disk.
-pub fn serve_many(logger: &slog::Logger, addr: SocketAddr, files: &HashMap<String, PathBuf>) -> std::io::Result<()> {
-    let listener = TcpListener::bind(addr)?;
+pub fn serve_many(logger: &slog::Logger, addr: SocketAddr, files: &HashMap<String, PathBuf>, socket_policy: &SocketPolicy) -> std::io::Result<()> {
+    let listener = socket_policy.bind_tcp(addr)?;
     crate::lan_runtime::mark_ready(2);
     loop {
         let (mut stream, _addr) = listener.accept()?;

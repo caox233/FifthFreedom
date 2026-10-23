@@ -1478,6 +1478,7 @@ pub struct MyMisc {
     storage: Arc<Storage>,
     debug_config: Arc<DebugConfig>,
     uplay_game_sessions: Arc<RwLock<UplayGameSessionRegistry>>,
+    socket_policy: quazal::socket_policy::SocketPolicy,
 }
 
 #[tonic::async_trait]
@@ -1763,7 +1764,9 @@ impl Misc for MyMisc {
         resp_data.extend(request.challenge);
 
         let buf = tokio::time::timeout(std::time::Duration::from_secs(5), async {
-            let socket = tokio::net::UdpSocket::bind("0.0.0.0:0").await?;
+            let socket = self.socket_policy.bind_ephemeral_udp()?;
+            socket.set_nonblocking(true)?;
+            let socket = tokio::net::UdpSocket::from_std(socket)?;
             socket.connect(client_addr).await?;
             socket.send(&resp_data).await?;
             let mut buf = [0; 1024];
@@ -2026,6 +2029,16 @@ fn base32(data: &[u8]) -> String {
     s
 }
 
+/// Bind through the shared policy while preserving tonic's accepted TCP options.
+fn api_incoming(socket_policy: &quazal::socket_policy::SocketPolicy, address: SocketAddr) -> std::io::Result<tonic::transport::server::TcpIncoming> {
+    let listener = socket_policy.bind_tcp(address)?;
+    listener.set_nonblocking(true)?;
+    let listener = tokio::net::TcpListener::from_std(listener)?;
+    // Match tonic Server::builder().serve's accepted-socket defaults. A raw
+    // TcpListenerStream would otherwise silently lose the existing TCP_NODELAY.
+    Ok(tonic::transport::server::TcpIncoming::from(listener).with_nodelay(Some(true)))
+}
+
 /// Starts the gRPC server, binding to the specified address and registering services.
 ///
 /// This function initializes the server, sets up reflection services, and registers
@@ -2038,6 +2051,7 @@ pub async fn start_server(
     debug_config: Arc<DebugConfig>,
     enable_admin_services: bool,
     token_config: AuthTokenConfig,
+    socket_policy: quazal::socket_policy::SocketPolicy,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let overlay_network = LanClientNetwork::from_env()?;
     let uplay_game_sessions = Arc::new(RwLock::new(UplayGameSessionRegistry::default()));
@@ -2077,6 +2091,7 @@ pub async fn start_server(
                 storage: Arc::clone(&storage),
                 debug_config,
                 uplay_game_sessions: Arc::clone(&uplay_game_sessions),
+                socket_policy: socket_policy.clone(),
             }),
             logger.clone(),
             token_config.clone(),
@@ -2107,8 +2122,34 @@ pub async fn start_server(
         builder
     };
 
-    builder.serve(server_addr).await?;
+    builder.serve_with_incoming(api_incoming(&socket_policy, server_addr)?).await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod socket_policy_api_tests {
+    use super::*;
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    use tokio_stream::StreamExt;
+    use tonic::transport::server::Connected;
+
+    #[test]
+    fn policy_listener_preserves_tonic_nodelay_peer_identity_and_lan_bytes() {
+        tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap().block_on(async {
+            let mut incoming = api_incoming(&quazal::socket_policy::SocketPolicy::lan(), "127.0.0.1:0".parse().unwrap()).unwrap();
+            let address = incoming.local_addr().unwrap();
+            let mut client = tokio::net::TcpStream::connect(address).await.unwrap();
+            let mut accepted = incoming.next().await.unwrap().unwrap();
+            assert!(accepted.nodelay().unwrap());
+            let identity = accepted.connect_info();
+            assert_eq!(identity.local_addr, Some(address));
+            assert_eq!(identity.remote_addr, Some(client.local_addr().unwrap()));
+            client.write_all(b"synthetic-api").await.unwrap();
+            let mut bytes = [0u8; 13];
+            accepted.read_exact(&mut bytes).await.unwrap();
+            assert_eq!(&bytes, b"synthetic-api");
+        });
+    }
 }
 
 #[cfg(test)]
@@ -2334,7 +2375,7 @@ mod lan_follow_readiness_tests {
         registry.publish(1,misc::UplayGameSession{id:u64::from(lobby),data:vec![0x5a;496],flags:7,invite_only:private});
         storage.record_published_game_session(1,u64::from(lobby));
         let service=MyMisc{logger:Logger::root(slog::Discard,slog::o!()),storage:Arc::clone(&storage),
-            debug_config:Arc::new(DebugConfig::default()),uplay_game_sessions:Arc::new(RwLock::new(registry))};
+            debug_config:Arc::new(DebugConfig::default()),uplay_game_sessions:Arc::new(RwLock::new(registry)),socket_policy:quazal::socket_policy::SocketPolicy::lan()};
         (service,storage,lobby,room,tokio::runtime::Builder::new_multi_thread().enable_all().build().unwrap())
     }
     fn event(service:&MyMisc,rt:&tokio::runtime::Runtime)->misc::EventResponse {
@@ -2545,7 +2586,7 @@ pub(crate) fn maintenance_api_invitation_checks(storage:Arc<Storage>,host:u32,pe
         publication.publish(host,misc::UplayGameSession{id:room as u64,data:vec![0x5a;496],flags:0,invite_only:false});
         let publications=Arc::new(RwLock::new(publication));
         let friends=MyFriends{logger:logger.clone(),storage:storage.clone(),debug_config:debug_config.clone(),uplay_game_sessions:publications.clone()};
-        let misc=MyMisc{logger,storage:storage.clone(),debug_config,uplay_game_sessions:publications};
+        let misc=MyMisc{logger,storage:storage.clone(),debug_config,uplay_game_sessions:publications,socket_policy:quazal::socket_policy::SocketPolicy::lan()};
         let other_account=storage.find_user_by_id_async(other).await.unwrap().unwrap().ubi_id;
         let peer_account=storage.find_user_by_id_async(peer).await.unwrap().unwrap().ubi_id;
         let bad=friends.invite(request(&storage,&config,host,Some(2),friends::InviteRequest{id:other_account}).await).await;

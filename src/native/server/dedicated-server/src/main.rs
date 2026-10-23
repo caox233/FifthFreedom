@@ -19,6 +19,7 @@ use std::sync::Arc;
 use quazal::prudp::packet::QPacket;
 use quazal::ClientInfo;
 use quazal::Context;
+use quazal::socket_policy::SocketPolicy;
 use sc_bl_protocols as protocols;
 use slog::Drain;
 use slog::Logger;
@@ -49,6 +50,8 @@ mod api;
 mod auth_key_file;
 #[cfg(target_os = "linux")]
 mod instance_lock;
+#[cfg(target_os = "linux")]
+mod public_preflight;
 mod challenge;
 mod clan;
 mod config;
@@ -107,7 +110,7 @@ mod secure_close_retry_tests;
 ///
 /// This function sets up the necessary protocols and handlers for the server
 /// and then enters the server loop.
-fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is_secure: bool) -> io::Result<()> {
+fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is_secure: bool, socket_policy: &SocketPolicy) -> io::Result<()> {
     use quazal::prudp::packet::StreamHandlerRegistry;
     use quazal::prudp::packet::StreamType;
     use quazal::prudp::packet::VPort;
@@ -156,7 +159,7 @@ fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is
         configure_secure_close_handler(&mut server, logger, storage);
         server.user_handler = Some(handle_user_packet);
     }
-    server.bind(ctx.listen)?;
+    server.bind_with_policy(ctx.listen, socket_policy)?;
     lan_runtime::mark_ready(if is_secure { 8 } else { 4 });
     server.serve();
     Ok(())
@@ -257,6 +260,9 @@ struct Args {
     /// optional absolute private 32-byte key file for trusted Linux control-plane sharing
     #[argh(option)]
     auth_key_file: Option<PathBuf>,
+    /// read-only Linux public deployment check; never starts any service
+    #[argh(option)]
+    check_public_deployment: Option<PathBuf>,
     /// path to config file (default: service.toml)
     #[argh(option, short = 'c', long = "config")]
     config_path: Option<PathBuf>,
@@ -298,6 +304,20 @@ where
 fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
     let args = argh::from_env::<Args>();
+    if let Some(path) = args.check_public_deployment.as_deref() {
+        #[cfg(target_os = "linux")]
+        {
+            public_preflight::arguments_valid(&args).map_err(|reason| eyre::eyre!(reason))?;
+            let report = public_preflight::check(path, &std::env::current_exe()?).map_err(|reason| eyre::eyre!(reason))?;
+            println!("{report}");
+            return Ok(());
+        }
+        #[cfg(not(target_os = "linux"))]
+        {
+            let _ = path;
+            return Err(eyre::eyre!("PUBLIC_PREFLIGHT_LINUX_REQUIRED"));
+        }
+    }
     // Resolve deployment before any persistent state or LAN-only startup action.
     // Public deliberately has no startup plan until its secure adapters exist.
     let startup_plan = args.deployment_profile.startup_plan()?;
@@ -357,16 +377,20 @@ fn main() -> color_eyre::Result<()> {
 
     let (service_exit_sender, service_exit_receiver) = mpsc::channel();
     let mut threads = Vec::new();
+    // Public remains gated above. All retained LAN sockets use the explicit LAN
+    // policy; an unverified interface configuration cannot activate public I/O.
+    let socket_policy = SocketPolicy::lan();
     for (name, svc) in config.quazal.into_services()? {
         let logger = logger.new(o!("service" => name.clone()));
         info!(logger, "Loaded LAN service {}", name);
         let storage = Arc::clone(&storage);
+        let socket_policy = socket_policy.clone();
         let handle = match svc {
             quazal::Service::Authentication(ctx) => spawn_required_service(name, service_exit_sender.clone(), move || {
-                start_server(&logger, &ctx, &storage, false).map_err(|error| format!("authentication server failed: {error}"))
+                start_server(&logger, &ctx, &storage, false, &socket_policy).map_err(|error| format!("authentication server failed: {error}"))
             }),
             quazal::Service::Secure(ctx) => spawn_required_service(name, service_exit_sender.clone(), move || {
-                start_server(&logger, &ctx, &storage, true).map_err(|error| format!("secure server failed: {error}"))
+                start_server(&logger, &ctx, &storage, true, &socket_policy).map_err(|error| format!("secure server failed: {error}"))
             }),
             quazal::Service::Config(cfg) => spawn_required_service(name, service_exit_sender.clone(), move || {
                 if cfg.listen.port() != 80 {
@@ -376,10 +400,10 @@ fn main() -> color_eyre::Result<()> {
                         cfg.listen.port()
                     );
                 }
-                simple_http::serve(&logger, cfg.listen, &cfg.content()).map_err(|error| format!("config server failed: {error}"))
+                simple_http::serve(&logger, cfg.listen, &cfg.content(), &socket_policy).map_err(|error| format!("config server failed: {error}"))
             }),
             quazal::Service::Content(srv) => spawn_required_service(name, service_exit_sender.clone(), move || {
-                simple_http::serve_many(&logger, srv.listen, &srv.files).map_err(|error| format!("content server failed: {error}"))
+                simple_http::serve_many(&logger, srv.listen, &srv.files, &socket_policy).map_err(|error| format!("content server failed: {error}"))
             }),
         };
         threads.push(handle?);
@@ -389,7 +413,7 @@ fn main() -> color_eyre::Result<()> {
         let logger = logger.new(o!("service" => "api"));
         let runtime = tokio::runtime::Runtime::new().map_err(|error| format!("API runtime creation failed: {error}"))?;
         runtime
-            .block_on(api::start_server(logger, storage, config.api_server, Arc::new(config.debug), false, token_config))
+            .block_on(api::start_server(logger, storage, config.api_server, Arc::new(config.debug), false, token_config, socket_policy))
             .map_err(|error| format!("API server failed: {error:?}"))
     })?);
 
