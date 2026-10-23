@@ -217,6 +217,13 @@ def windows_components(receipt: dict) -> None:
         "helper_sha256": digest_before, "helper_bytes": executable.stat().st_size,
         "helper_selected_from_same_invocation_cargo_json": True, "game_executed": False,
         "package_and_loaded_dll_admission_exercised": False}
+    source_log = run_build_step("ci-native-public-source-transport", [cargo, "test", "--locked", "-p", "hooks", "--lib",
+        "--features", "patch-free,lan-goal-origin", "api::source_transport::tests", "--", "--test-threads=1"], native, env)
+    receipt["native_public_source_transport_checks"] = {
+        "passed": required_native_test_count(source_log.with_suffix(".stdout.txt").read_text(encoding="utf-8", errors="replace"), expected=8),
+        "failed": 0, "ignored": 0, "game_executed": False, "production_admission": False,
+        "scope": "owned Windows loopback sockets, interface/source binding and revocation of retained API transports",
+    }
     for label, args in (
         ("hooks", ["-p", "hooks", "--lib", "--features", "patch-free,lan-goal-origin"]),
         ("gameplay", ["-p", "scbl-gameplay", "--lib", "--features", "goggle-feedback"]),
