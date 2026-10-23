@@ -3,6 +3,7 @@ import copy
 import asyncio
 from dataclasses import asdict
 import json
+import io
 import os
 from pathlib import Path
 import shutil
@@ -173,6 +174,76 @@ class ContainmentTests(unittest.TestCase):
 
 
 class ReceiptAndControlTests(unittest.TestCase):
+    def test_worker_failure_frame_is_strict_and_never_echoes_unknown_messages(self):
+        state = dict(phase="observe", cleanup_code=None)
+        value = worker.failure_record(worker.LifecycleError("OVERLAY_TUN_NOT_OWNED"), state)
+        self.assertTrue(worker.valid_failure_record(value))
+        self.assertEqual(value["code"], "OVERLAY_TUN_NOT_OWNED")
+        for error in (RuntimeError("SECRET"), worker.ProbeError("SECRET"), OSError("SECRET")):
+            record = worker.failure_record(error, state)
+            self.assertNotIn("SECRET", json.dumps(record))
+            self.assertTrue(worker.valid_failure_record(record))
+        for key, changed in (("schema", "unknown"), ("phase", "secret-phase"),
+                             ("code", "SECRET"), ("cleanup_reaped", 1), ("cleanup_code", [])):
+            self.assertFalse(worker.valid_failure_record(dict(value, **{key: changed})))
+        self.assertFalse(worker.valid_failure_record(dict(value, extra="SECRET")))
+        self.assertFalse(worker.valid_failure_record(dict(value, cleanup_reaped=False)))
+
+    def test_source_failure_survives_successful_or_failed_independent_cleanup(self):
+        from unittest.mock import Mock, AsyncMock
+        profile = profiles()[1]
+        for cleanup_fails in (False, True):
+            state = dict(phase="arguments", cleanup_code=None)
+            handles = [Mock(), Mock(), Mock()]
+            handles[0].identity.sha256 = profile.candidate.executable_sha256
+            handles[0].identity.size = profile.candidate.executable_size
+            core = Mock()
+            core.image_matches.return_value = True
+            core.stop = AsyncMock(side_effect=worker.LifecycleError("CHILD_STOP_TIMEOUT") if cleanup_fails else None)
+            monitor = Mock()
+            monitor.prepare = AsyncMock()
+            monitor.observe = AsyncMock(side_effect=worker.LifecycleError("OVERLAY_TUN_NOT_OWNED"))
+            document = dict(profile=asdict(profile), config="/tmp/synthetic-private-config",
+                **{role: dict(path="/tmp/synthetic-" + role, sha256="1" * 64, bytes=64) for role in ("core", "cli", "probe")})
+            stdin = Mock(buffer=io.BytesIO(b'{"action":"observe"}\n'))
+            with patch.object(worker, "VerifiedExecutable", side_effect=handles), patch.object(worker, "KernelTunMonitor", return_value=monitor), patch.object(worker.OwnedChild, "spawn", new=AsyncMock(return_value=core)), patch.object(worker.sys, "stdin", stdin), patch.object(worker, "_reply") as reply:
+                with self.assertRaises(worker.WorkerFailure) as raised:
+                    asyncio.run(worker.serve(document, state))
+            record = raised.exception.record
+            self.assertEqual((record["phase"], record["code"]), ("observe", "OVERLAY_TUN_NOT_OWNED"))
+            self.assertEqual(record["cleanup_reaped"], not cleanup_fails)
+            self.assertEqual(record["cleanup_code"], "WORKER_CHILD_CLEANUP_FAILED" if cleanup_fails else None)
+            self.assertTrue(worker.valid_failure_record(record))
+            core.stop.assert_awaited_once()
+            for handle in handles: handle.close.assert_called_once()
+            self.assertEqual(reply.call_count, 1)  # started, never a successful stop ACK
+
+    def test_unconfirmed_query_cleanup_never_claims_all_children_reaped(self):
+        from unittest.mock import Mock, AsyncMock
+        profile = profiles()[1]
+        state = dict(phase="arguments", cleanup_code=None)
+        handles = [Mock(), Mock(), Mock()]
+        handles[0].identity.sha256 = profile.candidate.executable_sha256
+        handles[0].identity.size = profile.candidate.executable_size
+        core = Mock(); core.image_matches.return_value = True; core.stop = AsyncMock()
+        monitor = Mock(); monitor.prepare = AsyncMock(); monitor.observe = AsyncMock(return_value=Mock())
+        query = Mock(); query.read.side_effect = worker.ProbeError("PIPE_READ_TIMEOUT")
+        query.close.side_effect = worker.ProbeError("PIPE_CHILD_CLEANUP_TIMEOUT")
+        document = dict(profile=asdict(profile), config="/tmp/synthetic-private-config",
+            **{role: dict(path="/tmp/synthetic-" + role, sha256="1" * 64, bytes=64) for role in ("core", "cli", "probe")})
+        stdin = Mock(buffer=io.BytesIO(b'{"action":"observe"}\n'))
+        with patch.object(worker, "VerifiedExecutable", side_effect=handles), patch.object(worker, "KernelTunMonitor", return_value=monitor), patch.object(worker.OwnedChild, "spawn", new=AsyncMock(return_value=core)), patch.object(worker, "VerifiedPipeChild", return_value=query), patch.object(worker.sys, "stdin", stdin), patch.object(worker, "_reply"):
+            with self.assertRaises(worker.WorkerFailure) as raised:
+                asyncio.run(worker.serve(document, state))
+        self.assertEqual((raised.exception.record["phase"], raised.exception.record["code"]), ("peer-query", "PIPE_READ_TIMEOUT"))
+        self.assertFalse(raised.exception.record["cleanup_reaped"])
+        self.assertEqual(raised.exception.record["cleanup_code"], "CLI_CHILD_CLEANUP_UNCONFIRMED")
+        self.assertTrue(worker.valid_failure_record(raised.exception.record))
+        query.close.assert_called_once(); core.stop.assert_awaited_once()
+        for handle in handles: handle.close.assert_called_once()
+        with patch.object(worker, "VerifiedPipeChild", side_effect=worker.ProbeError("PIPE_CHILD_START_FAILED")):
+            with self.assertRaises(worker.QueryCleanupUnconfirmed): worker.bounded_query(None, ())
+
     def test_real_guard3_receipt_and_older_or_incomplete_identity(self):
         lock = json.loads((ROOT / "scripts/easytier-source.lock.json").read_bytes())
         receipt = json.loads((ROOT / "docs/evidence/easytier-clean-linux-build-guard3.json").read_bytes())
@@ -321,6 +392,46 @@ class VerifiedPipeTests(unittest.TestCase):
         image = probe.VerifiedExecutable(destination, value["sha256"], value["bytes"])
         self.addCleanup(image.close)
         return image
+
+    def test_actual_worker_failure_is_bounded_and_parent_reaps_without_second_ack(self):
+        # This real worker is deliberately missing arguments: no namespace,
+        # config, core, CLI, TUN or synthetic socket probe can be started.
+        child = probe.NamespaceWorker.__new__(probe.NamespaceWorker)
+        child.cleaned, child.worker_failure = False, None
+        child.process = subprocess.Popen([sys.executable, "-I", "-B", str(ROOT / "scripts/easytier_probe_worker.py")],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=0)
+        child.pidfd = os.pidfd_open(child.process.pid)
+        process = child.process
+        try:
+            with self.assertRaises(worker.WorkerFailure) as raised:
+                child.read()
+            self.assertEqual(raised.exception.record, dict(event="failed", schema=worker.FAILURE_SCHEMA,
+                phase="arguments", code="WORKER_ARGUMENTS_INVALID", cleanup_reaped=True, cleanup_code=None))
+            self.assertTrue(child.stop())
+        finally:
+            child.stop()
+        self.assertEqual(process.returncode, 1)
+        self.assertIsNone(child.process)
+        with self.assertRaises(ChildProcessError): os.waitpid(process.pid, os.WNOHANG)
+
+    def test_parent_rejects_extra_fields_in_failure_frame(self):
+        child = probe.NamespaceWorker.__new__(probe.NamespaceWorker)
+        child.cleaned, child.worker_failure = False, None
+        value = worker.failure_record(worker.ProbeError("WORKER_COMMAND_INVALID"), dict(phase="parent-command", cleanup_code=None))
+        value["extra"] = "private-input-must-not-be-forwarded"
+        child.process = subprocess.Popen([sys.executable, "-I", "-S", "-c",
+            "import sys; sys.stdout.write(sys.argv[1]); sys.stdout.flush()", json.dumps(value) + "\n"],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=0)
+        child.pidfd = os.pidfd_open(child.process.pid)
+        process = child.process
+        try:
+            with self.assertRaisesRegex(worker.ProbeError, "WORKER_FAILURE_FRAME_INVALID"):
+                child.read()
+            self.assertIsNone(child.worker_failure)
+        finally:
+            child.stop()
+        self.assertIsNotNone(process.returncode)
+        with self.assertRaises(ChildProcessError): os.waitpid(process.pid, os.WNOHANG)
 
     def test_bounded_fdexec_returns_exact_stdout_and_reaps(self):
         image = self.image("printf")

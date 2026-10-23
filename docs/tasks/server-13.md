@@ -233,3 +233,38 @@ EasyTier or native runtime execution in that quick workflow. It resolves the
 observed predicate presentation mismatch while leaving strict comparisons in
 place. The complete owned runtime matrix is a separate run and is still needed;
 no full overlay or production admission success follows from this preflight.
+
+The subsequent full run
+[39916016529](https://github.com/caox233/FifthFreedom/actions/runs/39916016529),
+job 120289658048, passed containment and compiled the reviewed runtime/native
+probe, then failed with `WORKER_REPLY_EOF`, `OWNED_WORKER_CLEANUP_FAILED` and
+`TRANSPORT_MATRIX_INCOMPLETE`. Its original worker error handler discarded the
+exception and stage. These codes do **not** establish whether core startup, TUN
+ownership, peer authentication or packet transfer had succeeded. Raw artifact
+contents remain unavailable through the attempted official archive path.
+
+The worker now emits a bounded `ff-easytier-worker-failure-v1` protocol record
+after its child cleanup attempts. Exact source-defined phase/error enums and a
+separate cleanup result are the only fields; private configuration, RPC output,
+exception messages and runtime stdout/stderr remain excluded. The parent rejects
+unknown schemas, codes, extra keys and inconsistent cleanup booleans. A failure
+record always fails the transport and matrix. Its cleanup acknowledgement replaces
+the normal stop acknowledgement; the parent still waits for its exact worker and
+does not infer child reaping from worker exit or parent-death signals. Failed
+spawns that return no ownership handle conservatively report their internal
+cleanup unconfirmed. A short-lived peer-query child whose construction or close
+does not return confirmed ownership cleanup also fails immediately with a
+separate `CLI_CHILD_CLEANUP_UNCONFIRMED` result; it cannot become an ordinary
+unauthenticated observation or a claim that all children were reaped.
+
+The new real short-lived subprocess regression also exposed a parent cleanup
+race: after a failed stop command, an already-readable pidfd previously bypassed
+`Popen.wait()`. The parent now always waits/reaps that exact child. The test checks
+that a second `waitpid` reports no remaining child. This reproduced cleanup bug
+is independent of the still-unknown cause of the hosted worker EOF.
+
+The focused suite now has 25 passing tests, including actual bounded failure
+protocol/reaping and independent source-error plus cleanup-error injection. No
+EasyTier core, TUN or namespace runs in those tests. No timeout, containment rule,
+readiness check or production admission gate was relaxed; another actual hosted
+run must supply the missing runtime diagnosis.

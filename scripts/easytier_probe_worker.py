@@ -20,7 +20,7 @@ from fifth_freedom_control.easytier_profile import (ProfileError, core_arguments
     parse_peer_observation, parse_profile, peer_query_arguments)
 from fifth_freedom_control.owned_process import LifecycleError, OwnedChild, VerifiedExecutable, _BOOTSTRAP
 from fifth_freedom_control.overlay_supervisor import KernelTunMonitor
-from fifth_freedom_control.secure_config import read_private
+from fifth_freedom_control.secure_config import AdmissionError, read_private
 from ci_socket_isolation import observe_echo, parse_ready, PORT_FIELDS
 
 CLEAN_ENV = {"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "TZ": "UTC"}
@@ -28,6 +28,79 @@ CLEAN_ENV = {"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "TZ": "UTC"}
 
 class ProbeError(RuntimeError):
     pass
+
+
+FAILURE_SCHEMA = "ff-easytier-worker-failure-v1"
+FAILURE_PHASES = frozenset(("arguments", "release", "manifest", "namespace", "profile", "images",
+    "monitor-prepare", "core-start", "parent-command", "observe", "peer-query", "probe-start", "echo", "core-stop", "cleanup"))
+# Never derive public strings from arbitrary exception messages or errno text.
+# Unknown/new implementation failures remain a fixed unclassified failure.
+FAILURE_CODES = frozenset("""
+WORKER_UNCLASSIFIED_ERROR WORKER_OS_ERROR WORKER_INPUT_ERROR WORKER_CANCELLED
+WORKER_ARGUMENTS_INVALID WORKER_NOT_RELEASED WORKER_NAMESPACE_IDENTITY_MISMATCH
+WORKER_NAMESPACE_ENTRY_FAILED WORKER_CORE_PROFILE_MISMATCH WORKER_PARENT_EOF
+WORKER_COMMAND_LIMIT WORKER_COMMAND_INVALID WORKER_CORE_EXITED WORKER_PROBE_STATE_INVALID
+WORKER_TUN_NOT_READY WORKER_PORTS_INVALID WORKER_OWNERSHIP_LOST WORKER_REPLY_LIMIT
+WORKER_CHILD_CLEANUP_FAILED PROFILE_INVALID JSON_INVALID JSON_SIZE_INVALID
+CANDIDATE_INVALID PRIVATE_FILE_INVALID PRIVATE_FILE_CHANGED PRIVATE_FILE_UNAVAILABLE
+PRIVATE_FILE_TOO_LARGE PRIVATE_FILE_UNSUPPORTED OWNED_PROCESS_UNSUPPORTED
+EXECUTABLE_PATH_INVALID EXECUTABLE_IDENTITY_INVALID EXECUTABLE_FILE_INVALID
+EXECUTABLE_CAPABILITIES_UNVERIFIED EXECUTABLE_CAPABILITIES_FORBIDDEN EXECUTABLE_ELF_INVALID
+EXECUTABLE_CHANGED EXECUTABLE_HASH_MISMATCH EXECUTABLE_UNAVAILABLE
+CHILD_SPEC_INVALID CHILD_BOOTSTRAP_FAILED CHILD_EXITED_DURING_START CHILD_EXEC_FAILED
+CHILD_BOOTSTRAP_CLEANUP_FAILED CHILD_START_FAILED CHILD_HANDSHAKE_FAILED
+CHILD_STOP_BUDGET_INVALID CHILD_SIGNAL_FAILED CHILD_STOP_TIMEOUT
+OVERLAY_INTERFACE_INVALID OVERLAY_ADDRESS_INVALID OVERLAY_INTERFACE_ALREADY_EXISTS
+OVERLAY_NAMESPACE_UNAVAILABLE OVERLAY_OWNERSHIP_LOST OVERLAY_NAMESPACE_CHANGED
+OVERLAY_ADDRESS_OR_LINK_LOST OVERLAY_FD_BOUND_EXCEEDED OVERLAY_FDINFO_BOUND_EXCEEDED
+OVERLAY_TUN_NOT_OWNED OVERLAY_OBSERVATION_UNAVAILABLE
+PIPE_CHILD_SPEC_INVALID PIPE_BOOTSTRAP_FAILED PIPE_EXEC_FAILED PIPE_CHILD_START_FAILED
+PIPE_READ_LIMIT_INVALID PIPE_READ_TIMEOUT PIPE_READY_EOF PIPE_CHILD_FAILED PIPE_OUTPUT_LIMIT
+PIPE_READY_INVALID PIPE_CHILD_EXITED PIPE_READ_FAILED PIPE_CHILD_CLEANUP_TIMEOUT
+""".split())
+CLEANUP_CODES = frozenset(("WORKER_CHILD_CLEANUP_FAILED", "CHILD_START_CLEANUP_UNCONFIRMED", "CLI_CHILD_CLEANUP_UNCONFIRMED"))
+
+
+class QueryCleanupUnconfirmed(RuntimeError):
+    def __init__(self, cause):
+        super().__init__("CLI_CHILD_CLEANUP_UNCONFIRMED")
+        self.cause = cause
+
+
+class WorkerFailure(ProbeError):
+    def __init__(self, record):
+        super().__init__("WORKER_REPORTED_FAILURE")
+        self.record = record
+
+
+def fixed_failure_code(error):
+    if isinstance(error, (ProbeError, LifecycleError, ProfileError, AdmissionError)):
+        code = str(error)
+        return code if code in FAILURE_CODES else "WORKER_UNCLASSIFIED_ERROR"
+    if isinstance(error, OSError):
+        return "WORKER_OS_ERROR"
+    if isinstance(error, (ValueError, TypeError, KeyError)):
+        return "WORKER_INPUT_ERROR"
+    if isinstance(error, (KeyboardInterrupt, asyncio.CancelledError)):
+        return "WORKER_CANCELLED"
+    return "WORKER_UNCLASSIFIED_ERROR"
+
+
+def failure_record(error, state):
+    return dict(event="failed", schema=FAILURE_SCHEMA,
+        phase=state["phase"] if state["phase"] in FAILURE_PHASES else "arguments",
+        code=fixed_failure_code(error), cleanup_reaped=state["cleanup_code"] is None,
+        cleanup_code=state["cleanup_code"])
+
+
+def valid_failure_record(value):
+    return (type(value) is dict and set(value) == {"event", "schema", "phase", "code", "cleanup_reaped", "cleanup_code"}
+        and value["event"] == "failed" and value["schema"] == FAILURE_SCHEMA
+        and type(value["phase"]) is str and value["phase"] in FAILURE_PHASES
+        and type(value["code"]) is str and value["code"] in FAILURE_CODES
+        and type(value["cleanup_reaped"]) is bool
+        and (value["cleanup_code"] is None or type(value["cleanup_code"]) is str and value["cleanup_code"] in CLEANUP_CODES)
+        and value["cleanup_reaped"] == (value["cleanup_code"] is None))
 
 
 def fail(code):
@@ -155,11 +228,24 @@ class VerifiedPipeChild:
 
 
 def bounded_query(program, arguments):
-    child = VerifiedPipeChild(program, arguments)
+    child, error, result = None, None, None
     try:
-        return child.read(limit=65536, timeout=2)
+        child = VerifiedPipeChild(program, arguments)
+        result = child.read(limit=65536, timeout=2)
+    except BaseException as caught:
+        error = caught
     finally:
-        child.close()
+        if child is not None:
+            try:
+                child.close()
+            except BaseException as caught:
+                raise QueryCleanupUnconfirmed(error if error is not None else caught) from None
+    if child is None:
+        # Constructor unwind was internal; no ownership handle was returned.
+        raise QueryCleanupUnconfirmed(error) from None
+    if error is not None:
+        raise error
+    return result
 
 
 def _reply(value):
@@ -191,10 +277,13 @@ async def cleanup_children(core, probe, handles):
         fail("WORKER_CHILD_CLEANUP_FAILED")
 
 
-async def serve(manifest):
+async def serve(manifest, state):
+    state["phase"] = "profile"
     profile = parse_profile(json.dumps(manifest["profile"]).encode())
     handles, core, probe = [], None, None
+    failure = None
     try:
+        state["phase"] = "images"
         for role in ("core", "cli", "probe"):
             image = manifest[role]
             handles.append(VerifiedExecutable(Path(image["path"]), image["sha256"], image["bytes"]))
@@ -202,12 +291,15 @@ async def serve(manifest):
         if (core_image.identity.sha256 != profile.candidate.executable_sha256
                 or core_image.identity.size != profile.candidate.executable_size):
             fail("WORKER_CORE_PROFILE_MISMATCH")
+        state["phase"] = "monitor-prepare"
         monitor = KernelTunMonitor(profile.interface_name, str(profile.local.overlay.ip))
         await monitor.prepare()
         # No inherited ET_* options; core output includes cfg.dump and stays null.
+        state["phase"] = "core-start"
         core = await OwnedChild.spawn(core_image, core_arguments(profile, manifest["config"]))
         _reply({"event": "started", "profile_sha256": profile.sha256})
         while True:
+            state["phase"] = "parent-command"
             line = await asyncio.to_thread(sys.stdin.buffer.readline, 4097)
             if not line:
                 fail("WORKER_PARENT_EOF")
@@ -218,6 +310,7 @@ async def serve(manifest):
             if action == "stop":
                 break
             if action == "stop-core":
+                state["phase"] = "core-stop"
                 await core.stop()
                 absent = False
                 try:
@@ -226,18 +319,29 @@ async def serve(manifest):
                     absent = True
                 _reply({"event": "core-stopped", "core_reaped": core.closed, "tun_absent": absent})
                 continue
+            state["phase"] = "observe"
             if not core.image_matches():
                 fail("WORKER_CORE_EXITED")
             observation = await monitor.observe(core)
             if action == "observe":
                 authenticated = False
                 if observation is not None:
+                    state["phase"] = "peer-query"
                     try:
                         raw = await asyncio.to_thread(bounded_query, cli_image, peer_query_arguments(profile))
                         parse_peer_observation(profile, raw)
                         authenticated = True
+                    except QueryCleanupUnconfirmed as error:
+                        state["cleanup_code"] = "CLI_CHILD_CLEANUP_UNCONFIRMED"
+                        raise error.cause from None
+                    except asyncio.CancelledError:
+                        # Cancelling the await does not establish that the
+                        # bounded executor query has completed its own close.
+                        state["cleanup_code"] = "CLI_CHILD_CLEANUP_UNCONFIRMED"
+                        raise
                     except (ProfileError, ProbeError):
                         pass
+                    state["phase"] = "observe"
                 if not core.image_matches():
                     fail("WORKER_CORE_EXITED")
                 _reply({"event": "observation", "tun_owned": observation is not None,
@@ -245,6 +349,7 @@ async def serve(manifest):
                         "interface_index": observation.interface_index if observation is not None else None,
                         "probe_alive": probe.alive if probe is not None else None})
             elif action == "start-probe":
+                state["phase"] = "probe-start"
                 if observation is None or probe is not None or profile.role != "responder":
                     fail("WORKER_PROBE_STATE_INVALID")
                 probe = VerifiedPipeChild(probe_image, ("serve", "interface-bound",
@@ -252,6 +357,7 @@ async def serve(manifest):
                 ready = parse_ready(probe.read(limit=4096, timeout=4, line=True), "interface-bound")
                 _reply({"event": "probe-ready", **{key: ready[key] for key in PORT_FIELDS}})
             elif action == "echo":
+                state["phase"] = "echo"
                 if observation is None:
                     fail("WORKER_TUN_NOT_READY")
                 ports = command.get("ports")
@@ -268,24 +374,37 @@ async def serve(manifest):
                 _reply({"event": "echo", "outcomes": outcomes})
             else:
                 fail("WORKER_COMMAND_INVALID")
-        # Stop the synthetic native probe before the owned overlay. This is
-        # development cleanup, not a claim about production native lease expiry.
-        await cleanup_children(core, probe, handles)
-        core = probe = None
-        handles = []
-        _reply({"event": "stopped", "children_reaped": True})
+    except BaseException as error:
+        failure = error
+        if ((state["phase"] == "core-start" and core is None)
+                or (state["phase"] == "probe-start" and probe is None)):
+            # A failed spawn does its own unwind. Without a returned ownership
+            # handle this worker conservatively makes no independent reap claim.
+            state["cleanup_code"] = "CHILD_START_CLEANUP_UNCONFIRMED"
     finally:
-        await cleanup_children(core, probe, handles)
+        try:
+            await cleanup_children(core, probe, handles)
+        except BaseException as error:
+            state["cleanup_code"] = "WORKER_CHILD_CLEANUP_FAILED"
+            if failure is None:
+                failure = error
+                state["phase"] = "cleanup"
+    if failure is not None:
+        raise WorkerFailure(failure_record(failure, state)) from None
+    _reply({"event": "stopped", "children_reaped": True})
 
 
-def main(namespace_fd, manifest_path):
+def main(namespace_fd, manifest_path, state):
     # This executes before asyncio.to_thread or any spawned child. All threads
     # and exact core/CLI children inherit this one owned namespace afterwards.
     # The owner must acquire its worker pidfd before releasing any namespace
     # work or core startup. An acquisition failure closes stdin and starts none.
+    state["phase"] = "release"
     if sys.stdin.buffer.readline(7) != b"START\n":
         fail("WORKER_NOT_RELEASED")
+    state["phase"] = "manifest"
     manifest = json.loads(read_private(manifest_path, 32768))
+    state["phase"] = "namespace"
     expected = manifest["namespace"]
     info = os.fstat(namespace_fd)
     if [info.st_dev, info.st_ino] != expected:
@@ -296,15 +415,20 @@ def main(namespace_fd, manifest_path):
         fail("WORKER_NAMESPACE_ENTRY_FAILED")
     os.close(namespace_fd)
     os.chdir(Path(manifest_path).parent)
-    asyncio.run(serve(manifest))
+    asyncio.run(serve(manifest, state))
 
 
 if __name__ == "__main__":
+    state = dict(phase="arguments", cleanup_code=None)
     try:
         if len(sys.argv) != 3:
             fail("WORKER_ARGUMENTS_INVALID")
-        main(int(sys.argv[1]), sys.argv[2])
-    except BaseException:
+        main(int(sys.argv[1]), sys.argv[2], state)
+    except BaseException as error:
         # Exception messages and runtime/config output never enter public logs.
+        try:
+            _reply(error.record if isinstance(error, WorkerFailure) else failure_record(error, state))
+        except BaseException:
+            pass  # The parent may have closed the pipe; never log raw exceptions.
         sys.stderr.write("EASYTIER_DEVELOPMENT_WORKER_FAILED\n")
         raise SystemExit(1)

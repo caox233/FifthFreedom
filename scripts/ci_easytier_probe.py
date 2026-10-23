@@ -26,7 +26,7 @@ from fifth_freedom_control.easytier_profile import parse_profile, emit_private_t
 from fifth_freedom_control.owned_process import LifecycleError, VerifiedExecutable
 from fifth_freedom_control.overlay_supervisor import RuntimeCandidateIdentity
 from ci_socket_isolation import OwnedNamespaces, IsolationError, PORT_FIELDS
-from easytier_probe_worker import CLEAN_ENV, ProbeError, fail
+from easytier_probe_worker import CLEAN_ENV, ProbeError, WorkerFailure, valid_failure_record, fail
 
 PIN_GUARD = "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328"
 TRANSPORTS = ("quic", "wss", "tcp")
@@ -456,6 +456,7 @@ class NamespaceWorker:
         self.process = None
         self.pidfd = -1
         self.cleaned = False
+        self.worker_failure = None
         expected_profile = parse_profile(json.dumps(json_bytes(Path(manifest_path).read_bytes())["profile"]).encode()).sha256
         namespaces.assert_owned(name)
         fd = namespaces.owned[name]
@@ -468,8 +469,13 @@ class NamespaceWorker:
             reply = self.read(8)
             if reply != {"event": "started", "profile_sha256": expected_profile}:
                 fail("WORKER_START_FAILED")
-        except BaseException:
-            self.stop()
+        except BaseException as error:
+            try:
+                cleaned = self.stop()
+            except BaseException:
+                cleaned = False
+            if isinstance(error, WorkerFailure) and not cleaned and error.record["cleanup_reaped"]:
+                error.record = dict(error.record, cleanup_reaped=False, cleanup_code="WORKER_CHILD_CLEANUP_FAILED")
             raise
 
     def read(self, timeout=8):
@@ -486,7 +492,14 @@ class NamespaceWorker:
                 fail("WORKER_REPLY_LIMIT")
         if data.count(b"\n") != 1 or not data.endswith(b"\n"):
             fail("WORKER_REPLY_INVALID")
-        return json_bytes(bytes(data), 4096)
+        reply = json_bytes(bytes(data), 4096)
+        if type(reply) is dict and reply.get("event") == "failed":
+            if not valid_failure_record(reply):
+                fail("WORKER_FAILURE_FRAME_INVALID")
+            if getattr(self, "worker_failure", None) is None:
+                self.worker_failure = reply
+            raise WorkerFailure(self.worker_failure)
+        return reply
 
     def command(self, action, **values):
         if self.pidfd < 0 or select.select([self.pidfd], [], [], 0)[0]:
@@ -499,22 +512,37 @@ class NamespaceWorker:
         if self.process is None:
             return self.cleaned
         try:
-            if self.pidfd >= 0 and not select.select([self.pidfd], [], [], 0)[0]:
-                try:
-                    response = self.command("stop")
-                    self.cleaned = response == {"event": "stopped", "children_reaped": True}
-                    self.process.wait(timeout=4)
-                    self.cleaned = self.cleaned and self.process.returncode == 0
-                except (ProbeError, OSError, subprocess.SubprocessError):
+            if getattr(self, "worker_failure", None) is None:
+                if self.pidfd >= 0 and not select.select([self.pidfd], [], [], 0)[0]:
+                    try:
+                        response = self.command("stop")
+                        self.cleaned = response == {"event": "stopped", "children_reaped": True}
+                    except (ProbeError, OSError, subprocess.SubprocessError):
+                        self.cleaned = False
+                else:
                     self.cleaned = False
-                if not select.select([self.pidfd], [], [], 0)[0]:
-                    signal.pidfd_send_signal(self.pidfd, signal.SIGKILL)
-                    self.process.wait(timeout=3)
-            else:
+            if getattr(self, "worker_failure", None) is not None:
+                # A failure frame follows child cleanup attempts and replaces
+                # the ordinary stop ACK. The enclosing run still fails; worker
+                # death alone never proves that its children were reaped.
+                self.cleaned = self.worker_failure["cleanup_reaped"]
+            if self.pidfd < 0 and not self.process.stdin.closed:
+                self.process.stdin.close()  # Unreleased bootstrap receives EOF.
+            try:
+                # Reap even when pidfd already reports exit. Merely noticing a
+                # readable pidfd does not reap our exact Popen child.
+                self.process.wait(timeout=4)
+            except subprocess.TimeoutExpired:
                 self.cleaned = False
                 if self.pidfd < 0:
-                    self.process.stdin.close()  # EOF makes an unpinned worker clean up.
-                self.process.wait(timeout=4)
+                    raise
+                try:
+                    signal.pidfd_send_signal(self.pidfd, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                self.process.wait(timeout=3)
+            expected_exit = 1 if getattr(self, "worker_failure", None) is not None else 0
+            self.cleaned = self.cleaned and self.process.returncode == expected_exit
         finally:
             for stream in (self.process.stdin, self.process.stdout):
                 if stream is not None and not stream.closed:
@@ -659,6 +687,8 @@ def run_transport(transport, candidate, images, stage, ip, nft):
         row["status"] = "owned_overlay_probe_verified"
     except (ProbeError, IsolationError, LifecycleError, OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
         row["error"] = diagnostic(error)
+        if isinstance(error, WorkerFailure):
+            row["worker_failure"] = error.record
         if isinstance(error, ContainmentMismatch):
             row["fixed_diagnostics"] = error.diagnostics
     except KeyboardInterrupt:
