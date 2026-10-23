@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Hosted source39913525941 atb6e0687 passed. Windows synthetic Schannel fix passed actual UI05; candidate117a60d passed managed PublicNativeReturn then failed FinalLaunchPreparation binding fixed loopback80. Read-only hosted probe39913526182 confirmed System/IIS listener and WSAEACCES; scoped temporary default-site preparation is being implemented. Hosted guard3 build39909129708 passed35 finite contracts and GNU Release. First real overlay39910723452 failed strict containment readback; new pre-build shape diagnosis is running. No complete package or full migration claimed.",
-  "NEXT_EXECUTABLE_ACTION": "Complete and verify scoped hosted IIS preparation/restoration without changing production port80; require final-login9, managed25/native8/interop3 and branding on actual Windows, then same-run native lifecycle. Diagnose actual nft readback with bounded shape evidence and rerun genuine guard3 QUIC/WSS/TCP probes without weakening containment. Independently review and genuinely compose OwnedOverlayMonitor with parent native lease; continue Windows owned source-route capability implementation while ordinary Public admission stays closed. Preserve all six goals and separate held SAV/META, absent Capture source, provenance and live acceptance gates.",
+  "LAST_CONFIRMED_RESULT": "Reviewed SERVER14 committed6a8e8fe:18 new+16 lifecycle+10 parent-lease tests passed independently; fresh source checkout358=356passed+2existingWindows-onlyskips. Actual Windows568c3c5 quick39915438709 passed exact default-IIS stop/owned80bind/originalFinal9/restore. Actual Linuxf85c515 strict containment39916016496 passed full nft readback and owned cleanup after reviewed typed-payload correction. Full568Windows native/interop components and f85real overlay transport run are still executing. Complete package and six-goal migration remain incomplete.",
+  "NEXT_EXECUTABLE_ACTION": "Complete actual568Windows native8/managed25/interop3/branding checks and same-run native lifecycle, diagnosing retained real failures. Continue f85same-build guard3 real QUIC/WSS/TCP positive/wrong-key/restore probe now strict containment passes. Implement/review independent combined native+overlay owned stack controls and Windows API source/interface-bound revocable transport; these need their own new-source hosted checks. Ordinary Public stays closed until genuine runtime owners exist. Preserve all six goals and separately track SAV/META privacy, absent Capture source, exact provenance, missing native replay dependencies and live acceptance.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -92,7 +92,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Official gh API initially denied, later succeeded under existing configuration. Actions log/artifact redirect hosts still denied; narrow official environment draft additions saved. No bypass; draft publication unconfirmed.",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39913526004",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39915438707",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -210,11 +210,11 @@
         "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "117a60d source/UI05/PublicNativeReturn passed, final-login fixed80 listener denied; b6e0687 quick probe confirms IIS/System listener, remedy pending actual execution",
+    "candidate_windows_source": "568c3c5 quick actual Final9 and scoped default-IIS preparation/restoration passed; full native/interop/component job still executing",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "117a60d all three Linux components and owned ingress namespaces passed; b6e0687 candidate running",
+    "candidate_linux_matrix": "568c3c5 protected control, donor and actual ingress namespaces passed; LAN baseline still executing at this checkpoint",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "Latest full candidate remains incomplete; explicit source/fixture and actual component outcomes are revision-specific. Privacy gate failed and complete package skipped."
+    "candidate_component_result": "Latest full candidate running; quick Windows Final9 and Linux strict containment passed separately. Privacy gate failed and full package skipped."
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -222,7 +222,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T07:00:32.105493+00:00",
+  "updated_utc": "2026-10-23T07:13:52.246308+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -479,7 +479,7 @@
       "wpf_crosscompile_warnings": 0,
       "wpf_crosscompile_errors": 0,
       "scope": "actual final HTTP2 login and historical kernel socket observation; no live overlay lease or Public startup",
-      "hosted": "117a60d actual test setup failed fixed80 WSAEACCES; b6e0687 read-only quick probe confirms System/IIS listener; targeted hosted preparation pending"
+      "hosted": "Passed original9 in568c3c5 quick run39915438709 with scoped default-IIS preparation and restoration; no whole-package or runtime admission claim"
     },
     "cloud_native_lifecycle_harness": {
       "implementation_commit": "92945e3dd043e1ee1dae21afdb73f5265b0f2c1f",
@@ -526,6 +526,25 @@
       "scope": "actual owned ELF/loopback RPC inode/bounded CLI/SCM-credential parent lease composition; TUN and peer service/native peer explicitly synthetic",
       "actual_easytier_native_stack_verified": false,
       "production_admission": false
+    },
+    "hosted_windows_loopback_prerequisite": {
+      "run_id": 39915438709,
+      "job_id": 120287860155,
+      "source_commit": "568c3c5c0de90749636d8ba5acff76e2b8e62f86",
+      "conclusion": "success",
+      "original_final_login_checks": 9,
+      "default_site_stop_bind_restore_verified": true,
+      "production_ports_changed": false,
+      "complete_package": false
+    },
+    "hosted_strict_overlay_containment": {
+      "run_id": 39916016496,
+      "job_id": 120289657927,
+      "source_commit": "f85c515168c35a7d727b0f936ad2254be144e036",
+      "conclusion": "success",
+      "scope": "exact full nft readback and owned namespace cleanup only; no EasyTier/TUN/native runtime executed",
+      "normalizer_and_comparator_weakened": false,
+      "actual_runtime_verified": false
     }
   }
 }

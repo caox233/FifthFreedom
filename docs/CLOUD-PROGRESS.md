@@ -563,3 +563,31 @@ owned namespace. It will distinguish lease revocation while the route remains
 alive (real held TCP closure) from peer disappearance (process/FD cleanup, without
 calling an unreachable remote TCP timeout an EOF). Ordinary Public admission
 remains closed and no complete package or gameplay acceptance is inferred.
+
+
+## Actual fixed-port and strict containment prerequisites passed
+
+The [568c3c5 Windows quick run](https://github.com/caox233/FifthFreedom/actions/runs/39915438709)
+completed successfully: exact default-IIS identity/HTTP80 member, scoped stop,
+owned port80 bind, original final-login nine checks, and restoration to Started.
+Production ports and exclusion rules were unchanged. The original failures and
+extra default WCF binding observations remain in the bounded official receipts.
+
+The [f85c515 Linux quick run](https://github.com/caox233/FifthFreedom/actions/runs/39916016496)
+also passed exact nft readback and owned namespace cleanup. Official nft source
+confirmed that a typed TCP/UDP port selector generates its own protocol check;
+readback elides the redundant explicit condition. Commita689dd5 avoids emitting
+that duplicate only for typed port rules. Portless protocol checks, default drop
+and full normalized-rule equality remain intact;20 independent checks passed.
+The quick probe executes no EasyTier/TUN/native runtime. The separate full owned
+transport run39916016529 remains required.
+
+The full568c3c5 Windows candidate is retained while later runs queue, so new pushes
+do not destroy its first native pipe/interop evidence. No cancellation is called
+a pass. The standalone knowledge repository is pushed at92a1342 and binds101
+snapshot files, including99 exact mirrors, to source11181ce. Official environment
+draft11 was saved and read back after complete workspace discovery:19,699
+directories, two projects and24 explicitly classified dependency/evidence Git
+roots, no errors. It selects source568c3c5 and knowledge92a1342; the tested install
+script, startup instructions and narrow network draft were preserved. Saving
+still does not publish/apply the draft or verify fresh snapshot restoration.
