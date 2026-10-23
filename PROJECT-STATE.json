@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Hosted run39901945731 at2b66f30 completed: Windows/three Linux components, real three-namespace isolation and same-run native static preflight all passed; strict privacy gate failed/full package skipped. Later reviewed SERVER08 passed dedicated348/quazal81; UI05 actual TLS client15 and SERVER09 owned-child lifecycle16 passed. Exact EasyTier source negative contracts retained before failures then guard fixes passed26 selected tests; both guard1 and guard2 clean GNU Release builds passed without executing or publishing the resulting binaries. Fresh detached checkoutd37854d source265=263pass+2Windows-onlyskips. Public runtime/complete-package/live acceptance remain incomplete.",
-  "NEXT_EXECUTABLE_ACTION": "Push this reviewed batch and verify Windows source-admission/UI05/branding plus isolated Linux lifecycle/build-only EasyTier jobs. Continue SERVER10 native owned-parent lease (SCM credentials, bounded renewal and real listener READY), Linux parent/profile provider and UI06 exact-owned-process token-return bridge; keep production Public provider closed until actual profile/runtime/interface/peer evidence is integrated. Preserve independent candidate build identities and license/source closure, finish same-run component proof, then full ordered six-milestone work. Capture source still absent; SAV/META privacy and Npcap/Wintun gates unchanged. Remaining VSS/crash/three-client evidence is parallel; no persistent Goal/scheduler API.",
+  "LAST_CONFIRMED_RESULT": "Hosted guard2 source build39905205148 succeeded (finite26 +GNU Release, receipts only). Source39906263839 at8389cb6 passed; candidate39906263847 Linux LAN/donor/control/namespace passed, Windows failed specifically in UI05 PublicSessionControl (after source success), dualidentity/fullpackage skipped and privacy gate failed. Later local SERVER10 dedicated367, native UI06 API54, parentlease10 and launcher UI06 portable14 passed; Windows IPC25/8 and cross-language combination await hosted evidence. Full six-milestone migration remains incomplete.",
+  "NEXT_EXECUTABLE_ACTION": "Resolve actual Windows UI05 failing case using bounded diagnostics; then validate native/managed UI06 return IPC and final-login observation with real hosted owned synthetic children. Run actual same-run-component native lifecycle in owned isolated GitHub namespaces, and independent guard3 EasyTier profile/TUN/traffic probes with negative pin controls. Keep production Public admission closed until genuine owned Windows/Linux runtime and route evidence is composed. Continue all six ordered goals, preserve accepted gameplay scope and original evidence. Capture source absent; SAV/META privacy and exact third-party provenance gates remain. No persistent Goal/scheduler API.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -92,7 +92,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Official gh API initially denied, later succeeded under existing configuration. Actions log/artifact redirect hosts still denied; narrow official environment draft additions saved. No bypass; draft publication unconfirmed.",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39901945731",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39906263847",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -163,13 +163,31 @@
         "namespace_isolation": "success_actual_privileged_three_namespace_controls_and_cleanup",
         "cross_platform_assembly": "success_real_same_run_components_native_dualidentity_and_static_preflight",
         "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39905205347,
+        "commit": "4a273bf9356ccd3036f67a3e8e7ee1cfce89baeb",
+        "overall": "failure",
+        "windows": "source_tests_failed_patch_conversion",
+        "linux_control": "synthetic_executable_fixture_errors",
+        "linux_lan_donor_namespace": "success",
+        "complete_package": "skipped_private_input_gate_failed"
+      },
+      {
+        "run_id": 39906263847,
+        "commit": "8389cb6193ea2bd6383f9f262304a14e50c96712",
+        "overall": "failure",
+        "windows": "source_passed_managed_UI05_PublicSessionControl_failed_native_build_and_branding_not_reached",
+        "linux_lan_donor_control_namespace": "success",
+        "cross_platform_assembly": "skipped_windows_dependency_failed",
+        "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "passed on PR run39901945731",
+    "candidate_windows_source": "passed_on8389cb6; later_UI05_PublicSessionControl_runtime_failure",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "LAN, donor, protected-control, actual namespace isolation and static native preflight passed on PR run39901945731",
+    "candidate_linux_matrix": "all_Linux_components_and_namespace_passed_on8389cb6",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "Run39901945731 at2b66f30: all four component lanes, actual namespace isolation and same-run dualidentity/static native preflight passed; strict private input gate failed and complete package skipped. Later SERVER08/09/UI05/branding await new hosted revision."
+    "candidate_component_result": "Latest8389 candidate preserves Windows UI05 failure and skipped dualidentity; previous2b66f30 all-component/static-preflight success remains revision-specific."
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -177,7 +195,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23T05:20:18.020667+00:00",
+  "updated_utc": "2026-10-23T05:47:44.879659+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -242,11 +260,11 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "executed": 265,
-      "passed": 263,
+      "executed": 285,
+      "passed": 283,
       "skipped": 2,
       "exit_code": 0,
-      "environment": "Fresh detached local checkoutd37854d39ee68e54fbf931af598f471b43a93b77; .local/cloud-receipts/clean-checkout-d37854d/receipt.json"
+      "environment": "fresh detached checkout99e3c6245dd8c1af70bab46c79e6407d6e49e3e2; .local/cloud-receipts/clean-checkout-99e3c6245dd8/receipt.json"
     },
     "cloud_authenticated_reader": {
       "passed": 69,
@@ -280,9 +298,9 @@
       "live_game": false
     },
     "cloud_native_dedicated_current": {
-      "passed": 348,
+      "passed": 367,
       "exit_code": 0,
-      "scope": "SERVER08 full dedicated suite, includes source rejection before request effects, existing LAN/current-run binding and prior preflight/lifecycle tests"
+      "scope": "SERVER10 exact-owner lease, real five-listener aggregate in isolated test process, before-write negative main checks; ordinary Public remains gated"
     },
     "cloud_protected_transport": {
       "passed": 16,
@@ -371,13 +389,57 @@
       "in_memory_noise_roundtrip": "1_pass",
       "official_binary_changed": false,
       "real_network_runtime": false,
-      "clean_guard2_build": "26_selected_tests_and_GNU_Release_passed_local; runtime_not_executed; evidence/easytier-clean-linux-build-guard2.json"
+      "clean_guard2_build": "26_selected_tests_and_GNU_Release_passed_local; runtime_not_executed; evidence/easytier-clean-linux-build-guard2.json",
+      "explicit_peer_pin_before": "2_pass_1_fail_wrong_key_with_valid_PSK_accepted",
+      "explicit_peer_pin_after": "3_pass_wrong_key_explicitly_identity_rejected",
+      "guard3_regression_checks": 35,
+      "guard3_clean_release": "in_progress_distinct_candidate"
     },
     "windows_branding_metadata": {
       "implementation_commit": "b171d4d",
       "source_migration_check": "passed",
       "actual_file_properties": "pending_next_hosted_readonly_FileVersionInfo_check",
       "wire_and_crate_names_preserved": true
+    },
+    "cloud_native_api_current": {
+      "passed": 54,
+      "exit_code": 0,
+      "scope": "UI06 nine new bounded wire/auth-generation contracts plus retained45; not Windows IPC execution"
+    },
+    "cloud_parent_lease": {
+      "implementation_commit": "99e3c6245dd8c1af70bab46c79e6407d6e49e3e2",
+      "timing_delta_commit": "b9ad6c6",
+      "passed": 10,
+      "original_lifecycle_passed": 16,
+      "actual_rust_test_peer_composition": "passed_5_loopback_listeners_and_revoke_exit92; not_real_main_Public_activation",
+      "production_admission": false
+    },
+    "cloud_ui_native_return": {
+      "launcher_commit": "ce4c29d",
+      "native_commit": "56f8feaef8cd595c983243630e79d1d31de8660b",
+      "portable_managed_passed": 14,
+      "windows_managed_pending": 11,
+      "native_contract_passed": 9,
+      "windows_native_pending": 8,
+      "wpf_crosscompile_warnings": 0,
+      "wpf_crosscompile_errors": 0,
+      "cross_language_windows_runtime": "pending",
+      "public_enabled": false
+    },
+    "hosted_overlay_guard2_build": {
+      "run_id": 39905205148,
+      "job_id": 120255467838,
+      "conclusion": "success",
+      "selected_contracts": 26,
+      "gnu_release": "success",
+      "artifact_scope": "three bounded JSON receipts only; archive contents not downloaded in cloud",
+      "runtime_executed": false,
+      "binary_published": false
+    },
+    "safe_cache_cleanup": {
+      "freed_bytes": 2052317184,
+      "scope": "only owned reproducible guard-build incremental cache; guard1/2 four original ELFs and receipts retained with before/after matching hashes",
+      "receipt": ".local/cloud-receipts/cache-cleanup-guard-incremental/receipt.json"
     }
   }
 }

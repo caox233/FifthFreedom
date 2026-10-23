@@ -24,8 +24,9 @@ implemented boundary and actual evidence, including work still blocked:
 | Native socket boundary and real ingress checks | [SERVER-06](server-06.md), [namespace harness](socket-isolation.md) |
 | Pinned overlay source, finite secure-session contracts and dependency holds | [SERVER-07](server-07.md), [dependency evidence](public-network-dependencies.md) |
 | Explicit Public source admission before native request processing | [SERVER-08](server-08.md) |
-| Exact owned process lifecycle and parent activation lease | [SERVER-09](server-09.md), [SERVER-11](server-11.md) |
+| Exact owned process lifecycle and native/parent activation lease | [SERVER-09](server-09.md), [SERVER-10](server-10.md), [SERVER-11](server-11.md) |
 | Explicit private overlay recipes and finite peer observations | [SERVER-12](server-12.md) |
+| Exact owned launcher/native authentication return channel | [UI-06 launcher](ui-06.md), [UI-06 native](ui-06-native-return.md) |
 | Hosted Windows/Linux checks and retained failures | [CI-01](ci-01.md), [cloud progress](../CLOUD-PROGRESS.md) |
 | Retained gameplay defects and missing native replay evidence | [Remaining bugs](remaining-bugs.md), [VSS audit](vss-lifecycle-audit.md) |
 

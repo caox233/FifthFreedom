@@ -380,3 +380,61 @@ explicit private overlay profiles and exact owned-process native token return.
 The full six milestones remain active, including unresolved gameplay evidence,
 Capture source closure and private resource gates. No persistent Goal or
 scheduler interface is exposed in this session.
+
+## Owned activation and source-based overlay build
+
+The first hosted reviewed-overlay source build,
+[run39905205148](https://github.com/caox233/FifthFreedom/actions/runs/39905205148),
+completed successfully. It prepared the guard2 sources, ran26 finite contracts
+and compiled GNU Release, uploading only three bounded JSON receipts. No core
+runtime or dependency binary was executed or published. The build step ran from
+05:31:54 to05:42:47 UTC; the earlier package installation delay was not a failure.
+The source archives and binaries were not downloaded through the denied artifact
+redirect here. Guard3 adds a separately reviewed explicit-peer-key check: a
+correct shared secret previously overrode a wrong configured server key. Its
+before2/3 and after3/3 actual Noise contracts are retained, alongside35 selected
+regressions. A new clean build has its own source/patch identity; it does not
+inherit guard2's hosted result.
+
+The [4a273bf candidate](https://github.com/caox233/FifthFreedom/actions/runs/39905205347)
+exposed two source-test defects: Windows Git line-ending conversion changed
+strict prepared-source hashes, and Linux synthetic-child tests tried to use a
+shared tool-cache executable under the production private-path policy. Actual
+CRLF Git reproduction and private owned interpreter fixtures fixed these without
+loosening production guards. The subsequent
+[8389cb6 source run](https://github.com/caox233/FifthFreedom/actions/runs/39906263839)
+passed. Its [candidate run](https://github.com/caox233/FifthFreedom/actions/runs/39906263847)
+passed all Linux components and actual namespace isolation, and passed Windows
+source checks, but failed later in `ci-test-PublicSessionControl`. Native Windows
+build/branding checks and dependent dual identity did not complete. This new
+UI05 failure needs its own diagnostics and resolution; the earlier2b66f30 result
+is not evidence for later source revisions.
+
+[SERVER-10](tasks/server-10.md) now accepts an explicit inherited owner lease
+only after real package/config/key/interface validation, and arms an independent
+watchdog before storage or listeners. Actual Debug and Release main programs
+rejected a wrong nonce after HELLO with all fixture bytes/directories unchanged.
+Measured preparation was50.34s for Debug and0.698s for Release; an initial30s
+Debug timeout remains recorded. The parent therefore has a distinct bounded
+pre-HELLO preparation budget, without changing native's three-second grant
+deadline. Dedicated367 passed. [SERVER-11](tasks/server-11.md) passed10 actual
+Unix parent cases plus the retained16 owned-lifecycle cases. A separate actual
+Python/Rust test-peer composition exercised five loopback listeners and revoke
+exit92; it is not production bootstrap or real-main activation evidence.
+
+[UI-06 launcher](tasks/ui-06.md) and [native](tasks/ui-06-native-return.md)
+preserve the original config pipe framing/ACK, add independent exact-process
+anchors and bounded generation-aware credential return, and cancel context on
+revocation/EOF. Linux managed14 and native API54 passed; Windows managed11 and
+native8 runtime cases still require hosted execution. Production Public remains
+unavailable: final-login ownership plumbing, real source-route/overlay ownership
+and actual cross-language Windows evidence are separate requirements.
+
+A fresh detached `99e3c6245dd8c1af70bab46c79e6407d6e49e3e2` checkout passed285
+source methods (283 passed, two existing Windows-only skips). The development
+knowledge repository separately verified75 snapshot files bound to4a273bf.
+Only a reproducible incremental build cache was cleaned, releasing2,052,317,184
+bytes; all four guard1/2 original ELFs and receipts were independently hashed
+before and after and retained. No original source or private four-role evidence
+was removed. Full package readiness and the complete six-milestone goal remain
+false; original SAV/META, Capture source and live-acceptance gates are unchanged.
