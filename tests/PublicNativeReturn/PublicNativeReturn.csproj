@@ -4,6 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="native-interop.toml" LogicalName="FifthFreedom.NativeInterop.toml" />
     <Compile Include="../../src/launcher/src/Services/LaunchPipe.cs" Link="LaunchPipe.cs" />
     <Compile Include="../../src/launcher/src/Services/PublicReturn*.cs" Link="%(Filename)%(Extension)" />
     <Compile Include="../../src/launcher/src/Services/PublicNativeReturn.cs" Link="PublicNativeReturn.cs" />

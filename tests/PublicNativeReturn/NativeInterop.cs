@@ -41,7 +41,10 @@ internal static partial class Program
             File.Copy(nativeHelper, executable, overwrite: false);
             // This is a copied Rust test executable with an explicit exact test
             // selection. No game image, hooks injection or driver is launched.
-            const string config = "ApiServer=\"http://127.0.0.1:1\"\nGameplayMode=\"MOD\"\n[User]\nUsername=\"synthetic-client\"\nPassword=\"\"\nAccountId=\"synthetic-account\"\n[Networking]\nIpAddress=\"10.66.0.10\"\n";
+            using var fixture = typeof(Program).Assembly.GetManifestResourceStream("FifthFreedom.NativeInterop.toml")
+                ?? throw new IOException("NATIVE_INTEROP_CONFIG_MISSING");
+            using var fixtureReader = new StreamReader(fixture, new UTF8Encoding(false, true));
+            string config = await fixtureReader.ReadToEndAsync(deadline.Token);
             await using var configuration = new LaunchPipe(config, executable);
             await using var server = new PublicReturnPipe((instance, account, username, bearer) => PublicNativeGameSession.FromOwnedNativeResponse(local,
                 CredentialEnvironmentContext.ForPublic(local).CreateIdentity("10.66.0.1:50051", User), "10.66.0.1:50051", package.Package,

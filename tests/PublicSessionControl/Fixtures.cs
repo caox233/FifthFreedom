@@ -63,7 +63,19 @@ internal sealed class SyntheticCertificates : IDisposable
         var san = new SubjectAlternativeNameBuilder(); san.AddIpAddress(IPAddress.Loopback);
         leaf.CertificateExtensions.Add(san.Build());
         using var issued = leaf.Create(Authority, DateTimeOffset.UtcNow.AddMinutes(-2), DateTimeOffset.UtcNow.AddHours(1), RandomNumberGenerator.GetBytes(16));
-        Server = issued.CopyWithPrivateKey(serverKey);
+        var withPrivateKey = issued.CopyWithPrivateKey(serverKey);
+        if (!OperatingSystem.IsWindows()) { Server = withPrivateKey; return; }
+        // Schannel rejects ephemeral certificate keys with SEC_E_NO_CREDENTIALS.
+        // Import only this synthetic leaf into a temporary user key container.
+        // Omitting PersistKeySet makes certificate disposal delete that container;
+        // no CA trust store is changed and the PFX never leaves process memory.
+        // https://learn.microsoft.com/dotnet/core/extensions/sslstream-troubleshooting#handshake-failed-with-ephemeral-keys
+        using (withPrivateKey)
+        {
+            byte[] pfx = withPrivateKey.Export(X509ContentType.Pkcs12);
+            try { Server = X509CertificateLoader.LoadPkcs12(pfx, password: null, X509KeyStorageFlags.UserKeySet); }
+            finally { CryptographicOperations.ZeroMemory(pfx); }
+        }
     }
     internal SocketsHttpHandler Handler()
     {
