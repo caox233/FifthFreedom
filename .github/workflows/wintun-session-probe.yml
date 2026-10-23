@@ -4,13 +4,17 @@ on:
   pull_request:
     paths:
       - '.github/workflows/wintun-session-probe.yml'
-      - 'scripts/ci_wintun_session_probe.py'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session/receipt.json'
+      - 'docs/dependency-patches/easytier-2.6.4-windows-session/tun-session-observer.patch'
+      - 'scripts/ci_easytier_build.py'
+      - 'scripts/ci_easytier_windows_build.py'
+      - 'scripts/ci_prepare_easytier_source.py'
       - 'scripts/ci_wintun_session_environment.ps1'
+      - 'scripts/ci_wintun_session_probe.py'
+      - 'scripts/pe_imports.py'
       - 'scripts/wintun-session-probe.lock.json'
       - 'tests/ci/test_ci_wintun_session_probe.py'
       - 'tests/native/wintun-session-probe/**'
-      - 'docs/dependency-patches/easytier-2.6.4-windows-session/tun-session-observer.patch'
-      - 'docs/dependency-patches/easytier-2.6.4-windows-session/receipt.json'
   workflow_dispatch:
 
 permissions:

@@ -2,6 +2,32 @@ name: Reviewed EasyTier Linux source build only
 
 on:
   pull_request:
+    paths:
+      - '.github/workflows/easytier-build-only.yml'
+      - 'docs/dependency-patches/easytier-2.6.4-authenticated-receive/authenticated-receive-tests.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-authenticated-receive/receipt.json'
+      - 'docs/dependency-patches/easytier-2.6.4-authenticated-receive/record-authenticated-data.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-data-challenge/correlate-authenticated-data.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-data-challenge/data-challenge-tests.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-data-challenge/receipt.json'
+      - 'docs/dependency-patches/easytier-2.6.4-explicit-pin/explicit-pin-contract-tests.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-explicit-pin/require-explicit-peer-pin.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-ingress-data/ingress-contract-tests.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-ingress-data/require-encrypted-data-ingress.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-secure-session/contract-tests.patch'
+      - 'docs/dependency-patches/easytier-2.6.4-secure-session/require-encrypted-flag.patch'
+      - 'scripts/ci_easytier_authenticated_receive_build.py'
+      - 'scripts/ci_easytier_build.py'
+      - 'scripts/ci_easytier_data_challenge_build.py'
+      - 'scripts/ci_prepare_easytier_source.py'
+      - 'scripts/ci_setup_protoc.py'
+      - 'scripts/easytier-authenticated-receive-source.lock.json'
+      - 'scripts/easytier-data-challenge-source.lock.json'
+      - 'scripts/easytier-source.lock.json'
+      - 'tests/ci/test_ci_easytier_authenticated_receive_build.py'
+      - 'tests/ci/test_ci_easytier_build.py'
+      - 'tests/ci/test_ci_easytier_data_challenge_build.py'
+      - 'tests/ci/test_ci_prepare_easytier_source.py'
   workflow_dispatch:
 
 permissions:
