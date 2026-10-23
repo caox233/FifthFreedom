@@ -1,7 +1,10 @@
 # 3.0 界面整合：已核实入口与下一步
 
 状态：donor 外观已接入保留的 LAN 启动器，Windows hosted 无游戏界面检查已通过；
-生产环境适配继续见 [UI-02](tasks/ui-02.md)。Public 尚未启用，实机边界不变。
+生产 LAN 接入见 [UI-03](tasks/ui-03.md)，部署凭据及受保护会话读取见
+[UI-04](tasks/ui-04.md)、[UI-05](tasks/ui-05.md)，原生回传、最终登录及连接撤销见
+[UI-06](tasks/ui-06.md)、[UI-07](tasks/ui-07.md)、[UI-08](tasks/ui-08.md)。
+Public 尚未启用；真实 Windows 自有网络会话仍未完成，实机边界不变。
 本文其余源码对照和步骤保留为迁移合同；已执行结果以具体任务收据为准。
 本文路径均相对于仓库根；`LAN` 指 `src/launcher/src`，`donor` 指
 `integration/scbl3/client/ScblPublicLauncher`。公开文档不包含原始个人路径、账号、服务器地址或运行日志。

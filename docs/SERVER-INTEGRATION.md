@@ -36,6 +36,10 @@ donor Windows管理器并不是“更完整的LAN后端”。不能直接替代�
 | [SERVER-07](tasks/server-07.md) | 固定 EasyTier 源码审计；实际会话负例与最小候选修复 | 完整所选入口合同、独立构建身份和自有进程生命周期 |
 | [SERVER-08](tasks/server-08.md) | 原生 API、PRUDP、HTTP 和票据入口在处理请求前执行明确来源网段约束 | 与受控 Public 启动共同启用；LAN 行为保留 |
 | [UI-05](tasks/ui-05.md) | 启动器受保护 HTTPS 会话读取、严格 TLS 和运行代际约束 | 实际自有 native token 回传与覆盖网络路由接入 |
+| [SERVER-09](tasks/server-09.md)、[SERVER-10](tasks/server-10.md)、[SERVER-11](tasks/server-11.md) | 精确子进程所有权、原生父进程许可与五监听端口退出监管 | 实际同轮候选 main 进程生命周期验证；测试进程不代替完整启动 |
+| [SERVER-12](tasks/server-12.md)、[SERVER-13](tasks/server-13.md) | 明确私有网络配方、固定加密源码与隔离探测；真实 nft 预检及构建通过 | 正确密钥、错误密钥与恢复的实际三种传输矩阵仍有失败 |
+| [SERVER-14](tasks/server-14.md)、[SERVER-15](tasks/server-15.md) | 自有 core/CLI 的实时观测已接入许可，实际组合探测和云端作业已实现 | 真实覆盖网络与原生服务组合的两项撤销控制尚未通过；普通 Public 仍关闭 |
+| [UI-06](tasks/ui-06.md)、[UI-07](tasks/ui-07.md)、[UI-08](tasks/ui-08.md) | 自有启动器/原生命名管道认证回传、最终登录和可撤销连接约束 | Windows 自有适配器会话与安全 peer 存活链；具体运行结果按提交记录 |
 
 这里的通过范围分别对应源码、库测试、实际组件和隔离拓扑；没有启动游戏或现网服务。
 最新运行编号和精确提交统一记录在 `PROJECT-STATE.json` 和 CI 收据，后续实现不能借用旧结果。
