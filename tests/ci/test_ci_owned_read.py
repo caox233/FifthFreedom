@@ -63,14 +63,18 @@ class OwnedReadAdapterTests(unittest.TestCase):
 
     def test_cargo_binds_one_successful_same_manifest_non_test_binary(self):
         with tempfile.TemporaryDirectory() as temporary:
-            target = Path(temporary)
+            root = Path(temporary)
+            (root / "alias-parent").mkdir()
+            # An actual resolvable parent alias exercises canonical identity on
+            # every OS, including Windows TEMP directories with short names.
+            target = root / "alias-parent" / ".." / "target"
             helper = target / probe.TARGET / "debug" / (probe.BINARY + ".exe")
             helper.parent.mkdir(parents=True)
             helper.write_bytes(b"INERT UNIT FIXTURE; NOT A WINDOWS EXECUTABLE")
             manifest = target / "Cargo.toml"
             rows = cargo(helper, manifest)
             encode = lambda value: "\n".join(json.dumps(row) for row in value)
-            self.assertEqual(probe.native_executable(encode(rows), target, manifest), helper)
+            self.assertEqual(probe.native_executable(encode(rows), target, manifest), helper.resolve())
             variants = [rows + [rows[0]], rows[:-1], rows + [rows[-1]],
                         [rows[0], {"reason": "build-finished", "success": False}],
                         [{**rows[0], "manifest_path": str(target / "other.toml")}, rows[1]],
@@ -116,12 +120,14 @@ class OwnedReadAdapterTests(unittest.TestCase):
     def test_actual_commands_use_fixed_target_exact_cargo_helper_and_two_digests(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
+            (root / "alias-parent").mkdir()
+            root = root / "alias-parent" / ".."
             result = {"passed": False}
             calls, image, helper = self.exercise(root, result)
             self.assertEqual(calls[0][:3], ["cargo", "+1.95.0", "test"])
             self.assertIn("--locked", calls[1])
             self.assertEqual(calls[2], [str(image)])
-            self.assertEqual(calls[3], [str(image), "--native-helper", str(helper)])
+            self.assertEqual(calls[3], [str(image), "--native-helper", str(helper.resolve())])
             self.assertTrue(result["passed"] and result["images_unchanged"])
             self.assertEqual((result["native_passed_checks"], result["managed_passed_checks"], result["interop_passed_checks"]), (8, 19, 4))
 
