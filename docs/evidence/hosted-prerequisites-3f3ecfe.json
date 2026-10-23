@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T07:03:57.754577+00:00",
+  "evidence_source": "Official GitHub run/check metadata API; no raw logs, raw site bindings, nft rules or artifact archive downloaded",
+  "observations": [
+    {
+      "run": {
+        "id": 39914866531,
+        "head_sha": "3f3ecfe295a187ba462f8c3cfd7d1c20b66c7fba",
+        "html_url": "https://github.com/caox233/FifthFreedom/actions/runs/39914866531",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "job_id": 120286043180,
+      "fixed_annotation": "stage=CHECK_ATTRIBUTES; appcmd_available=True; readback_succeeded=True; xml_parsed=True; default_name_present=True; default_name_unique=True; id_is_one=True; state_started=True; state_stopped=False; exact_http80_binding=False; has_http80_binding=True; has_https443_binding=False; other_site_80=False; additional_binding=True; site_count=1; binding_count=5"
+    },
+    {
+      "run": {
+        "id": 39914866601,
+        "head_sha": "3f3ecfe295a187ba462f8c3cfd7d1c20b66c7fba",
+        "html_url": "https://github.com/caox233/FifthFreedom/actions/runs/39914866601",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "job_id": 120286043563,
+      "fixed_annotation": "probe=containment; fixed_codes=CONTAINMENT_CHANGED,CONTAINMENT_PREFLIGHT_INCOMPLETE; nft_shape=NFT_I5_RULE_EXPR_COUNT_6_TO_5,NFT_I5_RULE_EXPR_I3_MATCH_LEFT_META_MISSING_KEY,NFT_I5_RULE_EXPR_I3_MATCH_LEFT_PAYLOAD_EXTRA_KEY,NFT_I5_RULE_EXPR_I3_MATCH_RIGHT_TYPE_STRING_TO_INTEGER; no raw probe output published"
+    },
+    {
+      "run": {
+        "id": 39913525945,
+        "head_sha": "b6e0687a3998093a694ca04ba3dabbb9b05a61d4",
+        "html_url": "https://github.com/caox233/FifthFreedom/actions/runs/39913525945",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "job_id": 120281733594,
+      "fixed_annotation": "probe=containment; fixed_codes=CONTAINMENT_CHANGED,CONTAINMENT_PREFLIGHT_INCOMPLETE; nft_shape=NFT_I5_RULE_EXPR_COUNT_6_TO_5,NFT_I5_RULE_EXPR_I3_MATCH_LEFT_META_MISSING_KEY,NFT_I5_RULE_EXPR_I3_MATCH_LEFT_PAYLOAD_EXTRA_KEY,NFT_I5_RULE_EXPR_I3_MATCH_RIGHT_TYPE_STRING_TO_INTEGER; no raw probe output published"
+    }
+  ],
+  "iis_identity_and_started_state_verified": true,
+  "iis_default_site_changed": false,
+  "additional_binding_types_not_yet_observed": true,
+  "containment_comparison_passed": false,
+  "encrypted_overlay_verified": false,
+  "fixes_not_verified_by_these_runs": true,
+  "artifact_contents_verified": false
+}

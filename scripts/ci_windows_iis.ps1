@@ -10,7 +10,9 @@ $siteFacts = [ordered]@{ stage = 'NOT_STARTED'; appcmd_available = $false; readb
     xml_parsed = $false; default_name_present = $false; default_name_unique = $false; id_is_one = $false;
     state_started = $false; state_stopped = $false; exact_http80_binding = $false;
     has_http80_binding = $false; has_https443_binding = $false; other_site_80 = $false;
-    additional_binding = $false; site_count = 'UNREAD'; binding_count = 'UNREAD' }
+    additional_binding = $false; site_count = 'UNREAD'; binding_count = 'UNREAD';
+    exact_http80_member = $false; default_net_tcp = $false; default_net_pipe = $false;
+    default_net_msmq = $false; default_msmq_formatname = $false; unknown_binding_present = $false }
 function Small-Count($Value) { if ($Value -ge 0 -and $Value -le 8) { return [string]$Value }; return 'OVER8' }
 
 function Write-NewJson($Path, $Value) {
@@ -43,9 +45,16 @@ function Read-DefaultSite {
     $siteFacts.binding_count = Small-Count $bindings.Count
     $siteFacts.additional_binding = $bindings.Count -ne 1
     $siteFacts.exact_http80_binding = [string]$site.bindings -eq 'http/*:80:'
+    $siteFacts.exact_http80_member = 'http/*:80:' -cin $bindings
+    $siteFacts.default_net_tcp = 'net.tcp/808:*' -cin $bindings
+    $siteFacts.default_net_pipe = 'net.pipe/*' -cin $bindings
+    $siteFacts.default_net_msmq = 'net.msmq/localhost' -cin $bindings
+    $siteFacts.default_msmq_formatname = 'msmq.formatname/localhost' -cin $bindings
+    $knownBindings = @('http/*:80:', 'net.tcp/808:*', 'net.pipe/*', 'net.msmq/localhost', 'msmq.formatname/localhost')
+    $siteFacts.unknown_binding_present = @($bindings | Where-Object { $_ -cnotin $knownBindings }).Count -gt 0
     $siteFacts.has_http80_binding = @($bindings | Where-Object { $_ -match '^http/.*:80:' }).Count -gt 0
     $siteFacts.has_https443_binding = @($bindings | Where-Object { $_ -match '^https/.*:443:' }).Count -gt 0
-    if (-not $siteFacts.id_is_one -or -not $siteFacts.exact_http80_binding -or
+    if (-not $siteFacts.id_is_one -or -not $siteFacts.exact_http80_member -or
         -not ($siteFacts.state_started -or $siteFacts.state_stopped)) { throw 'IIS_DEFAULT_SITE_UNVERIFIED' }
     $siteFacts.stage = 'CHECK_OTHER_SITES'
     # A different configured site on port 80 is outside this preparation scope.
@@ -88,7 +97,7 @@ try {
             $result.default_site_confirmed = $true
             # Record the exact original state before the reversible operation.
             Write-NewJson $State ([ordered]@{ schema = 1; original_started = $true; default_site_id = 1;
-                exact_default_http80_binding = $true })
+                default_http80_binding_present = $true })
             $discard = & $appcmd stop site '/site.name:Default Web Site' 2>$null
             if ($LASTEXITCODE -ne 0 -or (Read-DefaultSite) -ne 'Stopped') { throw 'IIS_STOP_FAILED' }
             $result.default_site_stopped = $true
@@ -102,8 +111,8 @@ try {
     elseif (Test-Path -LiteralPath $State) {
         $plan = Get-Content -LiteralPath $State -Raw | ConvertFrom-Json
         if ($plan.schema -ne 1 -or $plan.original_started -isnot [bool] -or -not $plan.original_started -or
-            $plan.default_site_id -ne 1 -or $plan.exact_default_http80_binding -isnot [bool] -or
-            -not $plan.exact_default_http80_binding) { throw 'RESTORE_PLAN_INVALID' }
+            $plan.default_site_id -ne 1 -or $plan.default_http80_binding_present -isnot [bool] -or
+            -not $plan.default_http80_binding_present) { throw 'RESTORE_PLAN_INVALID' }
         $current = Read-DefaultSite
         $result.default_site_confirmed = $true
         if ($current -eq 'Stopped') {
