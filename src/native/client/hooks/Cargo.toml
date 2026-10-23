@@ -21,6 +21,9 @@ lan-goal-origin = []
 forward_calls = []
 modding = ["hooks-config/modding", "hooks-addresses/modding"]
 patch-free = []
+# Requires the preserved external C71 native replay fixture; never synthesize it
+# merely to compile unrelated owned-process/pipe tests on a clean checkout.
+native-replay-fixtures = []
 
 [dependencies]
 anyhow = { workspace = true }

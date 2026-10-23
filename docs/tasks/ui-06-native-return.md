@@ -144,3 +144,66 @@ passed **1/1, zero ignored**. It parses those exact shared bytes through the
 retained production parser and also confirms that the original empty-password
 variant remains rejected. This fixes a known precondition; actual Windows IPC
 and cross-language execution are still required and are not inferred from it.
+
+### Actual hosted compile failure and retained replay-resource gate
+
+Windows candidate job `120288376951` at `568c3c5` reached
+`ci-native-public-return` and failed while compiling all hooks test modules, with
+official compiler code `E0425`. Managed suites, including PublicNativeReturn 25
+and FinalLaunchPreparation 9, had already passed; native IPC and cross-language
+interop had not run. The unavailable log archive was not treated as evidence of
+a particular missing symbol.
+
+A local diagnostic of all actual Rust test modules then reproduced the same
+`E0425` failure from this missing input: `merc_mouse_sensitivity_tests.rs:2` requires
+`SCBL_R58_C71_FIXTURE/native_fixture.rs` using compile-time `env!` and `include!`.
+The missing input also leaves the `native_fixture()` call at line 24 undefined
+(`E0425`). This is a retained C71 native-instruction replay dependency, unrelated
+to the owned pipe tests. The source file is unchanged from the failed revision:
+SHA256 `a0942f34386a90b7dfbfa95d634e98b0211e4248fc4c18d87ca98dce8552e679`.
+
+The `native-replay-fixtures` Cargo feature now explicitly includes that test
+module. The original tests, `include!`, assertions and real fixture requirement
+are unchanged. Enabling the feature without the input still fails compilation;
+there is no stub, placeholder native code or ignored passing test. The following
+13 native replay tests are **held, not executed** in ordinary IPC/source suites:
+
+```text
+c71_same_input_fixture
+c71_preserves_original_base_multiplier
+c71_neutral_is_bit_exact
+c71_gamepad_unchanged
+c71_spy_campaign_and_non_first_person_unchanged
+c71_no_bypass_and_positive_state_unchanged
+c71_nan_or_inf_inputs_unchanged
+c71_invalid_original_bit_exact
+c71_owner_mismatch_and_remote_unchanged
+c71_unrelated_camera_mode_unchanged
+c71_invalid_pointers_fail_closed
+c71_invalid_ranges_fail_closed
+c71_no_cumulative_or_third_person_gain
+```
+
+The external C71 fixture, its native bytes/generator and provenance manifest
+must be recovered before those replays can run. The unrelated authored
+`tests/CrashDiagnostics/native_fixture.rs` is not a replacement. Missing native
+header and retail-image closure for the separately retained VSS replays is
+recorded in [vss-replay-closure.md](vss-replay-closure.md); this feature does not
+supply those inputs or reopen accepted F3/EMF results.
+
+Actual local diagnostics used root-locked Rust dependency versions and
+`patch-free,lan-goal-origin` on the i686 MSVC target. The Linux host lacks the
+MSVC C++/audio/resource build prerequisites, so a private diagnostic copy skipped
+only those non-Rust build steps; production build scripts stayed untouched.
+Before the fix it reproduced the missing environment input and `E0425`; after
+the fix all Rust test modules type-checked, exit 0. Adding
+`native-replay-fixtures` without the missing input still failed, exit 101, with
+the same two errors. The original C71 source SHA was checked against the failed
+hosted revision. Logs and the bounded receipt are retained under ignored
+`.local/evidence/cloud/native-fixture-compile/`.
+
+This is Rust type-check evidence, not a full Windows build or test execution.
+The next hosted run must actually pass the exact IPC 8, source-transport 8 and
+interop 3 suites. Those targeted counts never mean that all hooks or native
+replay tests passed; this external-input dependency remains unresolved and its
+13 native replay tests remain held.
