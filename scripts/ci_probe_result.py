@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 
 import ci_diagnostics
+from easytier_probe_worker import valid_failure_record
 
 CODES = set("""ROOT_NAMESPACE_PRIVILEGES_REQUIRED NET_ADMIN_AND_SYS_ADMIN_REQUIRED
 CAPABILITIES_UNVERIFIED EXISTING_TUN_REQUIRED GITHUB_HOSTED_REQUIRED OWNED_NAMESPACE_APIS_REQUIRED
@@ -30,6 +31,21 @@ OWNED_NAMESPACE_CLEANUP_FAILED OWNED_WORKER_CLEANUP_FAILED PRIVATE_STAGE_CLEANUP
 PRIVATE_STAGE_IDENTITY_CHANGED SOCKET_PROBE_NOT_READY STOPPED_OVERLAY_STILL_TRANSFERS
 WRONG_PIN_INFRASTRUCTURE_OR_AUTH_INVALID SERVER_INFRASTRUCTURE_UNHEALTHY TRANSPORT_MATRIX_INCOMPLETE
 DEVELOPMENT_PROBE_FAILED DEVELOPMENT_PROBE_CANCELLED IMAGE_HASH_MISMATCH IMAGE_IDENTITY_INVALID""".split())
+CODES.update("""PUBLIC_RECEIPT_PARENT_REQUIRED PUBLIC_RECEIPT_WRITE_FAILED OWNED_STACK_CANCELLED
+STACK_CASES_INCOMPLETE STACK_CHECKOUT_MISMATCH STACK_CLIENT_OBSERVATION_INVALID
+STACK_CONNECTION_NOT_ESTABLISHED STACK_COPIED_NATIVE_IDENTITY_MISMATCH STACK_EXACT_PEER_STOP_FAILED
+STACK_HELD_CONNECTION_NOT_CLOSED STACK_NAMESPACE_CLEANUP_FAILED STACK_NATIVE_RECEIPT_MISMATCH
+STACK_NATIVE_REVOKE_FAILED STACK_PAUSE_NOT_ENTERED STACK_PRIVATE_CLEANUP_FAILED
+STACK_PRIVATE_PACKAGE_CHANGED STACK_PRIVATE_STAGE_CHANGED STACK_RELEASE_FAILED
+STACK_RUNTIME_RUN_MISMATCH STACK_STATE_INVALID STACK_STATE_TIMEOUT STACK_WORKER_CLEANUP_FAILED
+STACK_WORKER_START_FAILED STACK_CHILD_CLEANUP_FAILED STACK_CLIENT_CORE_LOST
+STACK_CLIENT_NOT_AUTHENTICATED STACK_CLOSE_BUDGET_INVALID STACK_COMMAND_INVALID STACK_COMMAND_LIMIT
+STACK_HELD_CONNECTION_LIMIT STACK_HELD_CONNECTION_TIMEOUT STACK_NATIVE_LISTENER_REMAINS
+STACK_NATIVE_PORT_CHECK_FAILED STACK_NATIVE_WATCHDOG_EXIT_INVALID STACK_ONLY_TCP_DEVELOPMENT
+STACK_PAUSED_OVERLAY_CHANGED STACK_PAUSE_ALREADY_REQUESTED STACK_PAUSE_BUDGET_INVALID
+STACK_PAUSE_EXPIRED STACK_REVOKE_CLEANUP_INVALID STACK_SOCKET_TABLE_INVALID STACK_SOCKET_TABLE_LIMIT
+STACK_START_FAILED""".split())
+CODES.update({"WORKER_REPORTED_FAILURE", "WORKER_FAILURE_FRAME_INVALID"})
 
 
 
@@ -49,7 +65,7 @@ _NFT_DIAGNOSTIC = re.compile(
 
 
 def nft_diagnostics(value):
-    rows = value.get("transports") if type(value) is dict else None
+    rows = value.get("transports", value.get("cases")) if type(value) is dict else None
     if type(rows) is not list:
         return []
     result = set()
@@ -67,6 +83,20 @@ def nft_diagnostics(value):
 
 def booleans(value, expected):
     return type(value) is dict and set(value) == set(expected) and all(value[key] is flag for key, flag in expected.items())
+
+
+def worker_diagnostics(value):
+    rows = value.get("transports", value.get("cases")) if type(value) is dict else None
+    if type(rows) is not list:
+        return []
+    summaries = set()
+    for row in rows[:3]:
+        record = row.get("worker_failure") if type(row) is dict else None
+        if valid_failure_record(record):
+            summaries.add(":".join((record["phase"], record["code"],
+                "cleanup_reaped=" + ("true" if record["cleanup_reaped"] else "false"),
+                record["cleanup_code"] or "NONE")))
+    return sorted(summaries)[:3]
 
 
 def native_cases(cases):
@@ -97,6 +127,7 @@ def echo_outcomes(value, allowed):
 def overlay_transport(row):
     phases = row.get("phases")
     if (row.get("status") != "owned_overlay_probe_verified" or row.get("cleanup_errors") != []
+            or "worker_failure" in row or "error" in row
             or any(type(row.get(key)) is not int or row[key] != 2 for key in ("namespaces_created", "namespaces_removed"))
             or type(phases) is not list or any(type(item) is not dict for item in phases)
             or [item.get("phase") for item in phases] != ["correct-pin-before", "wrong-pin", "correct-pin-after"]):
@@ -121,9 +152,49 @@ def overlay_transport(row):
                                           "production_native_lease_exercised": False})
 
 
+def owned_stack_cases(cases):
+    if (type(cases) is not list or any(type(row) is not dict for row in cases)
+            or [row.get("case") for row in cases] != ["lease-revoke", "peer-loss"]):
+        return False
+    for row in cases:
+        counters = row.get("containment_after")
+        if (row.get("status") != "owned_stack_case_verified" or row.get("cleanup_errors") != []
+                or "worker_failure" in row or "error" in row
+                or any(row.get(key) is not True for key in ("actual_native_ready", "established_tcp"))
+                or type(row.get("owned_listeners")) is not int or row["owned_listeners"] != 5
+                or any(type(row.get(key)) is not int or row[key] != 2 for key in ("namespaces_created", "namespaces_removed"))
+                or type(row.get("runtime_profile_sha256")) is not str
+                or not re.fullmatch(r"[0-9a-f]{64}", row["runtime_profile_sha256"])
+                or type(counters) is not list or len(counters) != 2
+                or any(type(item) is not dict or set(item) != {"input", "output", "forward"}
+                    or any(type(n) is not int or n < 0 for n in item.values()) for item in counters)):
+            return False
+        if row["case"] == "lease-revoke":
+            if (type(row.get("native_watchdog_exit")) is not int or row["native_watchdog_exit"] != 92
+                    or type(row.get("ports_rebound")) is not int or row["ports_rebound"] != 5
+                    or any(row.get(key) is not True for key in ("held_tcp_eof_or_reset", "overlay_alive_during_close"))):
+                return False
+        elif (any(row.get(key) is not True for key in ("exact_peer_reaped", "monitor_permanently_revoked", "native_reaped"))
+                or type(row.get("native_listeners_remaining")) is not int or row["native_listeners_remaining"] != 0
+                or row.get("remote_tcp_eof_claimed") is not False):
+            return False
+    return True
+
+
 def verified(kind, value):
     if type(value) is not dict:
         return False
+    if kind == "owned-stack":
+        scope = value.get("scope")
+        flags = {"production_admission": False, "ordinary_public_enabled": False, "game_executed": False,
+            "complete_client_package": False, "runtime_binary_uploaded": False, "raw_runtime_output_retained": False}
+        return (value.get("schema") == "ff-owned-overlay-native-stack-development-v1"
+            and value.get("status") == "owned_stack_development_verified" and value.get("precondition_failures") == []
+            and type(scope) is dict and set(scope) == set(flags) | {"transport", "purpose"}
+            and scope["transport"] == "tcp" and scope["purpose"] == "owned-isolated-development"
+            and all(scope[key] is flag for key, flag in flags.items())
+            and all(value.get(key) is True for key in ("copied_package_native_verified", "source_package_unchanged", "private_stage_removed"))
+            and owned_stack_cases(value.get("cases")))
     if kind == "native":
         expected_scope = {"synthetic_runtime_bindings": True, "controlled_native_startup_test": True,
             "encrypted_overlay_verified": False, "production_provider_open": False, "game_executed": False,
@@ -184,13 +255,16 @@ def inspect(kind, exit_code, receipt, error_log):
     reason = ",".join(codes) or ("PROBE_SUCCESS_RECEIPT_INVALID" if exit_code == 0 else "UNCLASSIFIED_PROBE_FAILURE")
     shape = nft_diagnostics(value)
     fields = "; nft_shape=" + ",".join(shape) if shape else ""
+    workers = worker_diagnostics(value)
+    if workers:
+        fields += "; worker_failures=" + ",".join(workers)
     ci_diagnostics.emit_error("probe=" + kind + "; fixed_codes=" + reason + fields + "; no raw probe output published")
     return 1
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--kind", choices=("native", "easytier", "containment"), required=True)
+    parser.add_argument("--kind", choices=("native", "easytier", "containment", "owned-stack"), required=True)
     parser.add_argument("--exit-code", type=int, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--error-log", type=Path, required=True)

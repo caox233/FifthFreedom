@@ -173,6 +173,20 @@ def known_ui_labels(source_paths) -> set[str]:
     return labels
 
 
+def known_native_test_ids() -> set[str]:
+    """Only public, statically declared tests in the two owned Windows suites."""
+    folder = Path(__file__).resolve().parents[1] / "src/native/client/hooks/src/api"
+    names = set()
+    for module in ("public_return", "source_transport"):
+        try:
+            source = (folder / (module + "_tests.rs")).read_text(encoding="utf-8")
+        except OSError:
+            continue
+        for name in re.findall(r"(?m)^#\[test\]\s*fn ([a-z][a-z0-9_]{0,159})\(\)", source):
+            names.add("api::" + module + "::tests::" + name)
+    return names
+
+
 def diagnostic_details(text: str, *, ui_labels=()) -> dict:
     # Only fixed-shape codes and exact source-known labels leave the raw log.
     codes = sorted({(a or b).upper() for a, b in _COMPILER_CODE.findall(text)})[:MAX_ITEMS]
@@ -211,6 +225,10 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
     tls = sorted({"PublicSessionControl:05:" + ":".join(match.groups())
                   for line in text.splitlines()
                   if (match := _TLS_FAILURE.fullmatch(line))})[:MAX_ITEMS]
+    native_allowed = known_native_test_ids()
+    native_tests = sorted({match[1] for line in text.splitlines()
+        if (match := re.fullmatch(r"test ([a-z0-9_:]+) \.\.\. FAILED", line))
+        and match[1] in native_allowed})[:MAX_ITEMS]
     def fixed_codes(allowed):
         return sorted(code for code in allowed
                       if re.search(r"(?<![A-Za-z0-9_])" + code + r"(?![A-Za-z0-9_])", text))[:MAX_ITEMS]
@@ -220,6 +238,7 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
             "managed_cases": managed, "tls_cases": tls,
             "return_phases": return_phases, "return_child_failures": child_failures,
             "native_interop_codes": fixed_codes(_INTEROP_CODES),
+            "native_failed_tests": native_tests,
             "final_preparation_codes": fixed_codes(_PREPARATION_CODES)}
 
 

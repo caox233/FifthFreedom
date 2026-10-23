@@ -282,6 +282,32 @@ class AnnotationSafetyTests(unittest.TestCase):
         self.assertEqual(details["final_preparation_codes"], ["FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE"])
         self.assertNotIn("PRIVATE", str(details))
 
+    def test_native_failures_only_name_actual_public_tests_in_selected_modules(self):
+        allowed = diagnostics.known_native_test_ids()
+        self.assertEqual(len(allowed), 16)
+        name = "api::public_return::tests::wrong_launch_challenge_permanently_closes_worker_without_hello"
+        self.assertIn(name, allowed)
+        self.assertNotIn("api::public_return::tests::deadline", allowed)
+        marker = "test " + name + " ... FAILED"
+        details = diagnostics.diagnostic_details(marker + "\nPRIVATE_PANIC_TOKEN /PRIVATE_PATH")
+        self.assertEqual(details["native_failed_tests"], [name])
+        self.assertNotIn("PRIVATE", str(details))
+        for bad in (marker + " PRIVATE", marker.replace(name, name + "_private"),
+                    marker.replace("public_return", "PRIVATE_MODULE"),
+                    "test api::public_return::tests::deadline ... FAILED",
+                    marker.replace("FAILED", "ok")):
+            self.assertEqual(diagnostics.diagnostic_details(bad)["native_failed_tests"], [])
+
+    def test_native_test_annotation_never_exports_panic_values_or_unknown_names(self):
+        name = "api::public_return::tests::overlapped_timeout_cancels_and_drains_before_buffer_reuse"
+        output = io.StringIO()
+        with redirect_stdout(output), self.assertRaises(diagnostics.AnnotatedFailure):
+            with diagnostics.diagnostic_step("ci-native-public-return"):
+                raise RuntimeError("test " + name + " ... FAILED\nPRIVATE_ASSERTION_VALUE\n"
+                    "test PRIVATE_RUNTIME_NAME ... FAILED\n")
+        self.assertIn("native_failed_tests=" + name, output.getvalue())
+        self.assertNotIn("PRIVATE", output.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()

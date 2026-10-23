@@ -12,6 +12,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 import ci_probe_result as probe
 import ci_easytier_probe as overlay_producer
 import ci_native_lifecycle as native_producer
+import ci_owned_stack as stack_producer
+import easytier_probe_worker as worker_producer
 
 
 def native():
@@ -43,6 +45,21 @@ def overlay():
             for transport in overlay_producer.TRANSPORTS]}
 
 
+def owned_stack():
+    return {"schema": stack_producer.SCHEMA, "status": "owned_stack_development_verified",
+        "scope": dict(stack_producer.SCOPE), "precondition_failures": [],
+        "copied_package_native_verified": True, "source_package_unchanged": True, "private_stage_removed": True,
+        "cases": [{"case": case, "status": "owned_stack_case_verified", "cleanup_errors": [],
+            "namespaces_created": 2, "namespaces_removed": 2, "actual_native_ready": True,
+            "owned_listeners": 5, "established_tcp": True, "runtime_profile_sha256": "a" * 64,
+            "containment_after": [dict.fromkeys(("input", "output", "forward"), 0) for _ in range(2)],
+            **({"native_watchdog_exit": 92, "ports_rebound": 5, "held_tcp_eof_or_reset": True,
+                "overlay_alive_during_close": True} if case == "lease-revoke" else
+               {"exact_peer_reaped": True, "monitor_permanently_revoked": True, "native_reaped": True,
+                "native_listeners_remaining": 0, "remote_tcp_eof_claimed": False})}
+            for case in stack_producer.CASES]}
+
+
 class ProbeResultTests(unittest.TestCase):
     def setUp(self):
         temporary = tempfile.TemporaryDirectory(prefix="ff-probe-result-tests-")
@@ -61,9 +78,77 @@ class ProbeResultTests(unittest.TestCase):
         return result, output.getvalue()
 
     def test_matching_success_receipts_need_successful_process(self):
-        for kind, value in (("native", native()), ("easytier", overlay())):
+        for kind, value in (("native", native()), ("easytier", overlay()), ("owned-stack", owned_stack())):
             self.assertEqual(self.inspect(kind, value), (0, ""))
             self.assertEqual(self.inspect(kind, value, exit_code=1)[0], 1)
+
+    def test_owned_stack_requires_both_controls_actual_positive_and_cleanup(self):
+        for index in (0, 1):
+            for key, invalid in (("actual_native_ready", False), ("established_tcp", False),
+                    ("owned_listeners", 4), ("owned_listeners", True), ("namespaces_removed", 1),
+                    ("cleanup_errors", ["STACK_WORKER_CLEANUP_FAILED"]), ("runtime_profile_sha256", "PRIVATE"),
+                    ("containment_after", []), ("containment_after", [{"input": -1, "output": 0, "forward": 0}] * 2)):
+                value = owned_stack(); value["cases"][index][key] = invalid
+                with self.subTest(case=index, key=key):
+                    self.assertEqual(self.inspect("owned-stack", value)[0], 1)
+        for cases in ([], list(reversed(owned_stack()["cases"])), owned_stack()["cases"][:1]):
+            value = owned_stack(); value["cases"] = cases
+            self.assertFalse(probe.verified("owned-stack", value))
+
+    def test_owned_stack_requires_real_eof_with_overlay_alive_and_sticky_peer_loss(self):
+        for index, key, invalid in ((0, "native_watchdog_exit", 0), (0, "ports_rebound", 4),
+                (0, "held_tcp_eof_or_reset", False), (0, "overlay_alive_during_close", False),
+                (1, "exact_peer_reaped", False), (1, "monitor_permanently_revoked", False),
+                (1, "native_reaped", False), (1, "native_listeners_remaining", False),
+                (1, "native_listeners_remaining", 1), (1, "remote_tcp_eof_claimed", True)):
+            value = owned_stack(); value["cases"][index][key] = invalid
+            with self.subTest(case=index, key=key):
+                self.assertFalse(probe.verified("owned-stack", value))
+
+    def test_owned_stack_preserves_privacy_admission_and_distinct_scope(self):
+        for key in ("copied_package_native_verified", "source_package_unchanged", "private_stage_removed"):
+            value = owned_stack(); value[key] = False
+            self.assertFalse(probe.verified("owned-stack", value))
+        for key in ("production_admission", "ordinary_public_enabled", "game_executed",
+                    "complete_client_package", "runtime_binary_uploaded", "raw_runtime_output_retained"):
+            for invalid in (True, 0):
+                value = owned_stack(); value["scope"][key] = invalid
+                self.assertFalse(probe.verified("owned-stack", value))
+        for key, invalid in (("transport", "quic"), ("purpose", "PRIVATE")):
+            value = owned_stack(); value["scope"][key] = invalid
+            self.assertFalse(probe.verified("owned-stack", value))
+        value = owned_stack(); value["precondition_failures"] = ["EXISTING_TUN_REQUIRED"]
+        self.assertFalse(probe.verified("owned-stack", value))
+        self.assertFalse(probe.verified("easytier", owned_stack()))
+
+    def test_owned_stack_failure_diagnostics_only_export_fixed_codes_and_nft_shapes(self):
+        value = {"error": "STACK_CASES_INCOMPLETE", "cases": [{"error": "STACK_STATE_TIMEOUT /PRIVATE_PATH",
+            "fixed_diagnostics": ["NFT_I0_RULE_EXPR_COUNT_6_TO_5", "NFT_PRIVATE_VALUE"]}],
+            "private": "STACK_STATE_INVALID_PRIVATE_SUFFIX"}
+        result, output = self.inspect("owned-stack", value, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("STACK_CASES_INCOMPLETE", output)
+        self.assertIn("STACK_STATE_TIMEOUT", output)
+        self.assertIn("NFT_I0_RULE_EXPR_COUNT_6_TO_5", output)
+        self.assertNotIn("STACK_STATE_INVALID", output)
+
+    def test_worker_failure_diagnostics_require_exact_source_enums_and_cleanup_consistency(self):
+        record = {"event": "failed", "schema": worker_producer.FAILURE_SCHEMA,
+            "phase": "core-start", "code": "CHILD_BOOTSTRAP_FAILED", "cleanup_reaped": False,
+            "cleanup_code": "CHILD_START_CLEANUP_UNCONFIRMED"}
+        value = {"error": "WORKER_REPORTED_FAILURE", "transports": [{"worker_failure": record}]}
+        result, output = self.inspect("easytier", value, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("worker_failures=core-start:CHILD_BOOTSTRAP_FAILED:cleanup_reaped=false:CHILD_START_CLEANUP_UNCONFIRMED", output)
+        for key, invalid in (("phase", "PRIVATE"), ("code", "CHILD_BOOTSTRAP_FAILED_PRIVATE"),
+                ("cleanup_reaped", 0), ("cleanup_reaped", True), ("cleanup_code", "PRIVATE"),
+                ("extra", "PRIVATE"), ("schema", "PRIVATE")):
+            bad = {"transports": [{"worker_failure": {**record, key: invalid}}]}
+            self.assertEqual(probe.worker_diagnostics(bad), [])
+            self.assertNotIn("PRIVATE", self.inspect("easytier", bad, 1)[1])
+        for kind, good in (("easytier", overlay()), ("owned-stack", owned_stack())):
+            good["transports" if kind == "easytier" else "cases"][0]["worker_failure"] = record
+            self.assertEqual(self.inspect(kind, good)[0], 1)
 
     def test_native_missing_cases_cleanup_or_scope_cannot_pass(self):
         for changes in ({"cases": []}, {"cases": list(reversed(native()["cases"]))},

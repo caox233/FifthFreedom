@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T07:31:33.351197+00:00",
+  "source_head_sha": "f85c515168c35a7d727b0f936ad2254be144e036",
+  "run_id": 39916016529,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39916016529",
+  "status": "completed",
+  "conclusion": "failure",
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no archive download",
+  "jobs": [
+    {
+      "id": 120289658048,
+      "name": "Fresh reviewed build and isolated transport probes (no runtime publication)",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install signed compiler and namespace tools without loading drivers",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install pinned profile key-validation provider",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify strict namespace containment before compiling runtime sources",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve only the sanitized containment receipt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install both explicit reviewed Rust toolchains",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install checksum-pinned protoc",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require probe input and cleanup regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Prepare the same-job six-patch source and verify finite contracts and GNU build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Compile the exact native socket-policy probe from this checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Exercise owned QUIC WSS and development TCP in isolated namespaces",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Preserve only the sanitized owned-probe receipt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12485626284,
+      "name": "owned-easytier-development-receipt-5ad4ae149a869808b3b19551841c9b0b774ae9f8",
+      "size_in_bytes": 1121,
+      "digest": "sha256:d3f3c736ae10bcead727577d48a11a3b4984ebe325144a6528e6f7eced0088df",
+      "expired": false
+    },
+    {
+      "id": 12485380024,
+      "name": "easytier-containment-receipt-5ad4ae149a869808b3b19551841c9b0b774ae9f8",
+      "size_in_bytes": 460,
+      "digest": "sha256:bda6e2dc47d6908b15d1666951b2a84e19635ae25c68c93ca9be4d21dae4fdd8",
+      "expired": false
+    }
+  ],
+  "bounded_failure": "probe=easytier; fixed_codes=OWNED_WORKER_CLEANUP_FAILED,TRANSPORT_MATRIX_INCOMPLETE,WORKER_REPLY_EOF; no raw probe output published",
+  "strict_containment_preflight_passed": true,
+  "same_job_guard3_contract_and_gnu_build_passed": true,
+  "same_job_native_socket_probe_compiled": true,
+  "worker_failure_stage_or_cause_confirmed": false,
+  "core_tun_peer_startup_confirmed": false,
+  "runtime_matrix_verified": false,
+  "worker_cleanup_verified": false,
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false,
+  "production_admission": false,
+  "game_executed": false,
+  "runtime_binary_uploaded": false,
+  "release_or_deployment": false,
+  "redundant_runs_cancelled_via_official_api": [
+    {
+      "run_id": 39918375619,
+      "source_head_sha": "1b6cdabcec13c3e1b313501ec4306c67ebcbf9f8",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "reason": "The same core/CLI recipe, worker harness and quazal socket-probe inputs would repeat the observed EOF without the new worker diagnostics."
+    },
+    {
+      "run_id": 39918375450,
+      "source_head_sha": "1b6cdabcec13c3e1b313501ec4306c67ebcbf9f8",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "reason": "The reviewed guard3 source/build recipe is unchanged from its actual successful hosted build."
+    }
+  ],
+  "retained_candidate_run": 39918375705
+}

@@ -304,6 +304,83 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+  linux-owned-overlay-native-stack:
+    name: Same-run owned overlay and native development composition
+    needs: linux-public-server-integrity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        id: python
+        with:
+          python-version: '3.12'
+      - name: Download only this workflow's verified component candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-public-server-component-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/owned-stack-input
+      - name: Install signed namespace tools without loading drivers
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends iproute2 nftables
+      - name: Install pinned profile key-validation provider
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: -r scripts/requirements-profile.txt
+      - name: Require actual containment and prerequisites before compiling runtime sources
+        env:
+          PROBE_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/owned-stack"
+          probe_status=0
+          sudo --non-interactive --preserve-env=GITHUB_ACTIONS,RUNNER_ENVIRONMENT,GITHUB_SHA -- "$PROBE_PYTHON" -I -B scripts/ci_easytier_probe.py \
+            --containment-only --output "$RUNNER_TEMP/owned-stack/containment.json" \
+            > "$RUNNER_TEMP/owned-stack-containment.stdout" 2> "$RUNNER_TEMP/owned-stack-containment.stderr" || probe_status=$?
+          python -B scripts/ci_probe_result.py --kind containment --exit-code "$probe_status" \
+            --receipt "$RUNNER_TEMP/owned-stack/containment.json" --error-log "$RUNNER_TEMP/owned-stack-containment.stderr"
+      - name: Install signed GNU compiler and native runtime libraries
+        run: sudo apt-get install --yes --no-install-recommends build-essential pkg-config cmake libsodium-dev libssl-dev libsqlite3-dev clang libclang-dev
+      - name: Install the reviewed GNU build toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --target x86_64-unknown-linux-gnu
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Require owned composition cleanup and control regressions
+        run: python -B -m unittest discover -s tests/ci -p test_owned_stack.py -v
+      - name: Build this job's exact guard3 core and CLI after all 35 finite contracts
+        run: python -B scripts/ci_easytier_build.py
+      - name: Verify real lease revocation and peer loss with the same-run native candidate
+        env:
+          PROBE_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: |
+          package="$RUNNER_TEMP/owned-stack-input/ci/linux-public-server-integrity/candidate"
+          probe_status=0
+          sudo --non-interactive --preserve-env=GITHUB_ACTIONS,RUNNER_ENVIRONMENT,GITHUB_SHA -- "$PROBE_PYTHON" -I -B scripts/ci_owned_stack.py \
+            --package "$package" --candidate-receipt "$package/CANDIDATE-RECEIPT.json" \
+            --build-receipt "$PWD/artifacts/ci/easytier-build-only/receipt.json" \
+            --core "$RUNNER_TEMP/fifth-easytier-build-only/target/x86_64-unknown-linux-gnu/release/easytier-core" \
+            --cli "$RUNNER_TEMP/fifth-easytier-build-only/target/x86_64-unknown-linux-gnu/release/easytier-cli" \
+            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --output "$RUNNER_TEMP/owned-stack/receipt.json" \
+            > "$RUNNER_TEMP/owned-stack.stdout" 2> "$RUNNER_TEMP/owned-stack.stderr" || probe_status=$?
+          python -B scripts/ci_probe_result.py --kind owned-stack --exit-code "$probe_status" \
+            --receipt "$RUNNER_TEMP/owned-stack/receipt.json" --error-log "$RUNNER_TEMP/owned-stack.stderr"
+      - name: Preserve only sanitized composition and containment receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: owned-overlay-native-development-receipt-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/owned-stack/containment.json
+            ${{ runner.temp }}/owned-stack/receipt.json
+          if-no-files-found: warn
+          retention-days: 14
+
   linux-socket-isolation:
     name: Linux native socket ingress isolation (synthetic namespaces)
     runs-on: ubuntu-24.04
