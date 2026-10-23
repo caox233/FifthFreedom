@@ -193,6 +193,10 @@ jobs:
         with:
           name: linux-lan-baseline-${{ github.sha }}
           path: ${{ runner.temp }}/public-server-inputs/linux
+      - name: Install signed runtime libraries for the system-linked Linux executable
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libsodium23 libsqlite3-0 libssl3t64
       - name: Verify same-run identities and require read-only deployment preflight
         run: python -B scripts/ci_candidate.py linux-public-server-integrity
       - name: Preserve component-only identity evidence without releasing or deploying
