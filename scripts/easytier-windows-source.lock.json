@@ -58,8 +58,8 @@
     "dependency_license_closure_verified": false
   },
   "expected_prepared": {
-    "source_tree_sha256": "0e01b494704e7a4f3afb67d7c54b446149fda7317938623d36164d0d53c0d1eb",
-    "patch_manifest_sha256": "74b55777b6501e237adc3676ffddd787f199aa116f66d0d6b43f640ae64270cd",
+    "source_tree_sha256": "efb765a226be8ad35826c71868b105f09d5d6971b9d58580754389efec058fcd",
+    "patch_manifest_sha256": "8123326e2c84d5909cab0a14d7c8f6539d73dea59a4e7ad5485f8ae361f68476",
     "cargo_lock_patched_sha256": "93933b3d72622fb04692d11defdf1ebc5ed979c5feedefceb74114bd2db6b6fc",
     "cargo_override_sha256": "d2eff4d03f1efa57a6a0e0b37af6dd7841fd0b5a2a77d7a02e3bdd437eafc830"
   },
@@ -69,5 +69,10 @@
     "source_path": "thunk-rs/src/lib.rs",
     "source_sha256": "5169a532a5e466efe660e5cf56ed0086b4df591f094c92e407b75a4742227034",
     "reason": "Explicit modern Windows feature skips thunk() call and its curl -LOkf unverified VC-LTL5/YY-Thunks download path; default upstream behavior is preserved."
+  },
+  "session_read_recipe": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-session-read/receipt.json",
+    "bytes": 2407,
+    "sha256": "377390db0467998b8f42c40a55e4970a070481957d27e8b70407ca9ba1303ed0"
   }
 }

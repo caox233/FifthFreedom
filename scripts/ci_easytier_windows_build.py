@@ -54,6 +54,10 @@ SAFE_ERROR_CODES = frozenset({
     'SOURCE_PATCH_SCOPE_OR_DIGEST_MISMATCH',
     'SOURCE_REQUIRED_BASE_MISMATCH',
     'SOURCE_UNREVIEWED_PREBUILT',
+    'WINDOWS_SESSION_READ_RECIPE',
+    'WINDOWS_SESSION_READ_BASE',
+    'WINDOWS_SESSION_READ_DIGEST',
+    'WINDOWS_SESSION_READ_MODULE',
     'WINDOWS_BASE_LOCK_DIGEST',
     'WINDOWS_BASE_NOTICE_DIGEST',
     'WINDOWS_BUILD_BASE',
@@ -180,6 +184,51 @@ def transform_lock(data):
     return changed
 
 
+def session_read_recipe(lock, repository=ROOT):
+    row = lock.get("session_read_recipe")
+    if row is None:
+        return None
+    require(source.safe_name(row["path"]), "WINDOWS_SESSION_READ_RECIPE")
+    recipe = json.loads(source.checked_bytes(repository / row["path"], row, 1024 * 1024))
+    return recipe
+
+
+def verify_session_read_contract_inputs(lock, repository=ROOT):
+    recipe = session_read_recipe(lock, repository)
+    if recipe is None:
+        return None
+    tests = recipe["contract_tests"]
+    require(type(tests["expected_passed"]) is int and tests["expected_passed"] == 8
+            and source.safe_name(tests["manifest"]), "WINDOWS_SESSION_READ_RECIPE")
+    require(tests["manifest"] in [item["path"] for item in tests["files"]], "WINDOWS_SESSION_READ_RECIPE")
+    for item in [recipe["linked_module"], *tests["files"]]:
+        require(source.safe_name(item["path"]), "WINDOWS_SESSION_READ_RECIPE")
+        source.checked_bytes(repository / item["path"], item, 1024 * 1024)
+    return tests
+
+
+def apply_session_read(directory, expected, lock, repository=ROOT):
+    recipe = session_read_recipe(lock, repository)
+    if recipe is None:
+        return []  # Historical nine-patch recipes remain reproducible.
+    require(recipe["base_windows_session_recipe"] == lock["session_recipe"], "WINDOWS_SESSION_READ_RECIPE")
+    require(recipe["schema"] == 1 and 0 < len(recipe["files"]) <= 8
+            and len({item["path"] for item in recipe["files"]}) == len(recipe["files"]), "WINDOWS_SESSION_READ_RECIPE")
+    module = recipe["linked_module"]
+    require(source.safe_name(module["path"]) and source.safe_name(module["production_path"]), "WINDOWS_SESSION_READ_MODULE")
+    tested_module = source.checked_bytes(repository / module["path"], module, 1024 * 1024)
+    for item in recipe["files"]:
+        require(source.safe_name(item["path"]), "WINDOWS_SESSION_READ_RECIPE")
+        require(expected.get(item["path"], {}).get("sha256") == item["original_sha256"], "WINDOWS_SESSION_READ_BASE")
+    apply_patch(directory, recipe["patch"], repository)
+    for item in recipe["files"]:
+        data = (directory / item["path"]).read_bytes()
+        require(source.sha(data) == item["patched_sha256"], "WINDOWS_SESSION_READ_DIGEST")
+        expected[item["path"]] = {"bytes": len(data), "sha256": source.sha(data)}
+    require((directory / module["production_path"]).read_bytes() == tested_module, "WINDOWS_SESSION_READ_MODULE")
+    return [dict(recipe["patch"], role="windows-session-read")]
+
+
 def prepare(easytier_archive, tun_archive, work, lock, repository=ROOT):
     work = work.resolve()
     linux, session = load_inputs(lock, repository)
@@ -224,6 +273,7 @@ def prepare(easytier_archive, tun_archive, work, lock, repository=ROOT):
     require(source.sha(data) == patch["patched_sha256"], "WINDOWS_BUILD_PATCH_DIGEST")
     expected["easytier"][patch["source_path"]] = {"bytes": len(data), "sha256": source.sha(data)}
     patch_rows.append({key: patch[key] for key in ("path", "bytes", "sha256")})
+    patch_rows.extend(apply_session_read(easytier, expected["easytier"], lock, repository))
     require(inventory(easytier) == expected["easytier"] and inventory(tun) == expected["tun"], "WINDOWS_PATCH_SCOPE")
 
     # This exact held import library is a link input, not a published runtime.
@@ -309,7 +359,7 @@ def safe_diagnostics(data, known_files=None):
             "known_source_locations": locations}
 
 
-def build(work, output, prepared, lock, environment=None, cargo="cargo"):
+def build(work, output, prepared, lock, environment=None, cargo="cargo", repository=ROOT):
     require_prepared(work, prepared, lock)
     output.mkdir(parents=True, exist_ok=False)
     (output / "source-receipt.json").write_bytes(source.encoded(prepared))
@@ -331,16 +381,24 @@ def build(work, output, prepared, lock, environment=None, cargo="cargo"):
                                             "-p", "easytier", "--features", FEATURE,
                                             "--bin", "easytier-core", "--bin", "easytier-cli"])]
     try:
+        read_tests = verify_session_read_contract_inputs(lock, repository)
+        if read_tests is not None:
+            commands.insert(0, ("typed-session-read-contract", base + ["test", "--locked", "--target", lock["build"]["target"],
+                "--manifest-path", str(repository / read_tests["manifest"]), "--lib", "--", "--test-threads=1"]))
         for label, command in commands:
             print("WINDOWS_EASYTIER_STAGE " + label, flush=True)
             out, err = logs / (label + ".stdout"), logs / (label + ".stderr")
             with out.open("xb") as stdout, err.open("xb") as stderr:
                 result = subprocess.run(command, cwd=work / "easytier-source", env=env,
-                                        stdout=stdout, stderr=stderr, timeout=600 if label == "metadata" else 7200)
+                                        stdout=stdout, stderr=stderr, timeout=600 if label != "core-cli-build" else 7200)
             data = out.read_bytes() + err.read_bytes()
             receipt["runs"].append({"stage": label, "exit_code": result.returncode,
                                     "log_sha256": source.sha(data), **safe_diagnostics(data, prepared["source_files"])})
             require(result.returncode == 0, "WINDOWS_BUILD_COMMAND_FAILED")
+            if label == "typed-session-read-contract":
+                linux_build.require_count(data.decode("utf-8", errors="replace"), read_tests["expected_passed"])
+                verify_session_read_contract_inputs(lock, repository)
+                receipt["typed_session_read_contracts"] = {"passed": read_tests["expected_passed"], "failed": 0, "ignored": 0}
             if label == "metadata":
                 receipt["resolution"] = require_resolution(json.loads(out.read_bytes()), work)
                 require_prepared(work, prepared, lock)

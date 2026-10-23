@@ -80,7 +80,9 @@ class WindowsPairedSourceTests(unittest.TestCase):
                                        {"id": "paired-tun", "features": ["async"], "deps": []}]}}
 
     def fake_compile(self, command, **kwargs):
-        if "metadata" in command:
+        if "test" in command:
+            kwargs["stdout"].write(b"test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n")
+        elif "metadata" in command:
             kwargs["stdout"].write(json.dumps(self.metadata()).encode())
         else:
             self.assertIn("build", command)
@@ -98,7 +100,68 @@ class WindowsPairedSourceTests(unittest.TestCase):
 
     def run_build(self, prepared, compiler=None):
         with patch.object(build.subprocess, "run", side_effect=compiler or self.fake_compile):
-            return build.build(self.work, self.output, prepared, self.lock, environment={})
+            return build.build(self.work, self.output, prepared, self.lock, environment={}, repository=self.root)
+
+    def add_read_recipe(self):
+        module = b"fn bounded_read() {}\n"
+        path = "easytier/read.rs"
+        addon = self.make_patch("read.patch", path, b"", module)
+        (self.root / "linked-read.rs").write_bytes(module)
+        (self.root / "contract.toml").write_bytes(b"synthetic manifest, never executed")
+        recipe = {"schema": 1, "patch": addon, "base_windows_session_recipe": self.lock["session_recipe"],
+                  "files": [{"path": path, "original_sha256": None, "patched_sha256": build.source.sha(module)}],
+                  "linked_module": {"path": "linked-read.rs", "production_path": path, **self.fixture.row(module)},
+                  "contract_tests": {"manifest": "contract.toml", "expected_passed": 8,
+                                     "files": [{"path": "contract.toml", **self.fixture.row((self.root / "contract.toml").read_bytes())}]}}
+        row = self.recipe("read.json", recipe)
+        row["bytes"] = (self.root / "read.json").stat().st_size
+        self.lock["session_read_recipe"] = row
+        return recipe
+
+    def test_additive_read_patch_preserves_previous_inputs_and_exact_linked_module(self):
+        self.add_read_recipe()
+        result = self.prepare()
+        self.assertEqual(len(result["patches"]), 5)
+        self.assertEqual(result["patches"][-1]["role"], "windows-session-read")
+        self.assertEqual((self.work / "easytier-source/easytier/read.rs").read_bytes(),
+                         (self.root / "linked-read.rs").read_bytes())
+        self.assertEqual((self.work / "easytier-source/easytier/secure.rs").read_bytes(), self.fixture.patched)
+        built = self.run_build(result)
+        self.assertEqual([row["stage"] for row in built["runs"]],
+                         ["typed-session-read-contract", "metadata", "core-cli-build"])
+        self.assertEqual(built["typed_session_read_contracts"], {"passed":8,"failed":0,"ignored":0})
+        self.assertFalse(built["driver_loaded"])
+
+    def test_compiled_module_cannot_differ_from_pinned_tested_module(self):
+        recipe = self.add_read_recipe()
+        different = b"fn a_different_read() {}\n"
+        (self.root / "linked-read.rs").write_bytes(different)
+        recipe["linked_module"].update(self.fixture.row(different))
+        row = self.recipe("read.json", recipe);row["bytes"]=(self.root/"read.json").stat().st_size
+        self.lock["session_read_recipe"] = row
+        with self.assertRaisesRegex(build.BuildError, "SESSION_READ_MODULE"):
+            self.prepare()
+
+    def test_successful_test_exit_without_all_eight_contracts_is_rejected(self):
+        self.add_read_recipe(); prepared = self.prepare()
+        def incomplete(command, **kwargs):
+            if "test" in command:
+                kwargs["stdout"].write(b"test result: ok. 7 passed; 0 failed; 1 ignored;\n")
+                return subprocess.CompletedProcess(command,0)
+            self.fail("Incomplete contract execution must stop before full build")
+        with self.assertRaisesRegex(build.linux_build.BuildError, "CONTRACT_COUNT"):
+            self.run_build(prepared, incomplete)
+        self.assertNotEqual(json.loads((self.output/"receipt.json").read_bytes())["status"], "paired_windows_core_cli_built_not_executed")
+
+    def test_contract_input_change_stops_before_metadata_or_core_build(self):
+        self.add_read_recipe(); prepared = self.prepare()
+        def mutate(command, **kwargs):
+            result=self.fake_compile(command,**kwargs)
+            self.assertIn("test",command)
+            (self.root/"linked-read.rs").write_bytes(b"changed after test")
+            return result
+        with self.assertRaises(build.source.PreparationError):
+            self.run_build(prepared, mutate)
 
     def test_paired_sources_keep_guard_and_only_explicit_link_input(self):
         result = self.prepare()
@@ -181,7 +244,7 @@ class WindowsPairedSourceTests(unittest.TestCase):
         prepared = self.prepare()
         (self.work / "tun-source/Cargo.toml").write_bytes(b"changed")
         with patch.object(build.subprocess, "run") as command, self.assertRaisesRegex(build.BuildError, "SOURCE_CHANGED"):
-            build.build(self.work, self.output, prepared, self.lock, environment={})
+            build.build(self.work, self.output, prepared, self.lock, environment={}, repository=self.root)
         command.assert_not_called()
 
     def test_changed_source_during_build_is_rejected_after_compiler_success(self):

@@ -38,7 +38,7 @@ jobs:
           "LIBCLANG_PATH=$clang" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
       - name: Verify source pairing, locked resolution and bounded receipt regressions
         run: python -B -m unittest discover -s tests/ci -p test_ci_easytier_windows_build.py -v
-      - name: Compile exact paired backend and core/CLI without running them
+      - name: Run bounded typed-read contracts then compile paired backend and core/CLI without running them
         run: python -B scripts/ci_easytier_windows_build.py
       - name: Preserve bounded source/build receipts only
         if: always()
