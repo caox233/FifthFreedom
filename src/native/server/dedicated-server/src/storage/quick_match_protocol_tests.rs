@@ -6,7 +6,7 @@
 mod quick_match_protocol {
     use super::*;
     use crate::protocols::game_session_ex_service::game_session_ex_protocol::{SearchSessionsRequest, SearchSessionsResponse};
-    use crate::protocols::game_session_service::game_session_protocol::{CreateSessionRequest, CreateSessionResponse, JoinSessionRequest, JoinSessionResponse};
+    use crate::protocols::game_session_service::game_session_protocol::{CreateSessionRequest, CreateSessionResponse, JoinSessionRequest, JoinSessionResponse, LeaveSessionRequest, LeaveSessionResponse};
     use crate::protocols::game_session_service::types::{GameSession as NativeSession, GameSessionKey, GameSessionQuery};
     use quazal::rmc::basic::{FromStream, ToStream};
     use quazal::rmc::types::{Property, QList};
@@ -108,4 +108,130 @@ mod quick_match_protocol {
     fn quick_match_protocol_official_two_clients_same_returned_session() { same_room(1); }
     #[test]
     fn quick_match_protocol_mod_two_clients_same_returned_session() { same_room(2); }
+
+    // Construct the actual production wrapper on the calling thread. Protocol
+    // trait objects are not Send; sharing Storage is the production state seam.
+    fn call_room(storage: &Arc<Storage>, client: &mut quazal::ClientInfo<()>, protocol_id: u16, method_id: u32, parameters: Vec<u8>) -> std::result::Result<Vec<u8>, Error> {
+        let protocol = match protocol_id {
+            42 => crate::game_session::new_protocol::<()>(storage.clone()),
+            123 => crate::game_session_ex::new_protocol::<()>(storage.clone()),
+            _ => panic!("unexpected room protocol"),
+        };
+        let logger = Logger::root(slog::Discard, slog::o!());
+        let context = quazal::Context::splinter_cell_blacklist();
+        let registry = quazal::prudp::ClientRegistry::<()>::default();
+        let socket = std::net::UdpSocket::bind("127.0.0.1:0").unwrap();
+        protocol.handle(&logger, &context, client,
+            &Request { protocol_id, call_id: 1, method_id, parameters }, &registry, &socket)
+    }
+
+    fn search_room(storage: &Arc<Storage>, client: &mut quazal::ClientInfo<()>) -> ((u32, u32), Vec<u32>) {
+        let parameters = SearchSessionsRequest { game_session_query: GameSessionQuery { type_id: 1, query_id: 0,
+            parameters: QList(vec![Property { id: 113, value: 0 }, Property { id: 103, value: 2_165_463_540 }]) } }.to_bytes();
+        let response = SearchSessionsResponse::from_bytes(&call_room(storage, client, 123, 1, parameters).unwrap()).unwrap();
+        assert_eq!(response.search_results.0.len(), 1);
+        let row = &response.search_results.0[0];
+        assert_eq!(row.game_session_search_result.host_pid, 1);
+        assert_eq!(row.game_session_search_result.host_urls.0.len(), 1);
+        let mut members = row.participants.0.iter().map(|peer| peer.pid).collect::<Vec<_>>();
+        members.sort_unstable();
+        let key = &row.game_session_search_result.session_key;
+        ((key.type_id, key.session_id), members)
+    }
+
+    fn join_request(target: (u32, u32)) -> Vec<u8> {
+        JoinSessionRequest { game_session_key: GameSessionKey { type_id: target.0, session_id: target.1 } }.to_bytes()
+    }
+
+    fn concurrent_existing_room(mode: i64, close_old_ticket: bool) {
+        let storage = Arc::new(create_test_storage("quick-match-concurrent-protocol"));
+        insert_accounts(&storage, 3);
+        for user in 1..=3 {
+            maintenance_begin_run(&storage, user, &format!("{user:032x}"), mode);
+            storage.register_urls(user, vec![format!("prudp:/address=192.0.2.{user};port=13000;sid={user};type=2")]).unwrap();
+        }
+        let mut host = maintenance_native_client(&storage, 1);
+        let parameters = CreateSessionRequest { game_session: NativeSession { type_id: 1,
+            attributes: QList(vec![Property { id: 113, value: 0 }, Property { id: 103, value: 2_165_463_540 },
+                Property { id: 3, value: 8 }, Property { id: 4, value: 0 }]) } }.to_bytes();
+        let created = CreateSessionResponse::from_bytes(&call_room(&storage, &mut host, 42, 1, parameters).unwrap()).unwrap().game_session_key;
+        let client_a = maintenance_native_client(&storage, 2);
+        let client_b = maintenance_native_client(&storage, 3);
+        let old_fingerprint = client_b.ticket_fingerprint;
+        assert_ne!(client_a.ticket_fingerprint, old_fingerprint);
+
+        let (mut healthy, mut old_client, replacement) = std::thread::scope(|scope| {
+            let (discovered, found) = std::sync::mpsc::channel();
+            let mut permits = Vec::new();
+            let mut workers = Vec::new();
+            for mut client in [client_a, client_b] {
+                let state = storage.clone();
+                let discovered = discovered.clone();
+                let (proceed, permit) = std::sync::mpsc::channel();
+                permits.push(proceed);
+                workers.push(scope.spawn(move || {
+                    let snapshot = search_room(&state, &mut client);
+                    discovered.send((client.user_id.unwrap(), snapshot.clone())).unwrap();
+                    // This timeout is a failure watchdog, not a timing assumption.
+                    permit.recv_timeout(Duration::from_secs(10)).expect("join permit missing");
+                    let result = call_room(&state, &mut client, 42, 22, join_request(snapshot.0));
+                    (client, result)
+                }));
+            }
+            let mut searches = (0..2).map(|_| found.recv_timeout(Duration::from_secs(10)).expect("search worker did not finish")).collect::<Vec<_>>();
+            searches.sort_by_key(|(user, _)| *user);
+            assert_eq!(searches[0], (2, ((created.type_id, created.session_id), vec![1])));
+            assert_eq!(searches[1], (3, searches[0].1.clone()));
+            let replacement = if close_old_ticket {
+                // A replacement connection exists before the old one closes.
+                // Exercise the same exact-ticket transaction as secure close,
+                // not the cfg(test) whole-user compatibility helper.
+                let fresh = maintenance_native_client(&storage, 3);
+                assert_ne!(fresh.ticket_fingerprint, old_fingerprint);
+                assert!(matches!(storage.try_close_secure_ticket(3, old_fingerprint).unwrap(), SecureCloseAttempt::Committed { preserved: true }));
+                assert!(storage.native_game_run(3, old_fingerprint, "127.0.0.1".parse().unwrap()).unwrap().is_none());
+                assert!(storage.native_game_run(3, fresh.ticket_fingerprint, fresh.address().ip()).unwrap().is_some());
+                Some(fresh)
+            } else { None };
+            // Both real calls are scheduled from independent threads; no sleep
+            // or copied SQL/filter algorithm chooses their target or result.
+            for permit in permits { permit.send(()).unwrap(); }
+            let mut results = workers.into_iter().map(|worker| worker.join().unwrap()).collect::<Vec<_>>();
+            let (b, b_result) = results.pop().unwrap();
+            let (a, a_result) = results.pop().unwrap();
+            JoinSessionResponse::from_bytes(&a_result.unwrap()).unwrap();
+            if close_old_ticket { assert!(matches!(b_result, Err(Error::AccessDenied))); }
+            else { JoinSessionResponse::from_bytes(&b_result.unwrap()).unwrap(); }
+            (a, b, replacement)
+        });
+        let target = (created.type_id, created.session_id);
+        if close_old_ticket {
+            assert_eq!(search_room(&storage, &mut healthy), (target, vec![1, 2]), "closed caller must not be persisted");
+        }
+        let mut remaining = if let Some(mut fresh) = replacement {
+            assert_eq!(search_room(&storage, &mut fresh), (target, vec![1, 2]));
+            JoinSessionResponse::from_bytes(&call_room(&storage, &mut fresh, 42, 22, join_request(target)).unwrap()).unwrap();
+            assert!(matches!(call_room(&storage, &mut old_client, 42, 22, join_request(target)), Err(Error::AccessDenied)));
+            fresh
+        } else { old_client };
+        assert_eq!(search_room(&storage, &mut healthy), (target, vec![1, 2, 3]));
+        assert_eq!(search_room(&storage, &mut remaining), (target, vec![1, 2, 3]));
+        // The protocol has LeaveSession, not a server matchmaking-queue Cancel.
+        // A client's leave must not remove the other client or the room host.
+        let leave = LeaveSessionRequest { game_session_key: GameSessionKey { type_id: target.0, session_id: target.1 } }.to_bytes();
+        LeaveSessionResponse::from_bytes(&call_room(&storage, &mut healthy, 42, 5, leave).unwrap()).unwrap();
+        assert_eq!(search_room(&storage, &mut remaining), (target, vec![1, 3]));
+        assert_eq!(storage.game_session_diagnostics(target.0, target.1).unwrap().unwrap().2, vec![1, 3]);
+        println!("QUICK_MATCH_CONCURRENT mode={mode} scheduled_join_threads=2 closed_old_ticket={close_old_ticket} replacement_control={close_old_ticket} same_returned_key=true serialized_rosters_verified=true leave_preserved_other_client=true queue_cancel=false real_udp_dispatch=false notification_delivery=false empty_lobby_convergence=false live_game=false user_report_reproduced=false");
+        run(storage.pool.close()).unwrap();
+    }
+
+    #[test]
+    fn quick_match_protocol_official_concurrent_existing_room_and_leave() { concurrent_existing_room(1, false); }
+    #[test]
+    fn quick_match_protocol_mod_concurrent_existing_room_and_leave() { concurrent_existing_room(2, false); }
+    #[test]
+    fn quick_match_protocol_official_closed_ticket_cannot_join_replacement_can() { concurrent_existing_room(1, true); }
+    #[test]
+    fn quick_match_protocol_mod_closed_ticket_cannot_join_replacement_can() { concurrent_existing_room(2, true); }
 }
