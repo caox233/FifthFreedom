@@ -72,6 +72,24 @@
       "unarmed_restore_succeeded": true,
       "path_predicate_passed": true,
       "admission_relaxed": false
+    },
+    {
+      "source_commit": "d432382803db60ded02b47cc334dc624ec23b219",
+      "run_id": 40384304423,
+      "job_id": 121788387227,
+      "artifact_id": 12679872345,
+      "official_zip_sha256": "27b3b1a87f1ccb382741a2d3989e163dd40c47278a027dd82d57e90abf4945d6",
+      "digest_verified": true,
+      "overall": "failure",
+      "observed_boundary": "ENFORCEMENT_STATUS: authoritative UInt16Array [InactiveProfile, Full]; PowerShell 15 package and 22 diagnostic contracts passed",
+      "raw_cim_statuses": [
+        "InactiveProfile",
+        "Full"
+      ],
+      "raw_cim_type": "UInt16Array",
+      "unarmed_restore_succeeded": true,
+      "path_predicate_passed": true,
+      "admission_relaxed": false
     }
   ]
 }

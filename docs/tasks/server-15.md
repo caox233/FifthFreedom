@@ -2,9 +2,19 @@
 
 Status: ready-for-agent for remaining Public integration. Both actual isolated
 development controls passed at `c42e0eb`, run `40371709938`, with independently
-verified official receipts below. Earlier failed runs remain retained. Ordinary
+verified official receipts below. Newer `7c614c1` run `40374533090` fails again
+before READY with `QUERY_IMAGE_CHANGED` and unconfirmed exact child cleanup;
+the earlier success does not establish stability. Earlier failed runs remain retained. Ordinary
 Public admission remains closed; guard3 success does not verify the distinct
 peer-map71 runtime or Windows owned-core/NIC chain.
+
+The [new verified receipt](../evidence/hosted-failures-7c614c1.json) records
+`CHILD_START_CLEANUP_UNCONFIRMED` and `STACK_WORKER_CLEANUP_FAILED`. Two namespaces
+and the private staging tree were removed, but that does not prove the exact
+child was drained. The peer-loss case did not run. Query/worker code is identical
+to successful c42. The next implementation must reproduce the actual short-lived
+query identity/exit boundary, retain live image mismatch rejection and exact
+ownership, and separately prove cleanup; it must not invent a successful drain.
 
 ## Problem and implementation
 

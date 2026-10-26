@@ -1,8 +1,9 @@
 # Actual Windows firewall readback prerequisite
 
-Status: **ready-for-agent**. Actual fast probes have now identified a present-null
-Package property. The narrowly corrected production predicate and its actual
-Windows checks are under verification; full core/NIC execution remains separate.
+Status: **ready-for-agent**. The present-null Package correction passed actual
+Windows checks. Raw CIM now confirms mixed `[InactiveProfile, Full]` enforcement;
+Prepare still refuses. Investigate precise documented policy semantics before
+any admission change; full core/NIC execution remains separate.
 
 ## Retained diagnostic steps before the Package correction
 
@@ -86,3 +87,36 @@ retained exact literal Any, while rejecting missing/empty/non-string/case-varian
 or specific-SID values. Actual PowerShell positive/negative contracts and all
 other strict readbacks must pass in Windows before claiming the prerequisite
 fixed. No core/NIC runtime success is inferred from a pure or unarmed probe.
+
+## Verified correction and remaining enforcement boundary
+
+Run `40379698020` at `72b43d4` passed all 15 actual production package contracts.
+Prepare advanced beyond the Package check and failed at ActiveStore enforcement.
+Unarmed Restore removed the exact owned rules and matched the original policy
+snapshot. Later diagnostic runs at `78c3f61` and `d23eaa8` retained this failure;
+their adapted property was an array of two unrecognized strings, not evidence
+of Full enforcement. No unknown string is admitted or published verbatim.
+
+Run `40384304423`, job `121788387227`, at exact
+`d432382803db60ded02b47cc334dc624ec23b219` reads the same rule's authoritative
+`CimInstanceProperties['EnforcementStatus']`. Its type is `UInt16Array` and its
+two bounded values are **InactiveProfile, Full**, in that order. The read-only
+TracePolicyStore side observation independently returned the same adapted shape
+of two unknown strings; it did not read raw CIM values, so no raw-CIM equality
+with that side observation is claimed. This is a mixed status; it is not
+silently converted to Full, and the unchanged production condition still refuses
+Prepare with `FIREWALL_POLICY_UNAVAILABLE`.
+
+The actual Windows run passed 15 package and 22 diagnostic PowerShell contracts,
+plus 16 runtime-adapter and six prerequisite Python checks. Unarmed Restore again
+succeeded, with owned rules removed and original policy digest unchanged. The
+official 1,551-byte artifact `12679872345` has verified ZIP SHA256
+`27b3b1a87f1ccb382741a2d3989e163dd40c47278a027dd82d57e90abf4945d6`.
+All probe identities/digests are in
+[the retained ledger](../evidence/hosted-firewall-prerequisites.json).
+
+No probe Arms, executes the copied image, starts core, loads a driver or changes
+profiles. Next establish whether documented authoritative current-interface and
+active-profile evidence can prove the intended boundary; otherwise retain the
+hard platform precondition. Neither a successful pure fixture nor rule cleanup
+proves runtime packet confinement or the full owned core/NIC lifecycle.

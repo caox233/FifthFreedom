@@ -1,7 +1,12 @@
 # SERVER-13 — owned isolated EasyTier development probe
 
-Status: ready-for-agent. Harness and focused local checks implemented; actual
-hosted QUIC/WSS/TCP results are still required. Production Public admission stays
+Status: ready-for-agent. Earlier c42 hosted QUIC/WSS/TCP matrix passed, but newer
+exact7c run `40374509451` failed before its first phase. The initial TUN was down
+and lacked its IPv4 address (`EADDRNOTAVAIL`), with no prior ready observation;
+worker and namespace cleanup passed. The unchanged harness now needs a focused
+startup-order regression and a fresh actual matrix run. See the
+[verified failure record](../evidence/hosted-failures-7c614c1.json).
+Production Public admission stays
 closed. This does not complete the native owner-lease integration or live gameplay
 acceptance.
 

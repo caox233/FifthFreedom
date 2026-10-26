@@ -1,0 +1,166 @@
+{
+  "verified_utc": "2026-10-26T19:15:04.385545+00:00",
+  "source_head": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
+  "checkout_merge": "d189ae87293d0fcdfc5233fe6d4cf86e8f5cceec",
+  "merge_parent_and_tree_verified": true,
+  "run_statuses": [
+    {
+      "run_id": 40374533090,
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "run_id": 40374532926,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "run_id": 40374546250,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "run_id": 40374509451,
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "run_id": 40374508990,
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "run_id": 40374521485,
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "new_runtime_failures": "hosted-failures-7c614c1.json",
+  "candidate": {
+    "run_id": 40374533090,
+    "overall": "failure",
+    "jobs_success": 7,
+    "jobs_failed": 3,
+    "jobs_skipped": 1,
+    "not_only_asset_gates": true,
+    "missing_private_SAV_META": 8,
+    "C71_unexecuted": 13,
+    "complete_package_skipped": true,
+    "complete_package_ready": false,
+    "gate_artifacts": [
+      {
+        "id": 12674243570,
+        "run_id": 40374533090,
+        "digest": "sha256:cb868873ccb9702f791beceb6600f9d7c6a6eb5adbbc4ad902d5c6f1d4284f13",
+        "official_digest_verified": true
+      },
+      {
+        "id": 12674533937,
+        "run_id": 40374533090,
+        "digest": "sha256:9cf4eb94b589ce41833423f0d62e86990a296824387af7e04f7112e36f6da189",
+        "official_digest_verified": true
+      }
+    ]
+  },
+  "windows_owned_build": {
+    "run_id": 40374532926,
+    "job_id": 121754790073,
+    "artifact": {
+      "id": 12676490397,
+      "run_id": 40374532926,
+      "digest": "sha256:d643ff86275fb2e9d57b34f874df47da0e5870c949b83f90e0c3e27c18bc95f5",
+      "official_digest_verified": true
+    },
+    "patches": 12,
+    "source_files": 752,
+    "source_tree_sha256": "980bb96687a83f7da040d8aa4c4f7134c1c07183637510f2f39a805eaa08a294",
+    "all_build_stages_exit_zero": true,
+    "normal_and_delay_Packet_imports_absent": true,
+    "runtime_executed": false,
+    "all_three_jobs_success_via_API": true,
+    "other_two_artifacts_not_downloaded": true,
+    "core_cli_full_MSVC_release_build": true
+  },
+  "linux_peer_map": {
+    "run_id": 40374546250,
+    "job_id": 121758200319,
+    "artifact": {
+      "id": 12677050288,
+      "run_id": 40374546250,
+      "digest": "sha256:bf0b0c1ba2d7119dc6ecb569e462e119589708e0353e027efe9c719050b9e00e",
+      "official_digest_verified": true
+    },
+    "source_files": 701,
+    "patches": 12,
+    "source_tree_sha256": "4f0a55d01c4a25dcb4bd7c62972b51e42425b99959566fb3046887dfecda2140",
+    "passed_new": 12,
+    "passed_retained": 59,
+    "failed": 0,
+    "ignored": 0,
+    "full_GNU_release_core_cli_exit": 0,
+    "runtime_executed": false,
+    "other_three_job_successes_API_only": true
+  },
+  "windows_managed": {
+    "run_id": 40374521485,
+    "return_checks": 28,
+    "final_launch_checks": 9,
+    "dependency_checks": 13,
+    "read_managed_checks": 22,
+    "read_native_checks": 8,
+    "read_interop_checks": 4,
+    "all_selected_skipped": 0,
+    "pipe_boundary_queries": [
+      "FACTORY:SUCCESS:LOCAL_BYTE:SERVER",
+      "LEGACY:SUCCESS:BYTE:SERVER",
+      "PRODUCTION:SUCCESS:LOCAL_BYTE:CLIENT"
+    ],
+    "IIS_default_site_restored": true,
+    "artifacts": [
+      {
+        "id": 12673268501,
+        "run_id": 40374521485,
+        "digest": "sha256:b85835dd5910c56489d1dfad03bb2991de4c65bdf34e989e8ec34c969aa46924",
+        "official_digest_verified": true
+      },
+      {
+        "id": 12673862840,
+        "run_id": 40374521485,
+        "digest": "sha256:f74fd0180082e8d0e2b0c7d2c1e111244f116339ad575ec47bf0dd3922cc0553",
+        "official_digest_verified": true
+      },
+      {
+        "id": 12673428154,
+        "run_id": 40374521485,
+        "digest": "sha256:f2a305b5c3922768459d979701e13fe6adf4535421272feba831442b75e0118f",
+        "official_digest_verified": true
+      }
+    ],
+    "driver_or_EasyTier_exercised": false
+  },
+  "windows_inert": {
+    "run_id": 40374508990,
+    "job_id": 121755993486,
+    "artifact": {
+      "id": 12676658664,
+      "run_id": 40374508990,
+      "digest": "sha256:8c6f9ea15486dbcc5443ec48517679d67ca155cdea1a6a9688fbf360dd9c352f",
+      "official_digest_verified": true
+    },
+    "full_inert_core_cli_compile_succeeded": true,
+    "managed_contracts_passed": 22,
+    "runtime_passed": false,
+    "error_code": "FIREWALL_RULE_CHANGED",
+    "restore_error_code": "FIREWALL_RULE_CHANGED",
+    "driver_before_clean": true,
+    "driver_after_clean": true,
+    "runtime_NIC_lifecycle_success_proven": false,
+    "firewall_restore_success_proven": false,
+    "separate_d432_diagnostic_not_inspected": true
+  },
+  "verified_new_artifact_ZIPs": 10,
+  "binary_hashes_scope": "All build-only binaries remain runner-reported; no executable bytes downloaded for these lanes.",
+  "ordinary_Public_ready": false,
+  "new_game_or_capture_executed_by_reviewer": false,
+  "dispatch_or_cancellation_performed": false
+}

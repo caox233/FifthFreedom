@@ -34,6 +34,25 @@ The source report SHA256 is
 
 ## Later verified results and current firewall boundary
 
+Newer exact `7c614c1` hosted receipts expose two additional failures despite the
+earlier `c42e0eb` successes. Candidate `40374533090` has seven successful jobs,
+three failures and one skipped complete package. Its composition fails before
+recorded READY with `QUERY_IMAGE_CHANGED`; exact child cleanup is unconfirmed.
+Matrix `40374509451` fails before its first phase with initial interface
+`EADDRNOTAVAIL` while the link is down and has never been observed ready.
+Its worker and namespace cleanup passed. The seven mapped harness/production
+files are byte-identical to successful c42; this does not establish a unique
+root cause. Both failures are being reproduced independently, and are distinct
+from the asset and C71 gates. See [the verified failure record](evidence/hosted-failures-7c614c1.json).
+
+The same exact source's separate [component receipts](evidence/hosted-components-7c614c1.json)
+confirm the Windows MSVC core/CLI build, Linux peer-map71 full GNU build and
+Windows return28/final9/dependency13/read22+8+4 checks, zero selected skips.
+The Windows inert lane compiled but failed before runtime at the old firewall
+readback condition. These successful builds do not remove either new runtime
+failure or admit a complete package; its binaries were not independently
+downloaded in this receipt review.
+
 Candidate `40371709938` at `c42e0eb` completed eight successful jobs, two strict
 input failures and one skipped complete package. Its two actual owned-stack
 controls and native lifecycle passed; see [the exact receipt](evidence/hosted-owned-stack-c42e0eb.json).
@@ -47,9 +66,10 @@ The full Windows inert runtime first failed before dispatch. Dedicated
 [actual firewall probes](evidence/hosted-firewall-prerequisites.json) established
 a present-null Package property, corrected by a strict shared predicate and15
 actual PowerShell contracts. Unarmed Restore now removes owned rules and restores
-the original policy. ActiveStore enforcement still rejects: adapted values are
-two unknown strings, not a demonstrated Full value. Raw authoritative CIM
-observation is the next step; no policy condition was waived. The separate
+the original policy. Run `40384304423` at `d432382` now confirms raw CIM
+`UInt16Array [InactiveProfile, Full]`; this is not an all-Full observation.
+The 15 package and 22 diagnostic PowerShell contracts pass, while Prepare still
+rejects and unarmed Restore succeeds. No policy condition was waived. The separate
 cleanup-ownership correction prevents a fresh invocation from restoring an
 older control directory. See [the continuing task](tasks/windows-core-firewall-prerequisite.md).
 A clean checkout at `72b43d4` passed621 source checks with2 platform skips, exit0;

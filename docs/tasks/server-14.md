@@ -1,7 +1,10 @@
 # SERVER-14 — owned overlay observations for native lease composition
 
 Status: ready-for-agent. Implementation, local process/IPC tests and independent
-review complete; same-build hosted composition is still required. Ordinary
+review complete. Exact c42 hosted composition passed, but newer7c again reports
+`QUERY_IMAGE_CHANGED` and unconfirmed child cleanup before READY; the lifetime
+boundary needs a concrete regression and repair. See the
+[new hosted failure record](../evidence/hosted-failures-7c614c1.json). Ordinary
 Public startup and `ClosedPublicAdmission` remain closed. No production admission
 provider is added by this task.
 
