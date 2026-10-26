@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import shutil
 import stat
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -103,6 +104,54 @@ class CorrespondingSourceTests(unittest.TestCase):
                 if kind == "hidden": (base / ".private-test-sentinel").write_text("inert test input")
                 elif kind == "directory": (base / "unexpected-empty").mkdir()
                 else: (base / "MemoryModule.h").unlink()
+                self.assert_rejected_without_output(root, Path(temporary) / "output")
+
+    @unittest.skipIf(os.name == "nt", "POSIX checkout umask and owner-executable semantics")
+    def test_fresh_git_checkout_under_private_umask_keeps_git_modes_and_canonical_output(self):
+        with tempfile.TemporaryDirectory(prefix="ff-source-git-umask-") as temporary:
+            seed = self.copied_root(Path(temporary) / "seed")
+
+            def git(*args, cwd=seed, **kwargs):
+                return subprocess.run(["git", "-c", "core.autocrlf=false", *args],
+                                      cwd=cwd, check=True, capture_output=True, text=True,
+                                      timeout=30, **kwargs).stdout.strip()
+
+            git("init", "--quiet")
+            git("add", "--all")  # Only the owned, reviewed source/notice fixture.
+            tree = git("write-tree")
+            commit = git("-c", "user.name=Source Fixture", "-c", "user.email=fixture@example.invalid",
+                         "-c", "commit.gpgSign=false", "commit-tree", tree, input="Source fixture\n")
+            git("update-ref", "refs/heads/source", commit)
+            git("symbolic-ref", "HEAD", "refs/heads/source")
+            checkout = Path(temporary) / "checkout"
+            # The real Git child performs a fresh checkout with its own umask;
+            # the test runner's process permissions are never changed.
+            git("clone", "--quiet", "--no-hardlinks", str(seed), str(checkout), umask=0o077)
+            base = checkout / source.REFERENCE / "upstream"
+            self.assertEqual(stat.S_IMODE((base / "MemoryModule.c").stat().st_mode), 0o600)
+            self.assertEqual(stat.S_IMODE((base / "tests/runwine.sh").stat().st_mode), 0o700)
+            self.assertEqual(git("rev-parse", "HEAD:" + source.REFERENCE.as_posix() + "/upstream",
+                                 cwd=checkout), source.TREE)
+            destination = Path(temporary) / "output"
+            self.assertEqual(len(provenance.copy_notices(destination, checkout)), 50)
+            manifest = json.loads((destination / source.PACKAGE_PREFIX / "SOURCE-MANIFEST.json").read_bytes())
+            for row in manifest["files"]:
+                path = destination / source.PACKAGE_PREFIX / "upstream" / row["path"]
+                self.assertEqual(stat.S_IMODE(path.stat().st_mode), int(row["mode"], 8) & 0o777)
+                self.assertEqual(provenance.identity(path.read_bytes()),
+                                 {key: row[key] for key in ("bytes", "sha256")})
+
+    @unittest.skipIf(os.name == "nt", "POSIX owner-executable and special permission bits")
+    def test_changed_owner_executability_and_special_bits_reject_before_output(self):
+        cases = (("tests/runwine.sh", 0o600), ("MemoryModule.c", 0o700),
+                 ("tests/runwine.sh", 0o4700), ("MemoryModule.c", 0o2600),
+                 ("MemoryModule.c", 0o1600))
+        for name, mode in cases:
+            with self.subTest(name=name, mode=oct(mode)), tempfile.TemporaryDirectory() as temporary:
+                root = self.copied_root(Path(temporary) / "source")
+                path = root / source.REFERENCE / "upstream" / name
+                path.chmod(mode)
+                self.assertEqual(stat.S_IMODE(path.stat().st_mode), mode)
                 self.assert_rejected_without_output(root, Path(temporary) / "output")
 
     @unittest.skipIf(os.name == "nt", "POSIX modes and unprivileged symlink/FIFO controls")

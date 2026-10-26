@@ -99,7 +99,9 @@ def source_payloads(root):
     The reference JSON is independently pinned, so it cannot authorize a new
     path/hash/mode by being edited together with an input. Windows cannot expose
     POSIX executable modes; the canonical tree and distribution manifest keep
-    those modes there, while POSIX checkouts/copies must preserve them literally.
+    those modes there. POSIX checkouts must preserve Git's owner-executable bit;
+    their read/write and group/other permissions depend on the checkout umask.
+    Output copies still receive the canonical 0644/0755 modes.
     """
     reference = _regular_directories(root, REFERENCE)
     documents = {name: pinned(read_snapshot(reference / name, 65536), expected)
@@ -119,7 +121,14 @@ def source_payloads(root):
         path = reference / "upstream" / name
         require(row["mode"] in ("100644", "100755"), "SOURCE_REFERENCE_MODE_INVALID")
         if os.name != "nt":
-            require(stat.S_IMODE(path.lstat().st_mode) == int(row["mode"], 8) & 0o777,
+            mode = path.lstat().st_mode
+            # Git records regular-file executability from S_IXUSR, not the
+            # full POSIX permission word. For example, umask 0077 checks out
+            # 100644/100755 as 0600/0700 without changing either Git mode.
+            # Privilege/sticky bits are not Git semantics and are not accepted.
+            git_mode = "100755" if mode & stat.S_IXUSR else "100644"
+            require(stat.S_ISREG(mode) and not mode & (stat.S_ISUID | stat.S_ISGID | stat.S_ISVTX)
+                    and git_mode == row["mode"],
                     "SOURCE_REFERENCE_MODE_INVALID")
         content = read_snapshot(path, 65536)
         if name == BAT_PATH and identity(content) == BAT_CRLF_PIN:
