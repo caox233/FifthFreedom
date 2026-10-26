@@ -1,16 +1,36 @@
 # SERVER-13 — owned isolated EasyTier development probe
 
-Status: ready-for-agent. Earlier c42 hosted QUIC/WSS/TCP matrix passed, but newer
-exact7c run `40374509451` failed before its first phase. The initial TUN was down
-and lacked its IPv4 address (`EADDRNOTAVAIL`), with no prior ready observation;
-worker and namespace cleanup passed. The unchanged harness now needs a focused
-startup-order regression and a fresh actual matrix run. See the
-[verified failure record](../evidence/hosted-failures-7c614c1.json).
+Status: ready-for-agent. Earlier c42 hosted QUIC/WSS/TCP matrix passed; newer7c
+failed at initial missing IPv4, and9a progressed to four of nine phases before
+an incomplete initial descriptor scan. Both demonstrated startup windows now
+have focused repairs and old-code negative controls. A fresh actual matrix is
+still required; historical successes and failures remain retained.
 Production Public admission stays
 closed. This does not complete the native owner-lease integration or live gameplay
 acceptance.
 
 ## Fixed scope and inputs
+
+The new exact9a matrix `40387245004` completed four of nine phases: all three
+QUIC controls and WSS correct-pin-before. It then failed a fresh initiator's
+initial fdinfo-entry open with `ENOENT` before an interface observation was
+committed. All four namespaces and private staging were removed; worker cleanup
+was confirmed. See [the actual partial receipt](../evidence/hosted-matrix-partial-9aede37.json).
+This progresses beyond7c's first-QUIC missing-address failure without proving
+the prior fix was its unique cause or that the matrix is stable. The complete
+matrix and TCP lane remain unverified for9a.
+
+Repair `c1b4317c5ef76a3af3e9b45a85b4e4c256adece6` discards the **whole first
+scan** only when a listed fdinfo entry disappears before it can be opened
+(`ENOENT`) and no interface index was accepted. It does not skip that entry and
+retain partial TUN proof. The next attempt must complete a fresh inventory;
+the existing startup deadline still applies. After an accepted index, the same
+loss remains fatal, as do unrelated stages and other errors. Real controlled
+child FD closure demonstrates the old failure and new pending result; a second
+complete inventory is required for acceptance, and perpetual incompleteness
+times out without starting native. The TUN/interface metadata in these local
+controls is explicitly synthetic. Related monitor28/probe34 pass and independent
+old/new controls pass; see [the regression receipt](../evidence/initial-fd-scan-regression.json).
 
 Fix `ab002271db8570551ac8a16fe8f13e29fc3633f5` now keeps only the initial
 `EADDRNOTAVAIL` observation pending even while the new link is down. The pinned

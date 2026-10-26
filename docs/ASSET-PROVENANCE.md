@@ -24,15 +24,30 @@ independent redistribution terms remain unverified. These source notices do not
 relicense every archive member or establish an independent rebuild.
 
 The Windows component collector and complete-package builder copy those seven
-pinned texts plus the exact provenance JSON into `licenses/FusionFix`. They read
-and validate every notice before creating that directory, then copy the same
-byte snapshots. Component artifacts use a separate notice checksum list, keeping
+pinned texts plus the exact provenance JSON into `licenses/FusionFix`. They now
+also carry the complete pinned MemoryModule source, access notice and manifest
+under `corresponding-source/MemoryModule/`, plus the existing upstream FusionFix
+MIT notice and an explicit attribution-scope statement (50 files in total).
+The [source reference](development-reference/fusionfix-loader-memorymodule/README.md)
+contains the exact 38-file, 126,092-byte tree selected by the v9.7.0 loader recipe.
+The common copy operation validates the complete inventory and fixed hashes
+before output; only the one explicitly pinned BAT checkout representation may
+differ in line endings, and output uses its canonical Git bytes. It rejects
+extra, altered or linked files. Component artifacts use a separate notice checksum list, keeping
 the existing four-component checksum contract unchanged. The assembled server
 candidate and complete-package manifests include the copied files as well.
 The JSON retains all unresolved source and permission holds;
 carrying notices is not approval of every embedded binary. The copy operation
 and real component collector were exercised with inert packaging inputs only;
-that check does not claim a complete Windows build.
+that check does not claim a complete Windows build. The source-copy addition
+initially passed 34 focused local and independent tests. A subsequent clean
+checkout exposed an overly strict permission comparison; the corrected Git-mode
+check now passes 36 focused tests and the complete clean source lane (649 passed,
+2 skipped at `ac89a7f`). The original failure remains in the
+[source-copy receipt](evidence/memorymodule-source-packaging.json). Actual hosted
+packaging of this addition remains to be verified. This narrows the MemoryModule source-availability
+gap; all seven existing provenance holds and independent binary/permission
+requirements remain recorded.
 
 `docs/ASSET-PUBLICATION.json` lists default SAV/META inputs held locally pending
 privacy verification. No actual secret was identified, but opaque SAV buffer I/O

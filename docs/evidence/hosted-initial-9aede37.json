@@ -1,0 +1,185 @@
+{
+  "observed_utc": "2026-10-26T19:34:08.239178+00:00",
+  "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14",
+  "checkout_merge": "3f594212ca7c77808dc6220b0dc50de469359fab",
+  "merge_parent_and_tree_verified": true,
+  "source_run": 40387244995,
+  "source_verified": [
+    {
+      "platform": "ubuntu-24.04",
+      "job_id": 121798672290,
+      "artifact": {
+        "id": 12681761861,
+        "run_id": 40387244995,
+        "digest": "sha256:0dba09337d46412882b8fe624df0e3a41f8622d953e3f37469183c91ca5a73a3",
+        "official_digest_verified": true
+      },
+      "totals": {
+        "executed": 629,
+        "passed": 627,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "complete_package_ready": false
+    },
+    {
+      "platform": "windows-2022",
+      "job_id": 121798672865,
+      "artifact": {
+        "id": 12681946514,
+        "run_id": 40387244995,
+        "digest": "sha256:40b24ac762802f9687d5d27e4217b530e6f7c662930f89e7b7b17660bd293af0",
+        "official_digest_verified": true
+      },
+      "totals": {
+        "executed": 629,
+        "passed": 519,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 110
+      },
+      "complete_package_ready": false
+    }
+  ],
+  "firewall": {
+    "run_id": 40387245019,
+    "job_id": 121798674270,
+    "artifact": {
+      "id": 12681647398,
+      "run_id": 40387245019,
+      "digest": "sha256:2765bdba6f2431c96636211855675789198e2aadac7428e32c9b36b0041cdb7a",
+      "official_digest_verified": true
+    },
+    "passed": false,
+    "error_code": "FIREWALL_POLICY_UNAVAILABLE",
+    "firewall_checks": [
+      {
+        "application_package_kind": null,
+        "application_path_case_insensitive_match": null,
+        "enforcement": {
+          "count": 2,
+          "item_type": "NONE",
+          "items": [
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            },
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            }
+          ],
+          "shape": "ARRAY",
+          "status": "MULTIPLE"
+        },
+        "enforcement_cim": {
+          "cim_type": "UInt16Array",
+          "query": "FOUND",
+          "value": {
+            "count": 2,
+            "item_type": "NONE",
+            "items": [
+              {
+                "item_type": "UINT16",
+                "status": "InactiveProfile"
+              },
+              {
+                "item_type": "UINT16",
+                "status": "Full"
+              }
+            ],
+            "shape": "ARRAY",
+            "status": "MULTIPLE"
+          }
+        },
+        "enforcement_trace": {
+          "count": 2,
+          "item_type": "NONE",
+          "items": [
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            },
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            }
+          ],
+          "shape": "ARRAY",
+          "status": "MULTIPLE"
+        },
+        "enforcement_trace_query": "SINGLE_MATCH",
+        "mode": "Prepare",
+        "rule_check": "ENFORCEMENT_STATUS",
+        "rule_direction": "Inbound",
+        "rule_store": "ActiveStore"
+      },
+      {
+        "application_package_kind": null,
+        "application_path_case_insensitive_match": null,
+        "enforcement": null,
+        "enforcement_cim": null,
+        "enforcement_trace": null,
+        "enforcement_trace_query": "NOT_RUN",
+        "mode": "Restore",
+        "rule_check": "ABSENT",
+        "rule_direction": "Outbound",
+        "rule_store": "ActiveStore"
+      }
+    ],
+    "restore": {
+      "active_rules_verified": false,
+      "application_path_rules": true,
+      "armed": false,
+      "exact_drain_verified": false,
+      "mode": "Restore",
+      "original_policy_unchanged": true,
+      "owned_rules_removed": true,
+      "packet_behavior_verified": false,
+      "pid_isolation": false,
+      "policy_enabled_or_changed": false
+    },
+    "pure_package_checks_passed": 15,
+    "pure_enforcement_checks_passed": 22,
+    "pure_checks_skipped": 0,
+    "armed": false,
+    "core_executed": false,
+    "driver_loaded": false,
+    "full_runtime_verified": false
+  },
+  "candidate": {
+    "run_id": 40387245159,
+    "status": "in_progress",
+    "composition_job_not_listed_in_observation": true,
+    "new_query_and_initial_address_fixes_not_yet_runtime_verified": true,
+    "package_gate": {
+      "id": 12681347103,
+      "run_id": 40387245159,
+      "digest": "sha256:cbaccdfed036a252b1196fb2ca9a3c9dab6d6cbc7146b97221ebe7532914fef9",
+      "official_digest_verified": true
+    },
+    "c71_gate": {
+      "id": 12682020803,
+      "run_id": 40387245159,
+      "digest": "sha256:12a529537308469030112f977e4683a50291eb10ce84778ff73928d737ffca07",
+      "official_digest_verified": true
+    },
+    "missing_SAV_META": 8,
+    "C71_tests_unexecuted": 13,
+    "complete_package_job_id": 121799082415,
+    "complete_package_job_status": "skipped",
+    "complete_package_ready": false
+  },
+  "matrix": {
+    "run_id": 40387245004,
+    "job_id": 121798673859,
+    "status": "in_progress",
+    "active_step": 11,
+    "active_step_name": "Prepare the same-job six-patch source and verify finite contracts and GNU build",
+    "runtime_matrix_result_verified": false
+  },
+  "verified_artifact_ZIPs": 5,
+  "prior_7c_failures_retained": true,
+  "scope": "Initial exact9a source/firewall/input receipts. Long runtime jobs were in progress at this observation; no later completion is inferred."
+}

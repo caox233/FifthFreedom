@@ -64,7 +64,7 @@ This is an existing-room server protocol regression, not actual UDP dispatcher,
 notification delivery, native P2P or empty-lobby convergence. No real user failure
 was reproduced or fixed, and the task remains **needs-triage**.
 
-## Next unified candidate acceptance
+## Follow-up protocol regression
 
 Test-only `790b1793085d6f940c107945e8c0e987598ba365` extends the focused suite
 to **six passed, zero failed/ignored**, independently rerun with the same result.
@@ -85,6 +85,45 @@ confirmed cause; the user's installed original1.1 binary is not bound to the
 handoff commit. The available public historical references contain no matching
 two-client matchmaking request replay. Empty-lobby Search/Create/Join order,
 native selection/P2P, notification delivery and real same-game entry remain open.
+
+Further static inspection at `4e633bd` does not close empty-lobby ordering:
+native RMC/state hooks delegate to original game functions, and address tables
+identify entry points rather than retaining the retail matchmaking state
+machine. Server Search/Create behavior alone therefore cannot prove the order,
+retry or convergence of two real clients. No matching two-client replay was
+found in the available public reference material; private logs remain private.
+
+The first full hosted run at `9aede37`, candidate `40387245159`, exposed a
+failure that the focused local run did not: Linux LAN job `121798674986` passed
+375 tests in the group and failed the MOD old-ticket case. Its direct
+`try_close_secure_ticket(...).unwrap()` saw SQLite code5, `database is locked`;
+the join workers then observed disconnected permit channels, not timeouts.
+The real configured close callback reports refusal on Deferred or error; the
+transport retains the uncommitted owner and retries. The test incorrectly required the first attempt to
+commit. [The exact failure receipt](../evidence/hosted-lan-failure-9aede37.json)
+remains retained; the unique cause of that database contention is not established.
+Correct the test to exercise the real callback, prove refusal under a held
+writer, and require confirmed commit before releasing clients. No gameplay or
+storage-admission change follows merely from this test failure.
+
+Test-only correction `e4f12132bb09d7cd98a8e3156d32831cfd493e06` now transfers
+the actual searched ClientInfo back to its owner and calls the real configured
+secure-close callback. A held SQLite writer must produce no commit acknowledgement
+and preserve both old and replacement tickets. After releasing that writer, a
+bounded retry must receive acknowledgement and verify only the old ticket is
+gone before Join workers are released. Persistent refusal still fails; join and
+serialized roster assertions remain. This tests the callback contract, not the
+transport retry scheduler or the unique cause of the hosted database contention.
+
+The corrected focused suite passes6 with default parallelism, independently
+rerun6/6. The same five-package Linux test selection passes519, zero failed or
+ignored, also using default parallelism and fresh owned fixtures. Its retained
+log hash was independently checked; the reviewer did not repeat that full run.
+See [the correction receipt](../evidence/quick-match-close-callback-regression.json).
+Those counts exclude the thirteen unavailable C71 replay fixtures. A new hosted
+candidate is still required; the original quick-match symptom remains needs-triage.
+
+## Next unified candidate acceptance
 
 Once a complete, admitted candidate is downloadable, use at least two real
 clients on the same server and mode. Select quick matching independently and

@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Original cloud executor and normal GitHub access recovered, original source/knowledge heads and recovery bundles preserved. Source7c and knowledge5e published; subsequent reviewed repairs through aac0243 are pushed and verified on the diagnostic development ref. Exact c42 hosted composition/matrix successes and newer7c runtime failures are both retained. Initial DOWN/no-IPv4 readiness now has old-code failing controls and 26+34 passing related tests. Actual query-exit race reproduced before repair; repaired query passes 26 local/independent tests and 500 real invocations. Exact aac clean checkout passes 627 with two platform skips, package readiness false. Quick-match existing-room concurrent/ticket/leave protocol six passed, symptom still needs-triage. Windows raw enforcement remains [InactiveProfile, Full], strict refusal and successful unarmed Restore retained. Eight held SAV/META inputs and thirteen separate C71 replay inputs remain unavailable; no full package or real multiplayer fix is claimed.",
-  "NEXT_EXECUTABLE_ACTION": "Push the reviewed integration checkpoint and read its exact new hosted composition and transport-matrix results; local query/initial-link regressions do not replace those controls or exact cleanup proof. Keep the Windows hard refusal while a separate bounded read-only WFP diagnostic investigates the compiled filter shape; no policy or admission change is authorized by an inventory result. Synchronize exact source-bound DevDocs and preserve a new standalone recovery receipt without replacing originals. Continue all six milestones and quick-match empty-lobby/native-client triage. Complete packaging still needs genuine privacy-reviewed default inputs or a reviewed reproducible generator; C71 needs separate real fixture/provenance closure. Independent cloud work does not require the user PC, and no Goal scheduler interface exists.",
+  "LAST_CONFIRMED_RESULT": "Original executor and GitHub access recovered; original heads and bundles preserved. Source 9aede37 and source-bound DevDocs 2eebd21 are published. Exact 9a source checks passed, but candidate failed eight held save inputs, thirteen separate C71 inputs and a concurrent Rust fixture; composition was skipped. Its matrix passed four of nine phases before initial FD inventory ENOENT. Reviewed observation and secure-close fixture repairs now have local evidence. Exact ac89a7f clean checkout passes 649 with two skips, unchanged tracked source and package readiness false; canonical patch apply/reverse passes. MemoryModule exact source is included by a strict shared copier; original Git-mode failure retained, restrictive-checkout correction independently verified. Actual Windows WFP diagnostic remains coverage UNKNOWN and strict refusal is preserved. Quick matching remains needs-triage, no complete package or live multiplayer repair claimed.",
+  "NEXT_EXECUTABLE_ACTION": "Push this reviewed integration checkpoint, bind and publish DevDocs, preserve a new standalone recovery checkpoint and inspect exact new hosted component, transport-matrix and native-composition results. Verify actual hosted inclusion of the MemoryModule source. Keep strict Windows firewall admission pending evidence; read-only WFP inventory does not prove coverage or arbitration. Continue all six milestones and empty-lobby/native-client quick-match triage. Complete packaging needs privacy review of three distinct existing original payloads across eight SAV/META paths, or a reviewed reproducible default generator; C71 separately needs genuine fixture/provenance admission. No new capture or always-on user PC is required for independent cloud work; no persistent Goal scheduler exists.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -28,12 +28,12 @@
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "linux_query_exit_and_initial_link_repairs_verified_locally_actual_new_matrix_and_composition_pending_windows_hard_precondition_public_closed"
+      "status": "initial_link_fd_and_query_repairs_locally_verified_new_hosted_matrix_and_composition_pending_windows_hard_precondition_public_closed"
     },
     {
       "id": 4,
       "name": "Reviewed public source and development knowledge base",
-      "status": "source7c_knowledge5e_and_reviewed_repairs_through_aac_on_separate_development_ref_published_new_integration_snapshot_pending"
+      "status": "source9a_knowledge2e_published_new_reviewed_runtime_and_packaging_snapshot_pending"
     },
     {
       "id": 5,
@@ -43,7 +43,7 @@
     {
       "id": 6,
       "name": "Standalone development root and safe cleanup",
-      "status": "originals_and_exact_recovery_bundles_preserved_capture_source_received_rebuild_equivalence_saves_privacy_and_final_distribution_conditions_open"
+      "status": "originals_and_recovery_preserved_capture_reference_build_memorymodule_source_copy_and_clean_checkout_verified_hosted_inclusion_permissions_and_saves_open"
     }
   ],
   "continuation_policy": "Code changes primarily in cloud per user. Local work finishes migration, privacy review, current builds and preservation; never auto-start game or private capture.",
@@ -97,7 +97,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Normal gh api, git fetch, non-force push and remote SHA verification succeeded using inherited platform access; prior401 preserved as history",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40374533090",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40387245159",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -242,17 +242,17 @@
         "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "At1974 run39922764910 Windows job120311712409 succeeded. Official component ZIP digest verified; native8, interop3 and source8 each fully passed with zero ignored/skipped; four component hashes and checked PE branding matched. Quick39922765064 separately passed27return+9final and restored IIS.",
+    "candidate_windows_source": "Exact 9a Windows components built; downloaded four hashes independently recomputed, launcher166/diagnostic12/authentication19/native-return8/interop3/source-transport8 passed. Separate prerequisites return28/final9/dependency13/read22+8+4 have zero skips. New source-copy inclusion awaits repaired-checkpoint hosted run.",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "The fe6 and c42 guard3 nine-phase matrices passed with namespace cleanup. Newer7c matrix40374509451 failed its first QUIC phase before readiness; cleanup succeeded. Peer-map71 build is separate from guard3 runtime evidence.",
+    "candidate_linux_matrix": "Exact 9a matrix40387245004 passed four of nine phases before initial fdinfo_entry ENOENT; worker and four namespaces cleaned. Prior c42 nine-phase success remains scoped to its run. Peer-map71 build is distinct.",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "Newer exact7c candidate40374533090: seven successful jobs, three failures (eight held package inputs, thirteen C71 fixtures and owned composition), complete package skipped. Composition again reports QUERY_IMAGE_CHANGED and CHILD_START_CLEANUP_UNCONFIRMED; newer matrix40374509451 fails initial EADDRNOTAVAIL before readiness. Exact c42 successes remain valid for their runs, not stability proof.",
-    "knowledge_snapshot_commit": "5e7b258374fc30e81c21a7069fcad3fe401281ba",
-    "knowledge_snapshot_source": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
-    "knowledge_snapshot_files": 231,
-    "last_verified_remote_source_commit": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
-    "latest_reviewed_local_implementation_commit": "aac0243825d7c6a04168df37cc712118f080a664",
-    "latest_reviewed_local_implementation_pushed": true,
+    "candidate_component_result": "Exact 9a candidate40387245159: four successful jobs, three failures (eight held package inputs, thirteen C71 fixtures, concurrent Linux Rust quick-match close fixture), four skipped jobs including composition. No new query-repair composition result. Fixture corrected with actual production close callback; new hosted verification pending.",
+    "knowledge_snapshot_commit": "2eebd2144111f7f986bb134df3766efe6850ff08",
+    "knowledge_snapshot_source": "9aede37dd34cb770b72003bb50dcec237ac8ed14",
+    "knowledge_snapshot_files": 242,
+    "last_verified_remote_source_commit": "9aede37dd34cb770b72003bb50dcec237ac8ed14",
+    "latest_reviewed_local_implementation_commit": "ac89a7f8c10a1917f254a173e04d85b772439cb1",
+    "latest_reviewed_local_implementation_pushed": false,
     "authentication_recovery": {
       "status": "recovered_actual_operations_verified",
       "normal_git_exit_code": 0,
@@ -270,10 +270,37 @@
     },
     "hosted_results_unobserved_after_authentication_failure": [],
     "duplicate_cancellations_confirmed": false,
-    "knowledge_snapshot_delivery": "Source7c614c1 and knowledge5e7b258 pushed; exact remote SHAs and draft PR heads verified. The knowledge snapshot has 230 manifest files, 228 exact source mirrors and 63 code-map links independently checked against remote Git objects; newer diagnostic/failure records await the next source-bound snapshot.",
+    "knowledge_snapshot_delivery": "Exact 9a source and 2e knowledge remote refs and draft PR heads verified; 241 manifest entries, 239 exact mirrors and 66 code-map links checked locally and against remote Git objects. Later fixes/evidence await next exact source-bound snapshot.",
     "recovered_hosted_receipt": "docs/evidence/hosted-recovery-c42e0eb.json",
     "diagnostic_branch": "codex/firewall-diagnostic",
-    "diagnostic_remote_commit": "aac0243825d7c6a04168df37cc712118f080a664"
+    "diagnostic_remote_commit": "94768f33da695763b69ea3f50cc66b00d2442245",
+    "transient_official_connectivity_observation": {
+      "environment_id": "ccarenv_b64_Y2NhcmVudl82MTdlMjZhYTE4ZDA4MTkxYWE2NWRjY2ZmYzdiN2U4MA",
+      "spec_revision": "4",
+      "observed_spec_revision": "4",
+      "observations_current": true,
+      "desired_phase": "running",
+      "observed_phase": "running",
+      "connectivity": "offline",
+      "failure": null,
+      "actual_pwd_and_both_repository_heads_exit": 0,
+      "actual_normal_github_ls_remote_exit": 0,
+      "source_head_observed": "ac89a7f8c10a1917f254a173e04d85b772439cb1",
+      "knowledge_head_observed": "2eebd2144111f7f986bb134df3766efe6850ff08",
+      "replacement_or_reset_performed": false,
+      "interpretation": "Official connectivity differs from successful current shell and Git network operations; no continuous connected-state claim."
+    },
+    "latest_official_status": {
+      "environment_id": "ccarenv_b64_Y2NhcmVudl82MTdlMjZhYTE4ZDA4MTkxYWE2NWRjY2ZmYzdiN2U4MA",
+      "spec_revision": "4",
+      "observed_spec_revision": "4",
+      "observations_current": true,
+      "desired_phase": "running",
+      "observed_phase": "running",
+      "connectivity": "connected",
+      "failure": null,
+      "note": "Subsequent official read is connected; preceding transient offline observation and successful shell/Git operations are retained separately."
+    }
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -281,7 +308,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-26T19:26:37.655620+00:00",
+  "updated_utc": "2026-10-26T20:38:33.988905+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -346,15 +373,16 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "source_commit": "ebd008bfcd31d99e1412339125ea8fe86112fee8",
-      "executed": 552,
-      "passed": 550,
-      "skipped": 2,
+      "source_commit": "ac89a7f8c10a1917f254a173e04d85b772439cb1",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
       "exit_code": 0,
-      "environment": "fresh detached ebd008b Linux; .local/cloud-receipts/clean-checkout-ebd008bfcd31/receipt.json",
-      "tracked_files_unchanged": true,
-      "complete_package": false,
-      "source_report_sha256": "730db8f624e58dcde0ab1bd1c27cd90d694b959a994f1c452f2e62774e91a4de"
+      "executed": 651,
+      "passed": 649,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "ab16711c3548a707e22fcdc9e2bf46cc09412c6e0c741b99b074a0ae36131d6c",
+      "retained_log_sha256": "a04823763b097acae5d2aaf5d31955f032e0d5529011e497a3f02f0bf84ec068"
     },
     "cloud_authenticated_reader": {
       "passed": 69,
@@ -1034,25 +1062,25 @@
       "record": "docs/evidence/hosted-owned-overlay-4b49da7.json"
     },
     "latest_local_detached_source": {
-      "source_commit": "8a694fac1def93966ffc10ef2569783f6a92aa9b",
+      "source_commit": "ac89a7f8c10a1917f254a173e04d85b772439cb1",
       "initial_git_clean": true,
       "tracked_source_unchanged": true,
       "exit_code": 0,
-      "executed": 605,
-      "passed": 603,
+      "executed": 651,
+      "passed": 649,
       "skipped": 2,
       "complete_package_ready": false,
-      "source_report_sha256": "542f3b2f981bf2864a6e0f86cf820352182c2b6c63cc7ed73af982eb19fce5cc",
-      "retained_log_sha256": "ec964ae58c97e2bfa67fcd3eb93aaf4df7c7b3e338ae164e14fa7c4bed931992"
+      "source_report_sha256": "ab16711c3548a707e22fcdc9e2bf46cc09412c6e0c741b99b074a0ae36131d6c",
+      "retained_log_sha256": "a04823763b097acae5d2aaf5d31955f032e0d5529011e497a3f02f0bf84ec068"
     },
     "latest_local_canonical_patch": {
       "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
-      "target": "8a694fac1def93966ffc10ef2569783f6a92aa9b",
-      "patch_sha256": "c99b637b560f4df4f920669932b4dcc5f958ebf0a9d986be8ce4210877bd8c0c",
-      "patch_bytes": 4176870,
-      "changed_paths": 456,
+      "target": "ac89a7f8c10a1917f254a173e04d85b772439cb1",
+      "patch_sha256": "849e6a9a56bf86d8c57f9581762b5c2d8b36f89dd3d31b6f016207c32804316d",
+      "patch_bytes": 4685162,
+      "changed_paths": 539,
       "original_paths_verified": 1312,
-      "forward_exact_bytes_modes_paths": 1714,
+      "forward_exact_bytes_modes_paths": 1793,
       "reverse_exact_bytes_modes_paths": 1312,
       "reverse_git_clean": true,
       "public_file_subprocess_umask": "022",
@@ -1307,7 +1335,7 @@
       "package_ps_contracts_passed": 15,
       "unarmed_restore_owned_rules_removed": true,
       "unarmed_restore_baseline_unchanged": true,
-      "current_failure": "ENFORCEMENT_STATUS: adapted ARRAY2 STRING OTHER_STRING; authoritative raw CIM pending"
+      "current_failure": "Raw CIM UInt16Array [InactiveProfile, Full]; strict Prepare refuses. Actual f319 read-only WFP inventory reports coverage UNKNOWN; provider-context/arbitration not established; unarmed Restore succeeds."
     },
     "clean_source_firewall_package": {
       "source_commit": "72b43d48ecf0319724a9ccdcd6d669797b85c155",
@@ -1377,6 +1405,144 @@
       "changed_paths": 491,
       "original_paths_verified": 1312,
       "forward_exact_bytes_modes_paths": 1745,
+      "reverse_exact_bytes_modes_paths": 1312,
+      "reverse_git_clean": true,
+      "public_file_subprocess_umask": "022",
+      "private_original_four_roles_changed": false,
+      "baseline_materialization": "canonical Git blobs and modes; attribute-driven checkout CRLF conversion excluded",
+      "scope": "supplemental cloud source patch, not a replacement for original private four-role evidence"
+    },
+    "fixture_clock_regressions": {
+      "record": "docs/evidence/fixture-clock-regressions.json"
+    },
+    "initial_fd_scan": {
+      "record": "docs/evidence/initial-fd-scan-regression.json"
+    },
+    "quick_match_close_callback": {
+      "record": "docs/evidence/quick-match-close-callback-regression.json"
+    },
+    "memorymodule_source_packaging": {
+      "record": "docs/evidence/memorymodule-source-packaging.json"
+    },
+    "hosted_9a_lan_failure": {
+      "record": "docs/evidence/hosted-lan-failure-9aede37.json"
+    },
+    "hosted_9a_partial_matrix": {
+      "record": "docs/evidence/hosted-matrix-partial-9aede37.json"
+    },
+    "hosted_wfp_read_only": {
+      "record": "docs/evidence/hosted-wfp-diagnostic-f319a07.json"
+    },
+    "clean_source_fixture_corrections": {
+      "source_commit": "94768f33da695763b69ea3f50cc66b00d2442245",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
+      "exit_code": 0,
+      "executed": 644,
+      "passed": 642,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "8168ff28ad2f0ac090bf50273daabbb6edb3cc3a6f49a9c21b6734e8c62a6a2f",
+      "retained_log_sha256": "5a1161cd38f95632e4efc051611ea3252212ff655b6e82916c49c9172ab89232"
+    },
+    "retained_clean_memorymodule_mode_failure": {
+      "source_commit": "4e633bd628c045767f459ad10800f4ceae840e1f",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
+      "exit_code": 1,
+      "executed": 649,
+      "passed": 639,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "54c97adcc72fd7a619b132679ee104138695f1888ddf3eded876634b228f6906",
+      "retained_log_sha256": "360a4cbe60025461fc5d8e0dab6f1ef30af5ca7473d40e41ec8de1ccac22966f",
+      "failed_methods": 8,
+      "error_events": 9,
+      "failure_code": "SOURCE_REFERENCE_MODE_INVALID",
+      "cause": "Exact POSIX rwx permissions incorrectly compared with canonical Git executable mode under restrictive checkout umask",
+      "corrected_clean_checkout_pending": false,
+      "corrected_clean_checkout_commit": "ac89a7f8c10a1917f254a173e04d85b772439cb1"
+    },
+    "canonical_patch_source_closure": {
+      "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "target": "4e633bd628c045767f459ad10800f4ceae840e1f",
+      "patch_sha256": "d388bc2fcc05687e2e47a70dc646bbc5564046b8e812666212c11e9b4f2b1cc2",
+      "patch_bytes": 4681186,
+      "changed_paths": 539,
+      "original_paths_verified": 1312,
+      "forward_exact_bytes_modes_paths": 1793,
+      "reverse_exact_bytes_modes_paths": 1312,
+      "reverse_git_clean": true,
+      "public_file_subprocess_umask": "022",
+      "private_original_four_roles_changed": false,
+      "baseline_materialization": "canonical Git blobs and modes; attribute-driven checkout CRLF conversion excluded",
+      "scope": "supplemental cloud source patch, not a replacement for original private four-role evidence"
+    },
+    "cloud_source_current_historical_ebd008b": {
+      "source_commit": "ebd008bfcd31d99e1412339125ea8fe86112fee8",
+      "executed": 552,
+      "passed": 550,
+      "skipped": 2,
+      "exit_code": 0,
+      "environment": "fresh detached ebd008b Linux; .local/cloud-receipts/clean-checkout-ebd008bfcd31/receipt.json",
+      "tracked_files_unchanged": true,
+      "complete_package": false,
+      "source_report_sha256": "730db8f624e58dcde0ab1bd1c27cd90d694b959a994f1c452f2e62774e91a4de"
+    },
+    "latest_local_detached_source_historical_8a694fa": {
+      "source_commit": "8a694fac1def93966ffc10ef2569783f6a92aa9b",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
+      "exit_code": 0,
+      "executed": 605,
+      "passed": 603,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "542f3b2f981bf2864a6e0f86cf820352182c2b6c63cc7ed73af982eb19fce5cc",
+      "retained_log_sha256": "ec964ae58c97e2bfa67fcd3eb93aaf4df7c7b3e338ae164e14fa7c4bed931992"
+    },
+    "latest_local_canonical_patch_historical_8a694fa": {
+      "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "target": "8a694fac1def93966ffc10ef2569783f6a92aa9b",
+      "patch_sha256": "c99b637b560f4df4f920669932b4dcc5f958ebf0a9d986be8ce4210877bd8c0c",
+      "patch_bytes": 4176870,
+      "changed_paths": 456,
+      "original_paths_verified": 1312,
+      "forward_exact_bytes_modes_paths": 1714,
+      "reverse_exact_bytes_modes_paths": 1312,
+      "reverse_git_clean": true,
+      "public_file_subprocess_umask": "022",
+      "private_original_four_roles_changed": false,
+      "baseline_materialization": "canonical Git blobs and modes; attribute-driven checkout CRLF conversion excluded",
+      "scope": "supplemental cloud source patch, not a replacement for original private four-role evidence"
+    },
+    "hosted_9a_final_lanes": {
+      "record": "docs/evidence/hosted-final-lanes-9aede37.json",
+      "official_zip_digests_verified": 10,
+      "downloaded_component_hashes_recomputed": 6,
+      "full_package": false,
+      "inert_runtime_passed": false
+    },
+    "clean_source_memorymodule_mode_correction": {
+      "source_commit": "ac89a7f8c10a1917f254a173e04d85b772439cb1",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
+      "exit_code": 0,
+      "executed": 651,
+      "passed": 649,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "ab16711c3548a707e22fcdc9e2bf46cc09412c6e0c741b99b074a0ae36131d6c",
+      "retained_log_sha256": "a04823763b097acae5d2aaf5d31955f032e0d5529011e497a3f02f0bf84ec068"
+    },
+    "canonical_patch_memorymodule_mode_correction": {
+      "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "target": "ac89a7f8c10a1917f254a173e04d85b772439cb1",
+      "patch_sha256": "849e6a9a56bf86d8c57f9581762b5c2d8b36f89dd3d31b6f016207c32804316d",
+      "patch_bytes": 4685162,
+      "changed_paths": 539,
+      "original_paths_verified": 1312,
+      "forward_exact_bytes_modes_paths": 1793,
       "reverse_exact_bytes_modes_paths": 1312,
       "reverse_git_clean": true,
       "public_file_subprocess_umask": "022",

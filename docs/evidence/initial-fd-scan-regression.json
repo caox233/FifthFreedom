@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "historical_run": 40387245004,
+  "historical_artifact": 12681043975,
+  "historical_artifact_sha256": "dc09d24708ec746176632c8cc0b01a9c34ea687151afb673b97a52fabd6b4a0d",
+  "historical_source_commit": "9aede37dd34cb770b72003bb50dcec237ac8ed14",
+  "historical_checkout_commit": "3f594212ca7c77808dc6220b0dc50de469359fab",
+  "historical_failure": {
+    "role": "initiator",
+    "stage": "fdinfo_entry",
+    "errno_class": "ENOENT",
+    "link_up": true,
+    "previously_observed": false,
+    "completed_matrix_phases": 4,
+    "required_matrix_phases": 9
+  },
+  "baseline_monitor_source": {
+    "path": "src/public/fifth_freedom_control/overlay_supervisor.py",
+    "commit": "9aede37dd34cb770b72003bb50dcec237ac8ed14",
+    "sha256": "d70b5b51eb3717529fc803333a6a60a6cba15749cac93b25172ed9b96ca78dc3"
+  },
+  "before_new_tests": {
+    "executed": 2,
+    "errors": 1,
+    "failures": 1,
+    "exit": 1
+  },
+  "after_focused": {
+    "executed": 4,
+    "passed": 4,
+    "exit": 0
+  },
+  "limits": {
+    "real_owned_child_namespace_procfs_inventory_and_fd_close": true,
+    "interface_and_tun_proof_synthetic": true,
+    "private_raw_logs_published": false,
+    "privileged_tun_executed": false,
+    "new_hosted_matrix_verified": false,
+    "production_admission": false
+  },
+  "logs": {
+    "before.log": "6f4164ea69c84d36ba35efb1ef373bbb1d931468579d531f9825b9d058efde62",
+    "after-focused.log": "e6649fa4994b4568ff25e5a7eff5e5d423e92ce72cbee4344f6bd49fb0c759fb",
+    "monitor-suite.log": "04b94ae817a0ae8eb62feca65006f0046c68b90120ccf41e91936826c9d21fc6",
+    "worker-probe-suite.log": "a9717ba3f5be1394864f4ba690b150e7b9c650ab47add56e300a4156f7351f95"
+  },
+  "after_related_suites": [
+    {
+      "suite": "test_overlay_supervisor",
+      "passed": 28,
+      "skipped": 0,
+      "exit": 0
+    },
+    {
+      "suite": "test_ci_easytier_probe",
+      "passed": 34,
+      "skipped": 0,
+      "exit": 0
+    }
+  ],
+  "repaired_monitor_source": {
+    "path": "src/public/fifth_freedom_control/overlay_supervisor.py",
+    "sha256": "5dffb5548c782784d1352b099e52b64dd1d03b1a893557c03b4f348297867a98",
+    "commit": "c1b4317c5ef76a3af3e9b45a85b4e4c256adece6"
+  },
+  "independent_review": {
+    "focused_passed": 4,
+    "old_new_test_failures": 1,
+    "old_new_test_errors": 1,
+    "reviewer": "review_recovery",
+    "source_changes_by_reviewer": false
+  }
+}

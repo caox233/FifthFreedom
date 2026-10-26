@@ -128,10 +128,43 @@ notices, copied without modification into `docs/third-party/`:
 commit/path, original Git blob, notice length/hash, tagged build/resource script,
 release asset and embedded input. The tagged `xliveless.cpp` separately declares
 its public-domain donation. The minidx9 README defers to Microsoft's DirectX SDK
-terms; it is not itself an SDK redistribution grant. MemoryModule's MPL source
-availability/distribution obligations still need an explicit package plan. No
+terms; it is not itself an SDK redistribution grant. MemoryModule's exact source
+is now preserved and connected to the shared packaging operation below. No
 independent loader rebuild or complete bundled-material permission closure is
 claimed by these notice copies.
+
+## Pinned MemoryModule source and package inclusion
+
+The tagged loader selects MemoryModule commit
+`5f83e41c3a3e7c6e8284a5c1afa5a38790809461`. Its complete 38-file tree is preserved
+in [the source reference](development-reference/fusionfix-loader-memorymodule/README.md),
+with 126,092 source bytes and the original three executable script modes.
+The committed upstream subtree is exactly
+`4cf1cf78190c2bd40fcd88584d3f0be36a1af947`, matching the official upstream tree.
+No upstream script was executed. MPL source and author notices remain unchanged.
+
+`scripts/fusionfix_corresponding_source.py` validates every source path, byte
+count, SHA256, Git blob and canonical mode, reconstructs the pinned Git tree,
+and rejects extra paths, links and changes before the common notice copier
+creates output. The original attributes permit a CRLF checkout for one BAT
+file; only its two fixed complete representations are accepted, and packaging
+emits canonical LF. This exception does not apply to assets or other sources.
+Windows retains canonical executable modes in the manifest; POSIX copies also
+preserve executable bits.
+
+The shared component/full-package/server-candidate seam includes the 40 source
+and reference files, the original eight notice/provenance files, and the
+upstream MIT notice with a scope statement: 50 files. The source copy and
+negative controls passed 34 local and independent checks at `4e633bd`.
+The first complete clean checkout then exposed a Git-mode/umask defect:
+Git preserves the owner executable bit, not full POSIX permissions. The exact
+restrictive checkout now passes after the `ac89a7f` correction; altered executable
+semantics and special bits still reject, and output modes remain canonical.
+The corrected focused suite passes 36 and the clean source lane passes 649 with
+2 skips. This proves the bounded copy operation and source checks, not a
+successful full Windows package or reproducible loader binary. Actual hosted inclusion still needs its receipt.
+The existing seven provenance holds remain unchanged; ASI attribution, embedded
+DLL/SDK terms and independent rebuild evidence remain separate work.
 
 Run `python -B scripts/fusionfix_provenance.py` to verify both original archives,
 the independent existing asset pin, exact root PE metadata, three embedded
@@ -237,10 +270,13 @@ compiler/linker command has been introduced before examining the received source
 ## Remaining closure gates
 
 - Preserve the frozen FusionFix archive while obtaining exact ASI source/build
-  provenance, the remaining embedded-DLL/SDK terms and a corresponding-source
-  distribution plan; the exact loader release identity is now established.
-- Receive and independently hash the capture-helper source; reproduce its build
-  without running a game or collecting a capture.
+  provenance and the remaining embedded-DLL/SDK terms. Verify actual hosted
+  inclusion of the pinned MemoryModule source; loader identity alone does not
+  establish a reproducible build or complete permission closure.
+- Capture source has been received and independently hash-verified; the x86
+  reference build and 19 no-attach checks passed. Its output differs from the
+  retained binary. Establish reproducibility/equivalence separately without
+  running a game or collecting a capture; do not replace the production helper.
 - Keep the 12 opaque SAV/META privacy holds in `ASSET-PUBLICATION.json`. This
   evidence does not authorize publishing them or producing a fake complete pack.
 - Keep original sources and unique local evidence until source/dependency closure

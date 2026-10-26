@@ -142,3 +142,29 @@ not an implemented replacement admission gate. Dynamic WFP sessions are not a
 shortcut: their automatic object deletion on session end conflicts with retaining
 the block whenever exact child drain is unknown. No policy/profile change or new
 WFP implementation was made by this documentation research.
+
+## Actual read-only WFP diagnostic
+
+The separate diagnostic implementation `f319a07d2ea58f936b891207302d108f0cc3e3c8`
+is now verified by run `40388413129`, job `121802683210`. Native x64 MSVC
+compilation and20 pure contracts pass; package15/enforcement22 PowerShell checks
+also pass. Local and independent Python checks pass35. The diagnostic uses a
+read-only BFE transaction, a four-layer bounded enumeration and exact AppID-byte
+comparison, then emits fixed counts only. It never admits the runtime, executes
+the staging image or alters policy; `coverage` is always `UNKNOWN`.
+
+Actual RECV IPv4/IPv6 each contains one enabled exact-AppID Block filter whose
+explicit condition is AppID only. Both have provider context; its semantics and
+filter arbitration remain unverified. No exact-AppID CONNECT filter was seen,
+but production Prepare had already stopped at Inbound before creating Outbound.
+This is a genuine partial Prepare observation, not a completed two-rule setup.
+No extra rules were created merely to populate the diagnostic.
+
+The transaction closed, the original mixed CIM refusal remained, and unarmed
+Restore removed the owned rules with unchanged original policy digest. Official
+artifact `12680673490` has verified ZIP SHA256
+`d5d1daa890ebf7d28987435f621039c6af816a247193e8cdff3a1d2ed71f37fd`.
+See [the bounded actual receipt](../evidence/hosted-wfp-diagnostic-f319a07.json).
+Next investigate provider-context and arbitration semantics before designing
+any replacement containment contract. The diagnostic is not packet, NIC,
+whole-process isolation or complete package acceptance.

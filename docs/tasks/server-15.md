@@ -19,6 +19,13 @@ passes 26 focused tests plus500 real query invocations. See
 A fresh hosted composition must still prove both controls and cleanup; local
 query success cannot replace the missing historical drain evidence.
 
+The9a candidate `40387245159` did not execute composition: its Linux LAN test
+failed the new test's one-shot secure-close assumption, so composition job
+`121811023064` was skipped. The [verified LAN failure](../evidence/hosted-lan-failure-9aede37.json)
+and [test-only callback correction](../evidence/quick-match-close-callback-regression.json)
+remain distinct from the runtime query fix. Local five-package519 success after
+that correction is not an actual composition result.
+
 ## Problem and implementation
 
 SERVER-13's guard3 EasyTier probe and SERVER-11's native lease lifecycle probe

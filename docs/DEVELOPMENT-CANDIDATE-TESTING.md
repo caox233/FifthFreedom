@@ -16,6 +16,16 @@ reproducible default-data generator with appropriate manifest updates. Do not
 upload personal saves, invent bytes or disable validation. The existing private
 `--asset-dir` import option is not publication approval.
 
+The eight paths contain three distinct pinned payloads: one 12-byte META repeated
+four times, one Official SAV repeated twice and one MOD SAV repeated twice.
+The MOD sidecar is already public. The minimum missing input is privacy review
+of those existing three original payloads, followed by admission of matching
+approved defaults; no new game capture is requested. Native save code writes
+the game-provided name into META and forwards opaque SAV buffers. The repository
+has no complete parser or reproducible generator that can establish safe new
+defaults. An arbitrary personal-save import would be a separate feature and
+would not satisfy the current exact default-restoration contract or its pins.
+
 The separate C71 gate requires the real x86 `native_fixture.rs`, native bytes or
 an auditable extraction/relocation generator, fixed source hashes and reviewed
 provenance/publication scope. Its 13 retained replay checks have not run in this

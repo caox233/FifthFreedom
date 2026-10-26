@@ -1,0 +1,63 @@
+{
+  "verified_utc": "2026-10-26T19:43:10.481282+00:00",
+  "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14",
+  "checkout_merge": "3f594212ca7c77808dc6220b0dc50de469359fab",
+  "merge_parent_and_tree_verified": true,
+  "run_id": 40387245159,
+  "job_id": 121798674986,
+  "job_name": "Linux linux-lan-baseline",
+  "failed_step": 7,
+  "failed_step_name": "Build and test the explicitly selected server source",
+  "artifact_id": 12681567979,
+  "artifact_sha256": "afe33cca14d9344579f8a170fb605eded0dbd20b910eecc2fb02da95459ab930",
+  "official_digest_verified": true,
+  "tracked_source_dirty": false,
+  "failure_type": "runtime Rust test panic, not compiler error",
+  "test_name": "storage::tests::quick_match_protocol::quick_match_protocol_mod_closed_ticket_cannot_join_replacement_can",
+  "cargo_test_exit_code": 101,
+  "cargo_test_command": null,
+  "failed_group": {
+    "passed": 375,
+    "failed": 1,
+    "ignored": 0
+  },
+  "prior_group": {
+    "passed": 56,
+    "failed": 0,
+    "ignored": 0
+  },
+  "primary_panic": {
+    "source_path": "src/native/server/dedicated-server/src/storage/quick_match_protocol_tests.rs",
+    "line": 191,
+    "column": 86,
+    "call": "storage.try_close_secure_ticket(3, old_fingerprint).unwrap()",
+    "error_class": "SQLite database-locked error",
+    "sqlite_code": 5,
+    "fixed_sqlite_message": "database is locked"
+  },
+  "secondary_panics": {
+    "source_path": "src/native/server/dedicated-server/src/storage/quick_match_protocol_tests.rs",
+    "line": 176,
+    "column": 66,
+    "count": 2,
+    "fixed_message": "join permit missing: Disconnected",
+    "timeout_reported": false
+  },
+  "source_file_sha256": "7af957b1a972816234500676eb178ec432ec8232db1d4e1668c2df761612adbb",
+  "raw_log_identity": {
+    "job_id": 121798674986,
+    "bytes": 52007,
+    "sha256": "6cf2f39b69a1ff11704d62927f2a024ea583d06ed738a7e1c012103c85854dd6",
+    "raw_log_publication_allowed": false
+  },
+  "test_stdout_sha256": "16770e5e52b33d316556bde21c3773966858488cf3a7d11ba1f3fb1965761999",
+  "test_stderr_sha256": "05994954a8793574927c8e65ee13165d8c2bba48b2b23ec3d1efecbd1a82467e",
+  "bounded_stdout_lines_inspected": [
+    438,
+    464
+  ],
+  "raw_log_contents_included": false,
+  "private_params_included": false,
+  "root_cause_beyond_observed_SQLite_lock_proven": false,
+  "complete_package_verified": false
+}

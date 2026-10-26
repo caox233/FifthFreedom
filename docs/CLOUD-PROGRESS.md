@@ -3,27 +3,77 @@
 Current delivery status (2026-10-27 Asia/Hong_Kong): the original task's executor
 and normal GitHub access recovered. Source `c42e0eb` and source-bound DevDocs
 `10e3e4a` were preserved, pushed and verified at their existing remote branches.
-Both original recovery bundles match their checkpoint hashes. Official connection
-is now `connected`, revision4; no reset or replacement workspace was used.
+Both original recovery bundles match their checkpoint hashes. Recovery was
+observed as `connected` at revision 4; no reset or replacement workspace was
+used. A later official status read reported running/current revision 4 but
+connectivity `offline`, while actual `pwd`, both repository HEAD reads and normal
+GitHub `ls-remote` all succeeded. This discrepancy does not establish a broken
+executor or justify replacing the original workspace. A subsequent official
+read returned `connected`, running and current revision 4.
 Candidate `40371709938` is a real new run; source checks `40371709863` passed.
 Complete package admission still lacks eight privacy-held saves, and C71's separate
 thirteen replay checks still lack reviewed fixture/provenance. See the
 [recovery task](tasks/cloud-authentication-recovery.md) and
 [candidate delivery requirements](DEVELOPMENT-CANDIDATE-TESTING.md).
 
-Latest reviewed repair checkpoint `aac0243825d7c6a04168df37cc712118f080a664`
-is pushed and remote-verified on the separate development ref. Its fresh clean
-checkout passes627 with2 platform skips (629 total), exit0, unchanged tracked
-files and `complete_package_ready:false`; report SHA256 is
-`79191c9bdb4a4ebfa384fffdd846b272d34c49250da0cfa0c39919dda8ba72e3`.
-The [initial-link repair](evidence/initial-overlay-address-regression.json)
-and [query-exit repair](evidence/query-exit-transition-regression.json) retain
-real old-code failing controls, focused passing regressions and independent
-review. The query also passes500 real invocations with96 pending exit
-observations. New hosted matrix/composition controls are still required.
-The [quick-match suite](evidence/quick-match-protocol-regressions.json) now
-passes6 existing-room concurrent/ticket/LeaveSession controls; the reported
-same-game symptom remains needs-triage, without empty-lobby or real-game proof.
+Latest published integration snapshot is `9aede37`, with source-bound DevDocs
+`2eebd21` (241 manifest entries, 239 exact mirrors and 66 code-map links verified
+against local and remote Git objects). Its source workflow `40387244995` passed:
+Linux 627 plus 2 skips; Windows 519 plus 110 skips. The exact candidate
+`40387245159` finished with 4 successful, 3 failed and 4 skipped jobs. In addition
+to the unchanged eight package-input and thirteen C71 gates, its concurrent Rust
+quick-match regression failed on SQLite writer contention. Assembly, native
+lifecycle and owned composition were skipped; there is no new composition
+runtime result for the query-exit repair. The [final component/build receipts](evidence/hosted-final-lanes-9aede37.json)
+verify ten artifact ZIP digests and six downloaded component hashes. Windows
+components, donor reference, protected synthetic TLS control and the separate
+MSVC/GNU source builds passed. The inert lane still failed before runtime at
+the firewall precondition; none supplies a full package. The [LAN failure](evidence/hosted-lan-failure-9aede37.json)
+and [partial matrix result](evidence/hosted-matrix-partial-9aede37.json) remain recorded.
+
+The exact matrix `40387245004` completed 4 of 9 phases: all three QUIC phases
+and the WSS positive phase passed, then an initial FD inventory lost an entry
+with `ENOENT` before any accepted ownership observation. Worker, namespaces and
+private stage were cleaned. The [initial-scan correction](evidence/initial-fd-scan-regression.json)
+discards that entire incomplete first scan and requires a later complete scan
+within the existing startup deadline. Accepted ownership loss and other errors
+still fail closed. Real procfs/child controls pass locally; real TUN matrix and
+composition checks still need a run at the repaired source.
+
+The [quick-match test correction](evidence/quick-match-close-callback-regression.json)
+now calls the production secure-close callback in a bounded test retry loop,
+including an actual held SQLite writer, before permitting join attempts. Its
+six concurrent existing-room/ticket/leave controls and the normal five-package
+Linux Rust selection (519 tests) pass. The original 1.1 same-game symptom remains
+needs-triage: empty-lobby request ordering, native networking and real multiplayer
+have not been reproduced or accepted. No single-client success substitutes for
+that regression. The [query-exit repair](evidence/query-exit-transition-regression.json)
+retains 26 focused checks and 500 real query invocations; these do not replace
+new hosted composition evidence.
+
+A clean checkout at `c1b4317` exposed three short-clock fixture assumptions
+(639 passed, 2 skipped, 3 failed methods). Controlled-clock fixture corrections
+preserve real child/socket/credential cleanup and exact expiry rejection while
+leaving production deadlines unchanged. The subsequent exact `94768f3` clean
+checkout passes 642 with 2 skips, exit 0, tracked files unchanged and
+`complete_package_ready:false`. See the [retained failure and bounded fixture
+proof](evidence/fixture-clock-regressions.json). This does not establish a unique
+cause for the historical scheduling delay or real native deadline performance.
+
+The [MemoryModule source copy](evidence/memorymodule-source-packaging.json)
+preserves the exact 38-file upstream tree and adds strict source/notice inclusion
+to the existing packaging seam. Its focused tests passed; the first clean
+checkout at `4e633bd` then found a Git-mode/umask compatibility defect, which is
+corrected at `ac89a7f` using Git owner-executable semantics while rejecting
+special permission bits. The same real restrictive-checkout regression fails
+on the old helper and passes after repair; 36 focused local and independent
+checks pass. The exact new clean checkout passes 649 with 2 skips (651 total),
+exit 0, unchanged tracked source and complete-package readiness false. Its
+source report SHA256 is
+`ab16711c3548a707e22fcdc9e2bf46cc09412c6e0c741b99b074a0ae36131d6c`.
+The original failure, fixed source bytes and all asset/permission holds remain.
+The supplemental patch also applies and reverses exact canonical bytes, paths
+and modes without modifying the original private four-role evidence.
 
 Further reviewed source `6ecfdb4` is also pushed and remote-verified. Its
 [local-only pipe check](evidence/hosted-local-pipe-6ecfdb.json) passed actual
@@ -56,8 +106,8 @@ Matrix `40374509451` fails before its first phase with initial interface
 `EADDRNOTAVAIL` while the link is down and has never been observed ready.
 Its worker and namespace cleanup passed. The seven mapped harness/production
 files are byte-identical to successful c42; this does not establish a unique
-root cause. Both failures are being reproduced independently, and are distinct
-from the asset and C71 gates. See [the verified failure record](evidence/hosted-failures-7c614c1.json).
+root cause. Both failures have subsequent bounded local repairs documented above; new
+hosted outcomes remain distinct from the asset and C71 gates. See [the verified failure record](evidence/hosted-failures-7c614c1.json).
 
 The same exact source's separate [component receipts](evidence/hosted-components-7c614c1.json)
 confirm the Windows MSVC core/CLI build, Linux peer-map71 full GNU build and
@@ -87,8 +137,17 @@ rejects and unarmed Restore succeeds. No policy condition was waived. The separa
 cleanup-ownership correction prevents a fresh invocation from restoring an
 older control directory. See [the continuing task](tasks/windows-core-firewall-prerequisite.md).
 A clean checkout at `72b43d4` passed621 source checks with2 platform skips, exit0;
-complete-package readiness remains false. Reviewed diagnostic work is published
-to `codex/firewall-diagnostic` while the stable integration PR remains at7c.
+complete-package readiness remains false. Later diagnostic work is published
+to `codex/firewall-diagnostic`; the integration PR is currently at `9aede37`.
+
+The newer [read-only WFP diagnostic](evidence/hosted-wfp-diagnostic-f319a07.json)
+actually compiled and ran on Windows (`40388413129`): 20 native contracts and
+37 PowerShell contracts passed. It found application-specific inbound block
+filters with provider contexts, but does not prove effective arbitration or
+coverage. Prepare had already refused before creating the outbound rule, so
+zero outbound matches do not describe a completed two-rule policy. Coverage
+remains UNKNOWN, the mixed raw enforcement status still rejects, and unarmed
+Restore succeeded. No Arm, core or driver was executed.
 
 The cloud checkout fetched and verified handoff commit
 `fc8ef510b51be83c31f9f8233997f758b0477acc` before creating

@@ -364,3 +364,13 @@ This repairs a demonstrated race, not a uniquely proven explanation of all hoste
 failures. Historical `CHILD_START_CLEANUP_UNCONFIRMED` remains unconfirmed: the
 worker can report it before a native handle exists, but its receipt lacks the
 spawn-stage/handle evidence needed to infer either a leak or successful drain.
+
+The latest9a matrix now records a fresh initiator's listed descriptor disappearing
+before its first fdinfo-entry open, after four of nine phases completed. Unlike
+the earlier synthetic syscall-stage test issue, this is an actual hosted initial
+scan failure. `c1b4317` discards the entire incomplete initial observation and
+requires a fresh complete scan within the unchanged startup deadline. It keeps
+no partial TUN proof or accepted index; every post-acceptance loss and unrelated
+error still fails. [The controlled regression](../evidence/initial-fd-scan-regression.json)
+uses actual owned-child descriptor closure with explicitly synthetic TUN metadata.
+No fresh complete hosted matrix is claimed yet.
