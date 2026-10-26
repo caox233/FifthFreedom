@@ -140,10 +140,13 @@ def run(report, output):
             "CAPTURE_REFERENCE_INPUT_CHANGED")
     require(image(helper) == report["rebuilt_reference"] and image(fixture) == report["fixture_image"],
             "CAPTURE_REFERENCE_IMAGE_CHANGED")
-    target = output / "CaptureReference.exe"
-    with target.open("xb") as stream:
+    # The artifact's fixed public filename appears only after the copied image
+    # has passed its final PE/hash check. Failed copies remain unpublished.
+    pending = output / ".CaptureReference.exe.pending"
+    with pending.open("xb") as stream:
         stream.write(identity.read_regular(helper, 16 * 1024 * 1024))
-    require(image(target) == report["rebuilt_reference"], "CAPTURE_REFERENCE_IMAGE_CHANGED")
+    require(image(pending) == report["rebuilt_reference"], "CAPTURE_REFERENCE_IMAGE_CHANGED")
+    pending.rename(output / "CaptureReference.exe")
     report.update(passed=True, passed_checks=len(CASES) + 2, skipped_checks=0,
                   reference_source_unchanged=True, retained_binary_unchanged=True)
 
@@ -166,9 +169,19 @@ def main():
     try:
         run(report, output)
     except Exception as error:
+        report.update(passed=False, passed_checks=None, skipped_checks=None)
         report["error"] = (str(error) if type(error) is ValueError and str(error) in ERRORS
                            else "CAPTURE_REFERENCE_TIMEOUT" if isinstance(error, subprocess.TimeoutExpired)
                            else "CAPTURE_REFERENCE_CHECK_FAILED")
+        # output was exclusively created by this invocation. Remove only its
+        # two fixed image names; keep failure evidence and all retained inputs.
+        cleanup_complete = True
+        for name in ("CaptureReference.exe", ".CaptureReference.exe.pending"):
+            try:
+                (output / name).unlink(missing_ok=True)
+            except OSError:
+                cleanup_complete = False
+        report["failed_output_cleanup_complete"] = cleanup_complete
         print(report["error"], file=sys.stderr)
     report_path = output / "receipt.json"
     with report_path.open("x", encoding="utf-8") as stream:

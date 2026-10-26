@@ -1,5 +1,8 @@
 """Fail-closed admission for the independent historical Capture build."""
 from pathlib import Path
+import contextlib
+import io
+import json
 import shutil
 import sys
 import tempfile
@@ -73,6 +76,31 @@ class CaptureReferenceBuildTests(unittest.TestCase):
         with patch.object(build.identity, "REPORTED_SOURCE_SHA256", "0" * 64):
             with self.assertRaisesRegex(ValueError, "CAPTURE_REFERENCE_INPUT_INVALID"):
                 build.verify_inputs()
+
+    def test_main_postcopy_failure_removes_own_images_and_preserves_failure_receipt(self):
+        def fail_after_copy(report, output):
+            (output / "CaptureReference.exe").write_bytes(b"unverified candidate")
+            (output / ".CaptureReference.exe.pending").write_bytes(b"unfinished copy")
+            (output / "unrelated-evidence.txt").write_text("preserve")
+            report["compilations"] = {"reference": {"exit_code": 0, "log_sha256": "a" * 64}}
+            raise ValueError("CAPTURE_REFERENCE_IMAGE_CHANGED")
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            with patch.object(build, "ROOT", root), patch.object(build, "run", fail_after_copy), \
+                    contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(build.main(), 1)
+            output = root / "artifacts/ci/capture-reference"
+            self.assertFalse((output / "CaptureReference.exe").exists())
+            self.assertFalse((output / ".CaptureReference.exe.pending").exists())
+            self.assertEqual((output / "unrelated-evidence.txt").read_text(), "preserve")
+            report = json.loads((output / "receipt.json").read_text())
+            self.assertFalse(report["passed"])
+            self.assertEqual(report["error"], "CAPTURE_REFERENCE_IMAGE_CHANGED")
+            self.assertTrue(report["failed_output_cleanup_complete"])
+            self.assertEqual(report["compilations"]["reference"]["log_sha256"], "a" * 64)
+            sums = (output / "SHA256SUMS.txt").read_text().splitlines()
+            self.assertEqual(sums, [build.sha((output / "receipt.json").read_bytes()) + "  receipt.json"])
 
 
 if __name__ == "__main__":
