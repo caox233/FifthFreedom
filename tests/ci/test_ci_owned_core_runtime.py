@@ -20,7 +20,8 @@ def manifest():
 
 def firewall_diagnostic():
     return {'rule_check':'APPLICATION_PATH', 'rule_store':'PersistentStore',
-        'rule_direction':'Inbound', 'application_path_case_insensitive_match':True, 'application_package_kind':'EMPTY'}
+        'rule_direction':'Inbound', 'application_path_case_insensitive_match':True, 'application_package_kind':'EMPTY',
+        'enforcement':None,'enforcement_trace':None,'enforcement_trace_query':'NOT_RUN'}
 
 
 def managed():
@@ -160,6 +161,18 @@ class RuntimeAdapterTests(unittest.TestCase):
         for key in firewall_diagnostic():
             changed=dict(original);del changed[key]
             with self.assertRaises(ValueError):runtime.firewall_observation(changed,'Prepare')
+
+    def test_enforcement_diagnostic_is_bounded_and_never_becomes_admission(self):
+        observed={'shape':'ARRAY','count':1,'item_type':'UINT16','status':'Full'}
+        original={'schema':1,'mode':'Prepare',**firewall_diagnostic(),'enforcement':observed,
+            'enforcement_trace':observed,'enforcement_trace_query':'SINGLE_MATCH'}
+        runtime.firewall_observation(original,'Prepare')
+        for key,value in (('shape','private'),('count',True),('count',66),('item_type','private'),
+            ('status','private'),('extra','raw')):
+            changed={**original,'enforcement':{**observed,key:value}}
+            with self.assertRaises(ValueError):runtime.firewall_observation(changed,'Prepare')
+        for key,value in (('enforcement_trace',None),('enforcement_trace_query','private'),('enforcement_trace_query','NOT_RUN')):
+            with self.assertRaises(ValueError):runtime.firewall_observation({**original,key:value},'Prepare')
 
     def test_armed_restore_without_matching_drain_must_fail(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -47,7 +47,9 @@ on:
       - 'scripts/ci_owned_core_runtime.py'
       - 'scripts/ci_windows_core_firewall.ps1'
       - 'scripts/windows_firewall_package.ps1'
+      - 'scripts/windows_firewall_enforcement.ps1'
       - 'tests/ci/windows_firewall_package_contracts.ps1'
+      - 'tests/ci/windows_firewall_enforcement_contracts.ps1'
       - 'scripts/ci_owned_dependencies.py'
       - 'scripts/ci_diagnostics.py'
       - 'scripts/ci_wintun_session_environment.ps1'
@@ -90,6 +92,8 @@ jobs:
           python -B -m unittest discover -s tests/ci -p test_ci_owned_core_runtime.py -v
       - name: Install reviewed Rust and explicit Windows target
         run: rustup toolchain install 1.95.0 --profile minimal --target x86_64-pc-windows-msvc
+      - name: Check bounded enforcement diagnostics without admission or firewall calls
+        run: pwsh -NoLogo -NoProfile -NonInteractive -File tests/ci/windows_firewall_enforcement_contracts.ps1
       - name: Require production package-filter predicate controls before building the runtime
         run: pwsh -NoLogo -NoProfile -NonInteractive -File tests/ci/windows_firewall_package_contracts.ps1
       - name: Install checksum-pinned protoc
@@ -129,5 +133,6 @@ jobs:
             artifacts/ci/easytier-windows-inert/receipt.json
             artifacts/ci/owned-core-runtime.json
             artifacts/ci/windows-firewall-package-contracts.json
+            artifacts/ci/windows-firewall-enforcement-contracts.json
           if-no-files-found: error
           retention-days: 14

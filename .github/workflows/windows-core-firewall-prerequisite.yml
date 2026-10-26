@@ -6,21 +6,25 @@ on:
     paths:
       - 'scripts/ci_windows_core_firewall.ps1'
       - 'scripts/windows_firewall_package.ps1'
+      - 'scripts/windows_firewall_enforcement.ps1'
       - 'scripts/ci_owned_core_runtime.py'
       - 'scripts/ci_windows_firewall_prerequisite.py'
       - 'tests/ci/test_ci_owned_core_runtime.py'
       - 'tests/ci/test_ci_windows_firewall_prerequisite.py'
       - 'tests/ci/windows_firewall_package_contracts.ps1'
+      - 'tests/ci/windows_firewall_enforcement_contracts.ps1'
       - '.github/workflows/windows-core-firewall-prerequisite.yml'
   pull_request:
     paths:
       - 'scripts/ci_windows_core_firewall.ps1'
       - 'scripts/windows_firewall_package.ps1'
+      - 'scripts/windows_firewall_enforcement.ps1'
       - 'scripts/ci_owned_core_runtime.py'
       - 'scripts/ci_windows_firewall_prerequisite.py'
       - 'tests/ci/test_ci_owned_core_runtime.py'
       - 'tests/ci/test_ci_windows_firewall_prerequisite.py'
       - 'tests/ci/windows_firewall_package_contracts.ps1'
+      - 'tests/ci/windows_firewall_enforcement_contracts.ps1'
       - '.github/workflows/windows-core-firewall-prerequisite.yml'
   workflow_dispatch:
 
@@ -47,6 +51,8 @@ jobs:
         run: |
           python -B -m unittest discover -s tests/ci -p test_ci_owned_core_runtime.py -v
           python -B -m unittest discover -s tests/ci -p test_ci_windows_firewall_prerequisite.py -v
+      - name: Check bounded enforcement diagnostics without admission or firewall calls
+        run: pwsh -NoLogo -NoProfile -NonInteractive -File tests/ci/windows_firewall_enforcement_contracts.ps1
       - name: Verify actual production package predicate and retained negative control
         run: pwsh -NoLogo -NoProfile -NonInteractive -File tests/ci/windows_firewall_package_contracts.ps1
       - name: Exercise production firewall readback without Arm or process startup
@@ -59,5 +65,6 @@ jobs:
           path: |
             artifacts/ci/windows-firewall-prerequisite.json
             artifacts/ci/windows-firewall-package-contracts.json
+            artifacts/ci/windows-firewall-enforcement-contracts.json
           if-no-files-found: error
           retention-days: 14

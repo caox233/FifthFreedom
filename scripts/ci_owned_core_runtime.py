@@ -131,7 +131,8 @@ def driver_inventory(phase):
 def firewall_observation(value, mode):
     require(type(value) is dict and type(value.get('schema')) is int and value['schema'] == 1
         and value.get('mode') == mode, 'RUNTIME_FIREWALL_FAILED')
-    fields = ('rule_check', 'rule_store', 'rule_direction', 'application_path_case_insensitive_match', 'application_package_kind')
+    fields = ('rule_check', 'rule_store', 'rule_direction', 'application_path_case_insensitive_match', 'application_package_kind',
+        'enforcement', 'enforcement_trace', 'enforcement_trace_query')
     require(all(key in value for key in fields), 'RUNTIME_FIREWALL_FAILED')
     require(value['rule_check'] is None or (type(value['rule_check']) is str
         and value['rule_check'] in FIREWALL_CHECKS), 'RUNTIME_FIREWALL_FAILED')
@@ -141,6 +142,23 @@ def firewall_observation(value, mode):
              or type(value['application_path_case_insensitive_match']) is bool), 'RUNTIME_FIREWALL_FAILED')
     require(value['application_package_kind'] in (None, 'MISSING', 'NULL', 'EMPTY', 'ANY',
         'ANY_CASE_VARIANT', 'SID', 'OTHER_STRING', 'OTHER_TYPE'), 'RUNTIME_FIREWALL_FAILED')
+    statuses = ('MISSING NULL EMPTY MULTIPLE NULL_ITEM OTHER_TYPE OTHER_STRING OTHER_NUMBER Invalid Full '
+        'FirewallOffInProfile CategoryOff DisabledObject InactiveProfile LocalAddressResolutionEmpty '
+        'RemoteAddressResolutionEmpty LocalPortResolutionEmpty RemotePortResolutionEmpty InterfaceResolutionEmpty '
+        'ApplicationResolutionEmpty RemoteMachineEmpty RemoteUserEmpty LocalGlobalOpenPortsDisallowed '
+        'LocalAuthorizedApplicationsDisallowed LocalFirewallRulesDisallowed LocalConsecRulesDisallowed '
+        'NotTargetPlatform OptimizedOut LocalUserEmpty TransportMachinesEmpty TunnelMachinesEmpty '
+        'TupleResolutionEmpty NotApplicable').split()
+    for key in ('enforcement', 'enforcement_trace'):
+        item = value[key]
+        if item is not None:
+            require(type(item) is dict and set(item) == {'shape', 'count', 'item_type', 'status'}
+                and item['shape'] in ('MISSING', 'NULL', 'SCALAR', 'ARRAY')
+                and type(item['count']) is int and 0 <= item['count'] <= 65
+                and item['item_type'] in ('NONE', 'NULL', 'STRING', 'ENUM', 'UINT16', 'UINT32', 'INT32', 'OTHER')
+                and item['status'] in statuses, 'RUNTIME_FIREWALL_FAILED')
+    require(value['enforcement_trace_query'] in ('NOT_RUN', 'SINGLE_MATCH', 'COUNT_MISMATCH', 'IDENTITY_MISMATCH', 'QUERY_FAILED')
+        and ((value['enforcement_trace_query'] == 'SINGLE_MATCH') == (value['enforcement_trace'] is not None)), 'RUNTIME_FIREWALL_FAILED')
     return {'mode': mode, **{key: value[key] for key in fields}}
 
 
