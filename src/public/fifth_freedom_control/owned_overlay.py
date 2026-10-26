@@ -39,7 +39,7 @@ async def _read_output(child, maximum):
     fd = child.output_fd
     os.set_blocking(fd, False)
     while True:
-        if child.query_image_state() not in (QueryImageState.MATCH, QueryImageState.EXITED):
+        if child.query_image_state() not in (QueryImageState.MATCH, QueryImageState.EXITED, QueryImageState.EXIT_PENDING):
             raise LifecycleError("QUERY_IMAGE_CHANGED")
         future = loop.create_future()
 
@@ -61,6 +61,11 @@ async def _read_output(child, maximum):
         if not block:
             if await child.wait() != 0:
                 raise LifecycleError("QUERY_EXIT_FAILED")
+            # Pipe EOF can precede process exit. Pending observations only allow
+            # bounded private draining; exact pidfd completion is still required
+            # and any previously observed identity failure remains terminal.
+            if child.query_image_state() is not QueryImageState.EXITED:
+                raise LifecycleError("QUERY_IMAGE_CHANGED")
             return bytes(data)
         data.extend(block)
         if len(data) > maximum:

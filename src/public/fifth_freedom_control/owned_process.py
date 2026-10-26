@@ -277,7 +277,11 @@ class OwnedChild:
                 # not a fallback for an unobserved or failed bootstrap.
                 child._exec_confirmed = True
                 observation = child.query_image_state()
-                if observation is QueryImageState.MATCH:
+                if observation in (QueryImageState.MATCH, QueryImageState.EXIT_PENDING):
+                    # Linux can remove the leader's exe link before the entire
+                    # thread group's pidfd becomes readable. Pending is not an
+                    # image match or successful query: only the bounded reader
+                    # may finish, after exact group exit0 and output checks.
                     pass
                 elif observation is QueryImageState.EXITED and await child.wait() == 0:
                     program.check_unchanged()
@@ -379,6 +383,7 @@ class OwnedChild:
 class QueryImageState(Enum):
     MATCH = "match"
     MISMATCH = "mismatch"
+    EXIT_PENDING = "exit_pending"
     EXITED = "exited"
     UNAVAILABLE = "unavailable"
 
@@ -393,13 +398,16 @@ class OwnedQueryChild(OwnedChild):
         super().__init__(process, pidfd, procfd, identity)
         self._exec_confirmed = False
         self._image_failure = None
+        self._exit_pending = False
 
     def query_image_state(self):
         """Keep observed identity failure distinct from exact child completion.
 
         EXITED is only a pidfd observation after the verified exec barrier, not
         success. The caller must still drain bounded stdout and require exit0.
-        Mismatch and live procfs failure cannot be cleared by a later exit.
+        An ENOENT before pidfd readiness is an unresolved exit transition;
+        it never establishes a live-image match or permission to publish output.
+        Mismatch and other procfs failures cannot be cleared by a later exit.
         """
         if self._image_failure is not None:
             return self._image_failure
@@ -411,14 +419,21 @@ class OwnedQueryChild(OwnedChild):
         try:
             info = os.stat("exe", dir_fd=self.procfd)
         except OSError as error:
-            # The exe link disappears on exit. Only that precise condition,
-            # with this exact pinned child's exit already signalled, is EOF.
-            if error.errno == errno.ENOENT and not self.alive:
-                return QueryImageState.EXITED
+            # exit_mm removes exe before exit_notify signals the pidfd. A
+            # thread-group leader can also finish while other threads remain.
+            # Retain that uncertainty; do not label a still-live group EXITED.
+            if error.errno == errno.ENOENT:
+                self._exit_pending = True
+                return QueryImageState.EXIT_PENDING if self.alive else QueryImageState.EXITED
             self._image_failure = QueryImageState.UNAVAILABLE
             return self._image_failure
         if (info.st_dev, info.st_ino, info.st_size) != (self.image.device, self.image.inode, self.image.size):
             self._image_failure = QueryImageState.MISMATCH
+            return self._image_failure
+        if self._exit_pending:
+            # A reappearing live image does not resolve the earlier absence as
+            # exact completion. Never revive this attempt, even for the same ELF.
+            self._image_failure = QueryImageState.UNAVAILABLE
             return self._image_failure
         return QueryImageState.MATCH if self.alive else QueryImageState.EXITED
 

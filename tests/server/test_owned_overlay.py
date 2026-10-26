@@ -52,6 +52,23 @@ with socket.create_connection(('127.0.0.1',int(sys.argv[1])),1) as stream:
 time.sleep(float(sys.argv[2]))
 os.write(1,data)
 '''
+LEADER_EXIT_QUERY = r'''
+import ctypes,os,sys,threading,time
+from pathlib import Path
+ready,leave,finish=map(Path,sys.argv[1:4])
+status=int(sys.argv[4])
+def worker():
+    if len(sys.argv)>5 and sys.argv[5]=='eof': os.close(1)
+    while not finish.exists(): time.sleep(.001)
+    if len(sys.argv)<=5 or sys.argv[5]!='eof': os.write(1,b'verified-threaded-output')
+    os._exit(status)
+threading.Thread(target=worker).start()
+ready.touch()
+while not leave.exists(): time.sleep(.001)
+# Linux x86_64 SYS_exit terminates only this leader, unlike exit_group.
+# The actual remaining worker keeps the exact pidfd live and later ends it.
+ctypes.CDLL(None).syscall(ctypes.c_long(60),ctypes.c_long(0))
+'''
 
 
 class InjectedTun:
@@ -221,6 +238,131 @@ while not Path(sys.argv[2]).exists(): time.sleep(.001)
         self.assertTrue(children[0].closed)
         self.assertEqual(children[0]._process.returncode, 0)
 
+    async def test_query_real_leader_exit_does_not_confuse_pending_group_exit_with_image_change(self):
+        ready, leave, finish = (self.directory / name for name in ("thread-ready", "leave-leader", "finish-worker"))
+        original_read = owned._read_output
+        children, transitions = [], []
+        async def read_during_real_exit(child, maximum):
+            children.append(child)
+            async with asyncio.timeout(1):
+                while not ready.exists():
+                    await asyncio.sleep(.001)
+                self.assertEqual(child.query_image_state(), QueryImageState.MATCH)
+                leave.touch()
+                while True:
+                    try:
+                        os.stat("exe", dir_fd=child.procfd)
+                    except FileNotFoundError:
+                        break
+                    await asyncio.sleep(.001)
+            # A real procfs ENOENT while the exact thread group is still alive;
+            # no os.stat, pidfd or process result is mocked for this transition.
+            self.assertTrue(child.alive)
+            transitions.append(True)
+            reading = asyncio.create_task(original_read(child, maximum))
+            try:
+                await asyncio.sleep(0)
+                self.assertFalse(reading.done())
+            finally:
+                finish.touch()
+                if reading.done() and not reading.cancelled():
+                    _ = reading.exception()
+            return await reading
+        query = self.query(timeout=2)
+        with mock.patch.object(owned, "_read_output", side_effect=read_during_real_exit):
+            result = await query.run(("-I", "-S", "-c", LEADER_EXIT_QUERY,
+                str(ready), str(leave), str(finish), "0"), on_failure=lambda: self.revocations.append("revoked"))
+        self.assertEqual(result, b"verified-threaded-output")
+        self.assertEqual(transitions, [True])
+        self.assertEqual(self.revocations, [])
+        self.assertTrue(children[0].closed)
+        self.assertEqual(children[0]._process.returncode, 0)
+
+    async def test_query_real_pending_exit_requires_zero_completion_and_bounded_exact_cleanup(self):
+        for behavior in ("nonzero", "timeout", "cancel"):
+            with self.subTest(behavior=behavior):
+                ready, leave, finish = (self.directory / (behavior + suffix)
+                    for suffix in ("-ready", "-leave", "-finish"))
+                original_read = owned._read_output
+                children, entered, revoked = [], asyncio.Event(), []
+                async def read_during_real_exit(child, maximum):
+                    children.append(child)
+                    async with asyncio.timeout(1):
+                        while not ready.exists():
+                            await asyncio.sleep(.001)
+                        leave.touch()
+                        while True:
+                            try:
+                                os.stat("exe", dir_fd=child.procfd)
+                            except FileNotFoundError:
+                                break
+                            await asyncio.sleep(.001)
+                    self.assertTrue(child.alive)
+                    self.assertEqual(child.query_image_state(), QueryImageState.EXIT_PENDING)
+                    entered.set()
+                    if behavior == "nonzero":
+                        finish.touch()
+                    return await original_read(child, maximum)
+                query = self.query(timeout=.7 if behavior == "timeout" else 2)
+                with mock.patch.object(owned, "_read_output", side_effect=read_during_real_exit):
+                    # EOF with a live worker cannot publish even empty output.
+                    arguments = ("-I", "-S", "-c", LEADER_EXIT_QUERY, str(ready), str(leave),
+                                 str(finish), "7" if behavior == "nonzero" else "0",
+                                 "output" if behavior == "nonzero" else "eof")
+                    task = asyncio.create_task(query.run(arguments, on_failure=lambda: revoked.append(True)))
+                    await asyncio.wait_for(entered.wait(), 1.5)
+                    if behavior == "cancel":
+                        await asyncio.sleep(0)
+                        self.assertFalse(task.done())
+                        task.cancel()
+                        with self.assertRaises(asyncio.CancelledError):
+                            await task
+                    else:
+                        with self.assertRaisesRegex(LifecycleError, "^OWNED_QUERY_FAILED$"):
+                            await task
+                self.assertTrue(revoked)
+                self.assertTrue(children[0].closed)
+                self.assertFalse(Path(f"/proc/{children[0].pid}").exists())
+                self.assertIsNone(query._child)
+                if behavior == "nonzero":
+                    self.assertEqual(children[0]._process.returncode, 7)
+
+    async def test_query_real_pending_exit_at_exec_barrier_still_requires_complete_output(self):
+        from fifth_freedom_control import owned_process
+        ready, leave, finish = (self.directory / name for name in ("early-ready", "early-leave", "early-finish"))
+        original_byte, original_read = owned_process._pipe_byte, owned._read_output
+        query, observations = self.query(timeout=2), []
+        async def leader_exits_before_post_exec_check(*args):
+            result = await original_byte(*args)
+            if result == b"":
+                async with asyncio.timeout(1):
+                    while not ready.exists():
+                        await asyncio.sleep(.001)
+                    leave.touch()
+                    while True:
+                        try:
+                            os.stat("exe", dir_fd=query._child.procfd)
+                        except FileNotFoundError:
+                            break
+                        await asyncio.sleep(.001)
+                self.assertTrue(query._child.alive)
+                observations.append(query._child)
+            return result
+        async def finish_only_after_spawn_returns(child, maximum):
+            self.assertEqual(child.query_image_state(), QueryImageState.EXIT_PENDING)
+            self.assertTrue(child.alive)
+            finish.touch()
+            return await original_read(child, maximum)
+        with mock.patch.object(owned_process, "_pipe_byte", side_effect=leader_exits_before_post_exec_check), \
+                mock.patch.object(owned, "_read_output", side_effect=finish_only_after_spawn_returns):
+            result = await query.run(("-I", "-S", "-c", LEADER_EXIT_QUERY,
+                str(ready), str(leave), str(finish), "0"), on_failure=lambda: self.revocations.append(True))
+        self.assertEqual(result, b"verified-threaded-output")
+        self.assertEqual(len(observations), 1)
+        self.assertTrue(observations[0].closed)
+        self.assertEqual(observations[0]._process.returncode, 0)
+        self.assertEqual(self.revocations, [])
+
     async def test_query_actual_other_image_stays_rejected_even_after_exit_zero(self):
         transition, release = self.directory / "exec-release", self.directory / "exit-release"
         original_image = Path(sys.executable).resolve()
@@ -292,6 +434,16 @@ while not Path(sys.argv[1]).exists(): time.sleep(.001)
                 if number == errno.ENOENT and exit_during_stat:
                     self.assertEqual(state, QueryImageState.EXITED)
                     self.assertEqual(await owned._read_output(child, 128), b"exact-output")
+                elif number == errno.ENOENT:
+                    self.assertEqual(state, QueryImageState.EXIT_PENDING)
+                    # The injected absence resolves to a genuinely live image,
+                    # not exact exit. It must not revive this query attempt.
+                    self.assertEqual(child.query_image_state(), QueryImageState.UNAVAILABLE)
+                    release.touch()
+                    self.assertEqual(await asyncio.wait_for(child.wait(), 1), 0)
+                    self.assertEqual(child.query_image_state(), QueryImageState.UNAVAILABLE)
+                    with self.assertRaisesRegex(LifecycleError, "^QUERY_IMAGE_CHANGED$"):
+                        await owned._read_output(child, 128)
                 else:
                     self.assertEqual(state, QueryImageState.UNAVAILABLE)
                     release.touch()
