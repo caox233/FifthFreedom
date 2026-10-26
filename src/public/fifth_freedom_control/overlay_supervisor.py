@@ -422,11 +422,15 @@ class KernelTunMonitor:
                 try:
                     address = socket.inet_ntoa(fcntl.ioctl(probe.fileno(), 0x8915, request)[20:24])
                 except OSError as error:
-                    # The runtime creates/raises its TUN before assigning IPv4.
+                    # TUNSETIFF makes the interface visible before the runtime
+                    # raises it and assigns IPv4; the initial missing-address
+                    # window can therefore have either DOWN or UP link flags.
                     # Only that initial missing-address state may remain pending
                     # under the owner's startup deadline; it grants no ownership
                     # observation and commits no interface index or native lease.
-                    if self._index is None and flags & 1 and error.errno == errno.EADDRNOTAVAIL:
+                    # Other errors and all losses after a committed observation
+                    # remain fatal, including the same DOWN/no-address state.
+                    if self._index is None and error.errno == errno.EADDRNOTAVAIL:
                         return None
                     raise
             if not flags & 1 or address != self.address:

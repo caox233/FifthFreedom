@@ -580,9 +580,10 @@ time.sleep(60)
         await monitor.prepare()
         child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
         self.addAsyncCleanup(child.stop)
-        cases = [(number, True, None, "OVERLAY_ADDRESS_QUERY_UNAVAILABLE")
-                 for number in (errno.EPERM, errno.EIO, errno.ENODEV, errno.EACCES)]
-        cases += [(errno.EADDRNOTAVAIL, False, None, "OVERLAY_ADDRESS_QUERY_UNAVAILABLE"),
+        cases = [(number, up, None, "OVERLAY_ADDRESS_QUERY_UNAVAILABLE")
+                 for number in (errno.EPERM, errno.EIO, errno.ENODEV, errno.EACCES)
+                 for up in (False, True)]
+        cases += [(None, False, "10.23.0.1", "OVERLAY_ADDRESS_OR_LINK_LOST"),
                   (None, True, "10.23.0.2", "OVERLAY_ADDRESS_OR_LINK_LOST"),
                   (None, True, "10.23.0.1", "OVERLAY_TUN_NOT_OWNED")]
         for number, up, address, expected in cases:
@@ -604,6 +605,98 @@ time.sleep(60)
                     await monitor.observe(child)
             self.assertIsNone(monitor._index)
             self.assertTrue(child.image_matches())
+
+    async def test_created_down_no_address_stays_pending_then_requires_full_owned_observation(self):
+        import fcntl
+        import stat
+        import struct
+        from types import SimpleNamespace
+        monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        await monitor.prepare()
+        child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
+        self.addAsyncCleanup(child.stop)
+        original_ioctl, original_stat, original_listdir = fcntl.ioctl, os.stat, os.listdir
+        descriptor_count = len(original_listdir("/proc/self/fd"))
+        missing_label = struct.pack("256s", b"lo:ffdiag")
+        state = {"up": False, "address": None}
+        fdinfo_reads = []
+        def ioctl(fd, operation, _request):
+            value = bytearray(256)
+            if operation == 0x8913:
+                struct.pack_into("H", value, 16, int(state["up"]))
+            elif operation == 0x8915:
+                if state["address"] is None:
+                    # Actual read-only EADDRNOTAVAIL from the unassigned local
+                    # label; interface discovery/flags and TUN proof are synthetic.
+                    return original_ioctl(fd, operation, missing_label)
+                value[20:24] = socket.inet_aton(state["address"])
+            else:
+                raise AssertionError("unexpected ioctl")
+            return bytes(value)
+        def stable_stdin(folder):
+            self.assertIn("0", original_listdir(folder))
+            fdinfo_reads.append(True)
+            return ["0"]
+        def synthetic_tun_stat(path, *args, **kwargs):
+            if path == "fd/0" and kwargs.get("dir_fd") == child.procfd:
+                return SimpleNamespace(st_mode=stat.S_IFCHR, st_rdev=os.makedev(10, 200))
+            return original_stat(path, *args, **kwargs)
+        with patch("socket.if_nametoindex", return_value=123), \
+                patch.object(fcntl, "ioctl", side_effect=ioctl), \
+                patch("os.listdir", side_effect=stable_stdin), \
+                patch("os.read", return_value=b"iff:\tffsynabsent09\n"), \
+                patch("os.stat", side_effect=synthetic_tun_stat):
+            # The real runtime's TUNSETIFF precedes configure/enable and its
+            # separate IPv4 assignment. Neither initial state admits anything.
+            for up in (False, True):
+                state["up"] = up
+                self.assertIsNone(await monitor.observe(child))
+                self.assertIsNone(monitor._index)
+                self.assertEqual(fdinfo_reads, [])
+            state["address"] = monitor.address
+            observed = await monitor.observe(child)
+            self.assertEqual(observed, OverlayObservation(*monitor._namespace, 123, monitor.address))
+            self.assertEqual(monitor._index, 123)
+            self.assertEqual(len(fdinfo_reads), 1)
+            # After committing an owned identity, even the exact initial
+            # DOWN/no-address state is a hard failure, never pending again.
+            state.update(up=False, address=None)
+            with self.assertRaisesRegex(LifecycleError, "^OVERLAY_ADDRESS_QUERY_UNAVAILABLE$") as lost:
+                await monitor.observe(child)
+            self.assertEqual(kernel_query_failure(lost.exception), dict(query_stage="ipv4_address",
+                errno_class="EADDRNOTAVAIL", previously_observed=True, link_up=False))
+            self.assertEqual(monitor._index, 123)
+        self.assertTrue(child.image_matches())
+        self.assertEqual(len(original_listdir("/proc/self/fd")), descriptor_count)
+
+    async def test_created_down_no_address_respects_supervisor_deadline_without_native_start(self):
+        import fcntl
+        import struct
+        self.monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        self.limits = replace(self.limits, startup=.3)
+        supervisor = self.supervisor()
+        original_ioctl, original_index = fcntl.ioctl, socket.if_nametoindex
+        calls = []
+        missing_label = struct.pack("256s", b"lo:ffdiag")
+        def discover(name):
+            calls.append(name)
+            if len(calls) == 1:
+                return original_index(name)  # actual absent-interface prepare
+            return 123
+        def ioctl(fd, operation, _request):
+            if operation == 0x8913:
+                return bytes(256)  # synthetic DOWN link
+            self.assertEqual(operation, 0x8915)
+            return original_ioctl(fd, operation, missing_label)
+        with patch("socket.if_nametoindex", side_effect=discover), \
+                patch.object(fcntl, "ioctl", side_effect=ioctl):
+            with self.assertRaisesRegex(LifecycleError, "^STARTUP_TIMEOUT$"):
+                await supervisor.start()
+        self.assertGreater(len(calls), 2)
+        self.assertIsNone(self.monitor._index)
+        self.assertFalse(supervisor.ready)
+        self.assertIsNone(supervisor.native)
+        self.assertTrue(supervisor.overlay.closed)
 
     async def test_kernel_query_diagnostic_tracks_real_ioctls_without_stale_flags(self):
         import errno
@@ -682,7 +775,7 @@ time.sleep(60)
                     with self.subTest(errno=expected, observed=observed, up=up), \
                             patch("socket.if_nametoindex", return_value=123), \
                             patch.object(fcntl, "ioctl", side_effect=ioctl):
-                        if not observed and up and number == errno.EADDRNOTAVAIL:
+                        if not observed and number == errno.EADDRNOTAVAIL:
                             self.assertIsNone(await monitor.observe(child))
                         else:
                             with self.assertRaises(LifecycleError) as failed:
