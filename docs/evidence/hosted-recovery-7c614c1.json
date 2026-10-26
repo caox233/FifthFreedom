@@ -1,0 +1,125 @@
+{
+  "observed_utc": "2026-10-26T18:14:25.493299+00:00",
+  "source_head": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
+  "checkout_merge": "d189ae87293d0fcdfc5233fe6d4cf86e8f5cceec",
+  "source_runs_successful": true,
+  "results": [
+    {
+      "artifact_id": 12675125341,
+      "run_id": 40374532962,
+      "source_head": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
+      "checkout_merge": "d189ae87293d0fcdfc5233fe6d4cf86e8f5cceec",
+      "merge_parent_and_tree_verified": true,
+      "artifact_sha256": "3f714cd788c894f07f742b55ac75a296705239d6b1e0930d6f9313fb79fdf28b",
+      "artifact_bytes": 23822,
+      "official_digest_verified": true,
+      "unread_log_members": [
+        "test-logs/build-source-logic.txt",
+        "test-logs/ci.txt",
+        "test-logs/public_candidate.txt",
+        "test-logs/public_server_candidate.txt",
+        "test-logs/server.txt",
+        "test-logs/ui.txt"
+      ],
+      "platform": "windows-2022",
+      "totals": {
+        "executed": 615,
+        "passed": 510,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 105
+      },
+      "complete_package_ready": false,
+      "ci_suite": [
+        {
+          "suite": "ci",
+          "executed": 371,
+          "passed": 339,
+          "failures": 0,
+          "errors": 0,
+          "skipped_count": 32
+        }
+      ]
+    },
+    {
+      "artifact_id": 12673519435,
+      "run_id": 40374532962,
+      "source_head": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
+      "checkout_merge": "d189ae87293d0fcdfc5233fe6d4cf86e8f5cceec",
+      "merge_parent_and_tree_verified": true,
+      "artifact_sha256": "3ac4ab4613660399da1ab4a2a9af21edde9a0201582b40a31b3e9782940a3b05",
+      "artifact_bytes": 20062,
+      "official_digest_verified": true,
+      "unread_log_members": [
+        "test-logs/ci.txt",
+        "test-logs/build-source-logic.txt",
+        "test-logs/public_candidate.txt",
+        "test-logs/public_server_candidate.txt",
+        "test-logs/ui.txt",
+        "test-logs/server.txt"
+      ],
+      "platform": "ubuntu-24.04",
+      "totals": {
+        "executed": 615,
+        "passed": 613,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "complete_package_ready": false,
+      "ci_suite": [
+        {
+          "suite": "ci",
+          "executed": 371,
+          "passed": 371,
+          "failures": 0,
+          "errors": 0,
+          "skipped_count": 0
+        }
+      ]
+    },
+    {
+      "artifact_id": 12674082013,
+      "run_id": 40374521618,
+      "source_head": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
+      "checkout_merge": "d189ae87293d0fcdfc5233fe6d4cf86e8f5cceec",
+      "merge_parent_and_tree_verified": true,
+      "artifact_sha256": "218ad0b35d00f338f15f5584a44cd69d34f6a8df83c756fc028b7b833132e6e8",
+      "artifact_bytes": 328037,
+      "official_digest_verified": true,
+      "unread_log_members": [],
+      "passed_checks": 19,
+      "skipped_checks": 0,
+      "rebuilt_reference": {
+        "bytes": 809984,
+        "sha256": "9ab9917009db737aaf3ac44d1c8bca31acaf5a83d46383727844a122fd6b8cfe",
+        "x86_pe32_executable": true
+      },
+      "independent_pe_and_sha256sums_verified": true,
+      "msvc_full_version": 194435229,
+      "source_binary_equivalence_verified": false,
+      "retained_inputs_unchanged": true,
+      "production_helper_replaced": false,
+      "capture_executed": false,
+      "debugger_attached": false,
+      "complete_package_ready": false
+    }
+  ],
+  "output_cleanup_regression_scope": "Included in successful source CI discovery and successful Capture workflow parser-test step; positive 19-check helper fixture does not itself exercise a failed publish.",
+  "original_c42_stack": {
+    "run_id": 40371709938,
+    "job_id": 121755096661,
+    "status": "in_progress",
+    "conclusion": null,
+    "receipt_verified": false,
+    "QUERY_IMAGE_CHANGED_resolved": null,
+    "observation_count": 1
+  },
+  "full_package_verified": false,
+  "output_protection_files": {
+    "scripts/ci_capture_reference.py": "b1f0787997ca24bfb0d0dc4f66315bd5ef5c5087486622ffd00f232ff6a4ee13",
+    "tests/ci/test_ci_capture_reference.py": "75aa8738017cb02be057f539aa55f105a09359ec019a061f3ac9eccaf90f29ee"
+  },
+  "capture_workflow_job_id": 121753823205,
+  "capture_parser_and_output_protection_test_step_success": true
+}

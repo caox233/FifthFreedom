@@ -1,10 +1,13 @@
 # Exact Instance peer-map challenge: independent Linux build
 
-Status: **ready-for-agent** — the complete source preparation, recipe and runner
-are locally verified. The independent **hosted 71-check and full GNU core/CLI
-build has not run**. GitHub authentication is currently unavailable; this batch
-uses the retained exact-hash archive without network retries. A local commit is
-not a successful push or hosted execution. Ordinary Public remains closed.
+Status: **ready-for-agent** for the remaining live integration. The independent
+hosted **71 checks and full GNU core/CLI build passed** at source `c42e0eb`, run
+`40371709759`, job `121743872131`. The official artifact digest, exact merge/source
+binding, all 701 files/twelve patches and all nine test-filter counts were checked
+in the [receipt](../evidence/hosted-peer-map-c42e0eb.json). Executable hashes are
+runner receipts; binaries were neither downloaded nor executed by this lane.
+Ordinary Public remains closed. The separately successful runtime matrix uses
+guard3 source, not this peer-map source; the two evidence scopes cannot be merged.
 
 The entry is `python -B scripts/ci_easytier_peer_map_build.py`; the build-only
 workflow adds the independent `peer-map-source` job. Its source and target

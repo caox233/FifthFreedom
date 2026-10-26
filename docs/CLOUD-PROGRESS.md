@@ -32,6 +32,30 @@ upload when its build step did not succeed. A fresh clean source check at exact
 The source report SHA256 is
 `38f239fc01ca640abfc6fc1c22dec77dc280ecf3bc54240b2c9c9884d4092443`.
 
+## Later verified results and current firewall boundary
+
+Candidate `40371709938` at `c42e0eb` completed eight successful jobs, two strict
+input failures and one skipped complete package. Its two actual owned-stack
+controls and native lifecycle passed; see [the exact receipt](evidence/hosted-owned-stack-c42e0eb.json).
+The 71-contract [peer-map full GNU build](evidence/hosted-peer-map-c42e0eb.json)
+also passed, without runtime execution. The separately successful
+[guard3 matrix](evidence/hosted-matrix-c42e0eb.json) must not be called peer-map71
+runtime evidence. New [7c source/Capture results](evidence/hosted-recovery-7c614c1.json)
+are likewise independently digest-verified.
+
+The full Windows inert runtime first failed before dispatch. Dedicated
+[actual firewall probes](evidence/hosted-firewall-prerequisites.json) established
+a present-null Package property, corrected by a strict shared predicate and15
+actual PowerShell contracts. Unarmed Restore now removes owned rules and restores
+the original policy. ActiveStore enforcement still rejects: adapted values are
+two unknown strings, not a demonstrated Full value. Raw authoritative CIM
+observation is the next step; no policy condition was waived. The separate
+cleanup-ownership correction prevents a fresh invocation from restoring an
+older control directory. See [the continuing task](tasks/windows-core-firewall-prerequisite.md).
+A clean checkout at `72b43d4` passed621 source checks with2 platform skips, exit0;
+complete-package readiness remains false. Reviewed diagnostic work is published
+to `codex/firewall-diagnostic` while the stable integration PR remains at7c.
+
 The cloud checkout fetched and verified handoff commit
 `fc8ef510b51be83c31f9f8233997f758b0477acc` before creating
 `codex/cloud-integration`. The original checkout branch and private local

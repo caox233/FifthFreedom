@@ -1,7 +1,10 @@
 # Actual Windows firewall readback prerequisite
 
-Status: **ready-for-agent**. The first inert core/NIC run exposed a firewall
-readback failure before runtime dispatch. Its exact field is not yet known.
+Status: **ready-for-agent**. Actual fast probes have now identified a present-null
+Package property. The narrowly corrected production predicate and its actual
+Windows checks are under verification; full core/NIC execution remains separate.
+
+## Retained diagnostic steps before the Package correction
 
 Run `40371709889`, job `121743990739`, source `c42e0eb`, checkout merge
 `64198de3d124a12152076754ec4cf88c6b6892f6`, compiled the thirteen-patch inert
@@ -68,3 +71,18 @@ Microsoft's [New-NetFirewallRule Package parameter](https://learn.microsoft.com/
 describes a Store application SID and default `None`. This supports checking the
 actual unconfigured representation rather than assuming a literal `Any`; it
 does not replace the bounded Windows observation required here.
+
+
+## Actual package representation
+
+The next actual run `40378390311`, job `121767626373`, at `74d1429`
+confirmed the Package property is **present and null**, not missing, at both
+Prepare and unarmed Restore. Official artifact `12674254739` has verified ZIP
+SHA256 `65b6ffc0589e3061a7d9a7159a469dd05050e32c19ad22cf87086afff39c0b20`.
+This is a bounded observed class, not a published provider value or policy dump.
+The exact application path comparison passed and remains unchanged. A shared
+production predicate accepts that observed default-None representation and the
+retained exact literal Any, while rejecting missing/empty/non-string/case-variant
+or specific-SID values. Actual PowerShell positive/negative contracts and all
+other strict readbacks must pass in Windows before claiming the prerequisite
+fixed. No core/NIC runtime success is inferred from a pure or unarmed probe.

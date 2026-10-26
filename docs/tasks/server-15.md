@@ -1,8 +1,10 @@
 # SERVER-15 — real owned overlay and native development composition
 
-Status: ready-for-agent; implementation, local checks and independent review
-complete; the actual isolated hosted run remains pending. Ordinary Public admission
-remains closed.
+Status: ready-for-agent for remaining Public integration. Both actual isolated
+development controls passed at `c42e0eb`, run `40371709938`, with independently
+verified official receipts below. Earlier failed runs remain retained. Ordinary
+Public admission remains closed; guard3 success does not verify the distinct
+peer-map71 runtime or Windows owned-core/NIC chain.
 
 ## Problem and implementation
 
@@ -254,3 +256,24 @@ unknown causes, contexts beyond the four-node limit, and failures outside these
 wrappers can still be reported only at wrapper or unclassified level. These
 controls start no EasyTier/native artifact, namespace, TUN or game. Only a new
 hosted run can establish the actual reason for a future failure.
+
+
+## Verified follow-up at c42e0eb
+
+Run `40371709938`, composition job `121755096661`, passed both actual controls at
+source `c42e0ebbc8084e943076aab7effc6abd4e8662c7`, which includes the query-exit
+fix. The [independently verified receipt](../evidence/hosted-owned-stack-c42e0eb.json)
+binds the official artifact digest and merge/source tree. Each successful branch
+requires the exact held socket's OPEN acknowledgement and live worker pidfd before
+control; the receipt has no separate OPEN field, so this observation combines the
+mandatory exact harness path with its successful result. Lease revoke observed
+native exit92, five rebound ports and EOF/reset while overlay remained alive;
+peer loss observed permanent revocation, exact cleanup and zero native listeners.
+All four namespaces and private stage were removed; source package was unchanged.
+
+No QUERY_IMAGE_CHANGED occurred in this run. The older fe6 failure remains real;
+this does not establish its unique cause or general stability. The runtime uses
+guard3, not the newly built peer-map71 source. Ordinary Public admission remains
+closed. Overall candidate result was eight jobs successful, two strict input
+failures (eight held SAV/META and C71's thirteen unexecuted replays), and complete
+Windows packaging skipped. No component or finite runtime proof is a full package.

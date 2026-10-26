@@ -306,3 +306,24 @@ unchanged. Evidence is retained in `.local/evidence/cloud/kernel-stage-fixture/`
 This demonstrates and removes the fixture's uncontrolled descriptor lifetime;
 it does not assign fd200 to the earlier clean-checkout failure or explain any
 historical hosted runtime failure. A new clean aggregate is still required.
+
+
+## Verified follow-up at c42e0eb
+
+Run `40371709938`, composition job `121755096661`, passed both actual controls at
+source `c42e0ebbc8084e943076aab7effc6abd4e8662c7`, which includes the query-exit
+fix. The [independently verified receipt](../evidence/hosted-owned-stack-c42e0eb.json)
+binds the official artifact digest and merge/source tree. Each successful branch
+requires the exact held socket's OPEN acknowledgement and live worker pidfd before
+control; the receipt has no separate OPEN field, so this observation combines the
+mandatory exact harness path with its successful result. Lease revoke observed
+native exit92, five rebound ports and EOF/reset while overlay remained alive;
+peer loss observed permanent revocation, exact cleanup and zero native listeners.
+All four namespaces and private stage were removed; source package was unchanged.
+
+No QUERY_IMAGE_CHANGED occurred in this run. The older fe6 failure remains real;
+this does not establish its unique cause or general stability. The runtime uses
+guard3, not the newly built peer-map71 source. Ordinary Public admission remains
+closed. Overall candidate result was eight jobs successful, two strict input
+failures (eight held SAV/META and C71's thirteen unexecuted replays), and complete
+Windows packaging skipped. No component or finite runtime proof is a full package.
