@@ -447,7 +447,18 @@ class KernelTunMonitor:
                     if not entry.isascii() or not entry.isdecimal():
                         continue
                     unavailable = "OVERLAY_FDINFO_ENTRY_UNAVAILABLE"
-                    descriptor = os.open(entry, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW, dir_fd=folder)
+                    try:
+                        descriptor = os.open(entry, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW, dir_fd=folder)
+                    except OSError as error:
+                        # A child's startup FD may close after enumeration. An
+                        # incomplete initial inventory proves nothing, including
+                        # any TUN match seen earlier in this same scan. Discard
+                        # the whole observation under the caller's deadline;
+                        # the next attempt must enumerate and verify afresh.
+                        # Never skip an entry or relax an admitted observation.
+                        if self._index is None and error.errno == errno.ENOENT:
+                            return None
+                        raise
                     try:
                         unavailable = "OVERLAY_FDINFO_READ_UNAVAILABLE"
                         data = os.read(descriptor, 8193)

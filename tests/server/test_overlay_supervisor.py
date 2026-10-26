@@ -385,8 +385,12 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
         descriptors = len(os.listdir("/proc/self/fd"))
         stages = ("NAMESPACE_OBSERVATION", "ADDRESS_QUERY", "FDINFO_DIRECTORY", "FDINFO_LIST",
                   "FDINFO_ENTRY", "FDINFO_READ", "TUN_DESCRIPTOR", "INTERFACE_RECHECK")
-        for stage in stages:
-            failure = PermissionError(errno.EACCES, "PRIVATE KERNEL ERROR SENTINEL")
+        cases = [(stage, errno.EACCES) for stage in stages]
+        cases += [("FDINFO_ENTRY", errno.EIO), ("FDINFO_DIRECTORY", errno.ENOENT),
+                  ("FDINFO_LIST", errno.ENOENT), ("FDINFO_READ", errno.ENOENT),
+                  ("TUN_DESCRIPTOR", errno.ENOENT)]
+        for stage, failure_errno in cases:
+            failure = OSError(failure_errno, "PRIVATE KERNEL ERROR SENTINEL")
             def kernel_stat(path, *args, **kwargs):
                 if stage == "NAMESPACE_OBSERVATION" and path == "/proc/self/ns/net":
                     raise failure
@@ -398,6 +402,8 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
                 return original_stat(path, *args, **kwargs)
             def kernel_open(path, *args, **kwargs):
                 if path == "fdinfo" and stage == "FDINFO_DIRECTORY":
+                    raise failure
+                if path == "0" and stage == "FDINFO_ENTRY":
                     raise failure
                 return original_open(path, *args, **kwargs)
             def ioctl(_fd, request, _argument):
@@ -413,7 +419,7 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
                 else:
                     raise AssertionError("unexpected ioctl")
                 return bytes(value)
-            with self.subTest(stage=stage), contextlib.ExitStack() as patches:
+            with self.subTest(stage=stage, errno=failure_errno), contextlib.ExitStack() as patches:
                 patches.enter_context(patch("os.stat", side_effect=kernel_stat))
                 patches.enter_context(patch("os.open", side_effect=kernel_open))
                 patches.enter_context(patch.object(fcntl, "ioctl", side_effect=ioctl))
@@ -422,9 +428,9 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
                 if stage == "FDINFO_LIST":
                     patches.enter_context(patch("os.listdir", side_effect=failure))
                 elif stage == "FDINFO_ENTRY":
-                    # A real procfs open of an absent entry represents the
-                    # disappeared-descriptor case; it is not silently skipped.
-                    patches.enter_context(patch("os.listdir", return_value=["999999999"]))
+                    # Only an initial ENOENT can discard a scan; entry access
+                    # failures remain fatal. Real closure is covered below.
+                    patches.enter_context(patch("os.listdir", side_effect=stable_stdin))
                 elif stage == "FDINFO_READ":
                     patches.enter_context(patch("os.listdir", side_effect=stable_stdin))
                     patches.enter_context(patch("os.read", side_effect=failure))
@@ -437,7 +443,7 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
                 diagnostic_stage = {"NAMESPACE_OBSERVATION": "namespace",
                                     "ADDRESS_QUERY": "ipv4_address"}.get(stage, stage.lower())
                 self.assertEqual(kernel_query_failure(raised.exception), dict(query_stage=diagnostic_stage,
-                    errno_class="ENOENT" if stage == "FDINFO_ENTRY" else "EACCES",
+                    errno_class=errno.errorcode[failure_errno],
                     previously_observed=False, link_up=None if stage == "NAMESPACE_OBSERVATION" else True))
             self.assertIsNone(monitor._index)
             self.assertTrue(child.image_matches())
@@ -469,6 +475,10 @@ time.sleep(60)
                 closed = self.directory / (str(stable) + "-closed")
                 monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
                 await monitor.prepare()
+                # Already-admitted inventory loss remains fatal. The separate
+                # transition regression below obtains this index via observe.
+                if not stable:
+                    monitor._index = 123
                 child = await OwnedChild.spawn(self.program,
                     ("-I", "-S", "-c", code, str(ready), str(release), str(closed)))
                 self.addAsyncCleanup(child.stop)
@@ -531,11 +541,150 @@ time.sleep(60)
                                  "EACCES" if stable else "ENOENT")
                 self.assertEqual(selected, ["0"] if stable else ["0", "200"])
                 self.assertEqual(missing_entries, [] if stable else ["200"])
-                self.assertIsNone(monitor._index)
+                self.assertEqual(monitor._index, None if stable else 123)
                 self.assertTrue(child.image_matches())
                 self.assertEqual(len(original_listdir("/proc/self/fd")), before)
                 await child.stop()
                 self.assertTrue(child.closed)
+
+    async def test_initial_fd_close_discards_partial_tun_proof_and_requires_fresh_complete_scan(self):
+        import errno
+        import fcntl
+        import stat
+        import struct
+        import time
+        from types import SimpleNamespace
+        original_listdir, original_stat, original_open = os.listdir, os.stat, os.open
+        ready, release, closed, ready_next, release_next, closed_next = [
+            self.directory / name for name in ("ready", "release", "closed", "ready-next", "release-next", "closed-next")]
+        code = """import os,sys,time
+from pathlib import Path
+for fd,offset in ((200,1),(201,4)):
+    opened=os.open('/dev/null',os.O_RDONLY)
+    os.dup2(opened,fd)
+    if opened!=fd:os.close(opened)
+    Path(sys.argv[offset]).touch()
+    while not Path(sys.argv[offset+1]).exists():time.sleep(.001)
+    os.close(fd)
+    Path(sys.argv[offset+2]).touch()
+time.sleep(60)
+"""
+        monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        await monitor.prepare()
+        child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", code,
+            *(str(path) for path in (ready, release, closed, ready_next, release_next, closed_next))))
+        self.addAsyncCleanup(child.stop)
+        async with asyncio.timeout(1):
+            while not ready.exists():
+                await asyncio.sleep(.001)
+        before = len(original_listdir("/proc/self/fd"))
+        scan, events, inventories = 0, [], []
+        def inventory_then_close(folder):
+            values = original_listdir(folder)
+            fd = "200" if scan == 0 else "201"
+            self.assertIn("0", values)
+            self.assertIn(fd, values)
+            if scan in (0, 2):
+                trigger, confirmed = (release, closed) if scan == 0 else (release_next, closed_next)
+                trigger.touch()
+                deadline = time.monotonic() + 1
+                while not confirmed.exists() and time.monotonic() < deadline:
+                    time.sleep(.001)
+                self.assertTrue(confirmed.exists())
+                with self.assertRaises(FileNotFoundError):
+                    original_stat("fd/" + fd, dir_fd=child.procfd)
+            # These are actual entries from this scan, with a real close only
+            # between enumeration and open. No invented errno or procfs entry.
+            inventories.append((scan, ["0", fd]))
+            return ["0", fd]
+        def entry_open(path, *args, **kwargs):
+            try:
+                return original_open(path, *args, **kwargs)
+            except FileNotFoundError as error:
+                self.assertEqual(error.errno, errno.ENOENT)
+                events.append((scan, "missing", path))
+                raise
+        def synthetic_stat(path, *args, **kwargs):
+            if path == "fd/0" and kwargs.get("dir_fd") == child.procfd:
+                events.append((scan, "tun-proof", "0"))
+                return SimpleNamespace(st_mode=stat.S_IFCHR, st_rdev=os.makedev(10, 200))
+            return original_stat(path, *args, **kwargs)
+        def ioctl(_fd, operation, _request):
+            value = bytearray(256)
+            if operation == 0x8913:
+                struct.pack_into("H", value, 16, 1)
+            elif operation == 0x8915:
+                value[20:24] = socket.inet_aton(monitor.address)
+            else:
+                raise AssertionError("unexpected ioctl")
+            return bytes(value)
+        # Interface/TUN metadata is explicitly synthetic; child ownership,
+        # namespace, directory opens, enumeration and descriptor loss are real.
+        with patch("socket.if_nametoindex", return_value=123), \
+                patch.object(fcntl, "ioctl", side_effect=ioctl), \
+                patch("os.listdir", side_effect=inventory_then_close), \
+                patch("os.open", side_effect=entry_open), \
+                patch("os.read", return_value=b"iff:\tffsynabsent09\n"), \
+                patch("os.stat", side_effect=synthetic_stat):
+            self.assertIsNone(await monitor.observe(child))
+            self.assertIsNone(monitor._index)
+            self.assertEqual(events, [(0, "tun-proof", "0"), (0, "missing", "200")])
+            # The first proof was discarded even though owned became true.
+            async with asyncio.timeout(1):
+                while not ready_next.exists():
+                    await asyncio.sleep(.001)
+            scan = 1
+            self.assertEqual(await monitor.observe(child),
+                             OverlayObservation(*monitor._namespace, 123, monitor.address))
+            self.assertEqual(monitor._index, 123)
+            self.assertIn((1, "tun-proof", "0"), events)
+            scan = 2
+            with self.assertRaisesRegex(LifecycleError, "^OVERLAY_FDINFO_ENTRY_UNAVAILABLE$") as failed:
+                await monitor.observe(child)
+            self.assertEqual(kernel_query_failure(failed.exception), dict(query_stage="fdinfo_entry",
+                errno_class="ENOENT", previously_observed=True, link_up=True))
+            self.assertEqual(monitor._index, 123)
+        self.assertEqual(inventories, [(0, ["0", "200"]), (1, ["0", "201"]), (2, ["0", "201"])])
+        self.assertEqual(events[-1], (2, "missing", "201"))
+        self.assertTrue(child.image_matches())
+        self.assertEqual(len(original_listdir("/proc/self/fd")), before)
+
+    async def test_initial_incomplete_fd_inventory_obeys_deadline_without_native_start(self):
+        import fcntl
+        import struct
+        self.monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        self.limits = replace(self.limits, startup=.3)
+        supervisor = self.supervisor()
+        original_index = socket.if_nametoindex
+        scans = []
+        discoveries = []
+        def discover(name):
+            discoveries.append(name)
+            return original_index(name) if len(discoveries) == 1 else 123
+        def ioctl(_fd, operation, _request):
+            value = bytearray(256)
+            if operation == 0x8913:
+                struct.pack_into("H", value, 16, 1)
+            elif operation == 0x8915:
+                value[20:24] = socket.inet_aton(self.monitor.address)
+            else:
+                raise AssertionError("unexpected ioctl")
+            return bytes(value)
+        def perpetually_incomplete(_folder):
+            # Explicit perpetual-churn fixture. The subsequent entry open is
+            # real ENOENT; this cannot satisfy even initial ownership.
+            scans.append(True)
+            return ["999999999"]
+        with patch("socket.if_nametoindex", side_effect=discover), \
+                patch.object(fcntl, "ioctl", side_effect=ioctl), \
+                patch("os.listdir", side_effect=perpetually_incomplete):
+            with self.assertRaisesRegex(LifecycleError, "^STARTUP_TIMEOUT$"):
+                await supervisor.start()
+        self.assertGreater(len(scans), 1)
+        self.assertIsNone(self.monitor._index)
+        self.assertFalse(supervisor.ready)
+        self.assertIsNone(supervisor.native)
+        self.assertTrue(supervisor.overlay.closed)
 
     async def test_initial_missing_ipv4_is_pending_but_never_owned_readiness(self):
         import errno
