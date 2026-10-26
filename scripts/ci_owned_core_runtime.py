@@ -131,7 +131,7 @@ def driver_inventory(phase):
 def firewall_observation(value, mode):
     require(type(value) is dict and type(value.get('schema')) is int and value['schema'] == 1
         and value.get('mode') == mode, 'RUNTIME_FIREWALL_FAILED')
-    fields = ('rule_check', 'rule_store', 'rule_direction', 'application_path_case_insensitive_match')
+    fields = ('rule_check', 'rule_store', 'rule_direction', 'application_path_case_insensitive_match', 'application_package_kind')
     require(all(key in value for key in fields), 'RUNTIME_FIREWALL_FAILED')
     require(value['rule_check'] is None or (type(value['rule_check']) is str
         and value['rule_check'] in FIREWALL_CHECKS), 'RUNTIME_FIREWALL_FAILED')
@@ -139,6 +139,8 @@ def firewall_observation(value, mode):
         and value['rule_direction'] in (None, 'Inbound', 'Outbound')
         and (value['application_path_case_insensitive_match'] is None
              or type(value['application_path_case_insensitive_match']) is bool), 'RUNTIME_FIREWALL_FAILED')
+    require(value['application_package_kind'] in (None, 'MISSING', 'NULL', 'EMPTY', 'ANY',
+        'ANY_CASE_VARIANT', 'SID', 'OTHER_STRING', 'OTHER_TYPE'), 'RUNTIME_FIREWALL_FAILED')
     return {'mode': mode, **{key: value[key] for key in fields}}
 
 

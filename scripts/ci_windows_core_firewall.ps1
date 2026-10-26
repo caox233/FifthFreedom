@@ -62,6 +62,7 @@ function Check-Owned($Condition, [string]$Field, [string]$Code = 'FIREWALL_RULE_
 function Read-Owned($Plan, [string]$Direction, [string]$Store, [bool]$Required) {
     $result.rule_store = $Store; $result.rule_direction = $Direction
     $result.application_path_case_insensitive_match = $null
+    $result.application_package_kind = $null
     $name = 'ff-core-' + $Plan.probe_id + '-' + $Direction.ToLowerInvariant()
     # Enumerating first makes an absent owned name distinguishable from a failed query.
     $result.rule_check = 'ENUMERATE'
@@ -95,6 +96,17 @@ function Read-Owned($Plan, [string]$Direction, [string]$Store, [bool]$Required) 
     # Deliberately retain the failing strict predicate until actual Windows
     # readback identifies the field. The diagnostic does not relax admission.
     Check-Owned ($app[0].Program -ceq $Plan.core_path) 'APPLICATION_PATH'
+    $packageProperty = $app[0].PSObject.Properties['Package']
+    $packageValue = $null
+    if ($null -ne $packageProperty) { $packageValue = $packageProperty.Value }
+    $result.application_package_kind = if ($null -eq $packageProperty) { 'MISSING' }
+        elseif ($null -eq $packageValue) { 'NULL' }
+        elseif ($packageValue -isnot [string]) { 'OTHER_TYPE' }
+        elseif ($packageValue.Length -eq 0) { 'EMPTY' }
+        elseif ($packageValue -ceq 'Any') { 'ANY' }
+        elseif ($packageValue -ieq 'Any') { 'ANY_CASE_VARIANT' }
+        elseif ($packageValue -cmatch '^S-[0-9]+(-[0-9]+)+$') { 'SID' }
+        else { 'OTHER_STRING' }
     Check-Owned ($app[0].Package -ceq 'Any') 'APPLICATION_PACKAGE'
     Check-Owned ($port.Count -eq 1) 'PORT_COUNT'
     Check-Owned ([string]$port[0].Protocol -ceq 'Any') 'PROTOCOL'
@@ -115,7 +127,7 @@ function Read-Owned($Plan, [string]$Direction, [string]$Store, [bool]$Required) 
 $result = [ordered]@{ schema=1; mode=$Mode; succeeded=$false; active_rules_verified=$false;
     armed=$false; owned_rules_removed=$false; original_policy_unchanged=$false; exact_drain_verified=$false;
     application_path_rules=$true; pid_isolation=$false; packet_behavior_verified=$false; policy_enabled_or_changed=$false;
-    rule_check=$null; rule_store=$null; rule_direction=$null; application_path_case_insensitive_match=$null }
+    rule_check=$null; rule_store=$null; rule_direction=$null; application_path_case_insensitive_match=$null; application_package_kind=$null }
 try {
     Require ($env:GITHUB_ACTIONS -ceq 'true' -and $env:RUNNER_ENVIRONMENT -ceq 'github-hosted' -and
         $env:ImageOS -cin @('win25','win25-vs2026')) 'FIREWALL_HOST_REQUIRED'

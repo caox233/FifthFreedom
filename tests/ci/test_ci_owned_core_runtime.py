@@ -20,7 +20,7 @@ def manifest():
 
 def firewall_diagnostic():
     return {'rule_check':'APPLICATION_PATH', 'rule_store':'PersistentStore',
-        'rule_direction':'Inbound', 'application_path_case_insensitive_match':True}
+        'rule_direction':'Inbound', 'application_path_case_insensitive_match':True, 'application_package_kind':'EMPTY'}
 
 
 def managed():
@@ -155,7 +155,7 @@ class RuntimeAdapterTests(unittest.TestCase):
         original={'schema':1,'mode':'Prepare',**firewall_diagnostic()}
         runtime.firewall_observation(original,'Prepare')
         for key,value in (('schema',True),('rule_check',[]),('rule_check','APPLICATION_PATH/private'),('rule_store','private'),
-            ('rule_direction','Inbound/private'),('application_path_case_insensitive_match',1)):
+            ('rule_direction','Inbound/private'),('application_path_case_insensitive_match',1),('application_package_kind','private')):
             with self.assertRaises(ValueError):runtime.firewall_observation({**original,key:value},'Prepare')
         for key in firewall_diagnostic():
             changed=dict(original);del changed[key]

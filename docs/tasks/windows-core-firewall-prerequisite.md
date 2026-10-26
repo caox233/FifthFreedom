@@ -52,3 +52,19 @@ failed on the prior implementation and pass after the correction, with prior
 bytes unchanged and no Restore call. The focused adapter15 and prerequisite6
 checks pass locally. This adjacent ownership defect is not identified as the
 cause of the first hosted `FIREWALL_RULE_CHANGED` failure.
+
+
+The first fast probe, run `40377415703` / job `121764159359`, at source
+`991ec1b6d7ac25d0593e7c97ba69830e8fd6ad85` reproduced the failure precisely at
+`APPLICATION_PACKAGE`, Inbound/PersistentStore, during both Prepare and Restore.
+The preceding exact path check passed. Artifact `12677320024` is 572 bytes with
+verified SHA256 `910d5c78f38794396dc35caea6f04a32f202eeda98b2681cbd152f8d390d89dd`.
+A bounded package-property class (missing/null/empty/Any/SID/other) is now added to
+identify the actual CIM representation before correcting its predicate; actual
+values are never published. Path equality and all admission predicates remain
+unchanged. This failed probe did not Arm, execute its image or start core/driver.
+
+Microsoft's [New-NetFirewallRule Package parameter](https://learn.microsoft.com/en-us/powershell/module/netsecurity/new-netfirewallrule?view=windowsserver2025-ps#-package)
+describes a Store application SID and default `None`. This supports checking the
+actual unconfigured representation rather than assuming a literal `Any`; it
+does not replace the bounded Windows observation required here.
