@@ -1,6 +1,21 @@
 # Pure, bounded diagnostics only. These functions do not decide rule admission.
 # MSFT_NetFirewallRule documents EnforcementStatus as uint16[]; Full is 1.
 # https://learn.microsoft.com/en-us/windows/win32/fwp/wmi/wfascimprov/msft-netfirewallrule
+function Get-FirewallEnforcementCimObservation($Rule) {
+    $diagnostic = [ordered]@{ query='NOT_CIM'; cim_type='NONE'; value=$null }
+    if ($Rule -isnot [Microsoft.Management.Infrastructure.CimInstance]) { return $diagnostic }
+    $diagnostic.query='PROPERTY_MISSING'
+    $property = $Rule.CimInstanceProperties['EnforcementStatus']
+    if ($null -eq $property) { return $diagnostic }
+    $diagnostic.query='FOUND'
+    $kind = [string]$property.CimType
+    $diagnostic.cim_type=if ($kind -cin @('UInt16Array','UInt32Array','StringArray','UInt16','UInt32','String')) { $kind } else { 'OTHER' }
+    # Bypass PowerShell's adapted/display property, retaining the typed CIM value.
+    # This remains a diagnostic and cannot authorize the rule.
+    $value = $property.Value
+    $diagnostic.value=Get-FirewallEnforcementObservation ([pscustomobject]@{EnforcementStatus=$value})
+    return $diagnostic
+}
 function Get-FirewallEnforcementObservation($Rule) {
     $observation = [ordered]@{ shape='MISSING'; count=0; item_type='NONE'; status='MISSING'; items=@() }
     if ($null -eq $Rule) { return $observation }

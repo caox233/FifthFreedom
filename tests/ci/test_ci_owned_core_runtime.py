@@ -21,7 +21,7 @@ def manifest():
 def firewall_diagnostic():
     return {'rule_check':'APPLICATION_PATH', 'rule_store':'PersistentStore',
         'rule_direction':'Inbound', 'application_path_case_insensitive_match':True, 'application_package_kind':'EMPTY',
-        'enforcement':None,'enforcement_trace':None,'enforcement_trace_query':'NOT_RUN'}
+        'enforcement':None,'enforcement_trace':None,'enforcement_trace_query':'NOT_RUN','enforcement_cim':None}
 
 
 def managed():
@@ -176,6 +176,10 @@ class RuntimeAdapterTests(unittest.TestCase):
         for items in ([], [{'item_type':'raw','status':'Full'}], [{'item_type':'UINT16','status':'private'}],
             [{'item_type':'UINT16','status':'Full','raw':'private'}], observed['items']*9):
             with self.assertRaises(ValueError):runtime.firewall_observation({**original,'enforcement':{**observed,'items':items}},'Prepare')
+        cim={'query':'FOUND','cim_type':'UInt16Array','value':observed}
+        runtime.firewall_observation({**original,'enforcement_cim':cim},'Prepare')
+        for key,value in (('query','private'),('cim_type','private'),('value',None),('extra','raw')):
+            with self.assertRaises(ValueError):runtime.firewall_observation({**original,'enforcement_cim':{**cim,key:value}},'Prepare')
 
     def test_armed_restore_without_matching_drain_must_fail(self):
         with tempfile.TemporaryDirectory() as folder:

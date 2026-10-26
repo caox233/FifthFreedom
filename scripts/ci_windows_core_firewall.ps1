@@ -66,6 +66,7 @@ function Read-Owned($Plan, [string]$Direction, [string]$Store, [bool]$Required) 
     $result.application_path_case_insensitive_match = $null
     $result.application_package_kind = $null
     $result.enforcement = $null; $result.enforcement_trace = $null
+    $result.enforcement_cim = $null
     $result.enforcement_trace_query = 'NOT_RUN'
     $name = 'ff-core-' + $Plan.probe_id + '-' + $Direction.ToLowerInvariant()
     # Enumerating first makes an absent owned name distinguishable from a failed query.
@@ -86,6 +87,7 @@ function Read-Owned($Plan, [string]$Direction, [string]$Store, [bool]$Required) 
     if ($Store -ceq 'ActiveStore') {
         Check-Owned ([string]$rule.PrimaryStatus -ceq 'OK') 'PRIMARY_STATUS' 'FIREWALL_POLICY_UNAVAILABLE'
         $result.enforcement = Get-FirewallEnforcementObservation $rule
+        $result.enforcement_cim = Get-FirewallEnforcementCimObservation $rule
         if ([string]$rule.EnforcementStatus -cne 'Full') {
             # Read-only side observation; never replace the admitted rule or
             # alter the strict predicate below. TracePolicyStore identifies
@@ -141,7 +143,7 @@ $result = [ordered]@{ schema=1; mode=$Mode; succeeded=$false; active_rules_verif
     armed=$false; owned_rules_removed=$false; original_policy_unchanged=$false; exact_drain_verified=$false;
     application_path_rules=$true; pid_isolation=$false; packet_behavior_verified=$false; policy_enabled_or_changed=$false;
     rule_check=$null; rule_store=$null; rule_direction=$null; application_path_case_insensitive_match=$null; application_package_kind=$null;
-    enforcement=$null; enforcement_trace=$null; enforcement_trace_query='NOT_RUN' }
+    enforcement=$null; enforcement_trace=$null; enforcement_trace_query='NOT_RUN'; enforcement_cim=$null }
 try {
     Require ($env:GITHUB_ACTIONS -ceq 'true' -and $env:RUNNER_ENVIRONMENT -ceq 'github-hosted' -and
         $env:ImageOS -cin @('win25','win25-vs2026')) 'FIREWALL_HOST_REQUIRED'

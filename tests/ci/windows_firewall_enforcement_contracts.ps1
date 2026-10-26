@@ -21,7 +21,7 @@ $cases = @(
     @{Name='case variant is unknown'; Rule=[pscustomobject]@{EnforcementStatus='full'}; Shape='SCALAR'; Count=1; Type='STRING'; Status='OTHER_STRING'}
 )
 $report = [ordered]@{schema=1; kind='pure-firewall-enforcement-diagnostics'; passed=$false;
-    required_checks=18; passed_checks=0; skipped_checks=0; failed_case=$null;
+    required_checks=22; passed_checks=0; skipped_checks=0; failed_case=$null;
     firewall_api_executed=$false; admission_exercised=$false; core_executed=$false; driver_loaded=$false}
 try {
     foreach ($case in $cases) {
@@ -42,6 +42,34 @@ try {
         throw 'FIREWALL_ENFORCEMENT_DIAGNOSTIC_FAILED'
     }
     $report.passed_checks++; Write-Output ('PASS ' + $report.failed_case)
+    # Constructed CIM objects only: no provider query, firewall API or admission.
+    foreach ($case in @(
+        @{Name='CIM absent property remains missing'; Values=$null; Query='PROPERTY_MISSING'; Status=$null},
+        @{Name='CIM single Full numeric remains typed'; Values=[uint16[]]@(1); Query='FOUND'; Status='Full'},
+        @{Name='CIM multiple Full values remain multiple'; Values=[uint16[]]@(1,1); Query='FOUND'; Status='MULTIPLE'},
+        @{Name='CIM mixed status remains distinct'; Values=[uint16[]]@(1,5); Query='FOUND'; Status='MULTIPLE'}
+    )) {
+        $report.failed_case=$case.Name
+        $instance=[Microsoft.Management.Infrastructure.CimInstance]::new('FirewallDiagnosticFixture')
+        try {
+            if ($null -ne $case.Values) {
+                $property=[Microsoft.Management.Infrastructure.CimProperty]::Create('EnforcementStatus',$case.Values,
+                    [Microsoft.Management.Infrastructure.CimType]::UInt16Array,[Microsoft.Management.Infrastructure.CimFlags]::None)
+                $instance.CimInstanceProperties.Add($property)
+            }
+            $actual=Get-FirewallEnforcementCimObservation $instance
+            if ($actual.query -cne $case.Query) { throw 'FIREWALL_CIM_DIAGNOSTIC_FAILED' }
+            if ($case.Query -ceq 'FOUND') {
+                if ($actual.cim_type -cne 'UInt16Array' -or $actual.value.status -cne $case.Status -or
+                    $actual.value.count -ne $case.Values.Length -or $actual.value.items[0].item_type -cne 'UINT16' -or
+                    $actual.value.items[0].status -cne 'Full') { throw 'FIREWALL_CIM_DIAGNOSTIC_FAILED' }
+                if ($case.Values[-1] -eq 5 -and $actual.value.items[-1].status -cne 'InactiveProfile') {
+                    throw 'FIREWALL_CIM_DIAGNOSTIC_FAILED'
+                }
+            } elseif ($null -ne $actual.value -or $actual.cim_type -cne 'NONE') { throw 'FIREWALL_CIM_DIAGNOSTIC_FAILED' }
+            $report.passed_checks++; Write-Output ('PASS ' + $report.failed_case)
+        } finally { $instance.Dispose() }
+    }
     $report.failed_case='unknown mixed member cannot expose raw provider string'
     $mixed=Get-FirewallEnforcementObservation ([pscustomobject]@{EnforcementStatus=@('Full','private fixture')})
     if ($mixed.items[0].item_type -cne 'STRING' -or $mixed.items[0].status -cne 'Full' -or
@@ -58,5 +86,5 @@ $bytes=[Text.Encoding]::UTF8.GetBytes(($report | ConvertTo-Json -Depth 4 -Compre
 $file=[IO.File]::Open($output,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
 try { $file.Write($bytes,0,$bytes.Length); $file.Flush($true) } finally { $file.Dispose() }
 if (!$report.passed) { exit 1 }
-Write-Output 'RESULT 18 passed; 0 skipped'
+Write-Output 'RESULT 22 passed; 0 skipped'
 exit 0

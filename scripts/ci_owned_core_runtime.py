@@ -132,7 +132,7 @@ def firewall_observation(value, mode):
     require(type(value) is dict and type(value.get('schema')) is int and value['schema'] == 1
         and value.get('mode') == mode, 'RUNTIME_FIREWALL_FAILED')
     fields = ('rule_check', 'rule_store', 'rule_direction', 'application_path_case_insensitive_match', 'application_package_kind',
-        'enforcement', 'enforcement_trace', 'enforcement_trace_query')
+        'enforcement', 'enforcement_trace', 'enforcement_trace_query', 'enforcement_cim')
     require(all(key in value for key in fields), 'RUNTIME_FIREWALL_FAILED')
     require(value['rule_check'] is None or (type(value['rule_check']) is str
         and value['rule_check'] in FIREWALL_CHECKS), 'RUNTIME_FIREWALL_FAILED')
@@ -149,8 +149,15 @@ def firewall_observation(value, mode):
         'LocalAuthorizedApplicationsDisallowed LocalFirewallRulesDisallowed LocalConsecRulesDisallowed '
         'NotTargetPlatform OptimizedOut LocalUserEmpty TransportMachinesEmpty TunnelMachinesEmpty '
         'TupleResolutionEmpty NotApplicable').split()
-    for key in ('enforcement', 'enforcement_trace'):
-        item = value[key]
+    observations = [value['enforcement'], value['enforcement_trace']]
+    cim = value['enforcement_cim']
+    if cim is not None:
+        require(type(cim) is dict and set(cim) == {'query', 'cim_type', 'value'}
+            and cim['query'] in ('NOT_CIM', 'PROPERTY_MISSING', 'FOUND')
+            and cim['cim_type'] in ('NONE', 'UInt16Array', 'UInt32Array', 'StringArray', 'UInt16', 'UInt32', 'String', 'OTHER')
+            and ((cim['query'] == 'FOUND') == (cim['value'] is not None)), 'RUNTIME_FIREWALL_FAILED')
+        observations.append(cim['value'])
+    for item in observations:
         if item is not None:
             require(type(item) is dict and set(item) == {'shape', 'count', 'item_type', 'status', 'items'}
                 and item['shape'] in ('MISSING', 'NULL', 'SCALAR', 'ARRAY')
