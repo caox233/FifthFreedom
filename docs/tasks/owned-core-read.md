@@ -3,8 +3,12 @@
 Status: implemented and independently reviewed; actual Windows managed 19, native 8,
 interop 4 and retained owner 17 passed with zero skips. The [official run receipt](../evidence/hosted-owned-read-4b49da7.json)
 binds run `39944703650`, source `4b49da7` and both sanitized artifacts.
-The follow-up normal suite now has 22 cases; its three additions await hosted
-execution and do not change the earlier 19-case evidence.
+The follow-up 22-case managed suite, native8 and interop4 all passed with zero
+skips at source `c42e0eb`, run `40371709757`, job `121743870408`; the official
+artifact digest and merge/source binding were independently verified in the
+[recovery receipt](../evidence/hosted-recovery-c42e0eb.json). This supplements,
+and does not rewrite, the earlier 19-case evidence. The later shared local-only
+factory extraction requires its own exact-SHA Windows check.
 This is a historical observation channel. It does not enable Public, construct a
 live overlay lease, authenticate a remote peer or run the full EasyTier core.
 

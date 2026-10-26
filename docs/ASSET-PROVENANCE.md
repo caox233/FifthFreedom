@@ -43,22 +43,32 @@ the cloud. A full Windows CI package is gated on approved matching inputs or a
 reviewed, reproducible default-data replacement. Do not upload personal saves,
 fake an asset, weaken package checks, or call this gate a successful build.
 
-The pinned capture helper binary is preserved, but its build project has not yet
-been migrated. Record this source-rebuild gap instead of calling every binary
-independently reproducible. The cloud independently verified the retained binary
+The pinned capture helper binary is preserved. The historical single-file source
+has now been received from reference commit `b7a4c871b39b527f3e9c12fa099ca6b7ea04c3cc`
+and independently read and hash-verified in the cloud. Its original bytes are
+retained under `docs/development-reference/capture-helper/`. This closes source
+receipt, not the distinct rebuild/equivalence gap. The cloud verified the retained binary
 SHA256 `d34d192bb97a379c4b063c24f7cea6789005b9e5a5584404b701dfd4e7533a11`.
-The local handoff reports C++ source SHA256
+The received 16,267-byte C++ source has SHA256
 `bed779d4302b68e4397a8e3fe9afddfa886c9b96c8667a4a9279def85e11a43b`,
-but that source has not arrived and its digest has not been independently checked
-in the cloud. Local migration builds used the retained inputs and are distinct
+and exactly preserves the historical mixed CRLF/LF byte sequence. Local migration builds used the retained inputs and are distinct
 from a clean public checkout build.
 
 The repeatable read-only `scripts/capture_helper_receipt.py` check verifies the
 retained binary's hash, size, x86 PE header and independent manifest pin, then
-checks an explicitly supplied source against the reported digest. Its current
-result is `blocked_source_not_supplied` (exit 2). It does not execute a capture,
+checks an explicitly supplied source against the reported digest. With the received
+reference path its actual result is `reported_source_identity_verified` (exit 0);
+the earlier `blocked_source_not_supplied` result remains historical. It does not execute a capture,
 copy inputs, change the pin, authorize publication or establish source/binary
 equivalence; those boundaries remain visible even after source identity matches.
+
+The independent Windows reference build subsequently passed 19 bounded no-attach
+checks at source `6ecfdb4`, run `40373151513`; see the
+[exact receipt](evidence/hosted-capture-reference-6ecfdb.json). The downloaded
+reference EXE is x86 PE32 and differs from the retained binary. Actual compiler
+version also differs from the historical recipe. These results do not establish
+reproducibility, debugger lifecycle parity or privacy of real capture output; the
+production helper was not replaced.
 
 Legacy live deployment host defaults in the SCBL3 donor are replaced by inert
 `.invalid` examples. Explicit deployment configuration belongs to cloud

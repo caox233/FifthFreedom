@@ -91,7 +91,7 @@
   ],
   "full_public_clean_checkout_package_build": "blocked until approved matching default saves or reviewed generated replacement are available; never fabricate a successful package",
   "binary_rebuild_gap": [
-    "SCBL.LAN.Capture.exe source project not yet migrated; existing pinned binary retained"
+    "Capture historical source received/hash-verified and independent Windows x86 reference build plus19 bounded checks passed; rebuilt bytes differ, behavioral equivalence and reproducibility unverified; original pinned binary retained"
   ],
   "third_party_notice_gap": [
     "FusionFix provenance/license details to be supplemented"

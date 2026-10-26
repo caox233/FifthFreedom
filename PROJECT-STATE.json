@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Reviewed local implementation 8a694fac1def93966ffc10ef2569783f6a92aa9b passed a fresh detached Linux source check: 603 passed, 2 explicit platform skips, unchanged tracked files. Its canonical patch applies/reverses exactly 1312\u21921714\u21921312. The query-exit race fix passed83 checks, actual Instance/Weak PeerMap membership passed12+59 contracts, and inert STUN configuration passed13+21+1; independent reviews retained the real negative controls. The newer Windows core/NIC lane remains unexecuted here. The official432 combined stack failed: case A passed with OPEN and case B reported QUERY_IMAGE_CHANGED before combined readiness was confirmed; cleanup was verified. GitHub API401 and normal Git credential failure block newer pushes and hosted verification. Last verified remote source is fe6e3cd; knowledge b809b4a binds6954, and environment draft19 still binds its earlier verified source6954/knowledgeb809 pins. No complete package, ordinary Public admission, full migration or persistent Goal is claimed.",
-  "NEXT_EXECUTABLE_ACTION": "Restore this managed session's GitHub identity through supported platform controls; no credential-refresh interface is exposed and no new development permission is needed. Preserve local branches, fetch normally, compare intervening remote changes, push reviewed source and verify its exact remote SHA. Read actual results of39947362637,39947934755 and39947934694; do not infer outcomes from the authentication interruption. Run the new71 Linux builder, Windows dependency13/read22 and reviewed inert13-patch actual-core/NIC candidate; verify exact official receipts and cleanup. Re-run the query-race/observer-policy/kernel-diagnostic composition. Then publish the reviewed source-bound DevDocs branch, refresh both draft PRs and update only published source pins in the environment draft. Continue all six milestones, whole-game UDP enforcement, held asset/retail/Capture/ASI closure and unresolved live checks without reopening accepted gameplay. See docs/tasks/cloud-authentication-recovery.md.",
+  "LAST_CONFIRMED_RESULT": "Original executor/GitHub recovered; c42 source and10e3 knowledge plus both exact recovery bundles preserved and pushed. Further reviewed source6ecfdb also pushed/remoteverified. c42 hosted source Linux603/2skip and Windows500/105skip passed; Windows dependency13/read22+native8+interop4 passed. P2 local-only return pipe fix passed actual Windows28+final9 zero-skips, real legacy/factory/production NT handle controls digest-verified. Capture reference actual Windows x86 build19/19 passed; downloaded PE checksum verified, original source/binary unchanged, rebuiltbytes differ and parity not claimed. Quick-match test-only0fe3 two-client existing-room Official/MOD protocol cases2/2 independently passed; user symptom remains needs-triage. Complete package remains blocked by8 privacy-held SAV/META, C7113 reviewed replay inputs absent; no full package/Public/live completion.",
+  "NEXT_EXECUTABLE_ACTION": "Push reviewed quick-match regression and Capture failed-output corrections with source-bound DevDocs. Verify their exact-SHA hosted results, and read ongoing c42 candidate40371709938, inert40371709889 and Linux71 build40371709759; fix actual code failures without weakening gates. Continue all six milestones and quick-match empty-lobby/native-client triage alongside remaining integration. Complete downloadable unified candidate requires privacy-reviewed genuine default templates or reviewed reproducible replacement and C71 fixture/provenance closure; details in docs/DEVELOPMENT-CANDIDATE-TESTING.md. Do not repeat accepted live results or pretend component artifacts are complete.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -33,17 +33,17 @@
     {
       "id": 4,
       "name": "Reviewed public source and development knowledge base",
-      "status": "draft_prs_exist_reviewed_new_local_source_and_knowledge_pending_restored_github_access"
+      "status": "reviewed_source_c42_and_knowledge10_pushed_verified_further_reviewed_updates_in_progress"
     },
     {
       "id": 5,
       "name": "Cloud handoff and ongoing implementation",
-      "status": "reviewed_local_commits_retained_hosted_followup_blocked_by_credentials_no_goal_scheduler"
+      "status": "original_executor_and_github_recovered_active_cloud_development_and_hosted_checks_no_goal_scheduler"
     },
     {
       "id": 6,
       "name": "Standalone development root and safe cleanup",
-      "status": "originals_preserved_official_wintun_origin_and_license_obtained_capture_source_absent_saves_privacy_npcap_and_final_distribution_conditions_open"
+      "status": "originals_and_exact_recovery_bundles_preserved_capture_source_received_rebuild_equivalence_saves_privacy_and_final_distribution_conditions_open"
     }
   ],
   "continuation_policy": "Code changes primarily in cloud per user. Local work finishes migration, privacy review, current builds and preservation; never auto-start game or private capture.",
@@ -71,6 +71,11 @@
     {
       "id": "chat-peer-relay",
       "status": "offline_fix_integrated_391_native_checks_pass_three_client_acceptance_pending"
+    },
+    {
+      "id": "quick-match-same-session",
+      "status": "needs-triage_user_reports_original_1_1_clients_cannot_match_same_game_root_cause_unconfirmed",
+      "task": "docs/tasks/quick-match-same-session.md"
     }
   ],
   "user_asset_authorization": {
@@ -83,16 +88,16 @@
   "cloud": {
     "thread_title": "FifthFreedom\u4e91\u7aef",
     "repository": "caox233/FifthFreedom",
-    "verified": "Running connected Linux x86_64; earlier Git/API operations succeeded, but latest official API is401 and normal Git remote/push fails for unavailable credentials",
+    "verified": "Same original managed environment; actual pwd/Git commands exit0, then official connectivity connected revision4; both original development branches and recovery bundles retained",
     "environment_display_name": "FifthFreedom in official configuration draft; live status exposes environment ID but not a separate display name",
-    "snapshot_publish_status": "Official draft19 saved/read back with source6954eea and DevDocsb809b4a after complete inventory:30688 directories, two projects,26 classified dependency/evidence Git roots, zero errors. Normalized repository membership/revisions, depth and all other setup/network/secret/requirement fields were preserved. requires_publish remains true; no publish or Goal/scheduler tool is exposed. Saving is not publication or verified fresh restoration.",
+    "snapshot_publish_status": "User reports publication; official source configuration version changed and revision4 is observed. Original task execution recovered. No reset, replacement workspace or draft19 overwrite performed; fresh-task restore not tested.",
     "handoff_commit": "fc8ef510b51be83c31f9f8233997f758b0477acc",
     "development_branch": "codex/cloud-integration",
     "knowledge_repository": "caox233/FifthFreedom-DevDocs",
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
-    "api_access": "Current official API HTTP401 and normal Git exit128 USERNAME_UNAVAILABLE. Earlier successes are historical. Existing network configuration was preserved; no bypass, credential output or retry loop.",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/39943233020",
+    "api_access": "Normal gh api, git fetch, non-force push and remote SHA verification succeeded using inherited platform access; prior401 preserved as history",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40371709938",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -239,34 +244,34 @@
     ],
     "candidate_windows_source": "At1974 run39922764910 Windows job120311712409 succeeded. Official component ZIP digest verified; native8, interop3 and source8 each fully passed with zero ignored/skipped; four component hashes and checked PE branding matched. Quick39922765064 separately passed27return+9final and restored IIS.",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "05c finite9-phase matrix succeeded. Later4b49 run39944703157 failed after8 phases at TCP restore/OVERLAY_ADDRESS_QUERY_UNAVAILABLE; official artifact and complete cleanup verified, role/errno unknown. Reviewed fixed diagnostic fields await an actual rerun; no stability guarantee or weakened refusal.",
+    "candidate_linux_matrix": "Digest-verified fe6 run39947934755 completed9 QUIC/WSS/developmentTCP correct/wrong/restore phases and6namespacecleanup. Earlier4b49 eightphasefailure retained; no universal stability or production nativelease claim. Newc42run40371709813 pending at lastobservation.",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "Historical b67 eight jobs succeeded before OPEN;432 native5 passed with OPEN, but combined stack failed caseB QUERY_IMAGE_CHANGED after successful caseA. Both strict held-input gates failed and fullpackage skipped. Newer Windows12/core and observer candidate results were not retrieved after401.",
-    "knowledge_snapshot_commit": "b809b4a6c8efac0c63627630f0ac3fb8413939a9",
-    "knowledge_snapshot_source": "6954eea73f6cd7ee7766ba34efc823ac85d2a319",
-    "knowledge_snapshot_files": 194,
-    "last_verified_remote_source_commit": "fe6e3cd5992888273bada9c7810a264cf8d54630",
+    "candidate_component_result": "Digest-verified ebd008Windows12patchfullcorebuild succeeded without execution. fe6candidate39947934694 failed firstlease-revoke QUERY_IMAGE_CHANGED, no secondcasecomplete; cleanupverified. Newc42candidate40371709938 actuallyrunningwithqueryexitfix; strictSAV/C71 gatesremain. CaptureandP2source6ecpushedandexactremoteSHAverified, Windowsevidencepending.",
+    "knowledge_snapshot_commit": "10e3e4ac4e4d90a4ea9a7755d30ad7eef6fd04bc",
+    "knowledge_snapshot_source": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+    "knowledge_snapshot_files": 222,
+    "last_verified_remote_source_commit": "6ecfdb474238614a9df5e22abbe91581b99f40e6",
     "latest_reviewed_local_implementation_commit": "8a694fac1def93966ffc10ef2569783f6a92aa9b",
-    "latest_reviewed_local_implementation_pushed": false,
+    "latest_reviewed_local_implementation_pushed": true,
     "authentication_recovery": {
-      "official_api_http_status": 401,
-      "normal_git_exit_code": 128,
-      "normal_git_failure_class": "USERNAME_UNAVAILABLE",
-      "formal_credential_refresh_interface_available": false,
-      "github_connector_available": false,
-      "platform_identity_repair_required": true,
+      "status": "recovered_actual_operations_verified",
+      "normal_git_exit_code": 0,
+      "normal_api_exit_code": 0,
+      "platform_identity_repair_required": false,
       "new_development_permission_required": false,
       "credentials_printed": false,
       "network_policy_changed_or_bypassed": false,
-      "record": "docs/tasks/cloud-authentication-recovery.md"
+      "record": "docs/tasks/cloud-authentication-recovery.md",
+      "historical_failure": {
+        "official_api_http_status": 401,
+        "normal_git_exit_code": 128,
+        "normal_git_failure_class": "USERNAME_UNAVAILABLE"
+      }
     },
-    "hosted_results_unobserved_after_authentication_failure": [
-      39947362637,
-      39947934755,
-      39947934694
-    ],
+    "hosted_results_unobserved_after_authentication_failure": [],
     "duplicate_cancellations_confirmed": false,
-    "knowledge_snapshot_delivery": "b809b4a remains the last verified remote; a newer exact local snapshot, when committed, is identified by its own SNAPSHOT.json and is not yet remotely verified"
+    "knowledge_snapshot_delivery": "Exact10e3e4a pushed and remote SHA verified; earlier local-only creation metadata retained historically pending new source-bound snapshot",
+    "recovered_hosted_receipt": "docs/evidence/hosted-recovery-c42e0eb.json"
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -274,7 +279,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-23",
+  "updated_utc": "2026-10-26",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -1186,6 +1191,71 @@
       "private_stage_removed": true,
       "official_artifact_sha256": "c445d4e3d8a1e05b55d970c9abd0ce0e5bea77983fc4ede6aca7a72a21242a95",
       "record": "docs/evidence/hosted-owned-stack-4322658.json"
+    },
+    "recovered_c42_source": {
+      "source_commit": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+      "run_id": 40371709863,
+      "linux_passed": 603,
+      "linux_skipped": 2,
+      "windows_passed": 500,
+      "windows_skipped": 105,
+      "failures": 0,
+      "errors": 0,
+      "complete_package_ready": false
+    },
+    "recovered_c42_windows_owned": {
+      "run_id": 40371709757,
+      "dependencies_passed": 13,
+      "read_managed_passed": 22,
+      "read_native_passed": 8,
+      "read_interop_passed": 4,
+      "skipped": 0,
+      "easytier_executed": false,
+      "driver_exercised": false
+    },
+    "local_only_pipe_p2": {
+      "source_commit": "6ecfdb474238614a9df5e22abbe91581b99f40e6",
+      "run_id": 40373151715,
+      "job_id": 121748959278,
+      "public_return_passed": 28,
+      "final_launch_passed": 9,
+      "skipped": 0,
+      "actual_production_handle_local_only": true,
+      "smb_attack_demonstrated": false,
+      "receipt": "docs/evidence/hosted-local-pipe-6ecfdb.json"
+    },
+    "capture_reference": {
+      "source_commit": "6ecfdb474238614a9df5e22abbe91581b99f40e6",
+      "run_id": 40373151513,
+      "passed": 19,
+      "skipped": 0,
+      "source_and_original_binary_unchanged": true,
+      "reference_binary_sha256": "cfef61dc98ed01925a45da8aa56bdce6b39b94eec4c2e4602ec0fa7096de0501",
+      "reproducible_or_equivalent": false,
+      "production_replaced": false,
+      "receipt": "docs/evidence/hosted-capture-reference-6ecfdb.json"
+    },
+    "quick_match_protocol": {
+      "implementation_commit": "0fe3b743746315375382559613eaf08ac0c04363",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "independent_rerun_passed": 2,
+      "existing_room_protocol_only": true,
+      "reported_issue_reproduced": false,
+      "live_verified": false
+    },
+    "clean_source_recovery_followup": {
+      "source_commit": "134b49b7c702bc917e5e6b564d3ecc8613944947",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
+      "exit_code": 0,
+      "executed": 615,
+      "passed": 613,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "38f239fc01ca640abfc6fc1c22dec77dc280ecf3bc54240b2c9c9884d4092443",
+      "retained_log_sha256": "8c9285a0c99502c92d2e6e98cd230aff35ebd916be5fc029cd1bd7c9b0c30e2a"
     }
   }
 }

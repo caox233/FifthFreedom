@@ -1,11 +1,36 @@
 # Cloud implementation evidence
 
-Current delivery status: later reviewed changes are committed only in the cloud
-workspace because GitHub API access now returns 401 and normal Git credentials
-are unavailable. The last verified remote source is `fe6e3cd`; environment
-draft19 still pins source `6954eea` and knowledge `b809b4a`. Earlier access and
-hosted successes below are historical. See the final checkpoint and
-[recovery task](tasks/cloud-authentication-recovery.md) for the exact boundaries.
+Current delivery status (2026-10-27 Asia/Hong_Kong): the original task's executor
+and normal GitHub access recovered. Source `c42e0eb` and source-bound DevDocs
+`10e3e4a` were preserved, pushed and verified at their existing remote branches.
+Both original recovery bundles match their checkpoint hashes. Official connection
+is now `connected`, revision4; no reset or replacement workspace was used.
+Candidate `40371709938` is a real new run; source checks `40371709863` passed.
+Complete package admission still lacks eight privacy-held saves, and C71's separate
+thirteen replay checks still lack reviewed fixture/provenance. See the
+[recovery task](tasks/cloud-authentication-recovery.md) and
+[candidate delivery requirements](DEVELOPMENT-CANDIDATE-TESTING.md).
+
+Further reviewed source `6ecfdb4` is also pushed and remote-verified. Its
+[local-only pipe check](evidence/hosted-local-pipe-6ecfdb.json) passed actual
+Windows28 return checks plus9 final-launch checks, zero skips, including real
+legacy/factory/production kernel mode observations. The P2's missing local-only
+creation boundary is fixed; no SMB exploit demonstration or Public readiness is
+claimed. The [Capture reference build](evidence/hosted-capture-reference-6ecfdb.json)
+passed actual x86 compile and19 no-attach/pure checks; its downloaded EXE checksum
+is verified but differs from the original. Production bytes remain unchanged.
+
+Test-only `0fe3b74` adds actual serialized two-client existing-room protocol
+regressions,2/2 passed and independently rerun. The reported original1.1
+[quick-match symptom](tasks/quick-match-same-session.md) remains needs-triage;
+empty-lobby/native-client selection and real multiplayer remain unverified.
+The Capture failed-output publication correction `134b49b` has a real old-code
+failing negative control and9 passing focused tests; `78de05f` also excludes EXE
+upload when its build step did not succeed. A fresh clean source check at exact
+`134b49b7c702bc917e5e6b564d3ecc8613944947` passed613 with2 platform skips
+(615 total), exit0, unchanged tracked files and `complete_package_ready:false`.
+The source report SHA256 is
+`38f239fc01ca640abfc6fc1c22dec77dc280ecf3bc54240b2c9c9884d4092443`.
 
 The cloud checkout fetched and verified handoff commit
 `fc8ef510b51be83c31f9f8233997f758b0477acc` before creating

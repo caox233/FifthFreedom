@@ -1,8 +1,9 @@
 # Historical Capture reference build
 
-Status: **ready-for-agent** for the first GitHub-hosted Windows execution and
-receipt review. Source receipt is closed; binary parity and live debugger
-lifecycle acceptance remain open.
+Status: **ready-for-agent** for the remaining equivalence/lifecycle work. The first
+GitHub-hosted Windows x86 build and 19 bounded checks passed with independently
+verified receipts below. Source receipt is closed; binary parity and live debugger
+lifecycle acceptance remain open. No automatic capture is authorized.
 
 The received reference from commit
 `b7a4c871b39b527f3e9c12fa099ca6b7ea04c3cc` is 16,267 bytes with SHA256
@@ -52,3 +53,19 @@ Source availability does not close the independent held SAV/META privacy gate,
 C71 retail fixture closure, full package gate, source/binary parity or remaining
 rights/provenance review. No diagnostic capture, production replacement, game
 launch, formal Release or deployment is authorized by this lane.
+
+
+## Actual first hosted build
+
+Run [40373151513](https://github.com/caox233/FifthFreedom/actions/runs/40373151513),
+job `121748958885`, at source `6ecfdb474238614a9df5e22abbe91581b99f40e6`
+passed both real x86 compilations and all 19 checks with zero skips. The official
+ZIP digest, internal sums and actual downloaded PE were independently verified
+in the [receipt](../evidence/hosted-capture-reference-6ecfdb.json).
+`CaptureReference.exe` has SHA256
+`cfef61dc98ed01925a45da8aa56bdce6b39b94eec4c2e4602ec0fa7096de0501`.
+The compiler version `194435229` differs from historical `194435207`; the rebuilt
+809,984-byte EXE differs from the original 810,496-byte asset. The original source
+and asset remain unchanged. No attach, capture, production replacement, binary
+reproducibility or runtime equivalence is claimed. The later failed-output
+publication correction needs its own new-SHA hosted verification.

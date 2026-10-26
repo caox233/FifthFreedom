@@ -8,6 +8,16 @@
 
 ## 当前优先缺陷
 
+### `quick-match-same-session` — 快速匹配无法进入同一局
+
+- 标签：`needs-triage`；2026-10-27 新收到的原 1.1 多人现象，根因未确认。
+- 用户明确指“快速匹配”，不是快速适配或 Fast/Compatible 传输选项。
+- 下一步：沿实际队列、分组、通知和入房协议检查多个独立客户端同服同模式的流程，
+  对照保留 LAN 与 donor；不预设网络或版本原因，不以单客户端成功替代多人通过。
+- 详见 [调查任务](quick-match-same-session.md) 和
+  [下一统一候选包集中测试](../DEVELOPMENT-CANDIDATE-TESTING.md)。暂不要求重复采集，
+  不自动启动游戏、不公开私人日志；尚未真实多人复现或验证修复。
+
 ### `vss-scope-lifetime` — 间歇丢枪上附镜/ADS 镜模
 
 - 标签：`ready-for-agent`、`needs-info`。

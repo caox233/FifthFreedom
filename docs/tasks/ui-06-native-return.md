@@ -1,8 +1,10 @@
 # UI-06 native owned authentication return
 
-Status: ready-for-agent. Production-linked implementation and portable tests are
-complete; actual hosted Windows pipe execution, full native build and managed /
-Rust interoperation remain separate required evidence. No game was started.
+Status: ready-for-agent for remaining Public integration. Production-linked
+implementation, portable checks and hosted Windows pipe/native/interoperation
+results are recorded at their precise revisions below. The local-only return
+pipe P2 is now verified on actual production handles at `6ecfdb4`; this does not
+establish complete Public admission. No game was started.
 
 The original configuration pipe, TOML bytes, length header and receipt ACK are
 unchanged. An optional `FF_PUBLIC_RETURN_V1` contains only a pipe name, launch ID,
@@ -245,3 +247,25 @@ The next hosted run must actually pass the exact IPC 8, source-transport 8 and
 interop 3 suites. Those targeted counts never mean that all hooks or native
 replay tests passed; this external-input dependency remains unresolved and its
 13 native replay tests remain held.
+
+
+### Actual Windows production-handle result
+
+Run [40373151715](https://github.com/caox233/FifthFreedom/actions/runs/40373151715),
+job `121748959278`, at source `6ecfdb474238614a9df5e22abbe91581b99f40e6`
+passed PublicNativeReturn **28/28** and FinalLaunchPreparation **9/9**, zero skips.
+The [independently verified official receipt](../evidence/hosted-local-pipe-6ecfdb.json)
+records the actual NT observations:
+
+- `LEGACY:SUCCESS:BYTE:SERVER`.
+- `FACTORY:SUCCESS:LOCAL_BYTE:SERVER`.
+- `PRODUCTION:SUCCESS:LOCAL_BYTE:CLIENT`.
+
+The actual client handle connected to production PublicReturnPipe observes the
+same kernel pipe creation mode, including FILE_PIPE_REJECT_REMOTE_CLIENTS. The
+legacy current-user-only managed constructor is the real negative control.
+Current-user ACL, noninheritance, first-instance collision and same-user read/write
+also passed. The previously uncertain NT flag visibility is now observed on this
+actual runner. IIS state was restored. This closes the reported missing local-only
+creation boundary; it does not claim a demonstrated SMB exploit, full Public
+admission, game execution or complete-package acceptance.

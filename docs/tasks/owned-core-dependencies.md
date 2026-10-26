@@ -1,6 +1,9 @@
 # Owned core dependency file lifetime
 
-Status: implemented; independent review and actual Windows checks pending.
+Status: implemented and independently reviewed; actual hosted Windows13/13,
+zero skips passed at `c42e0eb`, run `40371709757`, job `121743870443`.
+The official artifact digest and exact merge/source binding were independently
+verified in the [recovery receipt](../evidence/hosted-recovery-c42e0eb.json).
 
 The actual process creation path can now accept an optional immutable
 `OwnedCoreDependencyInputs`. Its sole factory identifies the reviewed official
@@ -25,8 +28,8 @@ The absent optional argument preserves ordinary input/process behavior; no Publi
 provider or application launch callsite opts in automatically.
 
 `tests/OwnedCoreDependencies` links the production classes and the preserved
-official origin JSON. Five portable checks pass locally; eight Windows checks
-await hosted execution. The latter use actual official DLL bytes as file data
+official origin JSON. Five portable checks passed locally; the eight Windows
+checks subsequently passed in the hosted run above. The latter use actual official DLL bytes as file data
 only, never loaded as a module, and verify actual suspended/running synthetic-child file locks, mutation,
 missing/reparse inputs, partial pin failure, descendant retention, cancelled
 resume cleanup and the explicit no-dependency branch. The suite copies the
