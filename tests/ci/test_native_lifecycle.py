@@ -5,7 +5,7 @@ children on ephemeral loopback ports, never native services or namespaces.
 """
 import asyncio
 import copy
-from contextlib import redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 import hashlib
 import io
 import json
@@ -98,6 +98,65 @@ class NativeLifecycleInputTests(unittest.TestCase):
 
     def validate(self, receipt=None):
         return probe.validate_input(self.package, receipt or self.receipt, COMMIT, '123', '1')
+
+    def assert_admission_failure(self, expected):
+        report = self.root / 'failed-admission.json'
+        errors, output = io.StringIO(), io.StringIO()
+        with mock.patch.object(probe.isolation, 'preflight', return_value='unused-ip'), \
+                mock.patch.object(probe, 'verify_checkout'), \
+                mock.patch.object(probe.tempfile, 'TemporaryDirectory') as temporary, \
+                mock.patch.object(probe.isolation, 'OwnedNamespaces') as namespaces, \
+                mock.patch.object(probe, 'copy_private_package') as copied, \
+                mock.patch.object(probe.subprocess, 'run') as executed, \
+                redirect_stderr(errors), redirect_stdout(output):
+            code = probe.dispatch(['--package', str(self.package), '--candidate-receipt',
+                str(self.package / 'CANDIDATE-RECEIPT.json'), '--runner-temp', str(self.root),
+                '--report', str(report), '--commit', COMMIT, '--run-id', '123', '--run-attempt', '1'])
+        self.assertEqual(code, 1)
+        self.assertEqual(errors.getvalue(), expected + '\n')
+        self.assertEqual(output.getvalue(), '')
+        self.assertFalse(report.exists())
+        for operation in (temporary, namespaces, copied, executed):
+            operation.assert_not_called()
+
+    def test_missing_hidden_source_is_fixed_failure_before_any_stage_or_process(self):
+        name = 'licenses/FusionFix/corresponding-source/MemoryModule/upstream/.gitattributes'
+        path = self.package / name
+        path.parent.mkdir(parents=True)
+        path.write_bytes(b'SYNTHETIC INERT HIDDEN SOURCE\n')
+        self.receipt['files'][name] = probe.candidate.sha_file(path)
+        (self.package / 'CANDIDATE-RECEIPT.json').write_text(json.dumps(self.receipt))
+        path.unlink()
+        with self.assertRaisesRegex(probe.ProbeError, '^CANDIDATE_INPUT_MISSING$'):
+            self.validate()
+        self.assert_admission_failure('CANDIDATE_INPUT_MISSING')
+
+    def test_hash_and_inventory_rejections_still_precede_private_execution(self):
+        path = self.package / 'client/runtime/scbl_gameplay.dll'
+        original = path.read_bytes()
+        path.write_bytes(b'changed synthetic data')
+        self.assert_admission_failure('CANDIDATE_BYTES_CHANGED')
+        path.write_bytes(original)
+        (self.package / 'unexpected-private-data').write_bytes(b'not admitted')
+        self.assert_admission_failure('CANDIDATE_EXTRA_FILES')
+
+    def test_actual_symlink_is_rejected_before_any_stage_or_process(self):
+        path = self.package / 'client/runtime/scbl_gameplay.dll'
+        target = self.root / 'outside-input'
+        target.write_bytes(path.read_bytes())
+        path.unlink()
+        try:
+            path.symlink_to(target)
+        except (OSError, NotImplementedError):
+            self.skipTest('symlink creation unavailable')
+        self.assert_admission_failure('INPUT_LINK_REJECTED')
+        self.assertTrue(path.is_symlink())
+        self.assertTrue(target.is_file())
+
+    def test_other_input_io_error_never_exposes_raw_message_or_path(self):
+        with mock.patch.object(probe.candidate, 'sha_file',
+                               side_effect=PermissionError('PRIVATE_INPUT_SENTINEL/path')):
+            self.assert_admission_failure('CANDIDATE_INPUT_UNREADABLE')
 
     def test_same_run_metadata_and_copy_preserve_every_original_byte(self):
         rows = self.validate()

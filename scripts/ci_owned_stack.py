@@ -10,6 +10,7 @@ from dataclasses import asdict
 import json
 import os
 from pathlib import Path
+import re
 import select
 import secrets
 import shutil
@@ -36,6 +37,18 @@ SCOPE = dict(transport="tcp", purpose="owned-isolated-development", production_a
 
 def require(value, code):
     if not value: probe.fail(code)
+
+
+def diagnostic(error):
+    # Native admission uses its own fixed-code classes. Do not stringify
+    # arbitrary filesystem errors, subclasses or input-derived values.
+    if type(error) in (native.ProbeError, native.candidate.CandidateError):
+        if len(error.args) == 1 and type(error.args[0]) is str:
+            code = error.args[0]
+            if re.fullmatch(r"[A-Z][A-Z0-9_]{1,95}", code):
+                return code
+        return "DEVELOPMENT_PROBE_FAILED"
+    return probe.diagnostic(error)
 
 
 def same_run(build, commit, run_id, attempt):
@@ -161,7 +174,7 @@ def run_case(case, candidate, images, stage, identity, ip, nft):
         row["status"] = "owned_stack_case_verified"
     except (probe.ProbeError, probe.IsolationError, native.ProbeError, LifecycleError,
             OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
-        row["error"] = probe.diagnostic(error)
+        row["error"] = diagnostic(error)
         if isinstance(error, probe.WorkerFailure): row["worker_failure"] = error.record
         if isinstance(error, probe.ContainmentMismatch): row["fixed_diagnostics"] = error.diagnostics
     except KeyboardInterrupt:
@@ -218,7 +231,7 @@ def run(args):
         result["status"] = "owned_stack_development_verified"
     except (probe.ProbeError, probe.IsolationError, native.ProbeError, LifecycleError,
             OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
-        result["error"] = probe.diagnostic(error)
+        result["error"] = diagnostic(error)
     except KeyboardInterrupt:
         result["error"] = "OWNED_STACK_CANCELLED"
     finally:

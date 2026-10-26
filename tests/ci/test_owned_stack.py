@@ -12,6 +12,7 @@ import socket
 import sys
 import tempfile
 import time
+from types import SimpleNamespace
 import unittest
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -20,6 +21,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import ci_owned_stack as stack
 import owned_stack_worker as worker
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
+from test_native_lifecycle import COMMIT, fixture
 
 
 def candidate():
@@ -31,6 +33,84 @@ def pair():
     keys = [X25519PrivateKey.generate(), X25519PrivateKey.generate()]
     profiles = stack.probe.profile_pair(stack.probe.ProbeTopology("a" * 16, 1), "tcp", candidate(), keys)
     return keys, profiles
+
+
+class NativeInputDiagnosticsTests(unittest.TestCase):
+    """Actual input admission only; no privileged operation or binary runs."""
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(prefix='ff-stack-input-tests-')
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.package, self.receipt = fixture(self.root)
+
+    def assert_admission_failure(self, expected):
+        args = SimpleNamespace(package=self.package,
+            candidate_receipt=self.package / 'CANDIDATE-RECEIPT.json',
+            commit=COMMIT, run_id='123', run_attempt='1')
+        with patch.object(stack.probe, 'preconditions', return_value=[]), \
+                patch.object(stack.probe, 'checked_checkout', return_value=COMMIT), \
+                patch.object(stack.probe, 'load_build') as load, \
+                patch.object(stack.tempfile, 'mkdtemp') as temporary, \
+                patch.object(stack.native, 'copy_private_package') as copied, \
+                patch.object(stack.probe, 'bounded_command') as executed, \
+                patch.object(stack, 'run_case') as run_case:
+            result = stack.run(args)
+        self.assertEqual(result['status'], 'failed')
+        self.assertEqual(result['error'], expected)
+        self.assertEqual(result['cases'], [])
+        for field in ('copied_package_native_verified', 'source_package_unchanged', 'private_stage_removed'):
+            self.assertIs(result[field], False)
+        self.assertIs(result['scope']['game_executed'], False)
+        self.assertNotIn(str(self.root), json.dumps(result))
+        for operation in (load, temporary, copied, executed, run_case):
+            operation.assert_not_called()
+
+    def test_missing_hash_and_extra_real_inputs_retain_fixed_native_reason(self):
+        path = self.package / 'client/runtime/scbl_gameplay.dll'
+        original = path.read_bytes()
+        path.unlink()
+        self.assert_admission_failure('CANDIDATE_INPUT_MISSING')
+        path.write_bytes(b'changed synthetic data')
+        self.assert_admission_failure('CANDIDATE_BYTES_CHANGED')
+        path.write_bytes(original)
+        (self.package / 'unexpected-private-data').write_bytes(b'not admitted')
+        self.assert_admission_failure('CANDIDATE_EXTRA_FILES')
+
+    def test_actual_symlink_retains_candidate_code_without_stage_or_process(self):
+        path = self.package / 'client/runtime/scbl_gameplay.dll'
+        target = self.root / 'outside-input'
+        target.write_bytes(path.read_bytes())
+        path.unlink()
+        try:
+            path.symlink_to(target)
+        except (OSError, NotImplementedError):
+            self.skipTest('symlink creation unavailable')
+        self.assert_admission_failure('INPUT_LINK_REJECTED')
+        self.assertTrue(path.is_symlink())
+        self.assertTrue(target.is_file())
+
+    def test_malformed_receipt_retains_fixed_candidate_code(self):
+        (self.package / 'CANDIDATE-RECEIPT.json').write_bytes(b'{PRIVATE_INPUT_SENTINEL')
+        self.assert_admission_failure('INPUT_JSON_INVALID')
+
+    def test_only_exact_fixed_native_errors_are_projected_without_stringifying_unknowns(self):
+        class PrivateValue:
+            def __str__(self): raise AssertionError('private value stringified')
+        class ForeignError(RuntimeError):
+            def __str__(self): raise AssertionError('foreign error stringified')
+        class NativeSubclass(stack.native.ProbeError):
+            def __str__(self): raise AssertionError('native subclass stringified')
+        class CandidateSubclass(stack.native.candidate.CandidateError):
+            def __str__(self): raise AssertionError('candidate subclass stringified')
+        for error in (FileNotFoundError('PRIVATE_INPUT_SENTINEL/path'), ForeignError(),
+                      NativeSubclass('CANDIDATE_INPUT_MISSING'), CandidateSubclass('INPUT_LINK_REJECTED'),
+                      stack.native.ProbeError(PrivateValue()), stack.native.candidate.CandidateError(),
+                      stack.native.ProbeError('CANDIDATE_INPUT_MISSING', 'PRIVATE_INPUT_SENTINEL'),
+                      stack.native.candidate.CandidateError('INPUT_LINK_REJECTED\nPRIVATE_INPUT_SENTINEL')):
+            with self.subTest(type=type(error).__name__):
+                self.assertEqual(stack.diagnostic(error), 'DEVELOPMENT_PROBE_FAILED')
+        self.assertEqual(stack.diagnostic(stack.probe.ProbeError('STACK_CASES_INCOMPLETE')),
+                         'STACK_CASES_INCOMPLETE')
 
 
 class InputTests(unittest.TestCase):

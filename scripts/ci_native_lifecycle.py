@@ -71,6 +71,17 @@ def safe_relative(name):
 
 def validate_input(package, receipt, commit, run_id, attempt):
     """Read-only identity/run admission; this never executes downloaded input."""
+    try:
+        return _validate_input(package, receipt, commit, run_id, attempt)
+    except FileNotFoundError:
+        raise ProbeError("CANDIDATE_INPUT_MISSING") from None
+    except OSError:
+        raise ProbeError("CANDIDATE_INPUT_UNREADABLE") from None
+
+
+def _validate_input(package, receipt, commit, run_id, attempt):
+    # Keep file identity and inventory checks intact; the public boundary only
+    # translates filesystem failures so paths cannot enter diagnostic output.
     require(re.fullmatch(r"[a-f0-9]{40}", commit) is not None
             and re.fullmatch(r"[1-9][0-9]{0,19}", run_id) is not None
             and re.fullmatch(r"[1-9][0-9]{0,7}", attempt) is not None, "EXPECTED_RUN_INVALID")
