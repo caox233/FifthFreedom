@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><TreatWarningsAsErrors>true</TreatWarningsAsErrors></PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../src/launcher/src/Services/LocalOnlyPipeServer.cs" Link="LocalOnlyPipeServer.cs" />
     <Compile Include="../../src/launcher/src/Services/OwnedCore*.cs" Link="%(Filename)%(Extension)" />
     <Compile Include="../../src/launcher/src/Services/PublicReturnProcess.cs" Link="PublicReturnProcess.cs" />
     <EmbeddedResource Include="../../scripts/easytier-windows-inert-owned-read.lock.json" LogicalName="inert-recipe.json" />

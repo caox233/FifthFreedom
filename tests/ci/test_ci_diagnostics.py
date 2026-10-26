@@ -201,7 +201,7 @@ class AnnotationSafetyTests(unittest.TestCase):
         self.assertNotIn("PRIVATE", str(diagnostics.diagnostic_details(text)))
 
     def test_all_managed_suites_enforce_their_own_public_case_bounds(self):
-        for suite, count in (("PublicSessionControl", 15), ("PublicNativeReturn", 27),
+        for suite, count in (("PublicSessionControl", 15), ("PublicNativeReturn", 28),
                              ("FinalLaunchPreparation", 9), ("NativeManagedInterop", 3), ("OwnedCoreProcess", 17)):
             with self.subTest(suite=suite):
                 template = f"CI_MANAGED_FAILURE suite={suite} case={{case}} exception=Win32Exception"
@@ -219,6 +219,16 @@ class AnnotationSafetyTests(unittest.TestCase):
                             ("NativeManagedInterop", "SETUP_LISTENER")):
             marker = f"CI_MANAGED_FAILURE suite={suite} case={case} exception=IOException"
             self.assertEqual(diagnostics.diagnostic_details(marker)["managed_cases"], [])
+
+    def test_pipe_boundary_query_keeps_only_fixed_kernel_observation_labels(self):
+        legacy = "PIPE_BOUNDARY_QUERY role=LEGACY status=SUCCESS type=BYTE end=SERVER"
+        production = "PIPE_BOUNDARY_QUERY role=PRODUCTION status=SUCCESS type=LOCAL_BYTE end=CLIENT"
+        self.assertEqual(diagnostics.diagnostic_details(legacy + "\n" + production)["pipe_boundary_queries"],
+                         ["LEGACY:SUCCESS:BYTE:SERVER", "PRODUCTION:SUCCESS:LOCAL_BYTE:CLIENT"])
+        for invalid in (production + " token=PRIVATE", production.replace("PRODUCTION", "PRIVATE"),
+                        production.replace("SUCCESS", "PRIVATE"), production.replace("LOCAL_BYTE", "PRIVATE"),
+                        production.replace("CLIENT", "PRIVATE")):
+            self.assertEqual(diagnostics.diagnostic_details(invalid)["pipe_boundary_queries"], [])
 
     def test_owned_core_phase_and_reason_are_fixed_and_case_bounded(self):
         valid = "CI_OWNED_CORE_FAILURE case=17 phase=PARENT_DEATH code=OWNED_CORE_CLEANUP_FAILED"
@@ -242,7 +252,7 @@ class AnnotationSafetyTests(unittest.TestCase):
         self.assertEqual(details["return_phases"], ["NativeManagedInterop:03:WAIT_DISCONNECT",
                                                    "PublicNativeReturn:25:CONFIG_ACK"])
         self.assertEqual(details["return_child_failures"], ["PIPE_READ:InvalidDataException"])
-        bad = (marker + " token=PRIVATE_TOKEN", marker.replace("25", "28"),
+        bad = (marker + " token=PRIVATE_TOKEN", marker.replace("25", "29"),
                marker.replace("PublicNativeReturn", "PublicSessionControl"),
                marker.replace("CONFIG_ACK", "PRIVATE_PHASE"),
                marker.replace("CONFIG_ACK", "CONFIG_READ"),

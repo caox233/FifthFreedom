@@ -21,7 +21,7 @@ STREAM_CASES = (
 )
 SUITES = {
     "FinalLaunchPreparation": (9, "RESULT 9 final-login preparation checks passed; owned loopback HTTP2 only; no game, Public runtime or live-route admission."),
-    "PublicNativeReturn": (27, "RESULT 27 passed, 0 skipped"),
+    "PublicNativeReturn": (28, "RESULT 28 passed, 0 skipped"),
     "DiagnosticTextStreaming": (12, "DIAGNOSTIC_STREAM_SUMMARY cases=12 linked_production=true source_unchanged=true full_zip_tested=false network=false game=false"),
     "OwnedCoreProcess": (17, "RESULT 17 passed; 0 skipped"),
 }

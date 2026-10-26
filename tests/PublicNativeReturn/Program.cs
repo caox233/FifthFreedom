@@ -195,7 +195,7 @@ internal static partial class Program
             throw new Exception("Missing handoff queried");
         });
         if (OperatingSystem.IsWindows()) await WindowsCases();
-        else { skipped = 13; Console.WriteLine("SKIP 13 Windows-only actual named-pipe, owned-child process and directory-lock cases"); }
+        else { skipped = 14; Console.WriteLine("SKIP 14 Windows-only actual named-pipe, owned-child process and directory-lock cases"); }
         setup = "CLEANUP"; Console.WriteLine($"RESULT {passed} passed, {skipped} skipped");
     }
     private static async Task Eventually(Func<bool> condition)
@@ -345,6 +345,7 @@ internal static partial class Program
             }
             finally { held.Dispose(); if (Directory.Exists(root)) await DeleteOwnedDirectoryAsync(root, () => true); }
         });
+        await Case("actual production return pipe rejects remote clients and preserves current-user local access", LocalPipeBoundary);
     }
     private static async Task ConfigAckCase(int reply)
     {

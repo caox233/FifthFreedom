@@ -44,7 +44,7 @@ _PREPARATION_CODES = {"FINAL_PREPARATION_LOOPBACK_ADDRESS_IN_USE", "FINAL_PREPAR
                       "FINAL_PREPARATION_LOOPBACK_START_FAILED"}
 # Case identities are public test source constants. Each suite has its own
 # bound so a valid ordinal from another suite cannot masquerade as evidence.
-_MANAGED_CASE_COUNTS = {"PublicSessionControl": 15, "PublicNativeReturn": 27,
+_MANAGED_CASE_COUNTS = {"PublicSessionControl": 15, "PublicNativeReturn": 28,
                         "FinalLaunchPreparation": 9, "NativeManagedInterop": 3, "OwnedCoreProcess": 17,
                         "OwnedCoreRead": 22, "OwnedCoreReadInterop": 4, "OwnedCoreDependencies": 13}
 _MANAGED_SETUP_CASES = {
@@ -84,6 +84,10 @@ _RETURN_PHASE = re.compile(
 _RETURN_CHILD_FAILURE = re.compile(
     r"CI_RETURN_CHILD_FAILURE phase=(" + _RETURN_PHASE_PATTERN + r") "
     r"exception=(" + _MANAGED_EXCEPTION_PATTERN + r")\Z"
+)
+_PIPE_BOUNDARY_QUERY = re.compile(
+    r"PIPE_BOUNDARY_QUERY role=(LEGACY|FACTORY|PRODUCTION) status=(SUCCESS|FAILURE) "
+    r"type=(BYTE|MESSAGE|LOCAL_BYTE|LOCAL_MESSAGE|OTHER) end=(SERVER|CLIENT|OTHER)\Z"
 )
 _RETURN_DIRECTORY_FAILURE = re.compile(
     r"CI_RETURN_DIRECTORY_FAILURE suite=PublicNativeReturn case=(15|16|17) "
@@ -242,6 +246,8 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
     child_failures = sorted({":".join(match.groups())
                              for line in text.splitlines()
                              if (match := _RETURN_CHILD_FAILURE.fullmatch(line))})[:MAX_ITEMS]
+    pipe_boundary = sorted({":".join(match.groups()) for line in text.splitlines()
+                            if (match := _PIPE_BOUNDARY_QUERY.fullmatch(line))})[:MAX_ITEMS]
     directory_failures = sorted({"PublicNativeReturn:" + ":".join(match.groups())
                                 for line in text.splitlines()
                                 if (match := _RETURN_DIRECTORY_FAILURE.fullmatch(line))})[:MAX_ITEMS]
@@ -263,6 +269,7 @@ def diagnostic_details(text: str, *, ui_labels=()) -> dict:
             "preflight_codes": preflight, "owned_process_codes": owned_process_codes(text),
             "managed_cases": managed, "tls_cases": tls,
             "return_phases": return_phases, "return_child_failures": child_failures,
+            "pipe_boundary_queries": pipe_boundary,
             "return_directory_failures": directory_failures,
             "owned_core_failures": core_failures,
             "native_interop_codes": fixed_codes(_INTEROP_CODES),

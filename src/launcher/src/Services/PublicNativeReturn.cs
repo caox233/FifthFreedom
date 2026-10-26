@@ -123,8 +123,7 @@ internal sealed class PublicReturnPipe : IAsyncDisposable
         {
             try
             {
-                using var pipe = new NamedPipeServerStream(Name, PipeDirection.InOut, 1, PipeTransmissionMode.Byte,
-                    PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
+                using var pipe = LocalOnlyPipeServer.Create(Name, PublicReturnProtocol.Invalid);
                 await pipe.WaitForConnectionAsync(stop.Token).ConfigureAwait(false);
                 using var handshake = CancellationTokenSource.CreateLinkedTokenSource(stop.Token);
                 handshake.CancelAfter(TimeSpan.FromSeconds(10));
