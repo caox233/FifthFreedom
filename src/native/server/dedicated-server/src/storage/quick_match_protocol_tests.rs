@@ -143,6 +143,71 @@ mod quick_match_protocol {
         JoinSessionRequest { game_session_key: GameSessionKey { type_id: target.0, session_id: target.1 } }.to_bytes()
     }
 
+    struct HeldWriter(Option<sqlx::Transaction<'static, sqlx::Sqlite>>);
+    impl HeldWriter {
+        fn begin(storage: &Storage) -> Self { Self(Some(run(storage.begin_write()).unwrap().unwrap())) }
+        fn has_connected_ticket(&mut self, client: &quazal::ClientInfo<()>) -> bool {
+            let hash = sodiumoxide::hex::encode(client.ticket_fingerprint.unwrap());
+            // Inspect actual rows through the owned writer; opening a second
+            // fixture connection while holding it would add unrelated contention.
+            run(sqlx::query_scalar::<_, bool>("SELECT EXISTS(SELECT 1 FROM user_sessions WHERE user_id=? AND ticket_hash=? AND native_connected=1)")
+                .bind(client.user_id.unwrap()).bind(hash)
+                .fetch_one(&mut **self.0.as_mut().unwrap())).unwrap().unwrap()
+        }
+        fn release(mut self) { run(self.0.take().unwrap().rollback()).unwrap().unwrap(); }
+    }
+    impl Drop for HeldWriter {
+        fn drop(&mut self) {
+            // A failing negative control must not drop a pooled transaction
+            // outside the temporary Tokio runtime and mask the first failure.
+            if let Some(transaction) = self.0.take() {
+                if !matches!(run(transaction.rollback()), Ok(Ok(()))) {
+                    eprintln!("QUICK_MATCH fixture writer rollback failed");
+                }
+            }
+        }
+    }
+
+    fn close_exact_client(storage: &Arc<Storage>, old: &quazal::ClientInfo<()>, fresh: &quazal::ClientInfo<()>) {
+        let logger = Logger::root(slog::Discard, slog::o!());
+        let context = quazal::Context::splinter_cell_blacklist();
+        let registry = quazal::prudp::packet::StreamHandlerRegistry::new(logger.clone());
+        let mut transport = crate::NativeServer::new(logger.clone(), &context, registry);
+        crate::configure_secure_close_handler(&mut transport, &logger, storage);
+        let mut close = transport.close_handler.take().unwrap();
+        let old_user = old.user_id.unwrap();
+        let still_valid = |client: &quazal::ClientInfo<()>| storage.native_game_run(
+            client.user_id.unwrap(), client.ticket_fingerprint, client.address().ip()).unwrap().is_some();
+
+        // A real SQLite writer blocks the close transaction. The production
+        // callback must refuse acknowledgement; neither ticket may disappear.
+        let mut writer = HeldWriter::begin(storage);
+        let early_ack = close(old, quazal::prudp::CloseReason::Disconnect);
+        let old_retained = writer.has_connected_ticket(old);
+        let fresh_retained = writer.has_connected_ticket(fresh);
+        writer.release();
+        assert!(!early_ack, "a blocked close must never be acknowledged");
+        assert!(old_retained && fresh_retained, "uncommitted close must preserve exact owners");
+        assert!(still_valid(old) && still_valid(fresh));
+
+        // The real secure-listener callback deliberately retains an owner for
+        // retry after either Deferred or an error. Drive that actual callback
+        // until its commit acknowledgement; do not unwrap a one-shot storage
+        // attempt or treat a transient BUSY as successful retirement.
+        let deadline = Instant::now() + Duration::from_secs(2);
+        let mut attempts = 0;
+        loop {
+            attempts += 1;
+            if close(old, quazal::prudp::CloseReason::Disconnect) { break; }
+            assert!(still_valid(old) && still_valid(fresh), "a refused close must preserve both tickets");
+            assert!(Instant::now() < deadline, "close never acknowledged after fixture writer release");
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        assert!(!still_valid(old));
+        assert!(still_valid(fresh));
+        println!("QUICK_MATCH_CLOSE user={old_user} actual_callback=true blocked_ack=false old_retained_until_commit=true replacement_retained=true committed_ack=true attempts_after_release={attempts} transport_retry_scheduler=false");
+    }
+
     fn concurrent_existing_room(mode: i64, close_old_ticket: bool) {
         let storage = Arc::new(create_test_storage("quick-match-concurrent-protocol"));
         insert_accounts(&storage, 3);
@@ -171,31 +236,35 @@ mod quick_match_protocol {
                 permits.push(proceed);
                 workers.push(scope.spawn(move || {
                     let snapshot = search_room(&state, &mut client);
-                    discovered.send((client.user_id.unwrap(), snapshot.clone())).unwrap();
+                    // Transfer the exact searched connection object to the
+                    // close controller, then receive it back for the join.
+                    discovered.send((client, snapshot.clone())).unwrap();
                     // This timeout is a failure watchdog, not a timing assumption.
-                    permit.recv_timeout(Duration::from_secs(10)).expect("join permit missing");
+                    let mut client = permit.recv_timeout(Duration::from_secs(10)).expect("join permit missing");
                     let result = call_room(&state, &mut client, 42, 22, join_request(snapshot.0));
                     (client, result)
                 }));
             }
             let mut searches = (0..2).map(|_| found.recv_timeout(Duration::from_secs(10)).expect("search worker did not finish")).collect::<Vec<_>>();
-            searches.sort_by_key(|(user, _)| *user);
-            assert_eq!(searches[0], (2, ((created.type_id, created.session_id), vec![1])));
-            assert_eq!(searches[1], (3, searches[0].1.clone()));
+            searches.sort_by_key(|(client, _)| client.user_id.unwrap());
+            assert_eq!(searches[0].0.user_id, Some(2));
+            assert_eq!(searches[1].0.user_id, Some(3));
+            assert_eq!(searches[0].1, ((created.type_id, created.session_id), vec![1]));
+            assert_eq!(searches[1].1, searches[0].1);
             let replacement = if close_old_ticket {
                 // A replacement connection exists before the old one closes.
-                // Exercise the same exact-ticket transaction as secure close,
-                // not the cfg(test) whole-user compatibility helper.
+                // Use the configured production callback's commit acknowledgement,
+                // including its retry contract, before releasing the old join.
                 let fresh = maintenance_native_client(&storage, 3);
                 assert_ne!(fresh.ticket_fingerprint, old_fingerprint);
-                assert!(matches!(storage.try_close_secure_ticket(3, old_fingerprint).unwrap(), SecureCloseAttempt::Committed { preserved: true }));
+                close_exact_client(&storage, &searches[1].0, &fresh);
                 assert!(storage.native_game_run(3, old_fingerprint, "127.0.0.1".parse().unwrap()).unwrap().is_none());
                 assert!(storage.native_game_run(3, fresh.ticket_fingerprint, fresh.address().ip()).unwrap().is_some());
                 Some(fresh)
             } else { None };
             // Both real calls are scheduled from independent threads; no sleep
             // or copied SQL/filter algorithm chooses their target or result.
-            for permit in permits { permit.send(()).unwrap(); }
+            for (permit, (client, _)) in permits.into_iter().zip(searches) { permit.send(client).unwrap(); }
             let mut results = workers.into_iter().map(|worker| worker.join().unwrap()).collect::<Vec<_>>();
             let (b, b_result) = results.pop().unwrap();
             let (a, a_result) = results.pop().unwrap();
