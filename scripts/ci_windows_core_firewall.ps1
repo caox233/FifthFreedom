@@ -9,6 +9,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
+. (Join-Path $PSScriptRoot 'windows_firewall_package.ps1')
 function Require($Condition, [string]$Code) { if (!$Condition) { throw $Code } }
 function Integer($Value) { return $Value -is [int] -or $Value -is [long] }
 function Write-NewJson($Path, $Value) {
@@ -93,21 +94,11 @@ function Read-Owned($Plan, [string]$Direction, [string]$Store, [bool]$Required) 
     Check-Owned ($app.Count -eq 1) 'APPLICATION_COUNT'
     $result.application_path_case_insensitive_match = [string]::Equals(
         [string]$app[0].Program, [string]$Plan.core_path, [StringComparison]::OrdinalIgnoreCase)
-    # Deliberately retain the failing strict predicate until actual Windows
-    # readback identifies the field. The diagnostic does not relax admission.
+    # Actual Windows readback passed this exact path check. Preserve it while
+    # handling the separately observed unconfigured package representation.
     Check-Owned ($app[0].Program -ceq $Plan.core_path) 'APPLICATION_PATH'
-    $packageProperty = $app[0].PSObject.Properties['Package']
-    $packageValue = $null
-    if ($null -ne $packageProperty) { $packageValue = $packageProperty.Value }
-    $result.application_package_kind = if ($null -eq $packageProperty) { 'MISSING' }
-        elseif ($null -eq $packageValue) { 'NULL' }
-        elseif ($packageValue -isnot [string]) { 'OTHER_TYPE' }
-        elseif ($packageValue.Length -eq 0) { 'EMPTY' }
-        elseif ($packageValue -ceq 'Any') { 'ANY' }
-        elseif ($packageValue -ieq 'Any') { 'ANY_CASE_VARIANT' }
-        elseif ($packageValue -cmatch '^S-[0-9]+(-[0-9]+)+$') { 'SID' }
-        else { 'OTHER_STRING' }
-    Check-Owned ($app[0].Package -ceq 'Any') 'APPLICATION_PACKAGE'
+    $result.application_package_kind = Get-FirewallPackageKind $app[0]
+    Check-Owned (Test-UnrestrictedFirewallPackage $app[0]) 'APPLICATION_PACKAGE'
     Check-Owned ($port.Count -eq 1) 'PORT_COUNT'
     Check-Owned ([string]$port[0].Protocol -ceq 'Any') 'PROTOCOL'
     Check-Owned ([string]$port[0].LocalPort -ceq 'Any') 'LOCAL_PORT'

@@ -5,18 +5,22 @@ on:
     branches: ['codex/firewall-diagnostic']
     paths:
       - 'scripts/ci_windows_core_firewall.ps1'
+      - 'scripts/windows_firewall_package.ps1'
       - 'scripts/ci_owned_core_runtime.py'
       - 'scripts/ci_windows_firewall_prerequisite.py'
       - 'tests/ci/test_ci_owned_core_runtime.py'
       - 'tests/ci/test_ci_windows_firewall_prerequisite.py'
+      - 'tests/ci/windows_firewall_package_contracts.ps1'
       - '.github/workflows/windows-core-firewall-prerequisite.yml'
   pull_request:
     paths:
       - 'scripts/ci_windows_core_firewall.ps1'
+      - 'scripts/windows_firewall_package.ps1'
       - 'scripts/ci_owned_core_runtime.py'
       - 'scripts/ci_windows_firewall_prerequisite.py'
       - 'tests/ci/test_ci_owned_core_runtime.py'
       - 'tests/ci/test_ci_windows_firewall_prerequisite.py'
+      - 'tests/ci/windows_firewall_package_contracts.ps1'
       - '.github/workflows/windows-core-firewall-prerequisite.yml'
   workflow_dispatch:
 
@@ -43,6 +47,8 @@ jobs:
         run: |
           python -B -m unittest discover -s tests/ci -p test_ci_owned_core_runtime.py -v
           python -B -m unittest discover -s tests/ci -p test_ci_windows_firewall_prerequisite.py -v
+      - name: Verify actual production package predicate and retained negative control
+        run: pwsh -NoLogo -NoProfile -NonInteractive -File tests/ci/windows_firewall_package_contracts.ps1
       - name: Exercise production firewall readback without Arm or process startup
         run: python -B scripts/ci_windows_firewall_prerequisite.py
       - name: Preserve fixed labels and result only, never raw local policy
@@ -50,6 +56,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: windows-firewall-prerequisite-${{ github.sha }}
-          path: artifacts/ci/windows-firewall-prerequisite.json
+          path: |
+            artifacts/ci/windows-firewall-prerequisite.json
+            artifacts/ci/windows-firewall-package-contracts.json
           if-no-files-found: error
           retention-days: 14

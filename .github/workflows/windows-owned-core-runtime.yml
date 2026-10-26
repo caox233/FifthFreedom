@@ -46,6 +46,8 @@ on:
       - 'scripts/easytier-windows-inert-owned-read.lock.json'
       - 'scripts/ci_owned_core_runtime.py'
       - 'scripts/ci_windows_core_firewall.ps1'
+      - 'scripts/windows_firewall_package.ps1'
+      - 'tests/ci/windows_firewall_package_contracts.ps1'
       - 'scripts/ci_owned_dependencies.py'
       - 'scripts/ci_diagnostics.py'
       - 'scripts/ci_wintun_session_environment.ps1'
@@ -88,6 +90,8 @@ jobs:
           python -B -m unittest discover -s tests/ci -p test_ci_owned_core_runtime.py -v
       - name: Install reviewed Rust and explicit Windows target
         run: rustup toolchain install 1.95.0 --profile minimal --target x86_64-pc-windows-msvc
+      - name: Require production package-filter predicate controls before building the runtime
+        run: pwsh -NoLogo -NoProfile -NonInteractive -File tests/ci/windows_firewall_package_contracts.ps1
       - name: Install checksum-pinned protoc
         run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
       - name: Require hosted MSVC SDK and LLVM
@@ -124,5 +128,6 @@ jobs:
             artifacts/ci/easytier-windows-inert/source-receipt.json
             artifacts/ci/easytier-windows-inert/receipt.json
             artifacts/ci/owned-core-runtime.json
+            artifacts/ci/windows-firewall-package-contracts.json
           if-no-files-found: error
           retention-days: 14
