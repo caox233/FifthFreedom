@@ -10,11 +10,14 @@ import signal
 import socket
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src/public"))
 try:
+    from fifth_freedom_control import native_lease as lease_module
     from fifth_freedom_control.native_lease import LeaseBinding, NativeOwnerLease
     from fifth_freedom_control.owned_process import LifecycleError, OwnedChild, VerifiedExecutable
     from fifth_freedom_control.overlay_supervisor import (ChildSpec, LifecycleLimits, OverlayObservation,
@@ -65,7 +68,20 @@ while True:
     assert renew['kind']=='renew' and renew['sequence']==last+1 and renew['nonce']=='e'*64
     assert renew['binding']==binding and 100<=renew['lease_ms']<=5000
     last=renew['sequence']
+if mode=='five_renewals':assert last==6
 '''
+
+
+class LeaseClock:
+    """Parent lease time only; asyncio and the synthetic process keep real time."""
+    def __init__(self):
+        self.value = 100.0
+
+    def monotonic(self):
+        return self.value
+
+    def advance(self, seconds):
+        self.value += seconds
 
 
 class BindingTests(unittest.TestCase):
@@ -109,22 +125,33 @@ class NativeLeaseTests(unittest.IsolatedAsyncioTestCase):
         return child
 
     async def ready(self, owner, child):
-        async with asyncio.timeout(2):
+        # This bounds real IPC/process coordination, not the granted lease TTL.
+        # The two timing-contract tests control only the parent's lease clock;
+        # they do not certify a native peer surviving delayed READY in real time.
+        async with asyncio.timeout(10):
             while not await owner.observe(child):
                 await asyncio.sleep(.01)
 
     async def test_real_child_hello_ready_renewal_and_endpoint_close(self):
-        owner = self.owner(lease_ms=400, renew_seconds=.05)
-        child = await self.child(owner)
-        await self.ready(owner, child)
-        for _ in range(5):
-            await asyncio.sleep(.06)
-            self.assertTrue(await owner.observe(child))
-        self.assertGreaterEqual(owner._sequence, 6)
-        owner.revoke()
-        self.assertEqual(await asyncio.wait_for(child.wait(), 2), 0)
-        with self.assertRaisesRegex(LifecycleError, "^PUBLIC_OWNER_LEASE_INVALID$"):
-            await owner.observe(child)
+        clock = LeaseClock()
+        # Replace this module's binding, never stdlib time.monotonic: changing
+        # the latter would also invalidate asyncio's real I/O/cleanup watchdogs.
+        with patch.object(lease_module, "time", SimpleNamespace(monotonic=clock.monotonic)):
+            owner = self.owner(lease_ms=400, renew_seconds=.05)
+            child = await self.child(owner, "five_renewals")
+            await self.ready(owner, child)
+            self.assertEqual(owner._sequence, 1)
+            for sequence in range(2, 7):
+                clock.advance(.06)
+                self.assertTrue(await owner.observe(child))
+                self.assertEqual(owner._sequence, sequence)
+                await asyncio.sleep(0)
+            owner.revoke()
+            # Exit0 also requires the independent wire peer to consume and
+            # validate all five sequential renewals before endpoint EOF.
+            self.assertEqual(await asyncio.wait_for(child.wait(), 2), 0)
+            with self.assertRaisesRegex(LifecycleError, "^PUBLIC_OWNER_LEASE_INVALID$"):
+                await owner.observe(child)
 
     async def test_wrong_schema_binding_nonce_sequence_and_duplicate_frames_close(self):
         for mode in ("wrong_binding", "ready_first", "lease_field", "bool_sequence", "duplicate", "oversized",
@@ -154,13 +181,22 @@ class NativeLeaseTests(unittest.IsolatedAsyncioTestCase):
         self.assertLessEqual(len(os.listdir("/proc/self/fd")), before - 1)
 
     async def test_stalled_observation_cannot_reanimate_expired_lease(self):
-        owner = self.owner(lease_ms=100, renew_seconds=.03)
-        child = await self.child(owner)
-        await self.ready(owner, child)
-        await asyncio.sleep(.14)
-        with self.assertRaisesRegex(LifecycleError, "^PUBLIC_OWNER_LEASE_INVALID$"):
-            await owner.observe(child)
-        self.assertEqual(await asyncio.wait_for(child.wait(), 2), 0)
+        clock = LeaseClock()
+        with patch.object(lease_module, "time", SimpleNamespace(monotonic=clock.monotonic)):
+            owner = self.owner(lease_ms=100, renew_seconds=.03)
+            child = await self.child(owner)
+            await self.ready(owner, child)
+            self.assertEqual(owner._sequence, 1)
+            clock.advance(.1)
+            # At the actual granted boundary, a fresh observation cannot renew
+            # or reanimate the lease. No real wall sleep stands in for expiry.
+            self.assertEqual(clock.monotonic(), owner._expires)
+            with self.assertRaisesRegex(LifecycleError, "^PUBLIC_OWNER_LEASE_INVALID$"):
+                await owner.observe(child)
+            self.assertEqual(owner._sequence, 1)
+            self.assertTrue(owner._revoked)
+            self.assertFalse(owner._ready)
+            self.assertEqual(await asyncio.wait_for(child.wait(), 2), 0)
 
     async def test_admission_without_listener_ready_does_not_publish_readiness(self):
         owner = self.owner(lease_ms=400, renew_seconds=.05)
