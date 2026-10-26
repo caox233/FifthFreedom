@@ -1,5 +1,39 @@
 # Cloud implementation evidence
 
+Current continuation at published source `9139c9e` and knowledge `2c39063`:
+normal cloud execution/GitHub access works and both recovery generations remain
+preserved. The [final exact-source result](evidence/hosted-final-9139c9e.json)
+now confirms all nine guard3 QUIC/WSS/TCP phases and six namespaces cleaned.
+Linux LAN's normal selection passes 519. Source workflow `40397583548` passes
+Linux 649 with 2 skips and Windows 536 with 115 skips, without failures/errors.
+
+Candidate `40397583631` has six successful, four failed and one skipped job.
+Besides the existing input gates, its native lifecycle and composition fail
+before recorded controls: upload dropped five declared hidden MemoryModule
+source files. The runner-side Windows copy declares 50 files but its official
+ZIP has 45; the assembled candidate declares 62 but its ZIP has 57. Remaining
+file hashes match. The real read-only validator on the downloaded candidate
+reproduces the missing input before staging, without executing a binary.
+See the [artifact publication repair](tasks/ci-artifact-source-closure.md).
+This does not erase earlier runtime failures or establish a new cleanup result.
+
+Reviewed repairs `5aa8a50`, `37ab1e1` and `dc55a93` now provide fixed early
+input diagnostics and strictly staged public upload payloads. Logs stay separate;
+only the validated payloads enable hidden-file upload. Old official ZIPs remain
+unchanged and rejected. Temporary exact-source reconstructions pass real ZIP
+round trips and read-only admission. The first integrated clean check caught an
+outer error-code allowlist omission; that failure remains recorded. The corrected
+exact `dc55a933` clean checkout passes 665 with 2 skips, tracked source unchanged,
+and the canonical supplemental patch applies/reverses exactly. See the
+[repair evidence](evidence/artifact-hidden-source-regression.json). Actual hosted
+upload/download and native runtime outcomes remain the next required evidence.
+
+The complete-package contract still includes default-save restoration; no
+reduced test-edition profile is enabled. All eight held package inputs remain
+absent from this workspace, and ordinary
+Public admission stays closed. The following older checkpoint records remain
+historical evidence, with their original scope and failures preserved.
+
 Current delivery status (2026-10-27 Asia/Hong_Kong): the original task's executor
 and normal GitHub access recovered. Source `c42e0eb` and source-bound DevDocs
 `10e3e4a` were preserved, pushed and verified at their existing remote branches.

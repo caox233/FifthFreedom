@@ -4,6 +4,15 @@ Status: **ready-for-agent** — parent IPC and real synthetic-child tests passed
 production profile/namespace/peer admission and actual native composition remain
 separate work.
 
+Latest `9139c9e` hosted native lifecycle job `121846866723` failed before its
+reported controls, with the generic `NATIVE_LIFECYCLE_PROBE_FAILED` code and no
+success receipt. The downloaded same-run candidate is missing five declared
+MemoryModule hidden source files. The production read-only input validator
+reproduces `FileNotFoundError` on that artifact before private staging or native
+startup. See [the verified evidence](../evidence/hosted-final-9139c9e.json) and
+[artifact repair task](ci-artifact-source-closure.md). Earlier successful native
+controls remain scoped to their exact runs; no new cleanup proof is inferred.
+
 `src/public/fifth_freedom_control/native_lease.py` implements the Python owner of
 SERVER-10's inherited Unix `SOCK_SEQPACKET` capability. Both endpoints enable
 `SO_PASSCRED` before spawning. `OwnedChild` permits only this one explicit

@@ -1,0 +1,827 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-10-26T23:01:10.419341+00:00",
+  "source_head": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
+  "merge_binding": {
+    "sha": "b7ecde2db89ead4a709221814c2bac3817b8d714",
+    "tree": "cab9ead3b3cb1257f20e92b63a5f2c09c3e82ed3",
+    "parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d"
+    ]
+  },
+  "checkout_tree_equals_source_head": true,
+  "official_artifacts": [
+    {
+      "id": 12687534390,
+      "name": "linux-public-server-component-candidate-b7ecde2db89ead4a709221814c2bac3817b8d714",
+      "digest": "sha256:d4171c8153355e453c1cbf59fa0be0817a829c83ef38217cb66edb90e523e311",
+      "size_in_bytes": 84683939,
+      "run_id": 40397583631,
+      "source_head": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12689771611,
+      "name": "owned-overlay-native-development-receipt-b7ecde2db89ead4a709221814c2bac3817b8d714",
+      "digest": "sha256:7406d6009e8141292be43d47bcc41fd94472631c4bd75f8b1752191a755ae82a",
+      "size_in_bytes": 898,
+      "run_id": 40397583631,
+      "source_head": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12689112959,
+      "name": "windows-owned-core-runtime-receipts-b7ecde2db89ead4a709221814c2bac3817b8d714",
+      "digest": "sha256:b66e416272f35b4e149ed7f7ace4cf61e0ad0499005238b2e2d00bc1346171ca",
+      "size_in_bytes": 53020,
+      "run_id": 40397583747,
+      "source_head": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12688036495,
+      "name": "linux-lan-baseline-b7ecde2db89ead4a709221814c2bac3817b8d714",
+      "digest": "sha256:af944e5fa54998e172507129e24237b24a9106969376a0cd217729e6c5eb4ab1",
+      "size_in_bytes": 9917550,
+      "run_id": 40397583631,
+      "source_head": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12687344369,
+      "name": "owned-easytier-development-receipt-b7ecde2db89ead4a709221814c2bac3817b8d714",
+      "digest": "sha256:a336d83f2938d282b37bc1f3822cb2fa406f3303ebe5e3714120253807248c63",
+      "size_in_bytes": 1777,
+      "run_id": 40397583543,
+      "source_head": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12689536321,
+      "name": "windows-compile-only-components-b7ecde2db89ead4a709221814c2bac3817b8d714",
+      "digest": "sha256:b9f4f28bde8e0bdd5c299751ea2ba18ed2d30d2afa5dee3dc6d0d00951538202",
+      "size_in_bytes": 74900303,
+      "run_id": 40397583631,
+      "source_head": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
+      "official_digest_verified": true
+    }
+  ],
+  "api_final_states": [
+    {
+      "run_id": 40397583631,
+      "conclusion": "failure",
+      "job_counts": {
+        "success": 6,
+        "failure": 4,
+        "skipped": 1
+      },
+      "jobs": [
+        {
+          "id": 121834606677,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834606940,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834607034,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834607075,
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "number": 4,
+              "name": "Verify all pinned package inputs without substituting private saves"
+            }
+          ]
+        },
+        {
+          "id": 121834607085,
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "number": 4,
+              "name": "Require reviewed C71 native fixture source and provenance"
+            }
+          ]
+        },
+        {
+          "id": 121834607314,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834607740,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834690578,
+          "conclusion": "skipped",
+          "failed_steps": []
+        },
+        {
+          "id": 121846567054,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121846866679,
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "number": 13,
+              "name": "Verify real lease revocation and peer loss with the same-run native candidate"
+            }
+          ]
+        },
+        {
+          "id": 121846866723,
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "number": 6,
+              "name": "Require withheld denied EOF expiry and parent-death contracts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": 40397583543,
+      "conclusion": "success",
+      "job_counts": {
+        "success": 1
+      },
+      "jobs": [
+        {
+          "id": 121834606559,
+          "conclusion": "success",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 40397583618,
+      "conclusion": "failure",
+      "job_counts": {
+        "failure": 1
+      },
+      "jobs": [
+        {
+          "id": 121834607248,
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "number": 8,
+              "name": "Exercise production firewall readback without Arm or process startup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": 40397583747,
+      "conclusion": "failure",
+      "job_counts": {
+        "failure": 1
+      },
+      "jobs": [
+        {
+          "id": 121834606679,
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "number": 13,
+              "name": "Verify pinned inputs, arm exact path blocks, execute the finite core and restore after drain"
+            },
+            {
+              "number": 14,
+              "name": "Retain blocks if exact drain is unknown; preserve failure and attempt owned recovery"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": 40397583706,
+      "conclusion": "success",
+      "job_counts": {
+        "success": 4
+      },
+      "jobs": [
+        {
+          "id": 121834607018,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834607335,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834607481,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834607491,
+          "conclusion": "success",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 40397583664,
+      "conclusion": "success",
+      "job_counts": {
+        "success": 3
+      },
+      "jobs": [
+        {
+          "id": 121834606566,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834606993,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834607310,
+          "conclusion": "success",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 40397583736,
+      "conclusion": "success",
+      "job_counts": {
+        "success": 5
+      },
+      "jobs": [
+        {
+          "id": 121834608432,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834608761,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834608819,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834608841,
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "id": 121834608960,
+          "conclusion": "success",
+          "failed_steps": []
+        }
+      ]
+    }
+  ],
+  "candidate": {
+    "run_id": 40397583631,
+    "job_counts": {
+      "success": 6,
+      "failure": 4,
+      "skipped": 1
+    },
+    "complete_package_gate": "8 held SAV/META inputs; previously verified exact-source official receipt retained",
+    "native_replay_gate": "13 held native fixture inputs; 0 executed; previously verified exact-source official receipt retained",
+    "windows_components": {
+      "build_job_success": true,
+      "full_package": false,
+      "launcher_checks_passed": 166,
+      "independent_component_hashes": [
+        {
+          "path": "FifthFreedom.Server.exe",
+          "sha256": "49ce343ac4177d3481fe5b81c854f8692d9f49e5940b9d9b12029bd886276ae7",
+          "bytes": 10890752,
+          "independently_rehashed": true
+        },
+        {
+          "path": "FifthFreedom.component-only.exe",
+          "sha256": "72372419ea1eb3beefca8596ea6bcae2d8685c49c8d78ae4fc8d16e4d7954727",
+          "bytes": 144932783,
+          "independently_rehashed": true
+        },
+        {
+          "path": "scbl_gameplay.dll",
+          "sha256": "ac6ffe308642dda0c978c18cbe96f7ecab19cb314969e271d7f9ffff5b4bb722",
+          "bytes": 2430976,
+          "independently_rehashed": true
+        },
+        {
+          "path": "uplay_r1_loader.dll",
+          "sha256": "05cd4b8bd0fc844c15156060251eb011af0a33b99729e4e2c41b3c4a6f2aa7a7",
+          "bytes": 7746048,
+          "independently_rehashed": true
+        }
+      ],
+      "source_notice_receipt_claim": 50,
+      "actual_source_notice_files": 45,
+      "complete_notice_source_inclusion": false,
+      "permission_closure": false
+    },
+    "linux_lan": {
+      "job_id": 121834606677,
+      "checks_passed": 519,
+      "failed": 0,
+      "ignored": 0,
+      "test_results": [
+        {
+          "path": "logs/20261026T203952084093Z-ci-linux-lan-baseline-tests.stdout.txt",
+          "sha256": "b98df90995ed7c93da7520e7a3470a4405fe6d8aa2e61dd3ddea9e32febcd81c",
+          "groups": [
+            {
+              "status": "ok",
+              "passed": 56,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 376,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 2,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 69,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 0,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 0,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 0,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 0,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 6,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 5,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 4,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 0,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 0,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 1,
+              "failed": 0,
+              "ignored": 0
+            },
+            {
+              "status": "ok",
+              "passed": 0,
+              "failed": 0,
+              "ignored": 0
+            }
+          ]
+        }
+      ]
+    },
+    "assembly": {
+      "job_id": 121846567054,
+      "runner_job_success": true,
+      "downloaded_input_complete": false,
+      "declared_files": 62,
+      "downloaded_declared_files": 57
+    },
+    "hidden_input_loss": [
+      {
+        "lane": "windows-components",
+        "declared_files": 50,
+        "actual_hashes_matched": 45,
+        "missing_declared_files": [
+          {
+            "path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.gitattributes",
+            "bytes": 140,
+            "sha256": "ba9707535af7fde7fd5c60fb8947a0b8d487a6e7c2409892504cd0b6f3dad395"
+          },
+          {
+            "path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.gitignore",
+            "bytes": 87,
+            "sha256": "1aa380980a310bc003db68218bf85d9001100582b2efba687ce413a5346c4616"
+          },
+          {
+            "path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.travis.yml",
+            "bytes": 3079,
+            "sha256": "2aac9d0f35ac618918b66baa9f023614bfd5655879e23b967e11d9445483a761"
+          },
+          {
+            "path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/example/DllLoader/.gitignore",
+            "bytes": 9,
+            "sha256": "d7d3dd5d67de6776268fdd2e858c777725ddd162b57f6116407ca445f8c2f1cb"
+          },
+          {
+            "path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/example/SampleDLL/.gitignore",
+            "bytes": 16,
+            "sha256": "9f22abfcdb63dd119c4fce27972c1bc93c15ed37792b0cd7997eb16974a76388"
+          }
+        ],
+        "hash_or_size_mismatch": []
+      },
+      {
+        "lane": "assembly",
+        "declared_files": 62,
+        "actual_hashes_matched": 57,
+        "missing_declared_files": [
+          {
+            "path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.gitattributes",
+            "bytes": 140,
+            "sha256": "ba9707535af7fde7fd5c60fb8947a0b8d487a6e7c2409892504cd0b6f3dad395"
+          },
+          {
+            "path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.gitignore",
+            "bytes": 87,
+            "sha256": "1aa380980a310bc003db68218bf85d9001100582b2efba687ce413a5346c4616"
+          },
+          {
+            "path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.travis.yml",
+            "bytes": 3079,
+            "sha256": "2aac9d0f35ac618918b66baa9f023614bfd5655879e23b967e11d9445483a761"
+          },
+          {
+            "path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/example/DllLoader/.gitignore",
+            "bytes": 9,
+            "sha256": "d7d3dd5d67de6776268fdd2e858c777725ddd162b57f6116407ca445f8c2f1cb"
+          },
+          {
+            "path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/example/SampleDLL/.gitignore",
+            "bytes": 16,
+            "sha256": "9f22abfcdb63dd119c4fce27972c1bc93c15ed37792b0cd7997eb16974a76388"
+          }
+        ],
+        "hash_or_size_mismatch": []
+      }
+    ],
+    "composition": {
+      "job_id": 121846866679,
+      "receipt": {
+        "schema": "ff-owned-overlay-native-stack-development-v1",
+        "status": "failed",
+        "scope": {
+          "transport": "tcp",
+          "purpose": "owned-isolated-development",
+          "production_admission": false,
+          "ordinary_public_enabled": false,
+          "game_executed": false,
+          "complete_client_package": false,
+          "runtime_binary_uploaded": false,
+          "raw_runtime_output_retained": false
+        },
+        "cases": [],
+        "precondition_failures": [],
+        "copied_package_native_verified": false,
+        "source_package_unchanged": false,
+        "private_stage_removed": false,
+        "error": "DEVELOPMENT_PROBE_FAILED"
+      },
+      "controls_executed": 0,
+      "cleanup_not_verified": true
+    },
+    "native_lifecycle": {
+      "job_id": 121846866723,
+      "failed_step": 6,
+      "official_fixed_error_code": "NATIVE_LIFECYCLE_PROBE_FAILED",
+      "official_failure_log_sha256": "35b8ab221d1e5ce52a59307e8c81773991f9c3488d2a4ca7ce5899c000acbf8b",
+      "official_failure_log_bytes": 24532,
+      "sanitized_receipt_uploaded": false,
+      "cleanup_not_verified": true
+    },
+    "read_only_input_reproduction": {
+      "source_head": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
+      "checkout_merge": "b7ecde2db89ead4a709221814c2bac3817b8d714",
+      "official_artifact_id": 12687534390,
+      "operation": "ci_native_lifecycle.validate_input only",
+      "downloaded_binaries_executed": false,
+      "namespace_or_process_created": false,
+      "source_tree_modified": false,
+      "outcome": "reproduced_failure",
+      "exception_type": "FileNotFoundError",
+      "missing_relative_path": "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.gitattributes",
+      "bounded_trace": [
+        {
+          "file": "scripts/ci_native_lifecycle.py",
+          "line": 95,
+          "function": "validate_input"
+        },
+        {
+          "file": "scripts/public_server_candidate.py",
+          "line": 82,
+          "function": "sha_file"
+        },
+        {
+          "file": "scripts/public_server_candidate.py",
+          "line": 56,
+          "function": "regular"
+        }
+      ]
+    },
+    "shared_failure_interpretation": "Official assembly ZIP is missing five declared hidden source files. Exact production read-only validator reproduces FileNotFoundError before private staging; both production harnesses map this exception to the observed generic codes. No downloaded binaries executed during verification."
+  },
+  "matrix": {
+    "run_id": 40397583543,
+    "job_id": 121834606559,
+    "status": "isolated_development_matrix_verified",
+    "runtime_candidate": {
+      "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+      "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+      "executable_sha256": "9ed7f755637af3758d7a4e8ba772625d8834468150295126068533e7ea157f22",
+      "executable_size": 28593032,
+      "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+      "role": "easytier-core",
+      "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+      "target": "x86_64-unknown-linux-gnu",
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626"
+    },
+    "phases_verified": 9,
+    "transports": [
+      {
+        "transport": "quic",
+        "status": "owned_overlay_probe_verified",
+        "phases": [
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-before",
+            "profile_sha256": "0dea322c2d658f8e51fa83921fe4bab1a1bee633f91f1553f6b4fa0efa64d6cd"
+          },
+          {
+            "echo_rounds": [
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              }
+            ],
+            "minimum_observation_seconds": 8,
+            "peer_authenticated": false,
+            "phase": "wrong-pin",
+            "profile_sha256": "7b186ecd6b2e2b7ac2223420e995c6aebbde59d5f843fc4753127bd944dfd8cb",
+            "tun_owned": true
+          },
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-after",
+            "profile_sha256": "78a36c14d4fb5b89e117b4f77b359052e9e3847f4fa1cdefad1b2559d04e1fb5"
+          }
+        ],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        }
+      },
+      {
+        "transport": "wss",
+        "status": "owned_overlay_probe_verified",
+        "phases": [
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-before",
+            "profile_sha256": "896b15d65d91d2504c00410547b717b60a07b348794cfc267f2456e405b1f69b"
+          },
+          {
+            "echo_rounds": [
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              }
+            ],
+            "minimum_observation_seconds": 8,
+            "peer_authenticated": false,
+            "phase": "wrong-pin",
+            "profile_sha256": "e169367eb717b87537a52d67eebcde050510f2c6006fbd1bb76f46420467deb4",
+            "tun_owned": true
+          },
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-after",
+            "profile_sha256": "e8938a07be3d14e1f1e89c3fa16b3965d53c2d0894b4099b7a67fb397dad28df"
+          }
+        ],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        }
+      },
+      {
+        "transport": "tcp",
+        "status": "owned_overlay_probe_verified",
+        "phases": [
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-before",
+            "profile_sha256": "8f2a78d747c9492114b3c137241a7f24dd679b4d6675bf8eb34879d6ee6a4079"
+          },
+          {
+            "echo_rounds": [
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              }
+            ],
+            "minimum_observation_seconds": 8,
+            "peer_authenticated": false,
+            "phase": "wrong-pin",
+            "profile_sha256": "e92fa6038b6d4b28f0e4f97b698bb93fcc35dd88162c3752d2ca6c4b20e5a290",
+            "tun_owned": true
+          },
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-after",
+            "profile_sha256": "bf34251270cef2fa6c5f33cc70083632c8f9f41e1d4b636d64db848c414edcf4"
+          }
+        ],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        }
+      }
+    ],
+    "private_stage_removed": true,
+    "native_owner_lease_verified": false,
+    "production_admission": false
+  },
+  "windows_inert": {
+    "run_id": 40397583747,
+    "job_id": 121834606679,
+    "error_code": "FIREWALL_POLICY_UNAVAILABLE",
+    "build_status": "windows_inert_owned_read_built_not_executed",
+    "all_build_stages_exit_zero": true,
+    "managed_contracts_passed": 22,
+    "firewall_restore": {
+      "active_rules_verified": false,
+      "application_path_rules": true,
+      "armed": false,
+      "exact_drain_verified": false,
+      "mode": "Restore",
+      "original_policy_unchanged": true,
+      "owned_rules_removed": true,
+      "packet_behavior_verified": false,
+      "pid_isolation": false,
+      "policy_enabled_or_changed": false
+    },
+    "driver_before_clean": true,
+    "driver_after_clean": true,
+    "packet_behavior_verified": false,
+    "peer_traffic_verified": false,
+    "public_admission": false
+  },
+  "other_long_builds_and_windows_prerequisites": "Final API job success verified only in this pass; artifacts not redownloaded, no new case-count or runtime claims",
+  "harness_sha256": {
+    ".github/workflows/candidate-build.yml": "726ab1c9dd0dbab92765e42dba7c2f1cc944d2ea26ca9ef1df4932b3b559dbdb",
+    "scripts/ci_native_lifecycle.py": "8144e773c49d85fc718b01fcc2c1888e990acc220d17c723c3f696f5376f7fcf",
+    "scripts/public_server_candidate.py": "c139bd9b01d628408b00ab942d6078f79125c16e3085dbdf532762c28651f386",
+    "scripts/ci_owned_stack.py": "e08206183509c16af3d803e3ff5956b29432115c4a464a9944edf8ba2e9ba79b",
+    "scripts/ci_easytier_probe.py": "7945b28db43a88660db200f975e84416578bfaab7de916095945f33263f2a122",
+    "src/public/fifth_freedom_control/overlay_supervisor.py": "5dffb5548c782784d1352b099e52b64dd1d03b1a893557c03b4f348297867a98",
+    "src/public/fifth_freedom_control/owned_process.py": "0e820aebd4a3ff1e24059b71ff18c61c2c4b772266e783563ab8bcddf1057075"
+  },
+  "boundaries": {
+    "tracked_source_modified": false,
+    "downloaded_binaries_executed": false,
+    "game_or_capture_executed": false,
+    "full_unified_package_delivered": false,
+    "production_deployed": false,
+    "formal_release_published": false,
+    "accepted_live_results_reopened": false
+  },
+  "scope": "Exact hosted 9139 final outcomes and read-only artifact validation; source notice copy on runner is distinct from uploaded/downloaded inventory. Full package and live acceptance remain false."
+}

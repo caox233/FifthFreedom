@@ -1,6 +1,14 @@
 # SERVER-15 — real owned overlay and native development composition
 
-Status: ready-for-agent for remaining Public integration. Both actual isolated
+Status: ready-for-agent for remaining Public integration. Latest `9139c9e`
+composition job `121846866679` fails before recorded controls because its
+downloaded candidate lacks five declared hidden source files. The exact
+[artifact/input reproduction](../evidence/hosted-final-9139c9e.json) and
+[publication repair task](ci-artifact-source-closure.md) distinguish this from
+runtime query failure. No new copied-package, runtime or cleanup success is
+claimed; the complete same-run artifact must be revalidated and both controls run.
+
+Retained history: both actual isolated
 development controls passed at `c42e0eb`, run `40371709938`, with independently
 verified official receipts below. Newer `7c614c1` run `40374533090` fails again
 before READY with `QUERY_IMAGE_CHANGED` and unconfirmed exact child cleanup;

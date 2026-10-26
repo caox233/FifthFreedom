@@ -1,15 +1,16 @@
 # SERVER-13 — owned isolated EasyTier development probe
 
-Status: ready-for-agent. Earlier c42 hosted QUIC/WSS/TCP matrix passed; newer7c
-failed at initial missing IPv4, and9a progressed to four of nine phases before
-an incomplete initial descriptor scan. Both demonstrated startup windows now
-have focused repairs and old-code negative controls. A fresh actual matrix is
-still required; historical successes and failures remain retained.
+Status: ready-for-agent for remaining integration. Exact `9139c9e` hosted matrix
+`40397583543` now passed all nine QUIC/WSS/TCP phases, with six namespaces
+removed, exact core exit/TUN absence and new-traffic refusal verified. See the
+[actual final receipt](../evidence/hosted-final-9139c9e.json). Earlier c42 success,
+7c initial missing-IPv4 failure and 9a four-phase/incomplete-FD-scan failure remain
+retained. This is a finite result at the repaired source, not stability proof.
 Production Public admission stays
 closed. This does not complete the native owner-lease integration or live gameplay
 acceptance.
 
-## Fixed scope and inputs
+## Fixed scope and retained input history
 
 The new exact9a matrix `40387245004` completed four of nine phases: all three
 QUIC controls and WSS correct-pin-before. It then failed a fresh initiator's
@@ -44,8 +45,8 @@ The [focused regression receipt](../evidence/initial-overlay-address-regression.
 records two failures on the old code, four passing new focused cases and all
 26 monitor plus34 probe tests passing. Independent review reran the old/new
 controls. Owned children and the read-only missing-address errno are real;
-interface flags/TUN metadata are synthetic, so a fresh hosted matrix remains
-required. This fixes a demonstrated startup window without claiming all causes
+interface flags/TUN metadata are synthetic. The subsequent hosted 9139 matrix
+supplies the distinct finite runtime result. This fixes a demonstrated startup window without claiming all causes
 of the hosted failure or runtime stability are resolved.
 
 `scripts/ci_easytier_probe.py` is an explicit development operation for a
