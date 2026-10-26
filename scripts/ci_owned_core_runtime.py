@@ -152,11 +152,16 @@ def firewall_observation(value, mode):
     for key in ('enforcement', 'enforcement_trace'):
         item = value[key]
         if item is not None:
-            require(type(item) is dict and set(item) == {'shape', 'count', 'item_type', 'status'}
+            require(type(item) is dict and set(item) == {'shape', 'count', 'item_type', 'status', 'items'}
                 and item['shape'] in ('MISSING', 'NULL', 'SCALAR', 'ARRAY')
                 and type(item['count']) is int and 0 <= item['count'] <= 65
                 and item['item_type'] in ('NONE', 'NULL', 'STRING', 'ENUM', 'UINT16', 'UINT32', 'INT32', 'OTHER')
                 and item['status'] in statuses, 'RUNTIME_FIREWALL_FAILED')
+            require(type(item['items']) is list and len(item['items']) == min(item['count'], 8), 'RUNTIME_FIREWALL_FAILED')
+            for member in item['items']:
+                require(type(member) is dict and set(member) == {'item_type', 'status'}
+                    and member['item_type'] in ('NULL', 'STRING', 'ENUM', 'UINT16', 'UINT32', 'INT32', 'OTHER')
+                    and member['status'] in statuses, 'RUNTIME_FIREWALL_FAILED')
     require(value['enforcement_trace_query'] in ('NOT_RUN', 'SINGLE_MATCH', 'COUNT_MISMATCH', 'IDENTITY_MISMATCH', 'QUERY_FAILED')
         and ((value['enforcement_trace_query'] == 'SINGLE_MATCH') == (value['enforcement_trace'] is not None)), 'RUNTIME_FIREWALL_FAILED')
     return {'mode': mode, **{key: value[key] for key in fields}}

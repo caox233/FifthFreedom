@@ -21,19 +21,35 @@ $cases = @(
     @{Name='case variant is unknown'; Rule=[pscustomobject]@{EnforcementStatus='full'}; Shape='SCALAR'; Count=1; Type='STRING'; Status='OTHER_STRING'}
 )
 $report = [ordered]@{schema=1; kind='pure-firewall-enforcement-diagnostics'; passed=$false;
-    required_checks=16; passed_checks=0; skipped_checks=0; failed_case=$null;
+    required_checks=18; passed_checks=0; skipped_checks=0; failed_case=$null;
     firewall_api_executed=$false; admission_exercised=$false; core_executed=$false; driver_loaded=$false}
 try {
     foreach ($case in $cases) {
         $report.failed_case=$case.Name
         $actual=Get-FirewallEnforcementObservation $case.Rule
         if ($actual.shape -cne $case.Shape -or $actual.count -ne $case.Count -or
-            $actual.item_type -cne $case.Type -or $actual.status -cne $case.Status) {
+            $actual.item_type -cne $case.Type -or $actual.status -cne $case.Status -or
+            $actual.items.Count -ne [Math]::Min($case.Count,8)) {
             throw 'FIREWALL_ENFORCEMENT_DIAGNOSTIC_FAILED'
         }
         $report.passed_checks++
         Write-Output ('PASS ' + $case.Name)
     }
+    $report.failed_case='mixed numeric statuses retain fixed member labels'
+    $mixed=Get-FirewallEnforcementObservation ([pscustomobject]@{EnforcementStatus=[uint16[]]@(1,5)})
+    if ($mixed.items[0].item_type -cne 'UINT16' -or $mixed.items[0].status -cne 'Full' -or
+        $mixed.items[1].item_type -cne 'UINT16' -or $mixed.items[1].status -cne 'InactiveProfile') {
+        throw 'FIREWALL_ENFORCEMENT_DIAGNOSTIC_FAILED'
+    }
+    $report.passed_checks++; Write-Output ('PASS ' + $report.failed_case)
+    $report.failed_case='unknown mixed member cannot expose raw provider string'
+    $mixed=Get-FirewallEnforcementObservation ([pscustomobject]@{EnforcementStatus=@('Full','private fixture')})
+    if ($mixed.items[0].item_type -cne 'STRING' -or $mixed.items[0].status -cne 'Full' -or
+        $mixed.items[1].item_type -cne 'STRING' -or $mixed.items[1].status -cne 'OTHER_STRING' -or
+        ($mixed | ConvertTo-Json -Depth 5 -Compress) -cmatch 'private') {
+        throw 'FIREWALL_ENFORCEMENT_DIAGNOSTIC_FAILED'
+    }
+    $report.passed_checks++; Write-Output ('PASS ' + $report.failed_case)
     $report.failed_case=$null; $report.passed=$report.passed_checks -eq $report.required_checks
 } catch { Write-Output 'FIREWALL_ENFORCEMENT_DIAGNOSTIC_FAILED' }
 $output=Join-Path $PSScriptRoot '../../artifacts/ci/windows-firewall-enforcement-contracts.json'
@@ -42,5 +58,5 @@ $bytes=[Text.Encoding]::UTF8.GetBytes(($report | ConvertTo-Json -Depth 4 -Compre
 $file=[IO.File]::Open($output,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
 try { $file.Write($bytes,0,$bytes.Length); $file.Flush($true) } finally { $file.Dispose() }
 if (!$report.passed) { exit 1 }
-Write-Output 'RESULT 16 passed; 0 skipped'
+Write-Output 'RESULT 18 passed; 0 skipped'
 exit 0

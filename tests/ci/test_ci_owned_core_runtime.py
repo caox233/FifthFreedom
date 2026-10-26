@@ -163,7 +163,7 @@ class RuntimeAdapterTests(unittest.TestCase):
             with self.assertRaises(ValueError):runtime.firewall_observation(changed,'Prepare')
 
     def test_enforcement_diagnostic_is_bounded_and_never_becomes_admission(self):
-        observed={'shape':'ARRAY','count':1,'item_type':'UINT16','status':'Full'}
+        observed={'shape':'ARRAY','count':1,'item_type':'UINT16','status':'Full','items':[{'item_type':'UINT16','status':'Full'}]}
         original={'schema':1,'mode':'Prepare',**firewall_diagnostic(),'enforcement':observed,
             'enforcement_trace':observed,'enforcement_trace_query':'SINGLE_MATCH'}
         runtime.firewall_observation(original,'Prepare')
@@ -173,6 +173,9 @@ class RuntimeAdapterTests(unittest.TestCase):
             with self.assertRaises(ValueError):runtime.firewall_observation(changed,'Prepare')
         for key,value in (('enforcement_trace',None),('enforcement_trace_query','private'),('enforcement_trace_query','NOT_RUN')):
             with self.assertRaises(ValueError):runtime.firewall_observation({**original,key:value},'Prepare')
+        for items in ([], [{'item_type':'raw','status':'Full'}], [{'item_type':'UINT16','status':'private'}],
+            [{'item_type':'UINT16','status':'Full','raw':'private'}], observed['items']*9):
+            with self.assertRaises(ValueError):runtime.firewall_observation({**original,'enforcement':{**observed,'items':items}},'Prepare')
 
     def test_armed_restore_without_matching_drain_must_fail(self):
         with tempfile.TemporaryDirectory() as folder:
