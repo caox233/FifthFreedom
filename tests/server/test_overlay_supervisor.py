@@ -1,5 +1,6 @@
 """Real owned synthetic children/TCP, injected observations; never EasyTier/TUN."""
 import asyncio
+import contextlib
 from dataclasses import replace
 import hashlib
 import json
@@ -168,6 +169,46 @@ class OwnedLifecycleTests(unittest.IsolatedAsyncioTestCase):
             self.monitor, self.service, self.limits)
         self.addAsyncCleanup(supervisor.stop)
         return supervisor
+
+    @contextlib.contextmanager
+    def pending_deadline_after_two_observations(self, supervisor):
+        """Exercise the supervisor deadline branch without timing child exec.
+
+        Only this production module's explicit supervisor clock is controlled;
+        asyncio scheduling, child bootstrap/read deadlines and the outer watchdog
+        retain their real clocks. Kernel observations and exact child drain run.
+        """
+        import fifth_freedom_control.overlay_supervisor as module
+        import fifth_freedom_control.owned_process as process_module
+        self.assertIs(module.asyncio, asyncio)
+        self.assertIs(process_module.asyncio, asyncio)
+        class Clock:
+            value = 0.0
+            def time(self):
+                return self.value
+        clock = Clock()
+        class SupervisorAsyncio:
+            def get_running_loop(self):
+                return clock
+            def __getattr__(self, name):
+                return getattr(asyncio, name)
+        original_observe = self.monitor.observe
+        observations = []
+        async def observe(child):
+            value = await original_observe(child)
+            self.assertIsNone(value)
+            self.assertTrue(child.image_matches())
+            self.assertIsNone(supervisor.native)
+            observations.append(value)
+            self.assertLessEqual(len(observations), 2, "deadline branch did not stop pending startup")
+            if len(observations) == 2:
+                clock.value = supervisor.limits.startup
+            return value
+        with patch.object(module, "asyncio", SupervisorAsyncio()), \
+                patch.object(self.monitor, "observe", side_effect=observe):
+            yield observations
+        self.assertIs(module.asyncio, asyncio)
+        self.assertIs(process_module.asyncio, asyncio)
 
     async def test_overlay_exit_revokes_and_closes_established_native_tcp(self):
         unrelated = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
@@ -653,7 +694,6 @@ time.sleep(60)
         import fcntl
         import struct
         self.monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
-        self.limits = replace(self.limits, startup=.3)
         supervisor = self.supervisor()
         original_index = socket.if_nametoindex
         scans = []
@@ -677,10 +717,12 @@ time.sleep(60)
             return ["999999999"]
         with patch("socket.if_nametoindex", side_effect=discover), \
                 patch.object(fcntl, "ioctl", side_effect=ioctl), \
-                patch("os.listdir", side_effect=perpetually_incomplete):
+                patch("os.listdir", side_effect=perpetually_incomplete), \
+                self.pending_deadline_after_two_observations(supervisor) as observations:
             with self.assertRaisesRegex(LifecycleError, "^STARTUP_TIMEOUT$"):
-                await supervisor.start()
-        self.assertGreater(len(scans), 1)
+                await asyncio.wait_for(supervisor.start(), 8)
+        self.assertEqual(observations, [None, None])
+        self.assertEqual(len(scans), 2)
         self.assertIsNone(self.monitor._index)
         self.assertFalse(supervisor.ready)
         self.assertIsNone(supervisor.native)
@@ -822,7 +864,6 @@ time.sleep(60)
         import fcntl
         import struct
         self.monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
-        self.limits = replace(self.limits, startup=.3)
         supervisor = self.supervisor()
         original_ioctl, original_index = fcntl.ioctl, socket.if_nametoindex
         calls = []
@@ -838,10 +879,12 @@ time.sleep(60)
             self.assertEqual(operation, 0x8915)
             return original_ioctl(fd, operation, missing_label)
         with patch("socket.if_nametoindex", side_effect=discover), \
-                patch.object(fcntl, "ioctl", side_effect=ioctl):
+                patch.object(fcntl, "ioctl", side_effect=ioctl), \
+                self.pending_deadline_after_two_observations(supervisor) as observations:
             with self.assertRaisesRegex(LifecycleError, "^STARTUP_TIMEOUT$"):
-                await supervisor.start()
-        self.assertGreater(len(calls), 2)
+                await asyncio.wait_for(supervisor.start(), 8)
+        self.assertEqual(observations, [None, None])
+        self.assertEqual(len(calls), 3)  # prepare plus two actual observations
         self.assertIsNone(self.monitor._index)
         self.assertFalse(supervisor.ready)
         self.assertIsNone(supervisor.native)
