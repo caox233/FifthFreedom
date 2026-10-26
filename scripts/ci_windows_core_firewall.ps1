@@ -53,39 +53,69 @@ function Read-Snapshot {
         interface_types = @(Get-NetFirewallInterfaceTypeFilter -PolicyStore PersistentStore | Sort-Object InstanceID | Select-Object InstanceID,InterfaceType)
     }
 }
+function Check-Owned($Condition, [string]$Field, [string]$Code = 'FIREWALL_RULE_CHANGED') {
+    # A fixed field label identifies a failed readback without publishing policy
+    # values, executable paths, rule names or raw PowerShell exceptions.
+    $result.rule_check = $Field
+    Require $Condition $Code
+}
 function Read-Owned($Plan, [string]$Direction, [string]$Store, [bool]$Required) {
+    $result.rule_store = $Store; $result.rule_direction = $Direction
+    $result.application_path_case_insensitive_match = $null
     $name = 'ff-core-' + $Plan.probe_id + '-' + $Direction.ToLowerInvariant()
     # Enumerating first makes an absent owned name distinguishable from a failed query.
+    $result.rule_check = 'ENUMERATE'
     $rules = @(Get-NetFirewallRule -PolicyStore $Store | Where-Object { $_.Name -ceq $name })
-    if (!$Required -and $rules.Count -eq 0) { return $null }
-    Require ($rules.Count -eq 1) 'FIREWALL_RULE_CHANGED'
+    if (!$Required -and $rules.Count -eq 0) { $result.rule_check = 'ABSENT'; return $null }
+    Check-Owned ($rules.Count -eq 1) 'RULE_COUNT'
     $rule = $rules[0]
-    Require ($rule.Group -ceq ('ff-core-' + $Plan.probe_id) -and $rule.DisplayName -ceq $name -and
-        [string]$rule.Enabled -ceq 'True' -and [string]$rule.Profile -ceq 'Any' -and
-        [string]$rule.Direction -ceq $Direction -and [string]$rule.Action -ceq 'Block' -and
-        [string]$rule.EdgeTraversalPolicy -ceq 'Block' -and [string]$rule.LooseSourceMapping -ceq 'False' -and
-        [string]$rule.LocalOnlyMapping -ceq 'False') 'FIREWALL_RULE_CHANGED'
+    Check-Owned ($rule.Group -ceq ('ff-core-' + $Plan.probe_id)) 'GROUP'
+    Check-Owned ($rule.DisplayName -ceq $name) 'DISPLAY_NAME'
+    Check-Owned ([string]$rule.Enabled -ceq 'True') 'ENABLED'
+    Check-Owned ([string]$rule.Profile -ceq 'Any') 'PROFILE'
+    Check-Owned ([string]$rule.Direction -ceq $Direction) 'DIRECTION'
+    Check-Owned ([string]$rule.Action -ceq 'Block') 'ACTION'
+    Check-Owned ([string]$rule.EdgeTraversalPolicy -ceq 'Block') 'EDGE_TRAVERSAL'
+    Check-Owned ([string]$rule.LooseSourceMapping -ceq 'False') 'LOOSE_SOURCE_MAPPING'
+    Check-Owned ([string]$rule.LocalOnlyMapping -ceq 'False') 'LOCAL_ONLY_MAPPING'
     if ($Store -ceq 'ActiveStore') {
-        Require ([string]$rule.PrimaryStatus -ceq 'OK' -and [string]$rule.EnforcementStatus -ceq 'Full') 'FIREWALL_POLICY_UNAVAILABLE'
+        Check-Owned ([string]$rule.PrimaryStatus -ceq 'OK') 'PRIMARY_STATUS' 'FIREWALL_POLICY_UNAVAILABLE'
+        Check-Owned ([string]$rule.EnforcementStatus -ceq 'Full') 'ENFORCEMENT_STATUS' 'FIREWALL_POLICY_UNAVAILABLE'
     }
+    $result.rule_check = 'FILTER_QUERY'
     $app = @($rule | Get-NetFirewallApplicationFilter)
     $port = @($rule | Get-NetFirewallPortFilter)
     $address = @($rule | Get-NetFirewallAddressFilter)
     $service = @($rule | Get-NetFirewallServiceFilter)
     $interface = @($rule | Get-NetFirewallInterfaceFilter)
     $type = @($rule | Get-NetFirewallInterfaceTypeFilter)
-    Require ($app.Count -eq 1 -and $app[0].Program -ceq $Plan.core_path -and $app[0].Package -ceq 'Any' -and
-        $port.Count -eq 1 -and [string]$port[0].Protocol -ceq 'Any' -and [string]$port[0].LocalPort -ceq 'Any' -and
-        [string]$port[0].RemotePort -ceq 'Any' -and $address.Count -eq 1 -and
-        [string]$address[0].LocalAddress -ceq 'Any' -and [string]$address[0].RemoteAddress -ceq 'Any' -and
-        $service.Count -eq 1 -and $service[0].Service -ceq 'Any' -and
-        $interface.Count -eq 1 -and [string]$interface[0].InterfaceAlias -ceq 'Any' -and
-        $type.Count -eq 1 -and [string]$type[0].InterfaceType -ceq 'Any') 'FIREWALL_RULE_CHANGED'
+    Check-Owned ($app.Count -eq 1) 'APPLICATION_COUNT'
+    $result.application_path_case_insensitive_match = [string]::Equals(
+        [string]$app[0].Program, [string]$Plan.core_path, [StringComparison]::OrdinalIgnoreCase)
+    # Deliberately retain the failing strict predicate until actual Windows
+    # readback identifies the field. The diagnostic does not relax admission.
+    Check-Owned ($app[0].Program -ceq $Plan.core_path) 'APPLICATION_PATH'
+    Check-Owned ($app[0].Package -ceq 'Any') 'APPLICATION_PACKAGE'
+    Check-Owned ($port.Count -eq 1) 'PORT_COUNT'
+    Check-Owned ([string]$port[0].Protocol -ceq 'Any') 'PROTOCOL'
+    Check-Owned ([string]$port[0].LocalPort -ceq 'Any') 'LOCAL_PORT'
+    Check-Owned ([string]$port[0].RemotePort -ceq 'Any') 'REMOTE_PORT'
+    Check-Owned ($address.Count -eq 1) 'ADDRESS_COUNT'
+    Check-Owned ([string]$address[0].LocalAddress -ceq 'Any') 'LOCAL_ADDRESS'
+    Check-Owned ([string]$address[0].RemoteAddress -ceq 'Any') 'REMOTE_ADDRESS'
+    Check-Owned ($service.Count -eq 1) 'SERVICE_COUNT'
+    Check-Owned ($service[0].Service -ceq 'Any') 'SERVICE'
+    Check-Owned ($interface.Count -eq 1) 'INTERFACE_COUNT'
+    Check-Owned ([string]$interface[0].InterfaceAlias -ceq 'Any') 'INTERFACE_ALIAS'
+    Check-Owned ($type.Count -eq 1) 'INTERFACE_TYPE_COUNT'
+    Check-Owned ([string]$type[0].InterfaceType -ceq 'Any') 'INTERFACE_TYPE'
+    $result.rule_check = 'VERIFIED'
     return $rule
 }
 $result = [ordered]@{ schema=1; mode=$Mode; succeeded=$false; active_rules_verified=$false;
     armed=$false; owned_rules_removed=$false; original_policy_unchanged=$false; exact_drain_verified=$false;
-    application_path_rules=$true; pid_isolation=$false; packet_behavior_verified=$false; policy_enabled_or_changed=$false }
+    application_path_rules=$true; pid_isolation=$false; packet_behavior_verified=$false; policy_enabled_or_changed=$false;
+    rule_check=$null; rule_store=$null; rule_direction=$null; application_path_case_insensitive_match=$null }
 try {
     Require ($env:GITHUB_ACTIONS -ceq 'true' -and $env:RUNNER_ENVIRONMENT -ceq 'github-hosted' -and
         $env:ImageOS -cin @('win25','win25-vs2026')) 'FIREWALL_HOST_REQUIRED'

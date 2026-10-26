@@ -18,6 +18,11 @@ def manifest():
         'core_sha256':'2'*64,'source_tree_sha256':'3'*64,'build_recipe_sha256':'4'*64,'inert_profile_sha256':'5'*64}
 
 
+def firewall_diagnostic():
+    return {'rule_check':'APPLICATION_PATH', 'rule_store':'PersistentStore',
+        'rule_direction':'Inbound', 'application_path_case_insensitive_match':True}
+
+
 def managed():
     inputs=manifest()
     row={key:True for key in runtime.BOOL_FIELDS}
@@ -44,6 +49,19 @@ def compiled():
 
 
 class RuntimeAdapterTests(unittest.TestCase):
+    def test_non_finalize_cannot_restore_a_preexisting_control_directory(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);control=root/'ff-owned-core-runtime-control';control.mkdir()
+            (control/'firewall-plan.json').write_text('{"prior":"do not modify"}')
+            (control/'session.json').write_text('{"prior":"do not modify"}')
+            before={p.name:p.read_bytes() for p in control.iterdir()}
+            env={'GITHUB_ACTIONS':'true','RUNNER_ENVIRONMENT':'github-hosted','ImageOS':'win25','RUNNER_TEMP':str(root)}
+            with patch.object(runtime,'ROOT',root),patch.object(runtime.sys,'platform','win32'),patch.dict(runtime.os.environ,env), \
+                patch.object(runtime.sys,'argv',['adapter']),patch.object(runtime,'run') as run,patch.object(runtime,'restore') as restore:
+                self.assertEqual(runtime.main(),1)
+                run.assert_not_called();restore.assert_not_called()
+            self.assertEqual({p.name:p.read_bytes() for p in control.iterdir()},before)
+
     def test_completed_finalize_is_read_only_and_cannot_swallow_restore_failure(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);output=root/'artifacts/ci/owned-core-runtime.json';output.parent.mkdir(parents=True)
@@ -123,11 +141,25 @@ class RuntimeAdapterTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);session={'manifest':manifest(),'manifest_path':str(root/'private.json')}
             def process(*args,**kwargs):
-                (root/'prepare.json').write_text(json.dumps({'schema':1,'mode':'Prepare','succeeded':False,'error_code':'FIREWALL_POLICY_UNAVAILABLE'}))
+                (root/'prepare.json').write_text(json.dumps({'schema':1,'mode':'Prepare','succeeded':False,
+                    'error_code':'FIREWALL_POLICY_UNAVAILABLE', **firewall_diagnostic(), 'private_extra':'raw private data'}))
                 return subprocess.CompletedProcess(args,1,b'private raw output',b'private exception')
+            observations=[]
             with patch.object(runtime,'powershell',side_effect=process):
-                with self.assertRaisesRegex(ValueError,'^FIREWALL_POLICY_UNAVAILABLE$'):runtime.firewall('Prepare',session,root)
+                with self.assertRaisesRegex(ValueError,'^FIREWALL_POLICY_UNAVAILABLE$'):runtime.firewall('Prepare',session,root,observations)
+            self.assertEqual(observations,[{'mode':'Prepare',**firewall_diagnostic()}])
+            self.assertNotIn('private',json.dumps(observations))
             self.assertEqual(runtime.fixed_error(ValueError('private raw path')),'RUNTIME_OPERATION_FAILED')
+
+    def test_firewall_observation_rejects_unknown_or_raw_diagnostics(self):
+        original={'schema':1,'mode':'Prepare',**firewall_diagnostic()}
+        runtime.firewall_observation(original,'Prepare')
+        for key,value in (('schema',True),('rule_check',[]),('rule_check','APPLICATION_PATH/private'),('rule_store','private'),
+            ('rule_direction','Inbound/private'),('application_path_case_insensitive_match',1)):
+            with self.assertRaises(ValueError):runtime.firewall_observation({**original,key:value},'Prepare')
+        for key in firewall_diagnostic():
+            changed=dict(original);del changed[key]
+            with self.assertRaises(ValueError):runtime.firewall_observation(changed,'Prepare')
 
     def test_armed_restore_without_matching_drain_must_fail(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -136,7 +168,8 @@ class RuntimeAdapterTests(unittest.TestCase):
                 keys=('active_rules_verified','armed','owned_rules_removed','original_policy_unchanged','exact_drain_verified',
                     'application_path_rules','pid_isolation','packet_behavior_verified','policy_enabled_or_changed')
                 row={key:False for key in keys};row.update(schema=1,mode='Restore',succeeded=True,probe_id=manifest()['probe_id'],
-                    armed=True,owned_rules_removed=True,original_policy_unchanged=True,application_path_rules=True)
+                    armed=True,owned_rules_removed=True,original_policy_unchanged=True,application_path_rules=True,
+                    **firewall_diagnostic())
                 (root/'restore.json').write_text(json.dumps(row))
                 return subprocess.CompletedProcess(args,0,b'',b'')
             with patch.object(runtime,'powershell',side_effect=process):

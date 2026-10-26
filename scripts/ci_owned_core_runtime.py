@@ -24,6 +24,7 @@ STAGES = frozenset('INPUT HOST PREFLIGHT CONFIGURATION START OBSERVE WRONG_SOURC
 ERRORS = frozenset('INPUT_REJECTED HOST_REJECTED KERNEL_PREFLIGHT_FAILED CONFIGURATION_FAILED CORE_START_FAILED CORE_OBSERVATION_FAILED WRONG_SOURCE_FAILED NORMAL_CLEANUP_OBSERVATION_FAILED RUNTIME_FAILED CORE_EXITED_BEFORE_NIC_ABSENT NIC_ABSENT_BEFORE_END_READS FOREIGN_KERNEL_CHANGED NIC_CLEANUP_OBSERVATION_TIMEOUT SUBNET_CONFLICT ADAPTER_COLLISION NIC_UNAVAILABLE CORE_EXITED_DURING_OBSERVATION WRONG_SOURCE_ACCEPTED RPC_PORT_UNAVAILABLE'.split())
 CLEANUP_ERRORS = frozenset('READ_CLOSE_FAILED EXACT_JOB_DRAIN_FAILED KERNEL_NOT_RESTORED KERNEL_POSTFLIGHT_FAILED INPUT_STILL_PINNED CONFIGURATION_CLEANUP_FAILED'.split())
 FIREWALL_CODES = frozenset('FIREWALL_INPUT_INVALID FIREWALL_POLICY_UNAVAILABLE FIREWALL_RULE_CHANGED FIREWALL_HOST_REQUIRED FIREWALL_STATE_EXISTS FIREWALL_IMAGE_CHANGED FIREWALL_DRAIN_UNCONFIRMED FIREWALL_RESTORE_FAILED FIREWALL_BASELINE_CHANGED FIREWALL_OPERATION_FAILED'.split())
+FIREWALL_CHECKS = frozenset('ENUMERATE ABSENT RULE_COUNT GROUP DISPLAY_NAME ENABLED PROFILE DIRECTION ACTION EDGE_TRAVERSAL LOOSE_SOURCE_MAPPING LOCAL_ONLY_MAPPING PRIMARY_STATUS ENFORCEMENT_STATUS FILTER_QUERY APPLICATION_COUNT APPLICATION_PATH APPLICATION_PACKAGE PORT_COUNT PROTOCOL LOCAL_PORT REMOTE_PORT ADDRESS_COUNT LOCAL_ADDRESS REMOTE_ADDRESS SERVICE_COUNT SERVICE INTERFACE_COUNT INTERFACE_ALIAS INTERFACE_TYPE_COUNT INTERFACE_TYPE VERIFIED'.split())
 CODES = FIREWALL_CODES | frozenset('RUNTIME_HOST_REQUIRED RUNTIME_BUILD_INVALID RUNTIME_INPUT_CHANGED RUNTIME_REPORT_INVALID RUNTIME_DRIVER_STATE_INVALID RUNTIME_FIREWALL_FAILED RUNTIME_PROCESS_FAILED RUNTIME_RESULT_FAILED RUNTIME_RESTORE_UNCONFIRMED RUNTIME_INPUT_INVALID'.split())
 
 
@@ -127,13 +128,30 @@ def driver_inventory(phase):
     return value
 
 
-def firewall(mode, session, control):
+def firewall_observation(value, mode):
+    require(type(value) is dict and type(value.get('schema')) is int and value['schema'] == 1
+        and value.get('mode') == mode, 'RUNTIME_FIREWALL_FAILED')
+    fields = ('rule_check', 'rule_store', 'rule_direction', 'application_path_case_insensitive_match')
+    require(all(key in value for key in fields), 'RUNTIME_FIREWALL_FAILED')
+    require(value['rule_check'] is None or (type(value['rule_check']) is str
+        and value['rule_check'] in FIREWALL_CHECKS), 'RUNTIME_FIREWALL_FAILED')
+    require(value['rule_store'] in (None, 'ActiveStore', 'PersistentStore')
+        and value['rule_direction'] in (None, 'Inbound', 'Outbound')
+        and (value['application_path_case_insensitive_match'] is None
+             or type(value['application_path_case_insensitive_match']) is bool), 'RUNTIME_FIREWALL_FAILED')
+    return {'mode': mode, **{key: value[key] for key in fields}}
+
+
+def firewall(mode, session, control, observations=None):
     report = control / (mode.lower() + '.json')
     args = ['-Mode', mode, '-Manifest', session['manifest_path'], '-State', str(control / 'firewall-plan.json'), '-Report', str(report)]
     if mode == 'Restore':
         args += ['-DrainReport', str(control / 'managed.json')]
     result = powershell('ci_windows_core_firewall.ps1', args)
     value = decode(report.read_bytes())
+    observation = firewall_observation(value, mode)
+    if observations is not None:
+        observations.append(observation)
     if type(value) is dict and value.get('error_code') in FIREWALL_CODES:
         raise ValueError(value['error_code'])
     require(result.returncode == 0 and type(value) is dict and value.get('schema') == 1 and value.get('mode') == mode
@@ -201,8 +219,8 @@ def run(report, control, temp):
         core_identity=pin, helper_identity=helper_pin, inert_profile_sha256=manifest['inert_profile_sha256'],
         official_dll={'bytes': dependency.MEMBER_BYTES, 'sha256': dependency.MEMBER_SHA})
     report['driver_before'] = driver_inventory('Before')
-    report['firewall_prepare'] = firewall('Prepare', session, control)
-    report['firewall_arm'] = firewall('Arm', session, control)
+    report['firewall_prepare'] = firewall('Prepare', session, control, report.setdefault('firewall_checks', []))
+    report['firewall_arm'] = firewall('Arm', session, control, report.setdefault('firewall_checks', []))
     require(dependency.image_identity(helper) == helper_pin and dependency.image_identity(core) == pin
         and dependency.sha((stage / 'wintun.dll').read_bytes()) == dependency.MEMBER_SHA, 'RUNTIME_INPUT_CHANGED')
     # Arm is durable before dispatch. Any missing cleanup report leaves the two path blocks in place.
@@ -228,7 +246,7 @@ def restore(report, control):
         require(existing.get('succeeded') is True and existing.get('owned_rules_removed') is True
             and existing.get('original_policy_unchanged') is True, 'RUNTIME_RESTORE_UNCONFIRMED')
     else:
-        report['firewall_restore'] = firewall('Restore', session, control)
+        report['firewall_restore'] = firewall('Restore', session, control, report.setdefault('firewall_checks', []))
 
 
 def main():
@@ -265,12 +283,16 @@ def main():
         # and the PowerShell path rule do; production input pinning checks the
         # actual handles/reparse boundaries independently.
         temp = Path(os.path.abspath(os.environ['RUNNER_TEMP']))
-        control = temp / 'ff-owned-core-runtime-control'
+        candidate_control = temp / 'ff-owned-core-runtime-control'
         if args.finalize:
+            control = candidate_control
             require(control.is_dir(), 'RUNTIME_RESTORE_UNCONFIRMED')
             restore(report, control)
             raise ValueError('RUNTIME_PROCESS_FAILED')
-        control.mkdir(exist_ok=False)
+        candidate_control.mkdir(exist_ok=False)
+        # A failed exclusive mkdir must not authorize Restore on another
+        # invocation's existing session. Explicit --finalize is separate.
+        control = candidate_control
         run(report, control, temp)
         report['passed'] = True
     except Exception as error:
