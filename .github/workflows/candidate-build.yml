@@ -107,13 +107,29 @@ jobs:
             ${{ runner.temp }}/ff-windows-iis/restore.json
           if-no-files-found: warn
           retention-days: 14
-      - name: Preserve compile-only components, checksums and build evidence
-        if: always()
+      - name: Stage only the verified public Windows payload including pinned source files
+        id: windows_public_payload
+        run: >-
+          python -B scripts/ci_artifact_publication.py --lane windows-components
+          --destination "${{ runner.temp }}/ff-public-windows-payload"
+          --commit "${{ github.sha }}" --run-id "${{ github.run_id }}" --run-attempt "${{ github.run_attempt }}"
+      - name: Preserve the exact public Windows payload and complete source inventory
+        if: ${{ steps.windows_public_payload.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: windows-compile-only-components-${{ github.sha }}
+          path: ${{ runner.temp }}/ff-public-windows-payload/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve Windows build evidence separately with default hidden-file exclusion
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-component-build-evidence-${{ github.sha }}
           path: |
             artifacts/ci/windows-components/
+            !artifacts/ci/windows-components/components/**
             artifacts/ci/source-receipt.json
             artifacts/ci/test-logs/
             artifacts/logs/
@@ -248,13 +264,29 @@ jobs:
           sudo apt-get install --yes --no-install-recommends libsodium23 libsqlite3-0 libssl3t64
       - name: Verify same-run identities and require read-only deployment preflight
         run: python -B scripts/ci_candidate.py linux-public-server-integrity
-      - name: Preserve component-only identity evidence without releasing or deploying
-        if: always()
+      - name: Stage only the verified component candidate including pinned source files
+        id: assembly_public_payload
+        run: >-
+          python -B scripts/ci_artifact_publication.py --lane linux-public-server-integrity
+          --destination "${{ runner.temp }}/ff-public-server-payload"
+          --commit "${{ github.sha }}" --run-id "${{ github.run_id }}" --run-attempt "${{ github.run_attempt }}"
+      - name: Preserve the exact public component candidate and complete source inventory
+        if: ${{ steps.assembly_public_payload.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: linux-public-server-component-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/ff-public-server-payload/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve identity build evidence separately with default hidden-file exclusion
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-public-server-build-evidence-${{ github.sha }}
           path: |
             artifacts/ci/linux-public-server-integrity/
+            !artifacts/ci/linux-public-server-integrity/candidate/**
             artifacts/logs/
           if-no-files-found: warn
           retention-days: 14
