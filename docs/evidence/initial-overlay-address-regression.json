@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "historical_failure_run": 40374509451,
+  "historical_failure_artifact": 12675063007,
+  "historical_artifact_sha256": "b892275ea8b8aa06ff81ef480166b681793be216214e8824b4d182f418ff80e6",
+  "historical_checkout_commit": "d189ae87293d0fcdfc5233fe6d4cf86e8f5cceec",
+  "historical_failure": {
+    "role": "initiator",
+    "query_stage": "ipv4_address",
+    "errno_class": "EADDRNOTAVAIL",
+    "link_up": false,
+    "previously_observed": false
+  },
+  "before_new_tests": {
+    "executed": 2,
+    "errors": 1,
+    "failures": 1,
+    "exit": 1
+  },
+  "after_focused": {
+    "executed": 4,
+    "passed": 4,
+    "exit": 0
+  },
+  "proof_limits": {
+    "owned_child_and_namespace_real": true,
+    "missing_ipv4_errno_from_readonly_kernel_ioctl": true,
+    "interface_flags_and_tun_metadata_synthetic": true,
+    "actual_tun_runtime_tested": false,
+    "hosted_rerun_verified": false,
+    "production_admission": false
+  },
+  "log_sha256": {
+    "before.log": "5e8d3f57d8d970c6579f08c645a05d5e36c78546049f72ba84a27022ff99b889",
+    "after-focused.log": "0e5fc4b8d1bb22181e34366241099020ae0468804366f4cb962e1591ce03346c",
+    "before-overlay_supervisor.py": "6e9e28a8d03ac2f493eace50a65eaa2cc965e8a48a835a5f163dfd332ac356fb"
+  },
+  "after_related_suites": [
+    {
+      "suite": "test_overlay_supervisor",
+      "passed": 26,
+      "exit": 0,
+      "log_sha256": "d21674caf5c2894519dcfc767920788e565d71020c3d65ee096fa2aac029c47e"
+    },
+    {
+      "suite": "test_ci_easytier_probe",
+      "passed": 34,
+      "exit": 0,
+      "log_sha256": "f39212be65c83f4b059c5e193be28686ad770adb474a094c575f91330ddf473b"
+    }
+  ],
+  "setup_order_source_evidence": {
+    "rust_tun_commit": "12378839e7985283df0e4fb536b7137230356db5",
+    "files": {
+      "src/platform/linux/device.rs": "5a89be71c38e10e3a4a52aaa8b6de06ac14db9710c0e49b2eb83bca65424b651",
+      "src/device.rs": "4c953de7de6f5ee256d03e25b00d15ea8765f0498eb045a9b6ea1b12ff322f66"
+    },
+    "ordering": "Device::new invokes tunsetiff before device.configure; configure calls enabled after optional address/MTU setup; EasyTier create_tun calls config.up then tun::create and add_ip is a later separate operation."
+  },
+  "implementation_commit": "ab002271db8570551ac8a16fe8f13e29fc3633f5",
+  "baseline_monitor_source": {
+    "path": "src/public/fifth_freedom_control/overlay_supervisor.py",
+    "commit": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
+    "sha256": "6e9e28a8d03ac2f493eace50a65eaa2cc965e8a48a835a5f163dfd332ac356fb"
+  },
+  "repaired_monitor_source": {
+    "path": "src/public/fifth_freedom_control/overlay_supervisor.py",
+    "commit": "ab002271db8570551ac8a16fe8f13e29fc3633f5",
+    "sha256": "d70b5b51eb3717529fc803333a6a60a6cba15749cac93b25172ed9b96ca78dc3"
+  }
+}

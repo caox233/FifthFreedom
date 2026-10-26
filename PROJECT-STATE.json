@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Original executor and normal GitHub access recovered; original c42 source, knowledge10 and both recovery bundles preserved. Source7c and knowledge5e pushed and verified; reviewed Windows diagnostics through d432382 published separately. The exact c42 owned composition and nine-phase matrix passed, but unchanged harnesses failed on newer 7c: QUERY_IMAGE_CHANGED with child cleanup unconfirmed, and first-interface EADDRNOTAVAIL before readiness. Those new code/runtime failures remain distinct from eight held SAV/META inputs and thirteen missing C71 fixtures. P2 actual Windows 28+9, Capture19, source checks and quick-match existing-room protocol2 passed within their recorded scope. Windows Package NULL correction passed actual checks; raw CIM enforcement is [InactiveProfile, Full], so Prepare still refuses. Unarmed Restore passed. No complete package, ordinary Public readiness or live multiplayer fix is claimed.",
-  "NEXT_EXECUTABLE_ACTION": "Reproduce and fix the exact short-lived query image/cleanup race and first TUN-address readiness failure with production regressions, then rerun the separate real hosted composition and transport matrix. Preserve Windows strict rejection while investigating documented authoritative enforcement semantics; do not treat mixed status as all Full. Publish reviewed source and source-bound DevDocs with every real result. Continue all six milestones and quick-match concurrent/cancellation triage; a complete candidate still requires genuine privacy-reviewed defaults or a reviewed reproducible generator, plus separate C71 fixture/provenance closure. Independent cloud implementation/builds require no user PC; no Goal scheduler interface is available.",
+  "LAST_CONFIRMED_RESULT": "Original cloud executor and normal GitHub access recovered, original source/knowledge heads and recovery bundles preserved. Source7c and knowledge5e published; subsequent reviewed repairs through aac0243 are pushed and verified on the diagnostic development ref. Exact c42 hosted composition/matrix successes and newer7c runtime failures are both retained. Initial DOWN/no-IPv4 readiness now has old-code failing controls and 26+34 passing related tests. Actual query-exit race reproduced before repair; repaired query passes 26 local/independent tests and 500 real invocations. Exact aac clean checkout passes 627 with two platform skips, package readiness false. Quick-match existing-room concurrent/ticket/leave protocol six passed, symptom still needs-triage. Windows raw enforcement remains [InactiveProfile, Full], strict refusal and successful unarmed Restore retained. Eight held SAV/META inputs and thirteen separate C71 replay inputs remain unavailable; no full package or real multiplayer fix is claimed.",
+  "NEXT_EXECUTABLE_ACTION": "Push the reviewed integration checkpoint and read its exact new hosted composition and transport-matrix results; local query/initial-link regressions do not replace those controls or exact cleanup proof. Keep the Windows hard refusal while a separate bounded read-only WFP diagnostic investigates the compiled filter shape; no policy or admission change is authorized by an inventory result. Synchronize exact source-bound DevDocs and preserve a new standalone recovery receipt without replacing originals. Continue all six milestones and quick-match empty-lobby/native-client triage. Complete packaging still needs genuine privacy-reviewed default inputs or a reviewed reproducible generator; C71 needs separate real fixture/provenance closure. Independent cloud work does not require the user PC, and no Goal scheduler interface exists.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -28,12 +28,12 @@
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "linux_actual_successes_retained_newer_composition_and_matrix_failures_under_repair_windows_enforcement_precondition_unsatisfied_public_closed"
+      "status": "linux_query_exit_and_initial_link_repairs_verified_locally_actual_new_matrix_and_composition_pending_windows_hard_precondition_public_closed"
     },
     {
       "id": 4,
       "name": "Reviewed public source and development knowledge base",
-      "status": "source7c_knowledge5e_and_separate_diagnostic_d432_published_verified_continuing_reviewed_updates"
+      "status": "source7c_knowledge5e_and_reviewed_repairs_through_aac_on_separate_development_ref_published_new_integration_snapshot_pending"
     },
     {
       "id": 5,
@@ -251,7 +251,7 @@
     "knowledge_snapshot_source": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
     "knowledge_snapshot_files": 231,
     "last_verified_remote_source_commit": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
-    "latest_reviewed_local_implementation_commit": "d432382803db60ded02b47cc334dc624ec23b219",
+    "latest_reviewed_local_implementation_commit": "aac0243825d7c6a04168df37cc712118f080a664",
     "latest_reviewed_local_implementation_pushed": true,
     "authentication_recovery": {
       "status": "recovered_actual_operations_verified",
@@ -273,7 +273,7 @@
     "knowledge_snapshot_delivery": "Source7c614c1 and knowledge5e7b258 pushed; exact remote SHAs and draft PR heads verified. The knowledge snapshot has 230 manifest files, 228 exact source mirrors and 63 code-map links independently checked against remote Git objects; newer diagnostic/failure records await the next source-bound snapshot.",
     "recovered_hosted_receipt": "docs/evidence/hosted-recovery-c42e0eb.json",
     "diagnostic_branch": "codex/firewall-diagnostic",
-    "diagnostic_remote_commit": "d432382803db60ded02b47cc334dc624ec23b219"
+    "diagnostic_remote_commit": "aac0243825d7c6a04168df37cc712118f080a664"
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -281,7 +281,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-26T19:14:05.996560+00:00",
+  "updated_utc": "2026-10-26T19:26:37.655620+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -1331,6 +1331,58 @@
     "recovered_7c_components": {
       "receipt": "docs/evidence/hosted-components-7c614c1.json",
       "scope": "Verified Windows full MSVC owned-read build, Linux peer-map71 full GNU build and selected actual Windows prerequisites; no full package or successful inert runtime claim."
+    },
+    "query_exit_transition": {
+      "commit": "aac0243825d7c6a04168df37cc712118f080a664",
+      "receipt": "docs/evidence/query-exit-transition-regression.json",
+      "actual_queries_passed": 500,
+      "focused_passed": 26,
+      "independent_focused_passed": 26,
+      "new_hosted_runtime_verified": false
+    },
+    "initial_link_pending": {
+      "commit": "ab002271db8570551ac8a16fe8f13e29fc3633f5",
+      "receipt": "docs/evidence/initial-overlay-address-regression.json",
+      "focused_monitor_passed": 26,
+      "related_probe_passed": 34,
+      "new_hosted_runtime_verified": false
+    },
+    "quick_match_protocol_followup": {
+      "commit": "790b1793085d6f940c107945e8c0e987598ba365",
+      "receipt": "docs/evidence/quick-match-protocol-regressions.json",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "independently_rerun": true,
+      "live_symptom_reproduced": false,
+      "status": "needs-triage"
+    },
+    "clean_source_runtime_repairs": {
+      "source_commit": "aac0243825d7c6a04168df37cc712118f080a664",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
+      "exit_code": 0,
+      "executed": 629,
+      "passed": 627,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "79191c9bdb4a4ebfa384fffdd846b272d34c49250da0cfa0c39919dda8ba72e3",
+      "retained_log_sha256": "49f2d44d6f74c55390df4b828eda931b08a8fe7a046b2e6188e9008f67ec1b40"
+    },
+    "canonical_patch_runtime_repairs": {
+      "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "target": "aac0243825d7c6a04168df37cc712118f080a664",
+      "patch_sha256": "425cab159effd66e45e636eb076012952b4f03adbbe578142627a69ef86c3fc7",
+      "patch_bytes": 4420053,
+      "changed_paths": 491,
+      "original_paths_verified": 1312,
+      "forward_exact_bytes_modes_paths": 1745,
+      "reverse_exact_bytes_modes_paths": 1312,
+      "reverse_git_clean": true,
+      "public_file_subprocess_umask": "022",
+      "private_original_four_roles_changed": false,
+      "baseline_materialization": "canonical Git blobs and modes; attribute-driven checkout CRLF conversion excluded",
+      "scope": "supplemental cloud source patch, not a replacement for original private four-role evidence"
     }
   }
 }

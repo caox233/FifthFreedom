@@ -120,3 +120,25 @@ profiles. Next establish whether documented authoritative current-interface and
 active-profile evidence can prove the intended boundary; otherwise retain the
 hard platform precondition. Neither a successful pure fixture nor rule cleanup
 proves runtime packet confinement or the full owned core/NIC lifecycle.
+
+## Documented limits of an active-profile alternative
+
+The [MSFT_NetFirewallRule contract](https://learn.microsoft.com/en-us/windows/win32/fwp/wmi/wfascimprov/msft-netfirewallrule)
+does not map each EnforcementStatus array member to a profile or interface.
+`Profile Any` and an active-profile snapshot therefore cannot establish complete
+coverage from the observed mixed values. Also,
+[ExcludedInterfaces](https://learn.microsoft.com/en-us/windows/win32/api/netfw/nf-netfw-inetfwpolicy2-get_excludedinterfaces)
+can exempt interface traffic from Windows Firewall; this has not been measured
+on the runner and is not asserted as its actual failure cause. The experiment
+creates a NIC after Arm, so independent before/after snapshots do not prove
+protection throughout execution. The current hard refusal remains appropriate.
+
+A concrete next investigation is a bounded read-only WFP transaction inspecting
+the compiled filters for the exact staging AppID at both IPv4/IPv6 ALE connect
+and receive/accept layers. It must account for every condition, disabled state,
+provider/sublayer and [filter arbitration](https://learn.microsoft.com/en-us/windows/win32/fwp/filter-arbitration);
+finding one Block filter alone is not proof. This is an investigation proposal,
+not an implemented replacement admission gate. Dynamic WFP sessions are not a
+shortcut: their automatic object deletion on session end conflicts with retaining
+the block whenever exact child drain is unknown. No policy/profile change or new
+WFP implementation was made by this documentation research.

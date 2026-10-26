@@ -11,6 +11,20 @@ thirteen replay checks still lack reviewed fixture/provenance. See the
 [recovery task](tasks/cloud-authentication-recovery.md) and
 [candidate delivery requirements](DEVELOPMENT-CANDIDATE-TESTING.md).
 
+Latest reviewed repair checkpoint `aac0243825d7c6a04168df37cc712118f080a664`
+is pushed and remote-verified on the separate development ref. Its fresh clean
+checkout passes627 with2 platform skips (629 total), exit0, unchanged tracked
+files and `complete_package_ready:false`; report SHA256 is
+`79191c9bdb4a4ebfa384fffdd846b272d34c49250da0cfa0c39919dda8ba72e3`.
+The [initial-link repair](evidence/initial-overlay-address-regression.json)
+and [query-exit repair](evidence/query-exit-transition-regression.json) retain
+real old-code failing controls, focused passing regressions and independent
+review. The query also passes500 real invocations with96 pending exit
+observations. New hosted matrix/composition controls are still required.
+The [quick-match suite](evidence/quick-match-protocol-regressions.json) now
+passes6 existing-room concurrent/ticket/LeaveSession controls; the reported
+same-game symptom remains needs-triage, without empty-lobby or real-game proof.
+
 Further reviewed source `6ecfdb4` is also pushed and remote-verified. Its
 [local-only pipe check](evidence/hosted-local-pipe-6ecfdb.json) passed actual
 Windows28 return checks plus9 final-launch checks, zero skips, including real

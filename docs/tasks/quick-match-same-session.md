@@ -66,6 +66,26 @@ was reproduced or fixed, and the task remains **needs-triage**.
 
 ## Next unified candidate acceptance
 
+Test-only `790b1793085d6f940c107945e8c0e987598ba365` extends the focused suite
+to **six passed, zero failed/ignored**, independently rerun with the same result.
+Official/MOD cases now use independently scheduled clients for concurrent
+existing-room Search/Join, exercise exact old-ticket closure without invalidating
+a previously established replacement ticket, and call real LeaveSession while
+checking serialized final rosters retain the other client and host. This is room
+departure, not an established matchmaking-queue cancellation contract. The first
+test-helper compile failure and corrected result are retained in
+[the regression receipt](../evidence/quick-match-protocol-regressions.json).
+
+Seven key LAN source files remain byte-identical to the handoff `fc8ef510`.
+Compared with donor, retained LAN uses a single WAL read snapshot, current
+run/ticket/release/mode admission, complete host encoding and exact-ticket
+disconnect cleanup. Donor uses separate pool reads, username/JSON mode snapshots
+and user-wide session cleanup. These are implementation differences, not a
+confirmed cause; the user's installed original1.1 binary is not bound to the
+handoff commit. The available public historical references contain no matching
+two-client matchmaking request replay. Empty-lobby Search/Create/Join order,
+native selection/P2P, notification delivery and real same-game entry remain open.
+
 Once a complete, admitted candidate is downloadable, use at least two real
 clients on the same server and mode. Select quick matching independently and
 confirm both enter the **same room/game**, rather than each reaching a separate

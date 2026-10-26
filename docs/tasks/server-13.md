@@ -12,6 +12,22 @@ acceptance.
 
 ## Fixed scope and inputs
 
+Fix `ab002271db8570551ac8a16fe8f13e29fc3633f5` now keeps only the initial
+`EADDRNOTAVAIL` observation pending even while the new link is down. The pinned
+TUN source creates the interface before enabling/addressing it. Existing owner,
+namespace and image checks and the finite startup deadline remain in force;
+no interface identity or native readiness is published until a full valid
+observation. Once an interface identity was committed, address loss still fails.
+Wrong addresses, unexpected errno and other invalid observations still fail.
+
+The [focused regression receipt](../evidence/initial-overlay-address-regression.json)
+records two failures on the old code, four passing new focused cases and all
+26 monitor plus34 probe tests passing. Independent review reran the old/new
+controls. Owned children and the read-only missing-address errno are real;
+interface flags/TUN metadata are synthetic, so a fresh hosted matrix remains
+required. This fixes a demonstrated startup window without claiming all causes
+of the hosted failure or runtime stability are resolved.
+
 `scripts/ci_easytier_probe.py` is an explicit development operation for a
 GitHub-hosted Linux runner with existing TUN, NET_ADMIN and SYS_ADMIN privileges.
 It is separate from the build-only workflow. It never installs a driver, runs the

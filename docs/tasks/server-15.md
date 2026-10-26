@@ -11,10 +11,13 @@ peer-map71 runtime or Windows owned-core/NIC chain.
 The [new verified receipt](../evidence/hosted-failures-7c614c1.json) records
 `CHILD_START_CLEANUP_UNCONFIRMED` and `STACK_WORKER_CLEANUP_FAILED`. Two namespaces
 and the private staging tree were removed, but that does not prove the exact
-child was drained. The peer-loss case did not run. Query/worker code is identical
-to successful c42. The next implementation must reproduce the actual short-lived
-query identity/exit boundary, retain live image mismatch rejection and exact
-ownership, and separately prove cleanup; it must not invent a successful drain.
+child was drained. The peer-loss case did not run. Query/worker code was identical
+to successful c42. The subsequent `aac024382` fix reproduces an actual short-lived
+query exit transition, retains live mismatch rejection and exact ownership, and
+passes 26 focused tests plus500 real query invocations. See
+[the regression receipt](../evidence/query-exit-transition-regression.json).
+A fresh hosted composition must still prove both controls and cleanup; local
+query success cannot replace the missing historical drain evidence.
 
 ## Problem and implementation
 
