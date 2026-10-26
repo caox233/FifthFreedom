@@ -1,5 +1,29 @@
 # Cloud implementation evidence
 
+The next published source `2429db8` exposed a Windows metadata portability
+failure before artifact publication. Source run `40419346353` passed Linux
+665 with 2 skips, but Windows had 546 passes, 116 skips and five failed methods
+(two failure plus five error events). Those failures converge on the publication
+inventory's regular-file/link-count predicate. Candidate Windows job
+`121909579406` also stopped at source checks and published no component payload.
+See the [bounded failure and correction](evidence/artifact-windows-metadata-regression.json).
+
+Reviewed correction `c3ce3a6` uses fresh `Path.lstat()` metadata instead of
+`DirEntry.stat()`. The documented Windows directory-enumeration metadata can omit
+fields needed by the link-count check; the failed hosted log did not record their
+actual values. All link, reparse-point, file-type and exact-inventory predicates
+remain unchanged. Eleven focused checks pass locally and independently, including
+an actual hard link, a simulated incomplete directory entry and fresh reparse
+rejection. The old helper fails the incomplete-entry negative control.
+
+Its clean checkout passes 668 with 2 platform skips (670 total), tracked source
+unchanged. The supplemental patch applies/reverses exact canonical bytes, modes
+and paths. These are local proofs; the next actual hosted Windows run and
+subsequent official artifact round trip remain required. The original failed
+source/run receipts are preserved. Full-package and separate C71 holds are unchanged.
+
+The following records describe earlier checkpoints.
+
 Current continuation at published source `9139c9e` and knowledge `2c39063`:
 normal cloud execution/GitHub access works and both recovery generations remain
 preserved. The [final exact-source result](evidence/hosted-final-9139c9e.json)

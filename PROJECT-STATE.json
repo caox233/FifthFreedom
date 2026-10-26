@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Original cloud workspace is connected at revision 4 and both repositories are clean at published source 9139c9e / knowledge 2c39063 on resume. Original and latest recovery bundles match their retained digests. Exact 9139 source workflow passed Linux 649+2 skips and Windows 536+115 skips; Linux LAN passed 519 and the guard3 QUIC/WSS/TCP matrix passed all nine phases with six namespaces removed. Candidate finished six successful jobs, four failures and one skipped full package: besides the eight-save and thirteen-C71 gates, lifecycle/composition failed early because upload omitted five pinned hidden MemoryModule source files. Downloaded artifact checks and the real read-only validator reproduce the missing input; no new composition or cleanup success is claimed. Strict Windows firewall refusal remains. No held default input exists in this workspace; quick matching stays needs-triage. Reviewed fixed-input diagnostics and bounded public artifact staging are implemented through dc55a933. A clean checkout passes 665 with two skips, source unchanged; canonical patch apply/reverse passes. The first integrated classification failure is retained; new hosted transfer/runtime verification is pending.",
-  "NEXT_EXECUTABLE_ACTION": "Publish the reviewed artifact/diagnostic repair checkpoint, bind the knowledge snapshot and read its exact new hosted results. Verify every declared hidden source file after actual GitHub upload/download, then complete the native lifecycle/composition controls and preserve honest cleanup outcomes. Continue all six goals. Full packaging still includes default-save restoration and requires privacy-reviewed genuine originals; no reduced test-edition profile is enabled or admitted. Existing complete-package/C71 gates and accepted gameplay results remain unchanged; no game/capture, ordinary Public startup, formal Release or production deployment.",
+  "LAST_CONFIRMED_RESULT": "Published source 2429db8 and knowledge c1f8d1d retain the prior runtime and package-input evidence. Source run 40419346353 passed Linux 665 plus 2 skips but failed Windows at the new publication inventory link-count predicate: five failed methods, two failure and five error events. Candidate Windows also stopped before publishing its payload. Reviewed c3ce3a6 reads fresh Path.lstat metadata, retaining all link/reparse/type/inventory predicates. Eleven focused checks pass locally and independently; exact clean source passes 668 plus 2 skips, tracked source unchanged. The canonical supplemental patch applies/reverses exactly. This is not a new hosted Windows or package result. Eight genuine save inputs remain privacy-held; thirteen separate C71 inputs and strict Windows firewall admission remain unresolved. Accepted live results and all six goals remain preserved.",
+  "NEXT_EXECUTABLE_ACTION": "Publish the reviewed Windows metadata fix and its bounded failure evidence, verify the exact new hosted source/candidate results, then download and validate all declared artifact files including the five hidden MemoryModule sources. Continue native lifecycle/composition and preserve exact cleanup outcomes. Sync the source-bound knowledge snapshot. Full packaging still includes default-save restoration and requires privacy-reviewed genuine originals; no reduced test-edition profile is enabled. Continue all six goals without game/capture, ordinary Public startup, formal Release or production deployment.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -247,11 +247,11 @@
     "candidate_linux_matrix": "Exact 9139 matrix40397583543 passed nine QUIC/WSS/TCP phases; six namespaces removed, exact core exit/TUN absence/new-traffic refusal verified. This is guard3 finite development evidence, not peer-map71/native-lease/Public/live acceptance.",
     "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
     "candidate_component_result": "Exact 9139 candidate: six success, four failure, one skipped complete package. Windows component and assembly runner builds succeeded but uploaded artifacts omit five declared hidden source files (45/50 notices and 57/62 candidate files). Read-only production validation reproduces the same early missing-input failure; lifecycle and composition have no new runtime success. Eight save and thirteen C71 gates remain distinct.",
-    "knowledge_snapshot_commit": "2c3906335ebfff2b2cc798fd7b4e706c93e02ec2",
-    "knowledge_snapshot_source": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
-    "knowledge_snapshot_files": 291,
-    "last_verified_remote_source_commit": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
-    "latest_reviewed_local_implementation_commit": "dc55a9337bf13b8bc53b22f734d0ba6151e7379f",
+    "knowledge_snapshot_commit": "c1f8d1d576a01a82bf1300e5d10d25aba74a205e",
+    "knowledge_snapshot_source": "2429db80264d4c2fd5b68260b23523308369e10f",
+    "knowledge_snapshot_files": 295,
+    "last_verified_remote_source_commit": "2429db80264d4c2fd5b68260b23523308369e10f",
+    "latest_reviewed_local_implementation_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
     "latest_reviewed_local_implementation_pushed": false,
     "authentication_recovery": {
       "status": "recovered_actual_operations_verified",
@@ -270,7 +270,7 @@
     },
     "hosted_results_unobserved_after_authentication_failure": [],
     "duplicate_cancellations_confirmed": false,
-    "knowledge_snapshot_delivery": "Source9139 and knowledge2c39063 published; exact remote and PR heads independently verified, 290 manifest entries/288 mirrors/70 links and canonical modes checked. New standalone source1802/knowledge291-file recovery bundles were verified offline and independently rehashed; they remain local while the public Git refs are remote.",
+    "knowledge_snapshot_delivery": "Source 2429db8 and knowledge c1f8d1d published; exact remote and PR heads verified. Independent pre-push review checked 294 manifest entries, 292 exact mirrors and 72 code-map links against local/remote source Git objects, including canonical modes and BAT bytes. Earlier standalone recovery bundles for source 9139 / knowledge 2c39063 remain preserved locally; no new c3ce recovery bundle is claimed.",
     "recovered_hosted_receipt": "docs/evidence/hosted-recovery-c42e0eb.json",
     "diagnostic_branch": "codex/firewall-diagnostic",
     "diagnostic_remote_commit": "94768f33da695763b69ea3f50cc66b00d2442245",
@@ -300,7 +300,8 @@
       "connectivity": "connected",
       "failure": null,
       "note": "Subsequent official read is connected; preceding transient offline observation and successful shell/Git operations are retained separately."
-    }
+    },
+    "knowledge_snapshot_delivery_historical_9139": "Source9139 and knowledge2c39063 published; exact remote and PR heads independently verified, 290 manifest entries/288 mirrors/70 links and canonical modes checked. New standalone source1802/knowledge291-file recovery bundles were verified offline and independently rehashed; they remain local while the public Git refs are remote."
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -308,7 +309,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-26T23:21:01.037134+00:00",
+  "updated_utc": "2026-10-26T23:34:24.999450+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -373,16 +374,16 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "source_commit": "dc55a9337bf13b8bc53b22f734d0ba6151e7379f",
+      "source_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
       "initial_git_clean": true,
       "tracked_source_unchanged": true,
       "exit_code": 0,
-      "executed": 667,
-      "passed": 665,
+      "executed": 670,
+      "passed": 668,
       "skipped": 2,
       "complete_package_ready": false,
-      "source_report_sha256": "b06018fa707f336e2d284bd1e7ad031f9cb04830dc2401bea72e1be00b1e902f",
-      "retained_log_sha256": "42f9cc3a3cb94fccfaba66c1218e5c41a76ed2e7c56ae8320a945b9c9816b55d"
+      "source_report_sha256": "e1e75e842de383a11956f7236466712bed51aea0f5f3e0895921d30925069ee2",
+      "retained_log_sha256": "16010e23db52e16bc3410138afeffa1f03d1ed56320e373547cd9ce831976992"
     },
     "cloud_authenticated_reader": {
       "passed": 69,
@@ -1062,25 +1063,25 @@
       "record": "docs/evidence/hosted-owned-overlay-4b49da7.json"
     },
     "latest_local_detached_source": {
-      "source_commit": "dc55a9337bf13b8bc53b22f734d0ba6151e7379f",
+      "source_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
       "initial_git_clean": true,
       "tracked_source_unchanged": true,
       "exit_code": 0,
-      "executed": 667,
-      "passed": 665,
+      "executed": 670,
+      "passed": 668,
       "skipped": 2,
       "complete_package_ready": false,
-      "source_report_sha256": "b06018fa707f336e2d284bd1e7ad031f9cb04830dc2401bea72e1be00b1e902f",
-      "retained_log_sha256": "42f9cc3a3cb94fccfaba66c1218e5c41a76ed2e7c56ae8320a945b9c9816b55d"
+      "source_report_sha256": "e1e75e842de383a11956f7236466712bed51aea0f5f3e0895921d30925069ee2",
+      "retained_log_sha256": "16010e23db52e16bc3410138afeffa1f03d1ed56320e373547cd9ce831976992"
     },
     "latest_local_canonical_patch": {
       "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
-      "target": "dc55a9337bf13b8bc53b22f734d0ba6151e7379f",
-      "patch_sha256": "4399045bb00a4d75c317c0bea39230b7fa7cfc573466f1e19a5a32a7c5ff825a",
-      "patch_bytes": 4809647,
-      "changed_paths": 550,
+      "target": "c3ce3a68294d73957739a388815d95b50b14defc",
+      "patch_sha256": "b36c812e8d47235ee1d9d87855e1f4de2db4203cc16e397a1154b933291917e5",
+      "patch_bytes": 4865815,
+      "changed_paths": 554,
       "original_paths_verified": 1312,
-      "forward_exact_bytes_modes_paths": 1804,
+      "forward_exact_bytes_modes_paths": 1808,
       "reverse_exact_bytes_modes_paths": 1312,
       "reverse_git_clean": true,
       "public_file_subprocess_umask": "022",
@@ -1618,6 +1619,51 @@
       "complete_package_ready": false,
       "source_report_sha256": "e1c30e54b99183d69fbeca9b716e5903903b4eb7a0310710ca9815b96fb28d0d",
       "retained_log_sha256": "0418ee900b15df42d02803d203c67e5a24a73fe90c86a1dbb465a890c2294a5a"
+    },
+    "cloud_source_current_historical_dc55": {
+      "source_commit": "dc55a9337bf13b8bc53b22f734d0ba6151e7379f",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
+      "exit_code": 0,
+      "executed": 667,
+      "passed": 665,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "b06018fa707f336e2d284bd1e7ad031f9cb04830dc2401bea72e1be00b1e902f",
+      "retained_log_sha256": "42f9cc3a3cb94fccfaba66c1218e5c41a76ed2e7c56ae8320a945b9c9816b55d"
+    },
+    "latest_local_detached_source_historical_dc55": {
+      "source_commit": "dc55a9337bf13b8bc53b22f734d0ba6151e7379f",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
+      "exit_code": 0,
+      "executed": 667,
+      "passed": 665,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "b06018fa707f336e2d284bd1e7ad031f9cb04830dc2401bea72e1be00b1e902f",
+      "retained_log_sha256": "42f9cc3a3cb94fccfaba66c1218e5c41a76ed2e7c56ae8320a945b9c9816b55d"
+    },
+    "latest_local_canonical_patch_historical_dc55": {
+      "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "target": "dc55a9337bf13b8bc53b22f734d0ba6151e7379f",
+      "patch_sha256": "4399045bb00a4d75c317c0bea39230b7fa7cfc573466f1e19a5a32a7c5ff825a",
+      "patch_bytes": 4809647,
+      "changed_paths": 550,
+      "original_paths_verified": 1312,
+      "forward_exact_bytes_modes_paths": 1804,
+      "reverse_exact_bytes_modes_paths": 1312,
+      "reverse_git_clean": true,
+      "public_file_subprocess_umask": "022",
+      "private_original_four_roles_changed": false,
+      "baseline_materialization": "canonical Git blobs and modes; attribute-driven checkout CRLF conversion excluded",
+      "scope": "supplemental cloud source patch, not a replacement for original private four-role evidence"
+    },
+    "artifact_windows_metadata_regression": {
+      "evidence": "docs/evidence/artifact-windows-metadata-regression.json",
+      "failed_hosted_source": "2429db80264d4c2fd5b68260b23523308369e10f",
+      "reviewed_correction": "c3ce3a68294d73957739a388815d95b50b14defc",
+      "new_hosted_windows_verified": false
     }
   }
 }
