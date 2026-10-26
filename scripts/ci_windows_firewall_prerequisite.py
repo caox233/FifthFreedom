@@ -15,6 +15,7 @@ import sys
 import uuid
 
 import ci_owned_core_runtime as runtime
+import ci_windows_firewall_filter_probe as wfp
 
 ROOT = runtime.ROOT
 
@@ -68,6 +69,16 @@ def main():
         if control is not None and (control / 'firewall-plan.json').exists():
             try:
                 session = runtime.decode((control / 'session.json').read_bytes())
+                # Observe only this invocation's staged AppID before removal.
+                # Neither a successful read nor its failure changes admission
+                # or substitutes for Restore. The original Prepare error stays.
+                try:
+                    report['wfp_diagnostic'] = wfp.observe(session)
+                    if not report['wfp_diagnostic']['passed']:
+                        report['passed'] = False
+                except Exception as error:
+                    report['wfp_diagnostic_error'] = wfp.fixed_error(error)
+                    report['passed'] = False
                 report['restore'] = runtime.firewall('Restore', session, control, report['firewall_checks'])
                 runtime.require(report['restore']['armed'] is False
                                 and report['restore']['exact_drain_verified'] is False,
