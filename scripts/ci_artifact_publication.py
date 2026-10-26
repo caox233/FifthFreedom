@@ -72,7 +72,10 @@ def inventory(root, expected):
             for entry in entries:
                 path = Path(entry.path)
                 name = path.relative_to(root).as_posix()
-                info = entry.stat(follow_symlinks=False)
+                # Windows DirEntry.stat() leaves inode/device/link-count
+                # fields incomplete. Query fresh, non-following full-path
+                # metadata before checking links or file type on every OS.
+                info = path.lstat()
                 require(not stat.S_ISLNK(info.st_mode)
                         and not getattr(info, "st_file_attributes", 0) & 0x400,
                         "PUBLICATION_LINK_REJECTED")

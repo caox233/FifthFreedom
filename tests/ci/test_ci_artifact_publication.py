@@ -1,5 +1,6 @@
 """Real staging/archive round trips with inert, never-executed component bytes."""
 import copy
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
@@ -7,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 import zipfile
@@ -81,6 +83,67 @@ class ArtifactPublicationTests(unittest.TestCase):
     def stage(self, lane, destination=None):
         destination = destination or self.root / "public-payload"
         return publication.stage(self.artifacts, destination, lane, ROOT, COMMIT, RUN, ATTEMPT)
+
+    def test_inventory_accepts_actual_single_link_and_rejects_real_hardlink_on_this_platform(self):
+        payload = self.root / "link-count"; payload.mkdir()
+        source = payload / "public.txt"; source.write_bytes(b"INERT PUBLIC FILE")
+        single_count = source.lstat().st_nlink
+        self.assertEqual(single_count, 1)
+        with os.scandir(payload) as entries:
+            cached_count = next(entries).stat(follow_symlinks=False).st_nlink
+        publication.inventory(payload, {"public.txt"})
+        alias = self.root / "hardlink-alias"
+        os.link(source, alias)
+        linked_count = source.lstat().st_nlink
+        self.assertEqual(linked_count, 2)
+        self.assertEqual(alias.lstat().st_nlink, 2)
+        with self.assertRaisesRegex(publication.PublicationError, "^PUBLICATION_FILE_INVALID$"):
+            publication.inventory(payload, {"public.txt"})
+        # Only bounded metadata of this inert owned fixture reaches CI logs.
+        print("ARTIFACT_PUBLICATION_LINK_METADATA " + json.dumps({
+            "platform": sys.platform, "direntry_nlink": cached_count,
+            "path_single_nlink": single_count, "path_hardlink_nlink": linked_count}, sort_keys=True))
+
+    def test_inventory_uses_fresh_path_metadata_when_direntry_fields_are_incomplete(self):
+        payload = self.root / "incomplete-entry"; payload.mkdir()
+        source = payload / "public.txt"; source.write_bytes(b"INERT PUBLIC FILE")
+        scan = os.scandir
+
+        class IncompleteEntry:
+            def __init__(self, entry): self.path, self.entry = entry.path, entry
+            def stat(self, *, follow_symlinks=True):
+                info = self.entry.stat(follow_symlinks=follow_symlinks)
+                return SimpleNamespace(st_mode=info.st_mode, st_ino=0, st_dev=0, st_nlink=0,
+                                       st_file_attributes=getattr(info, "st_file_attributes", 0))
+
+        @contextmanager
+        def incomplete_scan(path):
+            with scan(path) as entries:
+                yield (IncompleteEntry(entry) for entry in entries)
+
+        self.assertEqual(source.lstat().st_nlink, 1)
+        with patch.object(publication.os, "scandir", incomplete_scan):
+            publication.inventory(payload, {"public.txt"})
+            os.link(source, self.root / "incomplete-entry-alias")
+            self.assertEqual(source.lstat().st_nlink, 2)
+            with self.assertRaisesRegex(publication.PublicationError, "^PUBLICATION_FILE_INVALID$"):
+                publication.inventory(payload, {"public.txt"})
+
+    def test_inventory_rejects_reparse_point_from_fresh_path_metadata(self):
+        payload = self.root / "reparse-metadata"; payload.mkdir()
+        source = payload / "public.txt"; source.write_bytes(b"INERT PUBLIC FILE")
+        lstat = Path.lstat
+
+        def reparse(path):
+            info = lstat(path)
+            if path == source:
+                return SimpleNamespace(st_mode=info.st_mode, st_nlink=info.st_nlink,
+                                       st_file_attributes=0x400)
+            return info
+
+        with patch.object(Path, "lstat", reparse):
+            with self.assertRaisesRegex(publication.PublicationError, "^PUBLICATION_LINK_REJECTED$"):
+                publication.inventory(payload, {"public.txt"})
 
     def cli(self, lane, destination):
         return subprocess.run([sys.executable, "-B", str(ROOT / "scripts/ci_artifact_publication.py"),
