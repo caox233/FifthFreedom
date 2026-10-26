@@ -33,6 +33,7 @@ jobs:
       - name: Verify strict input and fixture-result parsing
         run: python -B -m unittest discover -s tests/ci -p test_ci_capture_reference.py -v
       - name: Build exact reference and run only no-attach fixtures
+        id: reference_build
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
@@ -46,6 +47,6 @@ jobs:
           path: |
             artifacts/ci/capture-reference/receipt.json
             artifacts/ci/capture-reference/SHA256SUMS.txt
-            artifacts/ci/capture-reference/CaptureReference.exe
+            ${{ steps.reference_build.outcome == 'success' && 'artifacts/ci/capture-reference/CaptureReference.exe' || '' }}
           if-no-files-found: error
           retention-days: 14
