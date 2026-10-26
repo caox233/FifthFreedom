@@ -11,6 +11,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 import fusionfix_provenance as provenance
+import fusionfix_corresponding_source as source
 
 
 class FusionFixProvenanceTests(unittest.TestCase):
@@ -29,6 +30,8 @@ class FusionFixProvenanceTests(unittest.TestCase):
             destination = root / path
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / path, destination)
+        shutil.copytree(ROOT / source.REFERENCE, root / source.REFERENCE)
+        shutil.copyfile(ROOT / source.MIT_PATH, root / source.MIT_PATH)
         return root
 
     def test_real_frozen_identity_keeps_rebuild_and_permission_holds(self):
@@ -113,7 +116,7 @@ class FusionFixProvenanceTests(unittest.TestCase):
             root = self.copied_root(Path(directory) / "source")
             destination = Path(directory) / "licenses/FusionFix"
             rows = provenance.copy_notices(destination, root)
-            self.assertEqual(len(rows), 8)
+            self.assertEqual(len(rows), 50)
             for name, expected in rows.items():
                 self.assertEqual(provenance.identity((destination / name).read_bytes()), expected)
             self.assertEqual((destination / "PROVENANCE.json").read_bytes(),

@@ -180,7 +180,7 @@ def copy_notices(destination, root=ROOT):
     require(record["schema"] == "ff-fusionfix-provenance-v1"
             and record["independent_permission_closure"] is False
             and bool(record["unresolved_holds"]), "NOTICE_PROVENANCE_INVALID")
-    payloads = {"PROVENANCE.json": record_bytes}
+    payloads = {"PROVENANCE.json": (record_bytes, 0o644)}
     require(len(record["notices"]) == 7, "NOTICE_SET_INVALID")
     for item in record["notices"]:
         relative = Path(item["notice_path"])
@@ -190,14 +190,22 @@ def copy_notices(destination, root=ROOT):
         content = pinned(read_snapshot(root / relative, 65536), item)
         blob = hashlib.sha1(b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest()
         require(blob == item["git_blob"], "NOTICE_GIT_BLOB_DIFFERS")
-        payloads[relative.name] = content
+        payloads[relative.name] = (content, 0o644)
+    from fusionfix_corresponding_source import source_payloads
+    sources = source_payloads(root)
+    require(not payloads.keys() & sources.keys(), "NOTICE_PATH_INVALID")
+    payloads.update(sources)
     # Validate every source before creating output, and write those same bytes.
     destination = Path(destination)
     destination.mkdir(parents=True, exist_ok=False)
-    for name, content in payloads.items():
-        with (destination / name).open("xb") as output:
+    for name, (content, mode) in payloads.items():
+        target = destination / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("xb") as output:
             output.write(content)
-    return {name: identity(content) for name, content in sorted(payloads.items())}
+        if os.name != "nt":
+            target.chmod(mode)
+    return {name: identity(content) for name, (content, _) in sorted(payloads.items())}
 
 
 def verify(root=ROOT, upstream_zip=None):

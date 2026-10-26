@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import stat
 import struct
 import subprocess
@@ -16,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 import public_server_candidate as candidate
 import ci_candidate
+import fusionfix_corresponding_source as source
 
 
 def pe(machine, dll, marker):
@@ -56,6 +58,8 @@ class PublicServerCandidateTests(unittest.TestCase):
             path = self.checkout / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes((ROOT / name).read_bytes())
+        shutil.copytree(ROOT / source.REFERENCE, self.checkout / source.REFERENCE)
+        shutil.copyfile(ROOT / source.MIT_PATH, self.checkout / source.MIT_PATH)
         self.commit, self.run, self.attempt = "a" * 40, "123456789", "2"
         self.output = self.root / "output"
         self.windows, self.linux = self.root / "windows", self.root / "linux"
@@ -131,7 +135,7 @@ class PublicServerCandidateTests(unittest.TestCase):
         provenance = self.output / "licenses/FusionFix/PROVENANCE.json"
         self.assertEqual(provenance.read_bytes(), (self.checkout / "docs/fusionfix-provenance.json").read_bytes())
         self.assertFalse(json.loads(provenance.read_bytes())["independent_permission_closure"])
-        self.assertEqual(len([name for name in receipt["files"] if name.startswith("licenses/FusionFix/")]), 8)
+        self.assertEqual(len([name for name in receipt["files"] if name.startswith("licenses/FusionFix/")]), 50)
         for name, row in receipt["files"].items():
             self.assertEqual(candidate.sha_file(self.output / name), row)
 
@@ -146,7 +150,7 @@ class PublicServerCandidateTests(unittest.TestCase):
                                              self.commit, self.run, self.attempt)
         self.assertEqual(set(paths), set(candidate.WINDOWS))
         self.assertEqual(rows, receipt["components"])
-        self.assertEqual(len(receipt["fusionfix_notices"]["files"]), 8)
+        self.assertEqual(len(receipt["fusionfix_notices"]["files"]), 50)
         self.assertFalse(receipt["fusionfix_notices"]["permission_closure"])
         for line in (folder / "components/FUSIONFIX-NOTICES-SHA256SUMS.txt").read_text().splitlines():
             digest, name = line.split("  ", 1)
