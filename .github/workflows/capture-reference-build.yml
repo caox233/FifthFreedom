@@ -1,0 +1,51 @@
+name: Historical Capture reference build (no capture)
+
+on:
+  pull_request:
+    paths:
+      - 'docs/development-reference/capture-helper/**'
+      - 'scripts/capture_helper_receipt.py'
+      - 'scripts/ci_capture_reference.py'
+      - 'tests/native/capture-reference/**'
+      - 'tests/ci/test_ci_capture_reference.py'
+      - '.github/workflows/capture-reference-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fifth-capture-reference-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reference-build:
+    name: Clean x86 reference and no-attach fixtures
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Verify strict input and fixture-result parsing
+        run: python -B -m unittest discover -s tests/ci -p test_ci_capture_reference.py -v
+      - name: Build exact reference and run only no-attach fixtures
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
+          if errorlevel 1 exit /b %ERRORLEVEL%
+          python -B scripts/ci_capture_reference.py
+      - name: Preserve reference binary and fixed receipts only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: capture-reference-build-${{ github.sha }}
+          path: |
+            artifacts/ci/capture-reference/receipt.json
+            artifacts/ci/capture-reference/SHA256SUMS.txt
+            artifacts/ci/capture-reference/CaptureReference.exe
+          if-no-files-found: error
+          retention-days: 14
