@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Published source 329f18a and knowledge 23970b9 are preserved with independently checked recovery bundles. Official environment recheck is connected/running at revision 4; actual shell and both HEADs match after a transient unavailable notification. Source run 40420957554 passes Linux 668 plus 2 skips and Windows 554 plus 116 skips, with no failures/errors. The current Windows fixture measured directory-entry link count 0 versus fresh path 1 and real hard link 2. Candidate 40420957576 publishes exact 61/65-file payloads with all 50 notice/source files and 5 hidden files verified from official downloads; six component hashes match the same run and read-only production admission passes. Linux LAN passed 519 tests, native lifecycle passed 5 controls with cleanup, and the matrix passed 9 phases with cleanup. Composition was still compiling at the recorded observation. Full packaging is skipped for 8 held SAV/META paths representing 3 original payloads; 13 separate C71 inputs remain absent. Reviewed package instructions use correct names and actual LAN setup. Retained Capture evidence closes its stale publication follow-up, with 19 finite checks and 9 Windows regression checks, not binary equivalence. Accepted live results and all six goals remain intact.",
-  "NEXT_EXECUTABLE_ACTION": "Read the actual remaining composition outcome and cleanup for source 329f18a; fix any demonstrated code failure without assigning old failures to a new cause. Publish the reviewed package documentation and bounded hosted evidence checkpoint, then bind/push the exact knowledge snapshot and preserve recovery. Continue all six goals. Full-package default-save restoration still requires privacy-reviewed genuine originals; no reduced test-edition profile is enabled. Do not invent inputs, relax existing gates, repeat accepted live checks, launch a game/capture, enable ordinary Public startup, publish a formal Release or deploy production.",
+  "LAST_CONFIRMED_RESULT": "Published source 329f18a and knowledge 23970b9 are preserved with independently checked recovery bundles. Official environment recheck is connected/running at revision 4; actual shell and both HEADs match after a transient unavailable notification. Source run 40420957554 passes Linux 668 plus 2 skips and Windows 554 plus 116 skips, with no failures/errors. The current Windows fixture measured directory-entry link count 0 versus fresh path 1 and real hard link 2. Candidate 40420957576 publishes exact 61/65-file payloads with all 50 notice/source files and 5 hidden files verified from official downloads; six component hashes match the same run and read-only production admission passes. Linux LAN passed 519 tests, native lifecycle passed 5 controls with cleanup, and the matrix passed 9 phases with cleanup. The actual same-run composition now passes both required OPEN-before-trigger controls; all four case namespaces and the private stage are removed with source package unchanged. Final candidate status is 8 successful jobs, 2 input-gate failures and 1 complete-package skip. Full packaging is skipped for 8 held SAV/META paths representing 3 original payloads; 13 separate C71 inputs remain absent. Reviewed package instructions use correct names and actual LAN setup. Retained Capture evidence closes its stale publication follow-up, with 19 finite checks and 9 Windows regression checks, not binary equivalence. Accepted live results and all six goals remain intact.",
+  "NEXT_EXECUTABLE_ACTION": "Publish the reviewed final hosted evidence and package instructions, bind/push the exact knowledge snapshot and preserve recovery. Full-test-package delivery still requires genuine privacy-reviewed default inputs: three original SAV/META payloads repeated across eight paths. Once admitted, run the hosted Windows full build and package smoke check, download the actual unified ZIP, verify its checksums and provide the reviewed short test instructions. No reduced test-edition profile is enabled; do not infer a changed feature contract from unavailable inputs. Preserve all six goals, separate C71 closure and remaining Public/Windows/live acceptance, without inventing inputs, weakening checks, repeating accepted gameplay, launching a game/capture, deploying production or publishing a formal Release.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -246,7 +246,7 @@
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
     "candidate_linux_matrix": "Exact source 329f18a matrix 40420957466 passed all 9 QUIC/WSS/TCP phases; six namespaces removed, core reaped, TUN absent and new traffic denied. Finite guard3 development evidence, not native lease, peer-map71 or ordinary Public/live acceptance.",
     "validated_implementation_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
-    "candidate_component_result": "Exact source 329f18a downloaded Windows 61-file and assembly 65-file payloads are complete; 6 same-run component hashes and read-only admission pass. Linux LAN 519 and native lifecycle 5 plus cleanup pass. Composition was still compiling at the recorded observation. Eight save inputs and thirteen C71 inputs remain distinct gates; the complete package is skipped.",
+    "candidate_component_result": "Exact tested source 329f18a candidate 40420957576 completed with 8 successful jobs, 2 input-gate failures and 1 full-package skip. Downloaded Windows61/assembly65 file payloads, all50notice/source files and5hidden sources match;6 same-run component hashes and read-only admission pass. Linux LAN519, native lifecycle5, matrix9 and two actual composition controls pass with their scoped cleanup. Eight save inputs and thirteen separateC71 inputs remain absent; ordinary Public and full-package admission stay closed.",
     "knowledge_snapshot_commit": "23970b93bb61763caf43c6e6ab4e1fbc2040810b",
     "knowledge_snapshot_source": "329f18a40f9959cfb06939c26150cd50126c26ee",
     "knowledge_snapshot_files": 296,
@@ -314,7 +314,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-27T00:09:13.986503+00:00",
+  "updated_utc": "2026-10-27T00:24:31.287211+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -1672,6 +1672,7 @@
     },
     "hosted_329f_source": "docs/evidence/hosted-source-329f18a.json",
     "hosted_329f_artifact_native": "docs/evidence/hosted-artifact-native-329f18a.json",
-    "hosted_capture_publication_7c": "docs/evidence/hosted-capture-publication-7c614c1.json"
+    "hosted_capture_publication_7c": "docs/evidence/hosted-capture-publication-7c614c1.json",
+    "hosted_329f_composition_final": "docs/evidence/hosted-composition-329f18a.json"
   }
 }

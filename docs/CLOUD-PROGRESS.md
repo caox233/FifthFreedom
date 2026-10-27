@@ -1,5 +1,27 @@
 # Cloud implementation evidence
 
+The final [same-run composition receipt](evidence/hosted-composition-329f18a.json)
+for tested source `329f18a` is now verified. Candidate `40420957576` finishes with
+8 successful jobs, 2 input-gate failures and 1 skipped complete-package job.
+Lease-revoke and peer-loss both establish five owned native listeners and a held
+connection before their controls. The exact harness requires an OPEN acknowledgement
+before each trigger. Lease-revoke records exit 92, five rebound ports and EOF/reset
+while the overlay remains alive; peer-loss records exact peer/native cleanup,
+permanent revocation and zero listeners without claiming remote TCP EOF. Both
+cases remove their two namespaces, with no cleanup errors; copied inputs match,
+the private stage is removed and the source package remains unchanged.
+
+The same job's guard3 six-patch recipe, build profile, lock and target bind to
+the exact tested source. Core/CLI hashes are runner-reported; those runtime
+binaries were not uploaded or rehashed locally. This finite TCP composition pass
+does not establish the distinct peer-map71 or Windows core/NIC chain, ordinary
+Public startup or gameplay. Earlier query, cleanup, SQLite, fdinfo, hidden-source
+and Windows-metadata failures remain preserved. Full packaging still lacks the
+three privacy-held default payloads (eight paths); C71's thirteen inputs remain
+separate. No complete unified package has been delivered.
+
+The earlier observation below predates this final composition result.
+
 Exact published source `329f18a` now has verified real upload/download closure.
 [Source run `40420957554`](evidence/hosted-source-329f18a.json) passed Linux
 668 with 2 skips and Windows 554 with 116 skips, no failures/errors. The new

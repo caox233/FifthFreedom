@@ -1,10 +1,21 @@
 # SERVER-11 — parent-owned native activation lease
 
+Latest tested `329f18a` native job `121924250746` passes all five controls
+against the complete same-run downloaded candidate. Withheld/denied create no
+state; EOF/expiry/parent-death confirm five listeners, protected traffic, wrong
+interface rejection, closure, five port releases, exit 92 and reaped children.
+Three namespaces and the private stage are removed, source package unchanged.
+See the [native evidence](../evidence/hosted-artifact-native-329f18a.json) and the
+separately [verified composition](../evidence/hosted-composition-329f18a.json).
+This is finite development evidence; ordinary Public admission remains closed.
+
+Earlier checkpoints follow with their original scope.
+
 Status: **ready-for-agent** — parent IPC and real synthetic-child tests passed;
 production profile/namespace/peer admission and actual native composition remain
 separate work.
 
-Latest `9139c9e` hosted native lifecycle job `121846866723` failed before its
+Earlier `9139c9e` hosted native lifecycle job `121846866723` failed before its
 reported controls, with the generic `NATIVE_LIFECYCLE_PROBE_FAILED` code and no
 success receipt. The downloaded same-run candidate is missing five declared
 MemoryModule hidden source files. The production read-only input validator

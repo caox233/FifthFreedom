@@ -1,0 +1,447 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-10-27T00:22:41.588572+00:00",
+  "tested_source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+  "merge_binding": {
+    "sha": "035d00c5f85426648479e4a80b774b763ffd541c",
+    "tree": "631053266b0ba4bfadf8513a6eac65cfc7fbb551",
+    "parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "329f18a40f9959cfb06939c26150cd50126c26ee"
+    ]
+  },
+  "checkout_tree_equals_tested_source": true,
+  "prior_publication_summary": {
+    "path": "publication-native-review.json",
+    "sha256": "6ca622b37b1a7e52f6df8bc54da35f3698ba3332249e6650036ece59e0b861bc",
+    "unchanged": true
+  },
+  "actual_candidate_final": {
+    "run_id": 40420957576,
+    "status": "completed",
+    "conclusion": "failure",
+    "total_jobs": 11,
+    "job_counts": {
+      "success": 8,
+      "failure": 2,
+      "skipped": 1
+    },
+    "jobs": [
+      {
+        "id": 121914968792,
+        "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": [],
+        "build_runtime_steps": []
+      },
+      {
+        "id": 121914969037,
+        "name": "Strict retained native replay input gate",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          {
+            "number": 4,
+            "name": "Require reviewed C71 native fixture source and provenance"
+          }
+        ],
+        "build_runtime_steps": []
+      },
+      {
+        "id": 121914969103,
+        "name": "Strict complete-package input gate",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          {
+            "number": 4,
+            "name": "Verify all pinned package inputs without substituting private saves"
+          }
+        ],
+        "build_runtime_steps": []
+      },
+      {
+        "id": 121914969147,
+        "name": "Linux native socket ingress isolation (synthetic namespaces)",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": [],
+        "build_runtime_steps": []
+      },
+      {
+        "id": 121914969196,
+        "name": "Linux linux-public-donor-reference",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": [],
+        "build_runtime_steps": []
+      },
+      {
+        "id": 121914969297,
+        "name": "Linux linux-lan-baseline",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": [],
+        "build_runtime_steps": []
+      },
+      {
+        "id": 121914969619,
+        "name": "Linux protected public control service",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": [],
+        "build_runtime_steps": []
+      },
+      {
+        "id": 121915019266,
+        "name": "Complete Windows candidate (requires admitted inputs)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": [],
+        "build_runtime_steps": []
+      },
+      {
+        "id": 121924031487,
+        "name": "Linux service/client identities and static deployment preflight",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": [],
+        "build_runtime_steps": []
+      },
+      {
+        "id": 121924250674,
+        "name": "Same-run owned overlay and native development composition",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": [],
+        "build_runtime_steps": [
+          {
+            "number": 7,
+            "name": "Require actual containment and prerequisites before compiling runtime sources",
+            "conclusion": "success"
+          },
+          {
+            "number": 11,
+            "name": "Require owned composition cleanup and control regressions",
+            "conclusion": "success"
+          },
+          {
+            "number": 12,
+            "name": "Build this job's exact guard3 core and CLI after all 35 finite contracts",
+            "conclusion": "success"
+          },
+          {
+            "number": 13,
+            "name": "Verify real lease revocation and peer loss with the same-run native candidate",
+            "conclusion": "success"
+          },
+          {
+            "number": 14,
+            "name": "Preserve only sanitized composition and containment receipts",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "id": 121924250746,
+        "name": "Same-run native owned lifecycle in synthetic namespaces",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": [],
+        "build_runtime_steps": []
+      }
+    ],
+    "failure_scope": "Only reviewed C71 fixture-input gate and privacy-held complete-package input gate; full Windows package skipped"
+  },
+  "official_composition_artifact": {
+    "id": 12699179384,
+    "name": "owned-overlay-native-development-receipt-035d00c5f85426648479e4a80b774b763ffd541c",
+    "digest": "sha256:373b07b149e1d66ff04edad2e235037c8229b21cdb71bc1358202ccf159cbe6e",
+    "size_in_bytes": 1756,
+    "expired": false,
+    "run_id": 40420957576,
+    "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+    "official_digest_verified": true,
+    "files": [
+      {
+        "path": "containment.json",
+        "bytes": 937,
+        "sha256": "4426eb4419283896bccd45750eb7a303602be9b1d997054f5b08ee78250e9915",
+        "keys": [
+          "checkout_commit",
+          "input_identity",
+          "precondition_failures",
+          "production_admission",
+          "raw_runtime_output_retained",
+          "runtime_binary_uploaded",
+          "runtime_executed",
+          "schema",
+          "status",
+          "transports"
+        ]
+      },
+      {
+        "path": "receipt.json",
+        "bytes": 2988,
+        "sha256": "628beea032e749761fae213c1d1d18b942cb333519c5e1ea0afbf911b22a56d8",
+        "keys": [
+          "schema",
+          "status",
+          "scope",
+          "cases",
+          "precondition_failures",
+          "copied_package_native_verified",
+          "source_package_unchanged",
+          "private_stage_removed",
+          "source_commit",
+          "run_id",
+          "run_attempt",
+          "runtime_candidate",
+          "cli_identity"
+        ]
+      }
+    ]
+  },
+  "official_composition_receipt_sha256": "628beea032e749761fae213c1d1d18b942cb333519c5e1ea0afbf911b22a56d8",
+  "composition_receipt": {
+    "schema": "ff-owned-overlay-native-stack-development-v1",
+    "status": "owned_stack_development_verified",
+    "scope": {
+      "transport": "tcp",
+      "purpose": "owned-isolated-development",
+      "production_admission": false,
+      "ordinary_public_enabled": false,
+      "game_executed": false,
+      "complete_client_package": false,
+      "runtime_binary_uploaded": false,
+      "raw_runtime_output_retained": false
+    },
+    "cases": [
+      {
+        "case": "lease-revoke",
+        "status": "owned_stack_case_verified",
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "actual_native_ready": true,
+        "owned_listeners": 5,
+        "runtime_profile_sha256": "e8b1ad4e726b5c379463876a609d67d759ede3acefb3c1b9739f3d708ccd2bf3",
+        "established_tcp": true,
+        "native_watchdog_exit": 92,
+        "ports_rebound": 5,
+        "held_tcp_eof_or_reset": true,
+        "overlay_alive_during_close": true,
+        "containment_after": [
+          {
+            "input": 0,
+            "output": 24,
+            "forward": 0
+          },
+          {
+            "input": 0,
+            "output": 26,
+            "forward": 0
+          }
+        ]
+      },
+      {
+        "case": "peer-loss",
+        "status": "owned_stack_case_verified",
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "actual_native_ready": true,
+        "owned_listeners": 5,
+        "runtime_profile_sha256": "66b23bde56e86506fce18228254928d92ceca7d40f626700a8395082078c04eb",
+        "established_tcp": true,
+        "exact_peer_reaped": true,
+        "monitor_permanently_revoked": true,
+        "native_reaped": true,
+        "native_listeners_remaining": 0,
+        "remote_tcp_eof_claimed": false,
+        "containment_after": [
+          {
+            "input": 0,
+            "output": 24,
+            "forward": 0
+          },
+          {
+            "input": 0,
+            "output": 25,
+            "forward": 0
+          }
+        ]
+      }
+    ],
+    "precondition_failures": [],
+    "copied_package_native_verified": true,
+    "source_package_unchanged": true,
+    "private_stage_removed": true,
+    "source_commit": "035d00c5f85426648479e4a80b774b763ffd541c",
+    "run_id": "40420957576",
+    "run_attempt": "1",
+    "runtime_candidate": {
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+      "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+      "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+      "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+      "executable_sha256": "be260ed8550b2f2162d83ebb1f6c8fd739978b6a237d0b90b860facf8f3f5c8b",
+      "executable_size": 28593032,
+      "role": "easytier-core",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "cli_identity": {
+      "bytes": 12261752,
+      "sha256": "f854a40bb355e89bafc9335339d5845d04e33551398a6c4d83daeae086de7ab3"
+    }
+  },
+  "controls": {
+    "case_count": 2,
+    "actual_native_ready_and_listeners_each": 5,
+    "held_tcp_open_required_before_each_control": {
+      "verified_from_exact_harness": true,
+      "separate_receipt_field": false,
+      "source_file": "scripts/ci_owned_stack.py",
+      "source_lines": [
+        153,
+        165
+      ],
+      "source_sha256": "83b2a5d3975318a75af2bc163ffb0255313cdd9d47f7e346669ff132eebc4d8f",
+      "requirement": "Exact held TCP OPEN acknowledgement and live owned worker pidfd are required before revoke or stopping exact peer"
+    },
+    "lease_revoke": {
+      "watchdog_exit": 92,
+      "ports_rebound": 5,
+      "held_tcp_eof_or_reset": true,
+      "overlay_alive_during_close": true
+    },
+    "peer_loss": {
+      "exact_peer_reaped": true,
+      "monitor_permanently_revoked": true,
+      "native_reaped": true,
+      "native_listeners_remaining": 0,
+      "remote_tcp_eof_claimed": false
+    }
+  },
+  "cleanup": {
+    "case_namespaces_created": 4,
+    "case_namespaces_removed": 4,
+    "case_cleanup_errors": [],
+    "private_stage_removed": true,
+    "source_package_unchanged": true,
+    "copied_package_native_verified": true,
+    "separate_containment_preflight_namespaces_created": 6,
+    "separate_containment_preflight_namespaces_removed": 6,
+    "separate_containment_preflight_errors": []
+  },
+  "same_job_guard3_provenance": {
+    "same_job_id": 121924250674,
+    "same_source_commit": "035d00c5f85426648479e4a80b774b763ffd541c",
+    "same_run_id": "40420957576",
+    "same_run_attempt": "1",
+    "runtime_candidate": {
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+      "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+      "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+      "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+      "executable_sha256": "be260ed8550b2f2162d83ebb1f6c8fd739978b6a237d0b90b860facf8f3f5c8b",
+      "executable_size": 28593032,
+      "role": "easytier-core",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "cli_identity": {
+      "bytes": 12261752,
+      "sha256": "f854a40bb355e89bafc9335339d5845d04e33551398a6c4d83daeae086de7ab3"
+    },
+    "six_patch_lock_sha256": "c9135af75df006062141b9ecb209887d46a9b374ed0b3d52924c15220448ebeb",
+    "patch_count": 6,
+    "last_patch_guard_sha256": "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328",
+    "independently_compared_recipe_fields": {
+      "upstream_matches": true,
+      "patch_manifest_matches": true,
+      "cargo_lock_matches": true,
+      "build_profile_matches": true,
+      "target_matches": true
+    },
+    "actual_official_log_markers": {
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "run_id": 40420957576,
+      "job_id": 121924250674,
+      "official_job_log_sha256": "ea65cf0a966e431e81d8bfcf3f6f11cb544f1d125745401205f41e1e393e010c",
+      "job_log_bytes": 52991,
+      "actual_build_stage_markers": [
+        "fifth_freedom_secure_profile_contract",
+        "fifth_freedom_ingress_contract",
+        "peers::secure_datagram::tests",
+        "peers::peer_session::tests",
+        "peer_conn_secure_mode_",
+        "ff_explicit_pin_contract",
+        "release-build"
+      ],
+      "actual_final_verified_marker": true,
+      "contract_counts_enforced_by_exact_hosted_build_and_runtime_loader": [
+        4,
+        10,
+        9,
+        2,
+        7,
+        3
+      ],
+      "contracts_total_enforced": 35,
+      "binary_bytes_uploaded": false,
+      "raw_log_publication": false
+    },
+    "same_run_and_35_zero_failure_zero_ignore_contract_checks_required_by_exact_harness": true,
+    "build_profile": {
+      "rust_toolchain": "1.95.0",
+      "target": "x86_64-unknown-linux-gnu",
+      "profile": "release",
+      "cargo_features": "default",
+      "crypto_backend": "ring; wireguard enabled; openssl-crypto/aes-gcm absent",
+      "bins": [
+        "easytier-core",
+        "easytier-cli"
+      ],
+      "official_musl_jemalloc_build_reproduction": false,
+      "cargo_incremental": false
+    },
+    "runtime_binary_bytes_uploaded": false,
+    "runtime_binary_hashes_independently_recomputed_by_reviewer": false,
+    "hash_scope": "Runtime core/CLI hashes and prepared source-manifest are reported by the same successful hosted job; recipe/patch/build/cargo bindings independently compared with exact tested Git source"
+  },
+  "same_run_packaged_component_binding": {
+    "prior_receipt": "assembly-payload/same-run-binding.json",
+    "sha256": "a894524a63fbb699b19f2df4445c4e10fab3fcd88228a91fbdc208cde3f65ef6",
+    "six_windows_linux_component_byte_hashes_independently_checked": true
+  },
+  "harness_sha256": {
+    ".github/workflows/candidate-build.yml": "5df2b6a5bc8d41efe0f288b35361ac69ab55115aa6209e4428fce43946dc236f",
+    "scripts/ci_owned_stack.py": "83b2a5d3975318a75af2bc163ffb0255313cdd9d47f7e346669ff132eebc4d8f",
+    "scripts/owned_stack_worker.py": "09615cbafe6db7f0928d93e7df7dae59c064a755a5fcd236c947a5ac62ab7413",
+    "scripts/ci_easytier_probe.py": "7945b28db43a88660db200f975e84416578bfaab7de916095945f33263f2a122",
+    "scripts/ci_easytier_build.py": "49f70f8073c0d0f92d6364aba076f51c3611a225865aacf47272da01edc68b40",
+    "scripts/ci_prepare_easytier_source.py": "b5d6dbf1251690a13039525017ca9c8c93fe11126678b0f9e84fe4fa10dc8fc6",
+    "scripts/ci_native_lifecycle.py": "1d55d20e914132793137a0f200de676b44599c38231df720cd21f1bef9d21887"
+  },
+  "strict_inputs": {
+    "missing_held_SAV_META": 8,
+    "C71_tests_held": 13,
+    "C71_tests_executed": 0,
+    "privacy_or_hash_checks_relaxed": false,
+    "complete_game_package_ready": false
+  },
+  "retained_history": "Old fe6 QUERY_IMAGE_CHANGED, 7c QUERY_IMAGE_CHANGED/address-query, 9a SQLite/fdinfo failures, 9139 hidden-source loss and 2429 Windows inventory failures remain unchanged; no stability or unique-cause claim from this run",
+  "boundaries": {
+    "complete_unified_game_package_delivered": false,
+    "Public_production_enabled": false,
+    "formal_Release_published": false,
+    "production_deployed": false,
+    "game_or_capture_executed": false,
+    "reviewer_executed_downloaded_binaries": false,
+    "tracked_files_modified_by_reviewer": false,
+    "later_documentation_commit_treated_as_tested_source": false
+  }
+}

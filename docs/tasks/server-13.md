@@ -1,5 +1,15 @@
 # SERVER-13 — owned isolated EasyTier development probe
 
+Latest tested `329f18a` matrix `40420957466` again passes all nine QUIC/WSS/TCP
+phases, with six namespaces removed, core reaped, TUN absent and new traffic
+denied. The [official evidence](../evidence/hosted-artifact-native-329f18a.json)
+binds the same reviewed guard3 source manifest. The separate
+[composition](../evidence/hosted-composition-329f18a.json) also passes its two
+native controls; neither result establishes peer-map71, Windows ownership or
+ordinary Public/gameplay acceptance. All earlier failed results remain retained.
+
+Earlier checkpoints follow with their original scope.
+
 Status: ready-for-agent for remaining integration. Exact `9139c9e` hosted matrix
 `40397583543` now passed all nine QUIC/WSS/TCP phases, with six namespaces
 removed, exact core exit/TUN absence and new-traffic refusal verified. See the

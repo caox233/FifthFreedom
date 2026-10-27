@@ -1,6 +1,17 @@
 # SERVER-15 — real owned overlay and native development composition
 
-Status: ready-for-agent for remaining Public integration. Latest `9139c9e`
+Latest tested `329f18a` composition job `121924250674` now passes both controls
+with the complete same-run candidate. The [verified final receipt](../evidence/hosted-composition-329f18a.json)
+records held OPEN before each trigger, five native listeners, lease-revoke
+exit 92/port release/EOF-reset while the overlay stays alive, and peer-loss exact
+cleanup/permanent revoke/zero listeners without a remote EOF claim. All four case
+namespaces and the private stage are removed, with the source package unchanged.
+The six-patch guard3 build binding is verified; runtime hashes are runner-reported,
+not locally rehashed binaries. Ordinary Public admission remains closed.
+
+Earlier checkpoints follow with their original scope.
+
+Status: ready-for-agent for remaining Public integration. Earlier `9139c9e`
 composition job `121846866679` fails before recorded controls because its
 downloaded candidate lacks five declared hidden source files. The exact
 [artifact/input reproduction](../evidence/hosted-final-9139c9e.json) and

@@ -1,7 +1,8 @@
 # CI artifact source closure
 
-Status: **ready-for-agent** for the downstream composition result; the
-source-transfer defect itself is verified fixed at `329f18a`. Continue the existing candidate-delivery and
+Status: **needs-info** for the remaining complete-package inputs; the bounded
+source-transfer defect and its same-run native/composition checks are verified
+at `329f18a`. Continue the existing candidate-delivery and
 dependency-closure goals; this is not a new product or a replacement goal.
 
 Exact source `9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d`, candidate run
@@ -137,3 +138,11 @@ failures. Composition was still compiling at the observation, so its runtime
 controls remain the next result to read. This transfer repair does not close
 permission review, privacy-held saves, C71 input closure, Public admission or
 live multiplayer acceptance.
+
+The later [final composition evidence](../evidence/hosted-composition-329f18a.json)
+now verifies both required controls against the complete same-run candidate,
+including held OPEN before each trigger, all four case namespaces removed,
+private-stage removal and unchanged source package. The source-transfer repair's
+hosted follow-up is complete. The final candidate still reports two input-gate
+failures and skips complete packaging; these input/acceptance boundaries remain
+in [CI-01](ci-01.md) and the [candidate requirements](../DEVELOPMENT-CANDIDATE-TESTING.md).
