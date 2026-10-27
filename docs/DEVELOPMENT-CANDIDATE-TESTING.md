@@ -5,34 +5,19 @@ artifacts and their checksums are not an installable complete package. This page
 records the acceptance steps for the next admitted candidate, not a request to
 test incomplete artifacts. No formal Release or production deployment is enabled.
 
-## Inputs still needed before complete packaging
+## Input admission and remaining independent gates
 
-The public checkout verifies 12 of 20 required build inputs. The missing eight
-are `src/launcher/src/Assets/DefaultSaves/{MOD,Official}/0000000{1,2}.{sav,meta}`.
-The twelve-file privacy hold also includes four donor files outside this Windows
-package. A matching hash proves identity, not absence of private data. Complete
-packaging requires genuinely reviewed default templates, or a reviewed,
-reproducible default-data generator with appropriate manifest updates. Do not
-upload personal saves, invent bytes or disable validation. The existing private
-`--asset-dir` import option is not publication approval.
+All 20 required Windows build inputs are present, including the eight original
+default SAV/META paths admitted from owner-confirmed public templates on
+2026-10-28. The [handoff receipt](development-reference/default-save-inputs-20261028/receipt.json)
+records unchanged sizes/hashes and the review limits. Default-save restoration
+remains included. Four donor-only privacy holds remain; no personal saves were
+admitted. Actual input-gate and full-build results must be recorded separately.
 
-The eight paths contain three distinct pinned payloads: one 12-byte META repeated
-four times, one Official SAV repeated twice and one MOD SAV repeated twice.
-The MOD sidecar is already public. The minimum missing input is privacy review
-of those existing three original payloads, followed by admission of matching
-approved defaults; no new game capture is requested. Native save code writes
-the game-provided name into META and forwards opaque SAV buffers. The repository
-has no complete parser or reproducible generator that can establish safe new
-defaults. An arbitrary personal-save import would be a separate feature and
-would not satisfy the current exact default-restoration contract or its pins.
-
-The separate C71 gate requires the real x86 `native_fixture.rs`, native bytes or
-an auditable extraction/relocation generator, fixed source hashes and reviewed
-provenance/publication scope. Its 13 retained replay checks have not run in this
-public checkout. An unrelated diagnostic fixture does not satisfy that input.
-The gate also needs reviewed manifest admission when those inputs arrive; file
-presence alone is insufficient. Neither gap requires a local PC to remain on
-while independent cloud code/build work continues.
+The separate C71 gate still requires thirteen reviewed fixture/native/provenance
+inputs and has executed zero replay checks. It is not a dependency of the
+Windows complete-package job. A full Windows candidate can be produced while
+this distinct replay gap and ordinary Public service admission remain open.
 
 ## Delivery requirements
 

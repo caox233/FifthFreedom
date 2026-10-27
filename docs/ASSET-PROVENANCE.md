@@ -49,14 +49,22 @@ packaging of this addition remains to be verified. This narrows the MemoryModule
 gap; all seven existing provenance holds and independent binary/permission
 requirements remain recorded.
 
-`docs/ASSET-PUBLICATION.json` lists default SAV/META inputs held locally pending
-privacy verification. No actual secret was identified, but opaque SAV buffer I/O
-and a SHA-256 manifest do not establish that player-specific fields are absent.
-The public source checkout therefore does **not yet independently build a complete
-game package**. Code, source tests, protocol work and UI integration can proceed in
-the cloud. A full Windows CI package is gated on approved matching inputs or a
-reviewed, reproducible default-data replacement. Do not upload personal saves,
-fake an asset, weaken package checks, or call this gate a successful build.
+The eight required LAN default SAV/META paths have now been supplied from
+owner-confirmed public templates in handoff `865a25ac8e8978be194418453fff8c403992c682`.
+The [handoff receipt](development-reference/default-save-inputs-20261028/receipt.json)
+records the explicit permission, exact original lengths/digests and review limits.
+Cloud Git-blob and checkout verification matches every pre-existing pin. Each
+META is exactly the fixed 12-byte ASCII name `sc6_save.sav`. SAV review consists
+of the reported bounded plaintext scan and the owner's public-template provenance
+confirmation; it is not complete binary deserialization or proof that every
+possible identity field is absent. `ASSET-PUBLICATION.json` admits precisely these
+eight paths and retains the four unrelated donor-only holds. No pin, template
+byte, input-validation code or default-restoration feature was changed.
+
+Passing the strict input gate permits the real Windows full build and package
+smoke check; it does not establish that a complete downloadable package exists.
+The thirteen C71 replay inputs remain a separate gate and are not a dependency
+of Windows full packaging. Personal saves remain excluded.
 
 The pinned capture helper binary is preserved. The historical single-file source
 has now been received from reference commit `b7a4c871b39b527f3e9c12fa099ca6b7ea04c3cc`
