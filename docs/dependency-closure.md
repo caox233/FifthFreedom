@@ -282,7 +282,9 @@ compiler/linker command has been introduced before examining the received source
   of public default templates; unchanged pins and strict20/20 input checks pass.
   Retain the four unrelated donor-only holds in `ASSET-PUBLICATION.json`. The
   [bounded review](development-reference/default-save-inputs-20261028/receipt.json)
-  is not full binary decoding; a full hosted package still needs its actual result.
+  is not full binary decoding. Source `da1805e` now has a verified full hosted
+  Windows package; [delivery and exact hashes](DEVELOPMENT-CANDIDATE-TESTING.md)
+  remain distinct from live acceptance and the other closure gates.
 - Keep original sources and unique local evidence until source/dependency closure
   and rollback receipts support safe cleanup. These cloud references do not
   replace the private cumulative four-role evidence.

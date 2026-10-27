@@ -1,5 +1,27 @@
 # Cloud implementation evidence
 
+The complete Windows LAN development package is now
+[downloadable](https://github.com/caox233/FifthFreedom/actions/runs/40594742870/artifacts/12777311164) from source `da1805e6764ac202bf6b8c1a9548fa2c44d4c085`.
+Actual full Windows job 122508092763 succeeded in build, packaged smoke and
+upload. The inner program ZIP is 73,276,517 bytes with SHA256
+`b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4`.
+[Hosted evidence](evidence/hosted-complete-package-da1805e.json) binds its exact
+source/merge/run/job, official artifact digest and the 166 UI / 26 LAN/save passing
+checks. [Independent read-only download validation](evidence/complete-package-download-da1805e.json)
+verifies 65 files, 63 manifest entries, 64 checksums, four embedded identities and PE
+architectures, and all 50 notice/source files. No downloaded binary or game was
+executed during review. Default restoration is retained. The UTF-8 correction
+has now passed actual full Windows packaging; the first failure stays below.
+
+Source 674 checks per platform and Linux LAN 523 are verified at the same source.
+The [delivery/test instructions](DEVELOPMENT-CANDIDATE-TESTING.md) identify the
+inner ZIP and exact hash, artifact retention, and pending two-/three-client
+manual tests. C71 remains an independent 13-input gap and ordinary Public stays
+closed. Full package delivery does not complete all six goals or replace real
+multiplayer/GPU acceptance. Previously accepted gameplay is not reopened.
+
+The following entries retain earlier observations and failures.
+
 The eight owner-confirmed public default inputs are now admitted at source
 `6f720f5`. Their original Git bytes match both existing manifests; strict local,
 independent and hosted gates verify20/20 inputs and pass2/2. Four donor-only holds

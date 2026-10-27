@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Default input admission at6f720 verifies20/20 exact original inputs, strict2/2 tests locally/independently/hosted;4donorholds retained. Source40591620254 passesLinux668+2skips/Windows554+116skips; LinuxLAN519passes. First completeWindowsjob122497093920 compiledfourcomponents successfully then failed errno2 at update-note path; no programZIP/BUILDRESULT/smoke. Exact failureartifact and actual logs retained. Fix45b5c6b explicitly reads UTF8 checksums, preserves all hash/path assertions and names/pins; targeted4pass independent4pass, fullbuildtests71+2skips. Quickmatch empty-lobby characterization10pass independent10pass, productionunchanged/liveissueunconfirmed. Source6f720/knowledgeb390published; originalrecoveries and acceptedgameplay retained.",
-  "NEXT_EXECUTABLE_ACTION": "Push reviewed UTF8 checksum correction and evidence; run hosted completeWindows build and packaged no-game UI/save smoke on the new exactSHA. Download actual programZIP, bind official artifact/run/checkout identity and verify all manifests/component markers/hashes before delivering link/checksum/test instructions. Never use the first failureartifact or compile-onlycomponents as fullpackage. Preserve independent13-inputC71,4donorholds,closedPublic,quickmatchneeds-triage and allsixgoals.",
+  "LAST_CONFIRMED_RESULT": "The complete Windows LAN development candidate from source da1805e6764ac202bf6b8c1a9548fa2c44d4c085 passed full build, packaged smoke and upload in run40594742870/job122508092763. Official artifact12777311164 was downloaded and independently verified: program ZIP73,276,517bytes, SHA256b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4. All65 files,63 manifest entries,64 checksum rows,four embedded PE component identities and50 notice/source files match. Actual packaged UI166 and LAN/save26 checks pass; input gate20/20 passes. Source checks pass Linux672+2skips and Windows558+116skips; Linux LAN523 passes. The first6f package failure is retained and the strictUTF-8 repair is verified by the new full build. Default restoration remains included; actual quick matching, Public,C71 and the full six milestones remain open. No game or downloaded binary was executed during review.",
+  "NEXT_EXECUTABLE_ACTION": "Use the delivered exact da180 Windows LAN candidate for the next user-led two-client quick-match (existing room and empty lobby) and three-client chat acceptance described in docs/DEVELOPMENT-CANDIDATE-TESTING.md; no automatic game/capture or repeat of accepted gameplay. Independently continue docs/tasks/windows-core-firewall-prerequisite.md and reviewed C71 fixture/source closure, then Capture equivalence/provenance and safe migration closure. Preserve the genuine artifact/checksum, original failures and all six goals; a delivered test package is not completion of the whole migration or ordinary Public admission.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -28,12 +28,12 @@
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "Windows LAN and Linux source components verified; finite Linux native/overlay/composition passed329f, ordinaryPublic Windows admission remainsclosed; fullWindowscandidate pending"
+      "status": "Complete Windows LAN candidate delivered; Linux components and finite native/overlay checks verified; ordinary Public and Windows core/NIC admission remain open"
     },
     {
       "id": 4,
       "name": "Reviewed public source and development knowledge base",
-      "status": "Published source311052d and knowledge05edc55 verified; owner-confirmed default inputs integrated for reviewed publication"
+      "status": "Reviewed source and separate knowledge snapshots published; verified complete candidate delivery evidence is being synchronized"
     },
     {
       "id": 5,
@@ -43,7 +43,7 @@
     {
       "id": 6,
       "name": "Standalone development root and safe cleanup",
-      "status": "Original recovery preserved; uploaded hidden-source closure verified329f; defaultinput admission passed20of20; Capture equivalence and independent licensing remainopen"
+      "status": "Original recovery and cumulative evidence preserved; approved default inputs and complete-package source/notice closure verified; Capture equivalence, donor holds and independent provenance remain open"
     }
   ],
   "continuation_policy": "Code changes primarily in cloud per user. Local work finishes migration, privacy review, current builds and preservation; never auto-start game or private capture.",
@@ -97,7 +97,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Normal gh api, git fetch, non-force push and remote SHA verification succeeded using inherited platform access; prior401 preserved as history",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40591620277",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40594742870",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -246,7 +246,7 @@
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
     "candidate_linux_matrix": "Exact source 329f18a matrix 40420957466 passed all 9 QUIC/WSS/TCP phases; six namespaces removed, core reaped, TUN absent and new traffic denied. Finite guard3 development evidence, not native lease, peer-map71 or ordinary Public/live acceptance.",
     "validated_implementation_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
-    "candidate_component_result": "6f720 inputgate20/20passed and LinuxLAN519passed; first fullWindows build compiled4components then failed packageverification(errno2 update-note path), noZIP/smoke; exactsource codepage repair45b5c6b awaits new hostedfullbuild. C71 separate13-input gap remains.",
+    "candidate_component_result": "da180 actual completeWindowsjob122508092763 fullbuild/smoke/upload succeeded;UI166+LANsave26;actualdownload65files/4roles/50notice-source closure verified. SeparateC71 and Public remainpending; overallcandidate may still be running its separatePublic jobs.",
     "knowledge_snapshot_commit": "23970b93bb61763caf43c6e6ab4e1fbc2040810b",
     "knowledge_snapshot_source": "329f18a40f9959cfb06939c26150cd50126c26ee",
     "knowledge_snapshot_files": 296,
@@ -314,7 +314,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-27T22:25:08.062842+00:00",
+  "updated_utc": "2026-10-27T22:46:32.216005+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -322,8 +322,8 @@
     "lan_self_tests": 26,
     "native_api_tests": 27,
     "initial_native_api_failure": "stale producer fixture digest after executable rename; regenerated by actual producer, old historical fixture restored unchanged",
-    "github_full_build": "b67_all_eight_component_isolation_preflight_native_and_owned_stack_jobs_passed;two_strict_withheld_input_gates_failed;fullpackage_skipped;historical_pre_OPEN_scope",
-    "clean_public_package": "strict_input_gate_passed20of20_after_owner_confirmed_default_admission_fullWindowsbuild_pending",
+    "github_full_build": "da180 run40594742870 job122508092763 fullWindowsbuild+packagedsmoke+artifactupload_success;complete programZIP independently downloaded and verified;notPublic/liveacceptance",
+    "clean_public_package": "actual GitHub cleanWindows checkout completepackage verified;20originalinputs admitted;4donorholds retained",
     "live_game": "not_run",
     "cloud_initial_python": {
       "tests": 37,
@@ -379,16 +379,16 @@
       "scope": "Windows-specific numeric Winsock assertions fail on Linux; unchanged assertions remain in Windows CI"
     },
     "cloud_source_current": {
-      "source_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
+      "source_commit": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
       "initial_git_clean": true,
       "tracked_source_unchanged": true,
       "exit_code": 0,
-      "executed": 670,
-      "passed": 668,
+      "executed": 674,
+      "passed": 672,
       "skipped": 2,
-      "complete_package_ready": false,
-      "source_report_sha256": "e1e75e842de383a11956f7236466712bed51aea0f5f3e0895921d30925069ee2",
-      "retained_log_sha256": "16010e23db52e16bc3410138afeffa1f03d1ed56320e373547cd9ce831976992"
+      "complete_package_ready": true,
+      "source_report_sha256": "6f23a107aada2ac3b74dba440ec63621372298886978a1df3455af9c8b8e70b8",
+      "retained_log_sha256": "c57b5a1001c73f97186d1bd287e7c1766c6216c9af286cf0689eed602263bf48"
     },
     "cloud_authenticated_reader": {
       "passed": 69,
@@ -1068,16 +1068,16 @@
       "record": "docs/evidence/hosted-owned-overlay-4b49da7.json"
     },
     "latest_local_detached_source": {
-      "source_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
+      "source_commit": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
       "initial_git_clean": true,
       "tracked_source_unchanged": true,
       "exit_code": 0,
-      "executed": 670,
-      "passed": 668,
+      "executed": 674,
+      "passed": 672,
       "skipped": 2,
-      "complete_package_ready": false,
-      "source_report_sha256": "e1e75e842de383a11956f7236466712bed51aea0f5f3e0895921d30925069ee2",
-      "retained_log_sha256": "16010e23db52e16bc3410138afeffa1f03d1ed56320e373547cd9ce831976992"
+      "complete_package_ready": true,
+      "source_report_sha256": "6f23a107aada2ac3b74dba440ec63621372298886978a1df3455af9c8b8e70b8",
+      "retained_log_sha256": "c57b5a1001c73f97186d1bd287e7c1766c6216c9af286cf0689eed602263bf48"
     },
     "latest_local_canonical_patch": {
       "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
@@ -1677,7 +1677,34 @@
     "default_input_admission": "docs/evidence/default-input-admission-20261028.json",
     "first_full_windows_failure": "docs/evidence/hosted-package-failure-6f720f5.json",
     "package_checksum_utf8": "docs/evidence/package-checksum-encoding-regression.json",
-    "quickmatch_empty_lobby": "docs/evidence/quick-match-empty-lobby-regressions.json"
+    "quickmatch_empty_lobby": "docs/evidence/quick-match-empty-lobby-regressions.json",
+    "github_full_build_historical_before_complete_delivery": "b67_all_eight_component_isolation_preflight_native_and_owned_stack_jobs_passed;two_strict_withheld_input_gates_failed;fullpackage_skipped;historical_pre_OPEN_scope",
+    "cloud_source_current_historical_before_da180": {
+      "source_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
+      "exit_code": 0,
+      "executed": 670,
+      "passed": 668,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "e1e75e842de383a11956f7236466712bed51aea0f5f3e0895921d30925069ee2",
+      "retained_log_sha256": "16010e23db52e16bc3410138afeffa1f03d1ed56320e373547cd9ce831976992"
+    },
+    "latest_local_detached_source_historical_before_da180": {
+      "source_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
+      "initial_git_clean": true,
+      "tracked_source_unchanged": true,
+      "exit_code": 0,
+      "executed": 670,
+      "passed": 668,
+      "skipped": 2,
+      "complete_package_ready": false,
+      "source_report_sha256": "e1e75e842de383a11956f7236466712bed51aea0f5f3e0895921d30925069ee2",
+      "retained_log_sha256": "16010e23db52e16bc3410138afeffa1f03d1ed56320e373547cd9ce831976992"
+    },
+    "hosted_complete_windows_da180": "docs/evidence/hosted-complete-package-da1805e.json",
+    "download_complete_windows_da180": "docs/evidence/complete-package-download-da1805e.json"
   },
   "default_template_admission": {
     "record": "docs/evidence/default-input-admission-20261028.json",
@@ -1687,7 +1714,24 @@
     "admission_errors": 0,
     "strict_tests_passed": 2,
     "retained_donor_holds": 4,
-    "complete_windows_build_pending": true,
+    "complete_windows_build_pending": false,
     "default_restore_included": true
+  },
+  "complete_windows_candidate": {
+    "source_commit": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
+    "run_id": 40594742870,
+    "job_id": 122508092763,
+    "artifact_id": 12777311164,
+    "download_url": "https://github.com/caox233/FifthFreedom/actions/runs/40594742870/artifacts/12777311164",
+    "archive": "fifth-freedom-1.1.0-migration1-program.zip",
+    "archive_bytes": 73276517,
+    "archive_sha256": "b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4",
+    "ui_passed": 166,
+    "lan_save_passed": 26,
+    "live_game_verified": false,
+    "default_restoration_included": true,
+    "formal_release": false,
+    "evidence": "docs/evidence/hosted-complete-package-da1805e.json",
+    "download_verification": "docs/evidence/complete-package-download-da1805e.json"
   }
 }

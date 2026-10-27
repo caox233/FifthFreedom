@@ -68,6 +68,9 @@ Passing the strict input gate permits the real Windows full build and package
 smoke check; it does not establish that a complete downloadable package exists.
 The thirteen C71 replay inputs remain a separate gate and are not a dependency
 of Windows full packaging. Personal saves remain excluded.
+Actual source `da1805e` has since passed the hosted full Windows build and
+packaged UI/save smoke. Its complete program ZIP has been downloaded and
+independently verified; see [delivery](DEVELOPMENT-CANDIDATE-TESTING.md).
 
 The pinned capture helper binary is preserved. The historical single-file source
 has now been received from reference commit `b7a4c871b39b527f3e9c12fa099ca6b7ea04c3cc`

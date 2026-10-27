@@ -33,7 +33,7 @@
       "reason": "opaque default save privacy not proven; user redistribution authorization is separate"
     }
   ],
-  "full_public_clean_checkout_package_build": "All required default inputs admitted from owner-confirmed public originals; unchanged exact-hash input gate and real hosted full build/package smoke still required. Four donor-only holds and independent C71 input gate remain.",
+  "full_public_clean_checkout_package_build": "Verified at source da1805e6764ac202bf6b8c1a9548fa2c44d4c085: hosted run40594742870 full Windows build, packaged UI/save smoke, official download and exact package checks pass. Default restoration retained. Four donor-only holds and the separate C71 gate remain; no live-game or complete Public claim.",
   "binary_rebuild_gap": [
     "Capture historical source received/hash-verified and independent Windows x86 reference build plus19 bounded checks passed; rebuilt bytes differ, behavioral equivalence and reproducibility unverified; original pinned binary retained"
   ],

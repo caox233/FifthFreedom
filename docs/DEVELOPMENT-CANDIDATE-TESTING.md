@@ -1,9 +1,59 @@
 # Unified development candidate testing
 
-There is currently **no newly verified complete unified download**. Component
-artifacts and their checksums are not an installable complete package. This page
-records the acceptance steps for the next admitted candidate, not a request to
-test incomplete artifacts. No formal Release or production deployment is enabled.
+The complete **Windows LAN development candidate** is now available from
+[GitHub Actions](https://github.com/caox233/FifthFreedom/actions/runs/40594742870/artifacts/12777311164). It includes the launcher, both native DLLs, Windows LAN
+server and the admitted default templates; default-save restoration is retained.
+It does not include the retail game or enable ordinary Public service. All six
+migration goals remain in progress; this delivery is not a formal Release.
+
+## Verified download — 2026-10-28 (Asia/Hong_Kong)
+
+- Built source: `da1805e6764ac202bf6b8c1a9548fa2c44d4c085`; actual PR checkout merge
+  `4c6e345ca195dfaea1a37662d62e8338090f647a` has the same source tree.
+- Hosted run `40594742870`, full Windows job `122508092763`: full build,
+  packaged no-game smoke and upload all succeeded.
+- Sign in to GitHub to download the artifact. Extract its inner
+  `fifth-freedom-1.1.0-migration1-program.zip` (73,276,517 bytes), then unpack
+  that program ZIP completely into a new writable directory. Artifact retention
+  currently expires **2026-11-11 06:41 (Asia/Hong_Kong)**.
+- Program ZIP SHA256 (not the outer artifact ZIP):
+  `b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4`
+- Outer artifact SHA256:
+  `12da5a82e4f3580b9a530a047cb3fb140eb5474bc178ddcc4d418b401dcaf358`.
+
+On Windows, `Get-FileHash .\fifth-freedom-1.1.0-migration1-program.zip -Algorithm SHA256`
+checks the inner archive. Keep all `runtime`, `package` and `licenses` files
+alongside `FifthFreedom.exe`; do not mix DLLs or overwrite previous player data.
+The outer artifact also carries `BUILD-RESULT.json`, checksum lists and actual
+smoke/build evidence. Read the program's `README.txt` for the verified LAN setup.
+
+Actual packaged checks passed **166 UI/protocol + 26 LAN-tools/save checks**,
+with zero failures and no game execution. Official/MOD restoration used isolated
+temporary fixtures and exact authorized template bytes. Independent read-only
+download checks verified all **65 files**, 63 manifest entries, 64 checksum rows,
+four embedded component identities/PE architectures and all 50 FusionFix notice
+and corresponding-source files. See [hosted proof](evidence/hosted-complete-package-da1805e.json)
+and [download verification](evidence/complete-package-download-da1805e.json).
+
+The same source passed Linux 672 + 2 skips and Windows 558 + 116 skips; its Linux LAN
+suite passed 523 with 0 failures/ignored, including the four new empty-lobby protocol
+cases. Those cases do not establish retail matchmaking order or live same-game
+entry. The first full build at `6f720` failed at the update-note checksum path and
+remains recorded; strict UTF-8 reader correction `45b5c6b` is verified by this new
+complete Windows build. No old failure artifact or compile-only payload is
+presented as this complete program ZIP.
+
+## Brief LAN test
+
+1. All participants use this same complete candidate and select LAN, their actual
+   IPv4 adapter, distinct accounts, and the same Official/MOD/gameplay mode.
+2. One participant creates the host; others join that host's real IPv4:50051.
+   Follow `README.txt` for the manual trusted-network firewall rules, then start
+   the game manually. The cloud build has not started a game or capture.
+3. At least two players test quick matching with an existing room and an empty
+   lobby, confirming the same roster and game. Three MOD players test all/team
+   chat relay. Report a short pass/fail and affected stage; new logs/captures are
+   not requested. Do not repeat accepted F3/MAC-11/Chinese/world-camera/VSS checks.
 
 ## Input admission and remaining independent gates
 
