@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "base_commit": "311052da801ee95b085ffbcd95498d5dde5f45ef",
+  "purpose": "handoff original public default templates without modifying bytes or restoring private saves",
+  "user_confirmation": "The owner confirmed these are public default templates and explicitly permits public distribution.",
+  "review": {
+    "meta": "All 12 bytes reviewed: ASCII sc6_save.sav, no newline or NUL. Four identical required copies.",
+    "sav": "Original template provenance confirmed by owner; exact pinned size/hash verified. Offline ASCII/UTF16 pattern review found no email, IPv4 address, user-directory path or credential label. This is bounded inspection, not a claim that every binary field was decoded.",
+    "other_content_excluded": [
+      "personal saves",
+      "private string inventories",
+      "raw logs",
+      "credentials",
+      "local paths",
+      "donor-only SAV inputs"
+    ]
+  },
+  "files": [
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/Official/00000001.meta",
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/Official/00000001.sav",
+      "bytes": 337743,
+      "sha256": "5bda2ee98904f2705621f40b5ebc5d480ef4fc59f8b4955fea38004ac8443d44"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/Official/00000002.meta",
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/Official/00000002.sav",
+      "bytes": 337743,
+      "sha256": "5bda2ee98904f2705621f40b5ebc5d480ef4fc59f8b4955fea38004ac8443d44"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000001.meta",
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000001.sav",
+      "bytes": 297865,
+      "sha256": "ee506410bc0046ac23a5e15624270810826ffca0e72b28f03961c0aa052f2cf8"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000002.meta",
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000002.sav",
+      "bytes": 297865,
+      "sha256": "ee506410bc0046ac23a5e15624270810826ffca0e72b28f03961c0aa052f2cf8"
+    }
+  ],
+  "unchanged": "No game/source code or original asset was modified; privacy admission is for cloud integration, not disabled here."
+}
