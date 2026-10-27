@@ -45,7 +45,10 @@ checkout exposed an overly strict permission comparison; the corrected Git-mode
 check now passes 36 focused tests and the complete clean source lane (649 passed,
 2 skipped at `ac89a7f`). The original failure remains in the
 [source-copy receipt](evidence/memorymodule-source-packaging.json). Actual hosted
-packaging of this addition remains to be verified. This narrows the MemoryModule source-availability
+packaging of this addition has since been verified from the official329f Windows
+and assembly downloads: all50 notice/source files and all5 hidden files survive
+transfer with exact hashes; see [the receipt](evidence/hosted-artifact-native-329f18a.json).
+This narrows the MemoryModule source-availability
 gap; all seven existing provenance holds and independent binary/permission
 requirements remain recorded.
 

@@ -1,5 +1,39 @@
 # Cloud implementation evidence
 
+The eight owner-confirmed public default inputs are now admitted at source
+`6f720f5`. Their original Git bytes match both existing manifests; strict local,
+independent and hosted gates verify20/20 inputs and pass2/2. Four donor-only holds
+remain. Hosted source checks pass Linux668+2skips and Windows554+116skips.
+[Admission](evidence/default-input-admission-20261028.json) preserves the explicit
+public-template authorization and bounded SAV review, not complete deserialization.
+
+The first real full Windows job122497093920 in candidate40591620277 passed all
+four component builds and reached package verification, then failed with errno2
+for the update-note path. No program ZIP, BUILD-RESULT or packaged smoke result
+was produced. The [official failure](evidence/hosted-package-failure-6f720f5.json)
+retains all43 artifact files and the actual log. The recorded UTF-8 checksum name
+matches the exact source bytes. The old runner locale was not measured. Controlled
+real-file regressions independently reproduce the defect in the default-encoding
+reader; [repair45b5c6b](evidence/package-checksum-encoding-regression.json) makes
+only that read explicitly strictUTF-8. New4/4 and full build tests71+2skips pass,
+while old1pass/3errors remains retained. Hosted full rebuild is next; no test
+package is claimed yet.
+
+The new [empty-lobby protocol tests](evidence/quick-match-empty-lobby-regressions.json)
+pass10 including4 new cases, independently repeated. Concurrent empty Search
+responses followed by Create produce two separate rooms; re-search does not
+merge them. Explicit test-directed Join/Leave can converge, and the ordered
+control converges. Production matching is unchanged and retail ordering/live
+same-game entry remains needs-triage. Previously accepted gameplay results
+and the full six migration goals remain separate from these server-only proofs.
+
+The [latest prior311 hosted evidence](evidence/hosted-final-311052d.json) is fully
+reviewed. Its8success/2gatefail/1skip and refused WindowsPublic probes remain
+historical, alongside329 and earlier results. Public is still closed; C71 is an
+independent13-input gap, not a Windows packaging dependency.
+
+The records below retain earlier observations and their original input status.
+
 The final [same-run composition receipt](evidence/hosted-composition-329f18a.json)
 for tested source `329f18a` is now verified. Candidate `40420957576` finishes with
 8 successful jobs, 2 input-gate failures and 1 skipped complete-package job.

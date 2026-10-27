@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "timezone": "Asia/Hong_Kong",
+  "fix_commit": "45b5c6be58b84a92e867f242f3b7deb7fefbb3dc",
+  "failure_record": "docs/evidence/hosted-package-failure-6f720f5.json",
+  "production_change": "Read the UTF-8 checksum format with explicit strict UTF-8; all previous hash/path assertions retained.",
+  "input_pins_changed": false,
+  "default_restoration_removed": false,
+  "renamed_unicode_file": false,
+  "fallback_decoding": false,
+  "local": {
+    "old-verifier-regression": {
+      "result": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests/build",
+          "-p",
+          "test_verify_package_encoding.py",
+          "-v"
+        ],
+        "exit_code": 1,
+        "source_head": "4a8e66bdf502674c05a8423013ca10cbdf1f9545",
+        "verifier_sha256": "af228892ae159a68810bdab367215d3204cdd50f34bdc30b7e4358bcdebc4f6c",
+        "test_sha256": "e9c1aa200a3124b13fad3ac4a1ec1c297bdedcda07153b103d13cbd28b752423",
+        "log_sha256": "79eb7e34eaac66619e599792aac54a1ce13cbf3f41bdaa977bac242897e92fd5",
+        "default_text_encoding_control": "cp1252; explicit encodings and real filesystem/hash I/O unchanged",
+        "actual_windows_execution": false
+      },
+      "log_sha256": "79eb7e34eaac66619e599792aac54a1ce13cbf3f41bdaa977bac242897e92fd5",
+      "receipt_sha256": "c5161940a72d0290995155603533c4b7aa0ebee88710f64aa068dd726535e181",
+      "passed": 1,
+      "errors": 3,
+      "executed": 4
+    },
+    "fixed-verifier-regression": {
+      "result": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests/build",
+          "-p",
+          "test_verify_package_encoding.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "source_head": "4a8e66bdf502674c05a8423013ca10cbdf1f9545",
+        "verifier_sha256": "0ec89f1e237a457f66c969a6f61a15b2146b343f1d733eaeefd4c6232cc0756f",
+        "test_sha256": "e9c1aa200a3124b13fad3ac4a1ec1c297bdedcda07153b103d13cbd28b752423",
+        "log_sha256": "27ad6ef52a5cf81843c88c06dbc8bb4e1d280d383e1dd1953bd4b452ece80ca7",
+        "default_text_encoding_control": "cp1252; explicit encodings and real filesystem/hash I/O unchanged",
+        "actual_windows_execution": false
+      },
+      "log_sha256": "27ad6ef52a5cf81843c88c06dbc8bb4e1d280d383e1dd1953bd4b452ece80ca7",
+      "receipt_sha256": "95671c03ae547b49861594c173a4d04fba0f32e985c4c72672c6ea90c9214c5b",
+      "passed": 4,
+      "errors": 0,
+      "executed": 4
+    },
+    "build-suite": {
+      "result": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests/build",
+          "-v"
+        ],
+        "exit_code": 0,
+        "log_sha256": "7a2a8621ee717d0329ad6920b14289c7f03fb6a4dd181caeb969cd6d4cb90c2c",
+        "production_ast_change_only": "Explicit UTF-8 encoding for checksum read; all integrity/path assertions unchanged",
+        "source_head": "4a8e66bdf502674c05a8423013ca10cbdf1f9545"
+      },
+      "log_sha256": "7a2a8621ee717d0329ad6920b14289c7f03fb6a4dd181caeb969cd6d4cb90c2c",
+      "receipt_sha256": "db3363cef8341d342ae2f4f50247a15f726d9f514317ad3d96d7dbce9d99d1f0",
+      "passed": 71,
+      "skipped": 2,
+      "executed": 73,
+      "errors": 0
+    }
+  },
+  "independent_review": {
+    "receipt_sha256": "a2a8c8e0c352b145719fc5c544845bdcaab8a82d305a2d8dc80caefea68c9465",
+    "fixed_passed": 4,
+    "old_passed": 1,
+    "old_errors": 3
+  },
+  "actual_prior_runner_locale_measured": false,
+  "new_hosted_full_package_verified": false,
+  "game_executed": false
+}

@@ -33,7 +33,7 @@ python -B scripts/ci_checks.py source
 
 建议在独立 Python 虚拟环境中执行。`source` 检查明确区分可运行的源码测试与
 资源门禁；`python -B scripts/ci_checks.py package-inputs` 保留严格完整输入校验，
-目前会因暂未公开的存档输入返回失败。
+当前已准入的公共默认模板使严格输入门禁通过；构建及包冒烟仍须独立验证。
 
 完整 Windows 构建使用 `build.cmd`，需要 [构建说明](docs/BUILD.md) 中的
 .NET、Rust、MSVC 和明确列出的资源输入。本机工具链与证据放在被 Git 排除的
@@ -41,9 +41,10 @@ python -B scripts/ci_checks.py source
 
 默认目标是由 GitHub Windows/Linux Actions 构建，不要求用户电脑保持开机。
 根工作流已接通源码检查、Windows/Linux 组件构建和独立隔离探测；具体提交的
-实际结果与失败见云端进展，工作流存在不等于构建通过。部分默认存档暂留本地等待
-隐私验证，因此公开 checkout 暂不能独立完成全包构建，见
-[资源门禁](docs/ASSET-PROVENANCE.md)；这不阻塞云端源码整合。
+实际结果与失败见云端进展，工作流存在不等于构建通过。八份默认存档原件已根据
+所有者对公共模板的明确确认获准公开，20 项输入严格校验通过；四项 donor 保留输入与
+独立 C71 回放缺口继续记录在[资源门禁](docs/ASSET-PROVENANCE.md)。
+完整候选下载、精确校验值和实测范围以[候选测试说明](docs/DEVELOPMENT-CANDIDATE-TESTING.md)为准。
 
 仅通过源码检查、单元测试或构建，不代表 DX11、游戏实机或多人网络验收通过。
 用户将集中测试新候选包。开发推送不会自动发布 GitHub Release。

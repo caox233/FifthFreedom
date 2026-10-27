@@ -270,15 +270,19 @@ compiler/linker command has been introduced before examining the received source
 ## Remaining closure gates
 
 - Preserve the frozen FusionFix archive while obtaining exact ASI source/build
-  provenance and the remaining embedded-DLL/SDK terms. Verify actual hosted
-  inclusion of the pinned MemoryModule source; loader identity alone does not
-  establish a reproducible build or complete permission closure.
+  provenance and the remaining embedded-DLL/SDK terms. Actual329f hosted
+  transfer includes all50 notice/source files, including the hidden MemoryModule
+  entries; loader identity/source delivery alone does not establish a reproducible
+  build or complete permission closure.
 - Capture source has been received and independently hash-verified; the x86
   reference build and 19 no-attach checks passed. Its output differs from the
   retained binary. Establish reproducibility/equivalence separately without
   running a game or collecting a capture; do not replace the production helper.
-- Keep the 12 opaque SAV/META privacy holds in `ASSET-PUBLICATION.json`. This
-  evidence does not authorize publishing them or producing a fake complete pack.
+- Eight original LAN SAV/META paths are admitted from explicit owner confirmation
+  of public default templates; unchanged pins and strict20/20 input checks pass.
+  Retain the four unrelated donor-only holds in `ASSET-PUBLICATION.json`. The
+  [bounded review](development-reference/default-save-inputs-20261028/receipt.json)
+  is not full binary decoding; a full hosted package still needs its actual result.
 - Keep original sources and unique local evidence until source/dependency closure
   and rollback receipts support safe cleanup. These cloud references do not
   replace the private cumulative four-role evidence.

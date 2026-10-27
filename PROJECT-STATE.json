@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Original source311052d and knowledge05edc55 plus recovery preserved; connected original cloud revision4 and normal GitHub access verified. Handoff865a25a supplies all eight owner-confirmed public default template originals; exact Git blobs and checkout match unchanged pins. Before admission, real input tests passed2 but eight privacy holds correctly rejected publication. Precisely eight records now admitted from explicit template/publication confirmation; four donor-only holds remain. Unchanged strict gate now verifies20/20, passes2/2, zero missing/admission errors, exit0. No complete Windows package exists yet; hosted full build/package smoke is next. Earlier329 successes and all accepted live results remain preserved.",
-  "NEXT_EXECUTABLE_ACTION": "Push reviewed original-template admission; execute the hosted Windows full build and package smoke on the exact new SHA, download the genuine unified program ZIP, verify manifest/checksums and deliver its artifact link and focused test instructions. Retain default restoration, four donor-only holds, separate13-inputC71 gap, Public closed and quickmatch empty-lobby needs-triage; do not relabel components as a full package or invent live acceptance. Continue all six goals.",
+  "LAST_CONFIRMED_RESULT": "Default input admission at6f720 verifies20/20 exact original inputs, strict2/2 tests locally/independently/hosted;4donorholds retained. Source40591620254 passesLinux668+2skips/Windows554+116skips; LinuxLAN519passes. First completeWindowsjob122497093920 compiledfourcomponents successfully then failed errno2 at update-note path; no programZIP/BUILDRESULT/smoke. Exact failureartifact and actual logs retained. Fix45b5c6b explicitly reads UTF8 checksums, preserves all hash/path assertions and names/pins; targeted4pass independent4pass, fullbuildtests71+2skips. Quickmatch empty-lobby characterization10pass independent10pass, productionunchanged/liveissueunconfirmed. Source6f720/knowledgeb390published; originalrecoveries and acceptedgameplay retained.",
+  "NEXT_EXECUTABLE_ACTION": "Push reviewed UTF8 checksum correction and evidence; run hosted completeWindows build and packaged no-game UI/save smoke on the new exactSHA. Download actual programZIP, bind official artifact/run/checkout identity and verify all manifests/component markers/hashes before delivering link/checksum/test instructions. Never use the first failureartifact or compile-onlycomponents as fullpackage. Preserve independent13-inputC71,4donorholds,closedPublic,quickmatchneeds-triage and allsixgoals.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -97,7 +97,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Normal gh api, git fetch, non-force push and remote SHA verification succeeded using inherited platform access; prior401 preserved as history",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40420957576",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40591620277",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -246,7 +246,7 @@
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
     "candidate_linux_matrix": "Exact source 329f18a matrix 40420957466 passed all 9 QUIC/WSS/TCP phases; six namespaces removed, core reaped, TUN absent and new traffic denied. Finite guard3 development evidence, not native lease, peer-map71 or ordinary Public/live acceptance.",
     "validated_implementation_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
-    "candidate_component_result": "Exact tested source 329f18a candidate 40420957576 completed with 8 successful jobs, 2 input-gate failures and 1 full-package skip. Downloaded Windows61/assembly65 file payloads, all50notice/source files and5hidden sources match;6 same-run component hashes and read-only admission pass. Linux LAN519, native lifecycle5, matrix9 and two actual composition controls pass with their scoped cleanup. Eight save inputs and thirteen separateC71 inputs remain absent; ordinary Public and full-package admission stay closed.",
+    "candidate_component_result": "6f720 inputgate20/20passed and LinuxLAN519passed; first fullWindows build compiled4components then failed packageverification(errno2 update-note path), noZIP/smoke; exactsource codepage repair45b5c6b awaits new hostedfullbuild. C71 separate13-input gap remains.",
     "knowledge_snapshot_commit": "23970b93bb61763caf43c6e6ab4e1fbc2040810b",
     "knowledge_snapshot_source": "329f18a40f9959cfb06939c26150cd50126c26ee",
     "knowledge_snapshot_files": 296,
@@ -314,7 +314,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-27T00:24:31.287211+00:00",
+  "updated_utc": "2026-10-27T22:25:08.062842+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -1673,7 +1673,11 @@
     "hosted_329f_source": "docs/evidence/hosted-source-329f18a.json",
     "hosted_329f_artifact_native": "docs/evidence/hosted-artifact-native-329f18a.json",
     "hosted_capture_publication_7c": "docs/evidence/hosted-capture-publication-7c614c1.json",
-    "hosted_329f_composition_final": "docs/evidence/hosted-composition-329f18a.json"
+    "hosted_329f_composition_final": "docs/evidence/hosted-composition-329f18a.json",
+    "default_input_admission": "docs/evidence/default-input-admission-20261028.json",
+    "first_full_windows_failure": "docs/evidence/hosted-package-failure-6f720f5.json",
+    "package_checksum_utf8": "docs/evidence/package-checksum-encoding-regression.json",
+    "quickmatch_empty_lobby": "docs/evidence/quick-match-empty-lobby-regressions.json"
   },
   "default_template_admission": {
     "record": "docs/evidence/default-input-admission-20261028.json",
