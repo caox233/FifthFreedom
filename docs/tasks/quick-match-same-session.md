@@ -120,8 +120,57 @@ rerun6/6. The same five-package Linux test selection passes519, zero failed or
 ignored, also using default parallelism and fresh owned fixtures. Its retained
 log hash was independently checked; the reviewer did not repeat that full run.
 See [the correction receipt](../evidence/quick-match-close-callback-regression.json).
-Those counts exclude the thirteen unavailable C71 replay fixtures. A new hosted
-candidate is still required; the original quick-match symptom remains needs-triage.
+Those counts exclude the thirteen unavailable C71 replay fixtures. The retained
+candidate `40420957576` at `329f18a` subsequently passed the full Linux LAN
+selection of 519; see [the hosted receipt](../evidence/hosted-artifact-native-329f18a.json).
+The original quick-match symptom remains needs-triage.
+
+## Empty-lobby protocol schedules, 2026-10-28 (Asia/Hong_Kong)
+
+Four additional Official/MOD cases now begin with **zero active rooms** and two
+different users, game runs and real bound secure tickets. They call the actual
+serialized Search/Create/Join/Leave protocols and mode wrappers, using real
+SQLite state. There is no fake search response or pre-created match. The two
+request orders are explicit test schedules; no retail trace establishes that
+the original 1.1 clients use either order.
+
+In the ordered control, A searches an empty server and creates a public room;
+B then searches and joins the key returned by that response. B's subsequent
+serialized response and the actual stored roster contain both users in that
+room. A's search response is empty because production search intentionally
+excludes rooms created by its caller.
+
+In the overlapping schedule, two independent worker threads must both report
+empty Search responses before a bounded controller barrier releases either
+Create. The actual calls create **two distinct rooms with one host each**.
+Re-search returns B's room to A and A's room to B; it does not merge the rooms.
+The test then chooses A's returned key for B's explicit Join. That adds B to A's
+roster while B's own room remains active. B's explicit Leave from its own room
+then retires that separate room and preserves both users in A's room. The test
+controller supplies this target choice and Leave order, not an implemented or
+verified retail matchmaking policy. There is no evidence here of an authoritative
+queue or host-election agreement between the clients.
+
+The first run passed the six retained tests and failed all four new tests:
+the fixture had incorrectly expected a caller to discover its own hosted room.
+`game_session_ex.rs` passes `Some(user_id)` to production search, and
+`storage/sessions.rs` explicitly filters `creator_id != caller`. Only those
+test expectations were corrected; the original failure log is retained.
+The corrected command
+`cargo test --offline --locked -p dedicated_server quick_match_protocol_ -- --nocapture`
+passed **10, failed 0, ignored 0**, with default test parallelism and an independent
+build directory. This includes four new empty-lobby cases and the six retained
+existing-room cases. Production matching, ticket admission and room lifetime
+rules are unchanged. Exact hashes and scope are recorded in
+[the empty-lobby receipt](../evidence/quick-match-empty-lobby-regressions.json).
+
+This is new empty-lobby **server protocol evidence**, not acceptance of retail
+quick matching. Actual request order, game/native host selection, UDP dispatch,
+notification delivery, P2P entry and two real players reaching the same game
+remain unverified. Do not introduce automatic room merging or relax filters
+solely to force these modeled schedules to converge. The next useful evidence
+is a candidate's paired-client transition outcome, with any already available
+private logs inspected locally rather than uploaded or newly requested.
 
 ## Next unified candidate acceptance
 

@@ -1,8 +1,9 @@
 // Exercise the actual serialized room protocols with independent authenticated
 // clients. This is a server-side convergence contract, not a replay of the user's
 // game requests or proof that native P2P matchmaking succeeds.
-// A compatible room is already advertised: empty-lobby find/create races and
-// native client selection are outside this test's scope.
+// The first six cases start with an advertised compatible room. The final four
+// characterize two explicit empty-lobby request schedules; neither schedule is
+// claimed to replay the unobserved retail client's matchmaking state machine.
 mod quick_match_protocol {
     use super::*;
     use crate::protocols::game_session_ex_service::game_session_ex_protocol::{SearchSessionsRequest, SearchSessionsResponse};
@@ -303,4 +304,145 @@ mod quick_match_protocol {
     fn quick_match_protocol_official_closed_ticket_cannot_join_replacement_can() { concurrent_existing_room(1, true); }
     #[test]
     fn quick_match_protocol_mod_closed_ticket_cannot_join_replacement_can() { concurrent_existing_room(2, true); }
+
+    #[derive(Debug, PartialEq, Eq)]
+    struct DiscoveredRoom {
+        key: (u32, u32),
+        host: u32,
+        members: Vec<u32>,
+    }
+
+    fn discover_all_rooms(storage: &Arc<Storage>, client: &mut quazal::ClientInfo<()>) -> Vec<DiscoveredRoom> {
+        let parameters = SearchSessionsRequest { game_session_query: GameSessionQuery { type_id: 1, query_id: 0,
+            parameters: QList(vec![Property { id: 113, value: 0 }, Property { id: 103, value: 2_165_463_540 }]) } }.to_bytes();
+        let response = SearchSessionsResponse::from_bytes(&call_room(storage, client, 123, 1, parameters).unwrap()).unwrap();
+        let mut rows = response.search_results.0.into_iter().map(|row| {
+            let result = row.game_session_search_result;
+            let mut members = row.participants.0.into_iter().map(|peer| peer.pid).collect::<Vec<_>>();
+            members.sort_unstable();
+            assert!(members.contains(&result.host_pid), "every returned host must be encoded");
+            assert_eq!(result.host_urls.0.len(), 1);
+            assert_eq!(result.host_urls.0[0].address, format!("192.0.2.{}", result.host_pid));
+            DiscoveredRoom { key: (result.session_key.type_id, result.session_key.session_id), host: result.host_pid, members }
+        }).collect::<Vec<_>>();
+        rows.sort_by_key(|row| row.host);
+        rows
+    }
+
+    fn create_public_room(storage: &Arc<Storage>, client: &mut quazal::ClientInfo<()>) -> (u32, u32) {
+        let parameters = CreateSessionRequest { game_session: NativeSession { type_id: 1,
+            attributes: QList(vec![Property { id: 113, value: 0 }, Property { id: 103, value: 2_165_463_540 },
+                Property { id: 3, value: 8 }, Property { id: 4, value: 0 }]) } }.to_bytes();
+        let key = CreateSessionResponse::from_bytes(&call_room(storage, client, 42, 1, parameters).unwrap()).unwrap().game_session_key;
+        (key.type_id, key.session_id)
+    }
+
+    fn empty_lobby_clients(mode: i64) -> (Arc<Storage>, [quazal::ClientInfo<()>; 2]) {
+        let storage = Arc::new(create_test_storage("quick-match-empty-lobby-protocol"));
+        insert_accounts(&storage, 2);
+        for user in 1..=2 {
+            maintenance_begin_run(&storage, user, &format!("{user:032x}"), mode);
+            storage.register_urls(user, vec![format!("prudp:/address=192.0.2.{user};port=13000;sid={user};type=2")]).unwrap();
+        }
+        let a = maintenance_native_client(&storage, 1);
+        let b = maintenance_native_client(&storage, 2);
+        assert_ne!(a.user_id, b.user_id);
+        assert_ne!(a.ticket_fingerprint, b.ticket_fingerprint);
+        let count: i64 = run(sqlx::query_scalar("SELECT COUNT(*) FROM game_sessions WHERE destroyed_at IS NULL")
+            .fetch_one(&storage.pool)).unwrap().unwrap();
+        assert_eq!(count, 0, "the fixture must not pre-create a room");
+        (storage, [a, b])
+    }
+
+    fn empty_lobby_ordered_search_create_join(mode: i64) {
+        let (storage, [mut a, mut b]) = empty_lobby_clients(mode);
+        assert!(discover_all_rooms(&storage, &mut a).is_empty());
+        let created = create_public_room(&storage, &mut a);
+        // This is an explicit test schedule: A publishes before B searches.
+        // The only target used for B's Join comes from B's actual response.
+        let found = discover_all_rooms(&storage, &mut b);
+        assert_eq!(found, vec![DiscoveredRoom { key: created, host: 1, members: vec![1] }]);
+        JoinSessionResponse::from_bytes(&call_room(&storage, &mut b, 42, 22, join_request(found[0].key)).unwrap()).unwrap();
+        let expected = vec![DiscoveredRoom { key: created, host: 1, members: vec![1, 2] }];
+        // Production search excludes the caller's own hosted rooms. An empty
+        // host response must not be interpreted as a missing shared room.
+        assert!(discover_all_rooms(&storage, &mut a).is_empty());
+        assert_eq!(discover_all_rooms(&storage, &mut b), expected);
+        assert_eq!(storage.game_session_diagnostics(created.0, created.1).unwrap().unwrap().2, vec![1, 2]);
+        println!("QUICK_MATCH_EMPTY_LOBBY mode={mode} schedule=create_before_second_search initial_rooms=0 independent_clients=2 actual_returned_key_join=true final_rooms=1 serialized_shared_roster=2 retail_order_verified=false real_udp_dispatch=false native_p2p=false live_game=false user_report_reproduced=false");
+        run(storage.pool.close()).unwrap();
+    }
+
+    fn empty_lobby_overlapping_search_then_create(mode: i64) {
+        let (storage, clients) = empty_lobby_clients(mode);
+        let mut created = std::thread::scope(|scope| {
+            let (searched, searches) = std::sync::mpsc::channel();
+            let mut permits = Vec::new();
+            let mut workers = Vec::new();
+            for mut client in clients {
+                let state = storage.clone();
+                let searched = searched.clone();
+                let (proceed, permit) = std::sync::mpsc::channel();
+                permits.push(proceed);
+                workers.push(scope.spawn(move || {
+                    let found = discover_all_rooms(&state, &mut client);
+                    searched.send((client.user_id.unwrap(), found)).unwrap();
+                    // Bounded controller barrier: no Create is allowed until
+                    // both independent production Search calls have completed.
+                    permit.recv_timeout(Duration::from_secs(10)).expect("create permit missing");
+                    let key = create_public_room(&state, &mut client);
+                    (client, key)
+                }));
+            }
+            let mut observations = (0..2).map(|_| searches.recv_timeout(Duration::from_secs(10))
+                .expect("empty search worker did not finish")).collect::<Vec<_>>();
+            observations.sort_by_key(|(user, _)| *user);
+            assert_eq!(observations, vec![(1, Vec::new()), (2, Vec::new())], "both actual responses must be empty before either Create");
+            for permit in permits { permit.send(()).unwrap(); }
+            workers.into_iter().map(|worker| worker.join().unwrap()).collect::<Vec<_>>()
+        });
+        created.sort_by_key(|(client, _)| client.user_id.unwrap());
+        let (mut b, b_key) = created.pop().unwrap();
+        let (mut a, a_key) = created.pop().unwrap();
+        assert_ne!(a_key, b_key, "independent Create requests do not elect a common host");
+        // Each caller excludes its own hosted room: A sees B, and B sees A.
+        // Inspect both genuine responses and both database rosters, instead of
+        // assuming a single caller's response lists all rooms on the server.
+        assert_eq!(discover_all_rooms(&storage, &mut a), vec![DiscoveredRoom { key: b_key, host: 2, members: vec![2] }]);
+        let discovered_by_b = discover_all_rooms(&storage, &mut b);
+        assert_eq!(discovered_by_b, vec![DiscoveredRoom { key: a_key, host: 1, members: vec![1] }], "re-search alone must not be mistaken for a merge");
+        assert_eq!(storage.game_session_diagnostics(a_key.0, a_key.1).unwrap().unwrap().2, vec![1]);
+        assert_eq!(storage.game_session_diagnostics(b_key.0, b_key.1).unwrap().unwrap().2, vec![2]);
+
+        // This selection is made by the test controller, not by a reconstructed
+        // retail policy. Use the genuine response and expose the remaining room:
+        // Join adds B to A but neither elects a host nor retires B's own room.
+        let target = discovered_by_b.iter().find(|row| row.host == 1).unwrap().key;
+        JoinSessionResponse::from_bytes(&call_room(&storage, &mut b, 42, 22, join_request(target)).unwrap()).unwrap();
+        assert_eq!(discover_all_rooms(&storage, &mut a), vec![DiscoveredRoom { key: b_key, host: 2, members: vec![2] }]);
+        assert_eq!(discover_all_rooms(&storage, &mut b), vec![DiscoveredRoom { key: a_key, host: 1, members: vec![1, 2] }]);
+        assert_eq!(storage.game_session_diagnostics(a_key.0, a_key.1).unwrap().unwrap().2, vec![1, 2]);
+        assert_eq!(storage.game_session_diagnostics(b_key.0, b_key.1).unwrap().unwrap().2, vec![2]);
+
+        // Only an explicit Leave removes the other owned room here. Confirm
+        // that it does not remove B from the separately joined shared room.
+        let leave = LeaveSessionRequest { game_session_key: GameSessionKey { type_id: b_key.0, session_id: b_key.1 } }.to_bytes();
+        LeaveSessionResponse::from_bytes(&call_room(&storage, &mut b, 42, 5, leave).unwrap()).unwrap();
+        let converged = vec![DiscoveredRoom { key: a_key, host: 1, members: vec![1, 2] }];
+        assert!(discover_all_rooms(&storage, &mut a).is_empty());
+        assert_eq!(discover_all_rooms(&storage, &mut b), converged);
+        assert!(storage.game_session_diagnostics(b_key.0, b_key.1).unwrap().is_none());
+        assert_eq!(storage.game_session_diagnostics(a_key.0, a_key.1).unwrap().unwrap().2, vec![1, 2]);
+        println!("QUICK_MATCH_EMPTY_LOBBY mode={mode} schedule=both_search_empty_before_create initial_rooms=0 independent_clients=2 barrier_verified=true created_rooms=2 re_search_merges=false explicit_returned_key_join=true other_created_room_retained_after_join=true explicit_leave_required_by_test_schedule=true final_rooms=1 serialized_shared_roster=2 retail_order_verified=false queue_election_verified=false real_udp_dispatch=false native_p2p=false live_game=false user_report_reproduced=false");
+        run(storage.pool.close()).unwrap();
+    }
+
+    #[test]
+    fn quick_match_protocol_official_empty_lobby_ordered_search_create_join() { empty_lobby_ordered_search_create_join(1); }
+    #[test]
+    fn quick_match_protocol_mod_empty_lobby_ordered_search_create_join() { empty_lobby_ordered_search_create_join(2); }
+    #[test]
+    fn quick_match_protocol_official_empty_lobby_overlapping_search_then_create() { empty_lobby_overlapping_search_then_create(1); }
+    #[test]
+    fn quick_match_protocol_mod_empty_lobby_overlapping_search_then_create() { empty_lobby_overlapping_search_then_create(2); }
 }
