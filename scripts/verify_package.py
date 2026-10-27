@@ -14,7 +14,8 @@ def verify(root):
  for n,r in manifest['files'].items():
   rel=PurePosixPath(n);assert not rel.is_absolute() and '..' not in rel.parts and ':' not in n
   p=root/n;assert p.stat().st_size==r['bytes'] and sha(p)==r['sha256'],n
- sums=(root/'package/SHA256SUMS.txt').read_text().splitlines()
+ # build.package writes UTF-8 paths; the Windows locale is not that file format.
+ sums=(root/'package/SHA256SUMS.txt').read_text(encoding='utf-8').splitlines()
  for row in sums:
   h,n=row.split('  ',1);rel=PurePosixPath(n);assert not rel.is_absolute() and '..' not in rel.parts and ':' not in n
   assert sha(root/n)==h,n
