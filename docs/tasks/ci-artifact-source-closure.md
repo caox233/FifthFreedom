@@ -1,6 +1,7 @@
 # CI artifact source closure
 
-Status: **ready-for-agent**. Continue the existing candidate-delivery and
+Status: **ready-for-agent** for the downstream composition result; the
+source-transfer defect itself is verified fixed at `329f18a`. Continue the existing candidate-delivery and
 dependency-closure goals; this is not a new product or a replacement goal.
 
 Exact source `9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d`, candidate run
@@ -118,3 +119,21 @@ unchanged. The supplemental patch applies/reverses exact canonical bytes, modes
 and paths. These are local proofs; the next actual hosted Windows run and
 subsequent official artifact round trip remain required. The original failed
 source/run receipts are preserved. Full-package and separate C71 holds are unchanged.
+
+## Actual repaired hosted publication
+
+Source `329f18a`, candidate `40420957576`, now closes the previously observed
+transfer defect. Official ZIP digests were verified before strict read-only
+extraction: all 61 Windows and 65 assembly files, all 50 notices/sources and all
+five hidden source files match. Six Windows/Linux component identities bind to
+this same run. The production candidate validator admits its exact 64-file root,
+without running downloaded binaries during review. The [bounded receipt](../evidence/hosted-artifact-native-329f18a.json)
+also records all five actual native lifecycle controls and cleanup. The new
+Windows source job passed and measured the platform metadata difference directly;
+see its [source evidence](../evidence/hosted-source-329f18a.json).
+
+The original incomplete artifacts and failed Windows metadata run remain historical
+failures. Composition was still compiling at the observation, so its runtime
+controls remain the next result to read. This transfer repair does not close
+permission review, privacy-held saves, C71 input closure, Public admission or
+live multiplayer acceptance.

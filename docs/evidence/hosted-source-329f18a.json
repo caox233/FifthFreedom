@@ -1,0 +1,282 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-10-26T23:41:01.207367+00:00",
+  "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+  "merge_binding": {
+    "sha": "035d00c5f85426648479e4a80b774b763ffd541c",
+    "tree": "631053266b0ba4bfadf8513a6eac65cfc7fbb551",
+    "parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "329f18a40f9959cfb06939c26150cd50126c26ee"
+    ]
+  },
+  "checkout_tree_equals_source_head": true,
+  "source_run_id": 40420957554,
+  "source_run_conclusion": "success",
+  "official_source_artifacts": [
+    {
+      "id": 12697613765,
+      "name": "portable-source-evidence-ubuntu-24.04-035d00c5f85426648479e4a80b774b763ffd541c",
+      "digest": "sha256:80786f6d7a4d0d44be619ccb0d7453963724ade98c59a2a8d5cbc9addbe7ac6e",
+      "size_in_bytes": 21691,
+      "expired": false,
+      "run_id": 40420957554,
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "official_digest_verified": true,
+      "receipt_sha256": "e1e75e842de383a11956f7236466712bed51aea0f5f3e0895921d30925069ee2"
+    },
+    {
+      "id": 12696443845,
+      "name": "portable-source-evidence-windows-2022-035d00c5f85426648479e4a80b774b763ffd541c",
+      "digest": "sha256:8323508e4a7e91144be7a7861817d3eed253605739c097d05e0d24752683a575",
+      "size_in_bytes": 25959,
+      "expired": false,
+      "run_id": 40420957554,
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "official_digest_verified": true,
+      "receipt_sha256": "d13a4ec1db021c0cbdf0c705ca515f34ab56c360a0168ba17311f6eefdb50d87"
+    }
+  ],
+  "source_results": {
+    "source-linux": {
+      "executed": 670,
+      "passed": 668,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "publication_tests": {
+        "log_sha256": "2b85230032e0f9d591fafb69d5f8f59a10717e0399314a381723c7104952150e",
+        "cases": [
+          {
+            "test": "test_actual_cli_reports_success_and_fixed_malformed_receipt_failure_without_payload",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_actual_cli_reports_success_and_fixed_malformed_receipt_failure_without_payload",
+            "result": "ok"
+          },
+          {
+            "test": "test_candidate_extra_declared_private_path_and_changed_checksum_list_are_rejected",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_candidate_extra_declared_private_path_and_changed_checksum_list_are_rejected",
+            "result": "ok"
+          },
+          {
+            "test": "test_changed_pinned_hidden_bytes_cannot_be_authorized_by_rewriting_receipts",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_changed_pinned_hidden_bytes_cannot_be_authorized_by_rewriting_receipts",
+            "result": "ok"
+          },
+          {
+            "test": "test_inventory_accepts_actual_single_link_and_rejects_real_hardlink_on_this_platform",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_inventory_accepts_actual_single_link_and_rejects_real_hardlink_on_this_platform",
+            "result": "ok"
+          },
+          {
+            "test": "test_inventory_rejects_reparse_point_from_fresh_path_metadata",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_inventory_rejects_reparse_point_from_fresh_path_metadata",
+            "result": "ok"
+          },
+          {
+            "test": "test_inventory_uses_fresh_path_metadata_when_direntry_fields_are_incomplete",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_inventory_uses_fresh_path_metadata_when_direntry_fields_are_incomplete",
+            "result": "ok"
+          },
+          {
+            "test": "test_old_hidden_exclusion_loses_exact_five_declared_inputs_and_fails_production_validator",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_old_hidden_exclusion_loses_exact_five_declared_inputs_and_fails_production_validator",
+            "result": "ok"
+          },
+          {
+            "test": "test_public_payload_archive_roundtrip_preserves_all_five_hidden_files_and_production_admission",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_public_payload_archive_roundtrip_preserves_all_five_hidden_files_and_production_admission",
+            "result": "ok"
+          },
+          {
+            "test": "test_symlinks_hardlinks_and_nonregular_inputs_are_rejected",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_symlinks_hardlinks_and_nonregular_inputs_are_rejected",
+            "result": "ok"
+          },
+          {
+            "test": "test_unlisted_hidden_visible_and_empty_directory_inputs_reject_before_staging",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_unlisted_hidden_visible_and_empty_directory_inputs_reject_before_staging",
+            "result": "ok"
+          },
+          {
+            "test": "test_wrong_run_existing_output_and_interrupted_copy_preserve_inputs",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_wrong_run_existing_output_and_interrupted_copy_preserve_inputs",
+            "result": "ok"
+          }
+        ],
+        "actual_owned_fixture_metadata": []
+      },
+      "actual_fixture_metadata": {
+        "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+        "run_id": 40420957554,
+        "job_id": 121914968343,
+        "official_job_log_sha256": "dc7269afa61b682c19fd97f4485cebeb243665c52368cfa89eb924012b047fab",
+        "log_bytes": 177015,
+        "actual_owned_fixture_metadata": [
+          {
+            "direntry_nlink": 1,
+            "path_hardlink_nlink": 2,
+            "path_single_nlink": 1,
+            "platform": "linux"
+          }
+        ]
+      }
+    },
+    "source-windows": {
+      "executed": 670,
+      "passed": 554,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 116,
+      "publication_tests": {
+        "log_sha256": "d7e1a6ccda87a30b80373cbef2b8ec79dd5874d506bec47768eb75ad2c879cc5",
+        "cases": [
+          {
+            "test": "test_actual_cli_reports_success_and_fixed_malformed_receipt_failure_without_payload",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_actual_cli_reports_success_and_fixed_malformed_receipt_failure_without_payload",
+            "result": "ok"
+          },
+          {
+            "test": "test_candidate_extra_declared_private_path_and_changed_checksum_list_are_rejected",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_candidate_extra_declared_private_path_and_changed_checksum_list_are_rejected",
+            "result": "ok"
+          },
+          {
+            "test": "test_changed_pinned_hidden_bytes_cannot_be_authorized_by_rewriting_receipts",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_changed_pinned_hidden_bytes_cannot_be_authorized_by_rewriting_receipts",
+            "result": "ok"
+          },
+          {
+            "test": "test_inventory_accepts_actual_single_link_and_rejects_real_hardlink_on_this_platform",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_inventory_accepts_actual_single_link_and_rejects_real_hardlink_on_this_platform",
+            "result": "ok"
+          },
+          {
+            "test": "test_inventory_rejects_reparse_point_from_fresh_path_metadata",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_inventory_rejects_reparse_point_from_fresh_path_metadata",
+            "result": "ok"
+          },
+          {
+            "test": "test_inventory_uses_fresh_path_metadata_when_direntry_fields_are_incomplete",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_inventory_uses_fresh_path_metadata_when_direntry_fields_are_incomplete",
+            "result": "ok"
+          },
+          {
+            "test": "test_old_hidden_exclusion_loses_exact_five_declared_inputs_and_fails_production_validator",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_old_hidden_exclusion_loses_exact_five_declared_inputs_and_fails_production_validator",
+            "result": "ok"
+          },
+          {
+            "test": "test_public_payload_archive_roundtrip_preserves_all_five_hidden_files_and_production_admission",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_public_payload_archive_roundtrip_preserves_all_five_hidden_files_and_production_admission",
+            "result": "ok"
+          },
+          {
+            "test": "test_symlinks_hardlinks_and_nonregular_inputs_are_rejected",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_symlinks_hardlinks_and_nonregular_inputs_are_rejected",
+            "result": "skipped"
+          },
+          {
+            "test": "test_unlisted_hidden_visible_and_empty_directory_inputs_reject_before_staging",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_unlisted_hidden_visible_and_empty_directory_inputs_reject_before_staging",
+            "result": "ok"
+          },
+          {
+            "test": "test_wrong_run_existing_output_and_interrupted_copy_preserve_inputs",
+            "class": "test_ci_artifact_publication.ArtifactPublicationTests.test_wrong_run_existing_output_and_interrupted_copy_preserve_inputs",
+            "result": "ok"
+          }
+        ]
+      },
+      "actual_fixture_metadata": {
+        "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+        "run_id": 40420957554,
+        "job_id": 121914968752,
+        "official_job_log_sha256": "e22241ad233b01f151e6bde602c81b46df2a9f12b4220a30b5e766b107e30b10",
+        "log_bytes": 221915,
+        "actual_owned_fixture_metadata": [
+          {
+            "direntry_nlink": 0,
+            "path_hardlink_nlink": 2,
+            "path_single_nlink": 1,
+            "platform": "win32"
+          }
+        ]
+      }
+    }
+  },
+  "actual_metadata_scope": "Official hosted source-test job stdout for inert owned fixture; read-only whitelist extraction. Windows DirEntry=0 versus fresh path single=1 and actual hardlink=2. No game or downloaded binaries executed by reviewer.",
+  "superseded_cancellation": {
+    "parent_authorized": true,
+    "before_state_receipt_sha256": "66a0afd9a386a19f1e4b75255ad5bb29808745e579f88334a1c2f0acabbc405c",
+    "requests_receipt_sha256": "f28fe24e271342c7613f1a5e77f94734843fed6159ecd327168aa49245ef8e3a",
+    "actual_after_state": {
+      "observed_utc": "2026-10-26T23:39:58.874012+00:00",
+      "records": [
+        {
+          "old": {
+            "run_id": 40419346360,
+            "head_sha": "2429db80264d4c2fd5b68260b23523308369e10f",
+            "status": "completed",
+            "conclusion": "cancelled"
+          },
+          "latest": {
+            "run_id": 40420957466,
+            "head_sha": "329f18a40f9959cfb06939c26150cd50126c26ee",
+            "status": "in_progress",
+            "conclusion": null
+          },
+          "cancellation_confirmed": true
+        },
+        {
+          "old": {
+            "run_id": 40419346340,
+            "head_sha": "2429db80264d4c2fd5b68260b23523308369e10f",
+            "status": "completed",
+            "conclusion": "cancelled"
+          },
+          "latest": {
+            "run_id": 40420957578,
+            "head_sha": "329f18a40f9959cfb06939c26150cd50126c26ee",
+            "status": "in_progress",
+            "conclusion": null
+          },
+          "cancellation_confirmed": true
+        },
+        {
+          "old": {
+            "run_id": 40419346354,
+            "head_sha": "2429db80264d4c2fd5b68260b23523308369e10f",
+            "status": "completed",
+            "conclusion": "cancelled"
+          },
+          "latest": {
+            "run_id": 40420957573,
+            "head_sha": "329f18a40f9959cfb06939c26150cd50126c26ee",
+            "status": "in_progress",
+            "conclusion": null
+          },
+          "cancellation_confirmed": true
+        },
+        {
+          "old": {
+            "run_id": 40419346346,
+            "head_sha": "2429db80264d4c2fd5b68260b23523308369e10f",
+            "status": "completed",
+            "conclusion": "cancelled"
+          },
+          "latest": {
+            "run_id": 40420957490,
+            "head_sha": "329f18a40f9959cfb06939c26150cd50126c26ee",
+            "status": "in_progress",
+            "conclusion": null
+          },
+          "cancellation_confirmed": true
+        }
+      ]
+    },
+    "reason": "Four old2429 builds superseded by exact329 pending runs; preserve oldcompletedjobs and do not infer pass/failure from cancellation",
+    "latest_cancelled": false,
+    "completed_oldsource_candidate_touched": false
+  },
+  "scope": "Source tests and owned fixture metadata only; the prior failed2429 log did not record its link count. These results do not admit held inputs, full packaging or live gameplay."
+}

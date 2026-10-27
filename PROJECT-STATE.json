@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Published source 2429db8 and knowledge c1f8d1d retain the prior runtime and package-input evidence. Source run 40419346353 passed Linux 665 plus 2 skips but failed Windows at the new publication inventory link-count predicate: five failed methods, two failure and five error events. Candidate Windows also stopped before publishing its payload. Reviewed c3ce3a6 reads fresh Path.lstat metadata, retaining all link/reparse/type/inventory predicates. Eleven focused checks pass locally and independently; exact clean source passes 668 plus 2 skips, tracked source unchanged. The canonical supplemental patch applies/reverses exactly. This is not a new hosted Windows or package result. Eight genuine save inputs remain privacy-held; thirteen separate C71 inputs and strict Windows firewall admission remain unresolved. Accepted live results and all six goals remain preserved.",
-  "NEXT_EXECUTABLE_ACTION": "Publish the reviewed Windows metadata fix and its bounded failure evidence, verify the exact new hosted source/candidate results, then download and validate all declared artifact files including the five hidden MemoryModule sources. Continue native lifecycle/composition and preserve exact cleanup outcomes. Sync the source-bound knowledge snapshot. Full packaging still includes default-save restoration and requires privacy-reviewed genuine originals; no reduced test-edition profile is enabled. Continue all six goals without game/capture, ordinary Public startup, formal Release or production deployment.",
+  "LAST_CONFIRMED_RESULT": "Published source 329f18a and knowledge 23970b9 are preserved with independently checked recovery bundles. Official environment recheck is connected/running at revision 4; actual shell and both HEADs match after a transient unavailable notification. Source run 40420957554 passes Linux 668 plus 2 skips and Windows 554 plus 116 skips, with no failures/errors. The current Windows fixture measured directory-entry link count 0 versus fresh path 1 and real hard link 2. Candidate 40420957576 publishes exact 61/65-file payloads with all 50 notice/source files and 5 hidden files verified from official downloads; six component hashes match the same run and read-only production admission passes. Linux LAN passed 519 tests, native lifecycle passed 5 controls with cleanup, and the matrix passed 9 phases with cleanup. Composition was still compiling at the recorded observation. Full packaging is skipped for 8 held SAV/META paths representing 3 original payloads; 13 separate C71 inputs remain absent. Reviewed package instructions use correct names and actual LAN setup. Retained Capture evidence closes its stale publication follow-up, with 19 finite checks and 9 Windows regression checks, not binary equivalence. Accepted live results and all six goals remain intact.",
+  "NEXT_EXECUTABLE_ACTION": "Read the actual remaining composition outcome and cleanup for source 329f18a; fix any demonstrated code failure without assigning old failures to a new cause. Publish the reviewed package documentation and bounded hosted evidence checkpoint, then bind/push the exact knowledge snapshot and preserve recovery. Continue all six goals. Full-package default-save restoration still requires privacy-reviewed genuine originals; no reduced test-edition profile is enabled. Do not invent inputs, relax existing gates, repeat accepted live checks, launch a game/capture, enable ordinary Public startup, publish a formal Release or deploy production.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -97,7 +97,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Normal gh api, git fetch, non-force push and remote SHA verification succeeded using inherited platform access; prior401 preserved as history",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40397583631",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40420957576",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -242,17 +242,17 @@
         "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "Exact 9a Windows components built; downloaded four hashes independently recomputed, launcher166/diagnostic12/authentication19/native-return8/interop3/source-transport8 passed. Separate prerequisites return28/final9/dependency13/read22+8+4 have zero skips. New source-copy inclusion awaits repaired-checkpoint hosted run.",
+    "candidate_windows_source": "Exact source 329f18a Windows component stage/upload succeeded; the official 61-file download and all 50 notice/source files were verified, including 5 hidden inputs. Four Windows component hashes independently bind to the same-run assembly. Source tests: 554 passed, 116 skipped, zero failures/errors. This is not the full Windows client.",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "Exact 9139 matrix40397583543 passed nine QUIC/WSS/TCP phases; six namespaces removed, exact core exit/TUN absence/new-traffic refusal verified. This is guard3 finite development evidence, not peer-map71/native-lease/Public/live acceptance.",
-    "validated_implementation_commit": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result": "Exact 9139 candidate: six success, four failure, one skipped complete package. Windows component and assembly runner builds succeeded but uploaded artifacts omit five declared hidden source files (45/50 notices and 57/62 candidate files). Read-only production validation reproduces the same early missing-input failure; lifecycle and composition have no new runtime success. Eight save and thirteen C71 gates remain distinct.",
-    "knowledge_snapshot_commit": "c1f8d1d576a01a82bf1300e5d10d25aba74a205e",
-    "knowledge_snapshot_source": "2429db80264d4c2fd5b68260b23523308369e10f",
-    "knowledge_snapshot_files": 295,
-    "last_verified_remote_source_commit": "2429db80264d4c2fd5b68260b23523308369e10f",
+    "candidate_linux_matrix": "Exact source 329f18a matrix 40420957466 passed all 9 QUIC/WSS/TCP phases; six namespaces removed, core reaped, TUN absent and new traffic denied. Finite guard3 development evidence, not native lease, peer-map71 or ordinary Public/live acceptance.",
+    "validated_implementation_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
+    "candidate_component_result": "Exact source 329f18a downloaded Windows 61-file and assembly 65-file payloads are complete; 6 same-run component hashes and read-only admission pass. Linux LAN 519 and native lifecycle 5 plus cleanup pass. Composition was still compiling at the recorded observation. Eight save inputs and thirteen C71 inputs remain distinct gates; the complete package is skipped.",
+    "knowledge_snapshot_commit": "23970b93bb61763caf43c6e6ab4e1fbc2040810b",
+    "knowledge_snapshot_source": "329f18a40f9959cfb06939c26150cd50126c26ee",
+    "knowledge_snapshot_files": 296,
+    "last_verified_remote_source_commit": "329f18a40f9959cfb06939c26150cd50126c26ee",
     "latest_reviewed_local_implementation_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
-    "latest_reviewed_local_implementation_pushed": false,
+    "latest_reviewed_local_implementation_pushed": true,
     "authentication_recovery": {
       "status": "recovered_actual_operations_verified",
       "normal_git_exit_code": 0,
@@ -270,7 +270,7 @@
     },
     "hosted_results_unobserved_after_authentication_failure": [],
     "duplicate_cancellations_confirmed": false,
-    "knowledge_snapshot_delivery": "Source 2429db8 and knowledge c1f8d1d published; exact remote and PR heads verified. Independent pre-push review checked 294 manifest entries, 292 exact mirrors and 72 code-map links against local/remote source Git objects, including canonical modes and BAT bytes. Earlier standalone recovery bundles for source 9139 / knowledge 2c39063 remain preserved locally; no new c3ce recovery bundle is claimed.",
+    "knowledge_snapshot_delivery": "Source 329f18a and knowledge 23970b9 are published with exact remote/PR heads independently verified. Checked 295 manifest entries, 293 mirrors, 72 links, modes and canonical bytes. New source 1809-file and knowledge 296-file standalone recovery bundles were restored offline and independently rehashed; bundle files remain local and exact Git refs are remote.",
     "recovered_hosted_receipt": "docs/evidence/hosted-recovery-c42e0eb.json",
     "diagnostic_branch": "codex/firewall-diagnostic",
     "diagnostic_remote_commit": "94768f33da695763b69ea3f50cc66b00d2442245",
@@ -299,9 +299,14 @@
       "observed_phase": "running",
       "connectivity": "connected",
       "failure": null,
-      "note": "Subsequent official read is connected; preceding transient offline observation and successful shell/Git operations are retained separately."
+      "note": "After a transient unavailable platform notification, official status and actual shell/HEAD reads again confirmed this original connected/running revision4 workspace; no reset/replacement."
     },
-    "knowledge_snapshot_delivery_historical_9139": "Source9139 and knowledge2c39063 published; exact remote and PR heads independently verified, 290 manifest entries/288 mirrors/70 links and canonical modes checked. New standalone source1802/knowledge291-file recovery bundles were verified offline and independently rehashed; they remain local while the public Git refs are remote."
+    "knowledge_snapshot_delivery_historical_9139": "Source9139 and knowledge2c39063 published; exact remote and PR heads independently verified, 290 manifest entries/288 mirrors/70 links and canonical modes checked. New standalone source1802/knowledge291-file recovery bundles were verified offline and independently rehashed; they remain local while the public Git refs are remote.",
+    "candidate_run_historical_before_329f": "https://github.com/caox233/FifthFreedom/actions/runs/40397583631",
+    "candidate_windows_source_historical_before_329f": "Exact 9a Windows components built; downloaded four hashes independently recomputed, launcher166/diagnostic12/authentication19/native-return8/interop3/source-transport8 passed. Separate prerequisites return28/final9/dependency13/read22+8+4 have zero skips. New source-copy inclusion awaits repaired-checkpoint hosted run.",
+    "candidate_linux_matrix_historical_before_329f": "Exact 9139 matrix40397583543 passed nine QUIC/WSS/TCP phases; six namespaces removed, exact core exit/TUN absence/new-traffic refusal verified. This is guard3 finite development evidence, not peer-map71/native-lease/Public/live acceptance.",
+    "validated_implementation_commit_historical_before_329f": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
+    "candidate_component_result_historical_before_329f": "Exact 9139 candidate: six success, four failure, one skipped complete package. Windows component and assembly runner builds succeeded but uploaded artifacts omit five declared hidden source files (45/50 notices and 57/62 candidate files). Read-only production validation reproduces the same early missing-input failure; lifecycle and composition have no new runtime success. Eight save and thirteen C71 gates remain distinct."
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",
@@ -309,7 +314,7 @@
     "no production/public server deployment",
     "do not repeat passed user tests"
   ],
-  "updated_utc": "2026-10-26T23:34:24.999450+00:00",
+  "updated_utc": "2026-10-27T00:09:13.986503+00:00",
   "build_evidence": {
     "local_package_sha256": "69297cc378c4f8d16cb256f00988271288ac7f97932c0f732e56435260a5a33f",
     "source_tests": 37,
@@ -1663,7 +1668,10 @@
       "evidence": "docs/evidence/artifact-windows-metadata-regression.json",
       "failed_hosted_source": "2429db80264d4c2fd5b68260b23523308369e10f",
       "reviewed_correction": "c3ce3a68294d73957739a388815d95b50b14defc",
-      "new_hosted_windows_verified": false
-    }
+      "new_hosted_windows_verified": true
+    },
+    "hosted_329f_source": "docs/evidence/hosted-source-329f18a.json",
+    "hosted_329f_artifact_native": "docs/evidence/hosted-artifact-native-329f18a.json",
+    "hosted_capture_publication_7c": "docs/evidence/hosted-capture-publication-7c614c1.json"
   }
 }

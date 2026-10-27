@@ -1,5 +1,38 @@
 # Cloud implementation evidence
 
+Exact published source `329f18a` now has verified real upload/download closure.
+[Source run `40420957554`](evidence/hosted-source-329f18a.json) passed Linux
+668 with 2 skips and Windows 554 with 116 skips, no failures/errors. The new
+Windows owned-file fixture measured directory-entry link count 0 versus fresh
+path normal-file 1 and actual hard-link 2. Its real hard-link check passed;
+this does not retrospectively measure the older failed run's fields.
+
+The [official candidate evidence](evidence/hosted-artifact-native-329f18a.json)
+verifies run `40420957576`: Windows publication contains exactly 61 files;
+assembly contains 65 (64 in the candidate root and one lane receipt). All 50
+notice/source files, including the five hidden sources, survive actual transfer
+with exact hashes. The 38 MemoryModule source files match reviewed Git blobs;
+permission closure remains a separate open boundary. Six component identities
+match the same run, and production read-only candidate validation passes. The
+previous incomplete ZIPs remain preserved and rejected.
+
+Linux LAN passed 519 with no failures/ignored cases. The actual native lifecycle
+passed all five withheld/denied/EOF/expiry/parent-death controls with three
+namespaces removed, all children reaped and source package unchanged. Separate
+matrix `40420957466` passed all nine transport phases and cleaned six namespaces.
+At the recorded observation, composition job `121924250674` was still compiling;
+no new composition outcome or complete Public readiness is inferred.
+
+Full packaging remains skipped for eight missing SAV/META paths representing
+three privacy-held original payloads. The thirteen C71 inputs remain a distinct
+gate. No reduced package profile is enabled. The source and knowledge branches
+are published; the reviewed README correction uses actual Fifth Freedom names,
+real LAN steps and an explicit historical-notes boundary. The retained Capture
+build evidence closes its stale publication-follow-up entry without claiming
+binary equivalence or any capture lifecycle acceptance.
+
+Earlier checkpoint records follow with their original scope.
+
 The next published source `2429db8` exposed a Windows metadata portability
 failure before artifact publication. Source run `40419346353` passed Linux
 665 with 2 skips, but Windows had 546 passes, 116 skips and five failed methods

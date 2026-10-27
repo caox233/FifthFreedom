@@ -43,11 +43,15 @@ production helper merely because the build succeeds.
 
 ## Next executable action and limits
 
-Run the workflow at the reviewed source SHA and verify its actual job, artifact
-digest, PE32 identity, 19 passed checks, zero skips and original-input hashes.
-If it fails, retain that receipt and fix the specific build or fixture defect.
-Portable parser/admission checks and Linux rejection of the Windows-only runner
-cannot stand in for this execution.
+The retained hosted evidence below covers the independent build and its
+publication corrections. Do not repeat those accepted checks merely to clear
+this task. The remaining work is to account for the recorded compiler/build
+inputs and establish reproducibility or bounded behavioral equivalence before
+proposing any production-helper replacement. Debugger and dump lifecycle
+acceptance still requires separately authorized execution; these finite
+non-attach fixtures cannot establish it. A changed build implementation needs
+its own exact-SHA hosted result, retaining any new failure without substituting
+Linux parser checks for Windows execution.
 
 Source availability does not close the independent held SAV/META privacy gate,
 C71 retail fixture closure, full package gate, source/binary parity or remaining
@@ -68,4 +72,28 @@ The compiler version `194435229` differs from historical `194435207`; the rebuil
 809,984-byte EXE differs from the original 810,496-byte asset. The original source
 and asset remain unchanged. No attach, capture, production replacement, binary
 reproducibility or runtime equivalence is claimed. The later failed-output
-publication correction needs its own new-SHA hosted verification.
+publication correction has the separately bounded hosted evidence below.
+
+## Failed-output publication correction: retained hosted evidence
+
+The [later verified receipt](../evidence/hosted-capture-publication-7c614c1.json)
+closes the stale requirement for a first hosted run containing the two correction
+commits. Source `7c614c1`, run `40374521618`, job `121753823205`, includes both
+`134b49b` and `78de05f`. The official artifact `12674082013` matches the retained
+ZIP's SHA256 `218ad0b35d00f338f15f5584a44cd69d34f6a8df83c756fc028b7b833132e6e8`.
+Its exact three files, internal sums, PE32 identity and 19 checks with zero skips
+were independently reverified. The original source and embedded helper still
+match their retained hashes; the workflow, build script and regression tests
+are byte-identical at current source `329f18a`.
+
+The official Windows log also records all nine portable regression checks,
+including a post-copy failure that removes the failed output and preserves its
+receipt. The successful hosted build exercised the corrected success upload.
+The workflow's success-only executable-upload condition was reviewed; no separate
+failed GitHub build/upload job was deliberately induced or observed. Therefore
+this closes the observed Windows fixture and successful publication requirement,
+not an unobserved end-to-end failed-upload scenario.
+
+Binary reproducibility/equivalence and debugger attach/detach or dump lifecycle
+remain open. This follow-up reused already verified hosted evidence; it did not
+repeat capture, replace the production helper or admit a complete package.
