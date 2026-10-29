@@ -95,9 +95,11 @@ public partial class MainWindow
             cmbGameplayMode.SelectedValue = _settings.GameplayMode == "MOD" ? "Official" : "MOD";
         }
         var surface = (FrameworkElement)Content;
-        Content = null;
+        // Keep the logical Window owner: its implicit styles and resources are
+        // part of the production UI. Before Show/EnsureHandle the content has no
+        // visual parent, so SetRootDpi remains valid without detaching Content.
         var frame = CaptureVisualSurface(surface, scenario, id, output, "launcher-content", hook != null);
-        if (hook != null && scenario.State is not ("main" or "cancel"))
+        if (hook != null)
             frame = frame with { Checks = frame.Checks.Concat(CheckVisualKeyboardBoundary(surface, scenario, hook)).ToArray() };
         return frame;
     }
@@ -168,6 +170,21 @@ public partial class MainWindow
         return false;
     }
 
+    private static DependencyObject? VisualHit(FrameworkElement surface, Point point)
+    {
+        DependencyObject? found = null;
+        VisualTreeHelper.HitTest(surface,
+            target => target is UIElement element && (element.Visibility != Visibility.Visible || !element.IsHitTestVisible || element.Opacity <= 0)
+                ? HitTestFilterBehavior.ContinueSkipSelfAndChildren : HitTestFilterBehavior.Continue,
+            hit => { found = hit.VisualHit; return HitTestResultBehavior.Stop; }, new PointHitTestParameters(point));
+        return found;
+    }
+
+    private static string[] VisualActionNames(string state) => state is "main" or "cancel"
+        ? ["btnLaunch", "btnSettings", "btnLocalConnection", "btnPublicConfiguration"]
+        : state.StartsWith("settings", StringComparison.Ordinal) ? ["btnToolsClose"]
+        : ["btnLocalConfirm", "btnLocalRescan", "btnLocalManual", "btnLocalCreate", "btnLocalCancel"];
+
     private LayoutCheck[] CheckVisualKeyboardBoundary(FrameworkElement surface, VisualScenario scenario, MethodInfo hook)
     {
         // This is a real shown WPF window with an HWND and real focus routing.
@@ -183,6 +200,16 @@ public partial class MainWindow
         Show(); Activate();
         hook.Invoke(this, [scenario.State]);
         Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+        void CheckActualInputHit(string name)
+        {
+            if (FindName(name) is not FrameworkElement element || !element.IsVisible || !element.IsEnabled || !element.IsHitTestVisible) return;
+            var rect = element.TransformToAncestor(surface).TransformBounds(new Rect(new Point(), element.RenderSize));
+            checks.Add(new("input-hit-test", name,
+                OwnsHit(surface.InputHitTest(new Point(rect.X+rect.Width/2, rect.Y+rect.Height/2)) as DependencyObject, element),
+                $"actual shown HWND; display DPI={VisualTreeHelper.GetDpi(surface).PixelsPerInchX}"));
+        }
+        foreach (string name in VisualActionNames(scenario.State)) CheckActualInputHit(name);
+        if (scenario.State is "main" or "cancel") return checks.ToArray();
         bool settings = scenario.State.StartsWith("settings", StringComparison.Ordinal);
         var overlay = FindName(settings ? "toolsOverlay" : "localDiscoveryOverlay") as FrameworkElement;
         var initial = FindName(settings ? "btnToolsClose" : "btnLocalCancel") as Control;
@@ -213,6 +240,13 @@ public partial class MainWindow
         btnSettings.Focus();
         Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
         Check("enabled-background-focus-blocked", btnSettings.IsEnabled && Contained());
+        if (settings && FindName("toolsCard") is FrameworkElement card)
+        {
+            var scroll = VisualElements(card).OfType<ScrollViewer>().FirstOrDefault();
+            scroll?.ScrollToEnd(); surface.UpdateLayout();
+            foreach (string name in new[] { "btnServerSettingsSave", "btnServerSettingsReset", "btnGameplaySave", "btnGameplayCancel" })
+                CheckActualInputHit(name);
+        }
         if (scenario.State == "settings-public")
         {
             foreach (string name in new[] { "txtServerEndpoint", "txtTestServerEndpoint" })
@@ -289,6 +323,15 @@ public partial class MainWindow
             $"x={rectangle.X:F2},y={rectangle.Y:F2},w={rectangle.Width:F2},h={rectangle.Height:F2}");
         var dpi = VisualTreeHelper.GetDpi(surface);
         Check("dpi", "root", Math.Abs(dpi.PixelsPerInchX - scenario.Dpi) < .01, $"observed={dpi.PixelsPerInchX}");
+        if (kind == "launcher-content")
+        {
+            Check("resource-scope", "logical-window-owner", ReferenceEquals(LogicalTreeHelper.GetParent(surface), this));
+            var foreground = TryFindResource("TextMainBrush") as SolidColorBrush;
+            foreach (string name in new[] { "txtAppTitle", "txtSectionTitle", "txtToolsTitle", "txtLocalTitle" })
+                if (named.TryGetValue(name, out var element) && element is TextBlock title)
+                    Check("resource-scope", name, foreground != null && title.Foreground is SolidColorBrush actual && actual.Color == foreground.Color,
+                        "production implicit title foreground retained");
+        }
         Check("privacy", "password-fields", elements.OfType<PasswordBox>().All(password => password.Password.Length == 0));
         string[] required = scenario.State.StartsWith("settings", StringComparison.Ordinal)
             ? ["toolsOverlay", "toolsCard", "btnToolsClose"]
@@ -317,9 +360,7 @@ public partial class MainWindow
             var left = Bounds(hero); var right = Bounds(auth);
             Check("overlap", "heroPanel/authPanel", left.Right + 12 <= right.Left, $"gap={right.Left-left.Right:F2}");
         }
-        var activeActions = main ? new[] { "btnLaunch", "btnSettings", "btnLocalConnection", "btnPublicConfiguration" }
-            : scenario.State.StartsWith("settings", StringComparison.Ordinal) ? new[] { "btnToolsClose" }
-            : new[] { "btnLocalConfirm", "btnLocalRescan", "btnLocalManual", "btnLocalCreate", "btnLocalCancel" };
+        var activeActions = VisualActionNames(scenario.State);
         var actionRects = new List<(string Name, Rect Bounds)>();
         foreach (string name in activeActions)
         {
@@ -328,7 +369,7 @@ public partial class MainWindow
             Check("hit-area", name, rect.Width >= 32 && rect.Height >= 32, RectText(rect));
             Check("geometry", name, rect.Left >= -.5 && rect.Top >= -.5 && rect.Right <= size.Width + .5 && rect.Bottom <= size.Height + .5, RectText(rect));
             if (element.IsEnabled && element.IsHitTestVisible)
-                Check("hit-test", name, OwnsHit(surface.InputHitTest(new Point(rect.X+rect.Width/2, rect.Y+rect.Height/2)) as DependencyObject, element));
+                Check("visual-hit-test", name, OwnsHit(VisualHit(surface, new Point(rect.X+rect.Width/2, rect.Y+rect.Height/2)), element));
             actionRects.Add((name, rect));
         }
         for (int a = 0; a < actionRects.Count; a++)
@@ -380,7 +421,7 @@ public partial class MainWindow
                         rect.Left >= viewport.Left - 1 && rect.Right <= viewport.Right + 1, RectText(rect));
                     Check("hit-area", name, rect.Width >= 32 && rect.Height >= 32, RectText(rect));
                     if (element.IsEnabled)
-                        Check("hit-test", name, OwnsHit(surface.InputHitTest(new Point(rect.X+rect.Width/2, rect.Y+rect.Height/2)) as DependencyObject, element));
+                        Check("visual-hit-test", name, OwnsHit(VisualHit(surface, new Point(rect.X+rect.Width/2, rect.Y+rect.Height/2)), element));
                 }
                 additional[id + "-scrolled-bottom.png"] = SaveScreenshot(id + "-scrolled-bottom.png");
             }

@@ -14,8 +14,9 @@ The matrix is eight states (`main`, `settings`, `settings-public`,
 Each phase therefore contains 128 primary screenshots. Modified settings pages
 also receive a separate screenshot after scrolling to the bottom.
 
-`VisualTreeHelper.SetRootDpi` changes the DPI of the actual detached production
-visual tree before layout. `GetDpi`, bitmap dimensions and SHA256 are checked.
+`VisualTreeHelper.SetRootDpi` changes the DPI of the production content before it
+has a visual parent or HWND. Its logical Window owner is retained so implicit
+styles/resources remain the production ones. `GetDpi`, bitmap dimensions and SHA256 are checked.
 `RenderTargetBitmap` renders that WPF tree; this is not a resized 96-DPI picture.
 It is **root-DPI WPF rendering, not a change to Windows display scaling or proof on
 a physical monitor**. Separate focus checks show a real WPF Window on the runner
@@ -62,5 +63,30 @@ Eight receipt-validator
 tests passed, including missing/duplicate frames, tampered images, wrong DPI or
 pixel dimensions, absent layout/hook checks and privacy boundaries. The official
 SHA256-verified actionlint 1.7.12 accepted the new workflow. Hosted run URLs,
-conclusions and manually inspected image findings must be appended after actual
-Windows execution.
+conclusions and manually inspected image findings follow below.
+
+## First actual hosted execution and probe correction
+
+Run [40811466898](https://github.com/caox233/FifthFreedom/actions/runs/40811466898)
+tested head `4e8eb0b96481772d724022faa1453907b8681bda` using GitHub's PR merge checkout
+`2db77356b60b33c6e8b5477b61fee7125e21edcd`. All four phases produced 128 primary
+PNGs each; the modified/reapplied settings pages also produced bottom-scroll
+screenshots. All original artifacts were downloaded to the ignored local evidence
+directory for this run and kept unchanged.
+
+The run failed. Each modified phase had 400 failed detached `InputHitTest`
+assertions; its geometric, text and actual-window keyboard/draft/long-address
+checks otherwise passed. Manual image inspection also found black title text
+caused by the probe clearing `Window.Content` and thereby losing implicit Window
+resources. Those images are evidence of the probe defect, not proof of a product
+foreground-color defect. The old baseline additionally has 40 minimum-hit-area
+failures at small size; its absent `toolsCard` name and detached hit-test failures
+are not counted as proof of the intended product regression.
+
+The correction keeps the logical resource owner, adds explicit title-resource
+checks, uses visual-layer geometric hit testing on the root-DPI render, and runs
+separate real `InputHitTest` assertions after showing each modified/reapplied
+window. No hit assertion was waived. A new validator regression rejects a current
+receipt that substitutes geometric hit testing for shown-window input testing.
+The corrected core cross-compiled without warnings/errors; nine validator tests
+passed. Corrected Windows rendering and manual visual acceptance remain pending.

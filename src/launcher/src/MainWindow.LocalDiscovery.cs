@@ -217,7 +217,8 @@ public partial class MainWindow
         if (!App.PreviewMode) throw new InvalidOperationException("Synthetic preview only.");
         CancelLocalDiscovery(); toolsOverlay.Visibility = dialogOverlay.Visibility = guideOverlay.Visibility = Visibility.Collapsed;
         txtUsername.Text = "PreviewPlayer"; txtPassword.Clear();
-        cmbNetworkEnvironment.SelectedValue = state == "main" || state == "settings-public" ? "Public" : "Lan";
+        _settings.NetworkEnvironment = state == "main" || state == "settings-public" ? "Public" : "Lan";
+        cmbNetworkEnvironment.SelectedValue = _settings.NetworkEnvironment;
         RenderModePresentation();
         if (state == "main") { txtServer.Text = "public.example.invalid:11010"; txtServerStatus.Text = L("公网尚未就绪，请完成服务器配置与前置检查。", "Public is not ready. Complete server configuration and prerequisites."); btnLaunch.IsEnabled = false; return; }
         if (state == "settings") { ShowToolsPreview("home"); return; }

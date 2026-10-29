@@ -14,6 +14,7 @@ import signal
 import socket
 import sys
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -34,11 +35,25 @@ CORE = r'''
 import socket,sys
 from pathlib import Path
 listener=socket.socket();listener.bind(('127.0.0.1',int(sys.argv[1])));listener.listen(8)
+Path(sys.argv[2]).with_suffix('.core-ready').touch()
 while True:
     stream,_=listener.accept()
     with stream:
         stream.recv(16)
         stream.sendall(Path(sys.argv[2]).read_bytes())
+'''
+GATED_CORE = r'''
+import socket,sys,time
+from pathlib import Path
+reply=Path(sys.argv[2])
+while not reply.with_suffix('.core-release').exists(): time.sleep(.001)
+listener=socket.socket();listener.bind(('127.0.0.1',int(sys.argv[1])));listener.listen(8)
+reply.with_suffix('.core-ready').touch()
+while True:
+    stream,_=listener.accept()
+    with stream:
+        stream.recv(16)
+        stream.sendall(reply.read_bytes())
 '''
 QUERY = r'''
 import os,socket,sys,time
@@ -146,11 +161,20 @@ class OwnedOverlayTests(unittest.IsolatedAsyncioTestCase):
         return value
 
     async def core(self):
+        ready = self.reply.with_suffix(".core-ready")
+        self.assertFalse(ready.exists(), "a core fixture must use a fresh listen acknowledgement")
         child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", CORE, str(self.port), str(self.reply)))
         self.addAsyncCleanup(child.stop)
         async with asyncio.timeout(2):
-            while owned.owned_rpc_listener(child, self.port) is None:
+            # Verified exec does not establish application readiness. Let this
+            # owned synthetic child finish listen before taking the strict fd/
+            # namespace-table observation; never retry or swallow an ownership
+            # failure as if it were merely a not-yet-ready listener.
+            while not ready.exists():
+                self.assertTrue(child.alive, "synthetic core exited before listen acknowledgement")
                 await asyncio.sleep(.01)
+        self.assertIsNotNone(owned.owned_rpc_listener(child, self.port),
+                             "listen acknowledgement must still pass actual RPC ownership")
         return child
 
     async def test_real_fast_query_and_default_long_lived_contract_remain_distinct(self):
@@ -645,6 +669,74 @@ os.execv(sys.argv[2], [sys.argv[2], '-I', '-S', '-c', sys.argv[3], sys.argv[4]])
         with mock.patch.object(owned, "_proc_bytes", side_effect=duplicate_ipv6):
             with self.assertRaisesRegex(LifecycleError, "RPC_LISTENER_NOT_OWNED_LOOPBACK"):
                 owned.owned_rpc_listener(core, self.port)
+
+    async def test_core_fixture_waits_for_real_listen_before_strict_owner_scan(self):
+        ready = self.reply.with_suffix(".core-ready")
+        release = self.reply.with_suffix(".core-release")
+        original_spawn, original_guard = OwnedChild.spawn, owned.owned_rpc_listener
+        scans = []
+        scheduled = []
+
+        async def spawn(*args, **kwargs):
+            child = await original_spawn(*args, **kwargs)
+            # No sleep-based race: this callback cannot release the child until
+            # the caller yields. The old helper probes immediately after exec.
+            scheduled.append(asyncio.get_running_loop().call_soon(release.touch))
+            return child
+
+        def after_listen(child, port):
+            self.assertTrue(ready.exists(), "fixture inspected socket ownership before actual listen acknowledgement")
+            value = original_guard(child, port)
+            scans.append(value)
+            return value
+
+        try:
+            with mock.patch(__name__ + ".CORE", GATED_CORE), \
+                    mock.patch.object(OwnedChild, "spawn", side_effect=spawn), \
+                    mock.patch.object(owned, "owned_rpc_listener", side_effect=after_listen):
+                child = await self.core()
+            self.assertEqual(len(scans), 1)
+            self.assertGreater(scans[0], 0)
+            await child.stop()
+            self.assertTrue(child.closed)
+            self.assertFalse(Path(f"/proc/{child.pid}").exists())
+        finally:
+            for callback in scheduled:
+                callback.cancel()
+
+    async def test_listener_created_between_fd_and_tcp_snapshots_still_fails_closed(self):
+        child = await OwnedChild.spawn(self.program,
+            ("-I", "-S", "-c", GATED_CORE, str(self.port), str(self.reply)))
+        self.addAsyncCleanup(child.stop)
+        ready, release = self.reply.with_suffix(".core-ready"), self.reply.with_suffix(".core-release")
+        original = owned._proc_bytes
+        transitions = []
+
+        def publish_after_fd_scan(current, name, maximum):
+            if name == "net/tcp" and not transitions:
+                self.assertFalse(ready.exists())
+                # owned_rpc_listener has already completed its real fd scan.
+                # Only now may this exact verified child create/listen. Keep the
+                # synchronous observation seam bounded by a failure watchdog.
+                release.touch()
+                deadline = time.monotonic() + 1
+                while not ready.exists():
+                    self.assertTrue(child.alive)
+                    self.assertLess(time.monotonic(), deadline, "fixture did not reach listen")
+                    time.sleep(.001)
+                transitions.append(True)
+            return original(current, name, maximum)
+
+        with mock.patch.object(owned, "_proc_bytes", side_effect=publish_after_fd_scan):
+            with self.assertRaisesRegex(LifecycleError, "^RPC_LISTENER_NOT_OWNED_LOOPBACK$"):
+                owned.owned_rpc_listener(child, self.port)
+        self.assertEqual(transitions, [True])
+        # A new complete observation sees the same child's now-stable listener.
+        # This test never turns the earlier ownership failure into readiness.
+        self.assertGreater(owned.owned_rpc_listener(child, self.port), 0)
+        await child.stop()
+        self.assertTrue(child.closed)
+        self.assertFalse(Path(f"/proc/{child.pid}").exists())
 
     async def test_pending_peer_then_actual_cli_success_and_loss_is_permanent(self):
         core, monitor = await self.core(), self.monitor()

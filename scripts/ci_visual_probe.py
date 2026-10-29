@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BASELINE = "12d394086a22c04e7e1defc7678ceccfe02ee004"
 FIXTURE_ID = "fifth-freedom-visual-fixture-v1"
 STATES = ("main", "settings", "settings-public", "settings-gameplay", "discovery", "join", "create", "cancel")
-LAYOUT_CATEGORIES = {"geometry", "overlap", "hit-area", "hit-test", "text-clipping", "scroll-accessibility"}
+LAYOUT_CATEGORIES = {"geometry", "overlap", "hit-area", "visual-hit-test", "input-hit-test", "text-clipping", "scroll-accessibility"}
 
 
 def sha(path: Path) -> str:
@@ -67,6 +67,8 @@ def validate_frames(report: dict, directory: Path, *, require_hook: bool) -> dic
             raise ValueError("Scenario lacks layout assertions")
         if require_hook and frame["State"] not in ("main", "cancel") and not any(check.get("Category") == "keyboard" for check in frame["Checks"]):
             raise ValueError("Current overlay lacks real-window keyboard checks")
+        if require_hook and not any(check.get("Category") == "input-hit-test" for check in frame["Checks"]):
+            raise ValueError("Current state lacks shown-window input hit tests")
         failures.extend({"frame": frame["Id"], **check} for check in frame["Checks"] if not check["Passed"])
     if seen != expected:
         raise ValueError("Visual matrix is incomplete")

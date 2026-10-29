@@ -440,12 +440,25 @@ public partial class MainWindow
             Check(Bounds(txtUsername).Left > size.Width/2 && Bounds(txtUsername).Top < Bounds(txtPassword).Top &&
                   Bounds(txtPassword).Top < Bounds(txtServer).Top, $"SCBL vertical sign-in fields {size.Width}x{size.Height}");
             Check(Bounds(btnExportDiagnostics).Right<Bounds(btnCheckNetwork).Left,"diagnostic export occupies former Hook slot before network check");
-            foreach(var e in new FrameworkElement[]{btnLaunch,txtUsername,txtPassword,txtServer,cmbBindAdapter,btnExportDiagnostics,btnCheckNetwork,btnWindowClose,cmbGameplayMode,fovSlider,chkRememberPassword})
+            foreach(var e in new FrameworkElement[]{btnLaunch,txtUsername,txtPassword,txtServer,cmbBindAdapter,btnExportDiagnostics,btnCheckNetwork,btnWindowClose,cmbNetworkEnvironment,btnOpenGameOptions,chkRememberPassword})
             {
                 var rect=Bounds(e);
                 Check(rect.Width>10 && rect.Height>10 && rect.Left>=0 && rect.Top>=0 && rect.Right<=size.Width+1 && rect.Bottom<=size.Height+1,
                     $"visible control {e.Name} {size.Width}x{size.Height}");
             }
+            GameplaySettingsPage_Click(this, new RoutedEventArgs());
+            ArrangePresentation();
+            Check(toolsOverlay.Visibility == Visibility.Visible && gameplaySettingsPanel.Visibility == Visibility.Visible,
+                $"gameplay draft opens in unified settings {size.Width}x{size.Height}");
+            foreach (var e in new FrameworkElement[] { cmbGameplayMode, fovSlider, btnGameplaySave, btnGameplayCancel })
+            {
+                var rect = Bounds(e);
+                Check(rect.Width > 10 && rect.Height > 10 && rect.Left >= 0 && rect.Top >= 0
+                    && rect.Right <= size.Width + 1 && rect.Bottom <= size.Height + 1,
+                    $"visible gameplay draft control {e.Name} {size.Width}x{size.Height}");
+            }
+            ToolsClose_Click(this, new RoutedEventArgs());
+            ArrangePresentation();
             ShowDiagnosticDialog(true);ArrangePresentation();
             var card=Bounds(dialogCard);
             Check(dialogCard.CornerRadius.TopLeft==0 && card.Left>=0 && card.Right<=size.Width && card.Top>=0 && card.Bottom<=size.Height,$"SCBL square dialog stays within {size.Width}x{size.Height}");

@@ -30,6 +30,7 @@ class VisualReceiptTests(unittest.TestCase):
                                 "ObservedDpi": scenario["Dpi"], "ProductionStateHook": True,
                                 "Screenshot": name, "Sha256": hashlib.sha256(data).hexdigest(),
                                 "Checks": [{"Category": "geometry", "Target": "fixture", "Passed": True},
+                                           {"Category": "input-hit-test", "Target": "fixture", "Passed": True},
                                            {"Category": "keyboard", "Target": "fixture", "Passed": True}]})
         self.report = {"Schema": 1, "FixtureId": visual.FIXTURE_ID, "NetworkStarted": False,
                        "GameStarted": False, "PersistedSettingsRead": False, "Frames": self.frames}
@@ -70,6 +71,11 @@ class VisualReceiptTests(unittest.TestCase):
             altered["Frames"][0][field] = value
             with self.subTest(field=field), self.assertRaises(ValueError):
                 self.validate(altered)
+
+    def test_geometric_hit_alone_cannot_replace_shown_window_input(self):
+        self.frames[0]["Checks"] = [{"Category": "visual-hit-test", "Target": "fixture", "Passed": True}]
+        with self.assertRaisesRegex(ValueError, "shown-window input"):
+            self.validate()
 
     def test_old_missing_state_hook_is_explicit_and_layout_failures_are_preserved(self):
         self.frames[0]["ProductionStateHook"] = False

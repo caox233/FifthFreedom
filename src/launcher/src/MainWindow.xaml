@@ -829,7 +829,7 @@
   </StackPanel>
 <Grid x:Name="toolsOverlay" Grid.RowSpan="3" Panel.ZIndex="95" Visibility="Collapsed" Background="#CC000000" KeyboardNavigation.TabNavigation="Cycle" PreviewKeyDown="ToolsOverlay_PreviewKeyDown">
  <Border x:Name="toolsCard" Width="760" MaxHeight="570" Padding="28,22" Background="#F20B0F11" BorderBrush="#55FFFFFF" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+  <ScrollViewer Style="{StaticResource LauncherDialogScrollViewer}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
    <StackPanel>
     <DockPanel Margin="0,0,0,16"><Button x:Name="btnToolsClose" DockPanel.Dock="Right" Content="×" Width="44" Height="44" Style="{StaticResource WindowChromeCloseButton}" Click="ToolsClose_Click"/><TextBlock x:Name="txtToolsTitle" Text="设置" FontSize="24" FontWeight="SemiBold"/></DockPanel>
     <WrapPanel x:Name="settingsNavigation" Margin="0,0,0,12">
@@ -935,7 +935,8 @@
   <StackPanel>
    <TextBlock x:Name="txtLocalTitle" Text="本地模式" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,14"/>
    <TextBlock x:Name="txtLocalMessage" TextWrapping="Wrap" LineHeight="22" Foreground="#B6BEC3" Margin="0,0,0,16"/>
-   <ListBox x:Name="localHostList" MaxHeight="170" Background="#65080B0D" Foreground="#DDE3E6" BorderBrush="#35FFFFFF" DisplayMemberPath="DisplayName" SelectionChanged="LocalHost_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,14" AutomationProperties.Name="发现的房主">
+   <ListBox x:Name="localHostList" MaxHeight="170" Background="#65080B0D" Foreground="#DDE3E6" BorderBrush="#35FFFFFF" SelectionChanged="LocalHost_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,14" AutomationProperties.Name="发现的房主">
+    <ListBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding DisplayName}" TextWrapping="Wrap" Foreground="#DDE3E6"/></DataTemplate></ListBox.ItemTemplate>
     <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="12,10"/><Setter Property="MinHeight" Value="44"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/></Style></ListBox.ItemContainerStyle>
    </ListBox>
    <TextBlock x:Name="txtLocalEndpointLabel" Text="房主地址（IPv4 或域名:端口）" FontSize="12" Foreground="#A5ADB2"/>
