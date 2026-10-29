@@ -630,6 +630,23 @@
             <Setter Property="Focusable" Value="True" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
             <Setter Property="IsDeferredScrollingEnabled" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid Background="{TemplateBinding Background}" ClipToBounds="True">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                Margin="{TemplateBinding Padding}" CanContentScroll="{TemplateBinding CanContentScroll}"
+                                Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                            <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="1" Orientation="Vertical"
+                                Style="{StaticResource LauncherDialogScrollBar}"
+                                Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}"
+                                Value="{Binding VerticalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Setter Property="FocusVisualStyle">
                 <Setter.Value>
                     <Style TargetType="{x:Type Control}">

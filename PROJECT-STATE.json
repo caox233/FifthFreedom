@@ -1737,10 +1737,15 @@
   "active_ui_revision": {
     "baseline": "12d394086a22c04e7e1defc7678ceccfe02ee004",
     "task": "docs/tasks/ui-mode-flow-review.md",
-    "status": "implementation_and_hosted_verification_pending",
+    "status": "implemented_followup_hosted_visual_and_package_verification_pending",
     "prior_delivered_candidate_source": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
     "new_complete_package_verified": false,
     "public_runtime_ready": false,
-    "accepted_gameplay_preserved": true
+    "accepted_gameplay_preserved": true,
+    "intermediate_implementation": "7e9fff371bb4e0654bb73e5878d292378dcf36c7",
+    "intermediate_complete_windows_job": 123250356296,
+    "intermediate_ui_checks": 182,
+    "intermediate_save_checks": 27,
+    "retained_followup_evidence": "docs/evidence/ui-mode-followup-7e9.json"
   }
 }

@@ -8,6 +8,7 @@ void Check(bool value,string name) { if(!value)throw new InvalidOperationExcepti
 foreach(string json in new[]{"{}","{\"NetworkEnvironment\":null}","{\"NetworkEnvironment\":\"invalid\"}"})
     Check(LauncherSettingsCodec.Deserialize(json).NetworkEnvironment=="Public","missing or invalid deployment preference defaults Public");
 var settings=LauncherSettingsCodec.Deserialize("{\"NetworkEnvironment\":\"Lan\",\"NetworkMode\":\"Compatible\",\"ServerAddress\":\"192.0.2.1:50051\",\"PublicEndpoint\":\"example.com:11010\",\"PublicUpdatePort\":18080,\"TestPublicEndpoint\":\"test.example.com:11011\",\"TestPublicUpdatePort\":18081}");
+PathChecks.Run(Check);
 settings.RememberPassword=false;settings.Password="fixture-never-persist";
 var serialized=LauncherSettingsCodec.Serialize(settings);var roundtrip=LauncherSettingsCodec.Deserialize(serialized);
 Check(roundtrip.NetworkEnvironment=="Lan"&&roundtrip.NetworkMode=="Compatible"&&roundtrip.ServerAddress==settings.ServerAddress&&roundtrip.PublicEndpoint==settings.PublicEndpoint&&roundtrip.TestPublicUpdatePort==18081,"explicit deployment transport and both server settings survive persistence independently");
@@ -47,8 +48,48 @@ try
  }
  var declaration=new {schema=1,deployment_id="fixture",control_origin="https://example.com",overlay_cidr="10.66.0.0/24",server_overlay_ip="10.66.0.1",transport="Fast",peer_uri="quic://example.com:11010",runtime=new {version="fixture",directory=temp,pins}};
  string config=Path.Combine(temp,"profile.json");File.WriteAllText(config,JsonSerializer.Serialize(declaration));pubSettings.PublicDeploymentConfigurationPath=config;
+ Check(PublicLocalPath.IsAllowed(config)&&PublicLocalPath.IsAllowed(temp),"actual host-owned local paths pass native platform and drive metadata admission");
+ bool noncanonicalRejected=false;
+ try { _=PublicDeploymentConfiguration.Load(Path.Combine(temp,".","profile.json")); }
+ catch(IOException e) { noncanonicalRejected=e.Message=="PUBLIC_DEPLOYMENT_CONFIGURATION_INVALID"; }
+ Check(noncanonicalRejected,"real importer rejects noncanonical configuration path instead of normalizing it before access");
  var read=adapter.Assess();
  Check(read.DeploymentConfigured&&read.RuntimeFilesVerified&&read.Stage==PublicReadinessStage.OwnedNetworkAdmissionRequired&&!read.IsReady,"real profile and all four file hashes verify but never grant Windows owned-network/native-session readiness");
+ foreach (string directory in new[] { @"\\example.invalid\share\runtime", @"\\?\UNC\example.invalid\share\runtime", @"\\?\C:\runtime", @"\\.\C:\runtime", @"C:\runtime:stream", "//example.invalid/share/runtime" })
+ {
+  // Load only opens our owned local declaration. A runtime rejection must occur
+  // before returning a configuration that could reach actual hash-file reads.
+  var unsafeDeclaration=declaration with { runtime=declaration.runtime with { directory=directory } };
+  File.WriteAllText(config,JsonSerializer.Serialize(unsafeDeclaration));
+  bool rejected=false;
+  try { _=PublicDeploymentConfiguration.Load(config); }
+  catch(IOException e) { rejected=e.Message=="PUBLIC_DEPLOYMENT_CONFIGURATION_INVALID"; }
+  Check(rejected,"real local importer rejects declared nonlocal/device/ADS runtime path before verification");
+ }
+ File.WriteAllText(config,JsonSerializer.Serialize(declaration));
+ var missingRuntime=declaration with { runtime=declaration.runtime with { directory=Path.Combine(temp,"missing-runtime") } };
+ File.WriteAllText(config,JsonSerializer.Serialize(missingRuntime));
+ Check(adapter.Assess().Stage==PublicReadinessStage.RuntimeInputsInvalid,"missing local runtime retains the runtime-input error stage");
+ File.WriteAllText(config,JsonSerializer.Serialize(declaration));
+ if (!OperatingSystem.IsWindows())
+ {
+  string link=Path.Combine(temp,"owned-local-link");Directory.CreateSymbolicLink(link,temp);
+  try
+  {
+   string linkedConfig=Path.Combine(link,"profile.json");var visited=new List<string>();bool rejected=false;
+   try { PublicLocalPath.RequirePlain(linkedConfig,false,_=>throw new InvalidOperationException("unexpected drive query"),item=>{visited.Add(item);return File.GetAttributes(item);}); }
+   catch(IOException) { rejected=true; }
+   Check(rejected&&visited[^1]==link&&!visited.Contains(linkedConfig),"actual owned local symlink stops metadata before its descendant");
+   pubSettings.PublicDeploymentConfigurationPath=linkedConfig;
+   Check(adapter.Assess().Stage==PublicReadinessStage.DeploymentConfigurationInvalid,"real importer rejects a configuration below an owned symlink ancestor");
+   pubSettings.PublicDeploymentConfigurationPath=config;
+   var linkedRuntime=declaration with { runtime=declaration.runtime with { directory=link } };
+   File.WriteAllText(config,JsonSerializer.Serialize(linkedRuntime));
+   Check(adapter.Assess().Stage==PublicReadinessStage.RuntimeInputsInvalid,"runtime ancestor walk rejects owned symlink before pinned component reads");
+  }
+  finally {pubSettings.PublicDeploymentConfigurationPath=config;File.WriteAllText(config,JsonSerializer.Serialize(declaration));Directory.Delete(link);}
+ }
+ else Console.WriteLine("SKIP actual Unix symlink fixture on Windows; Windows reparse stopping uses injected metadata checks.");
  pubSettings.NetworkMode="Compatible";Check(adapter.Assess().Stage==PublicReadinessStage.DeploymentConfigurationInvalid,"changed donor transport cannot reuse incompatible deployment profile");pubSettings.NetworkMode="Fast";
  File.AppendAllText(Path.Combine(temp,"easytier-core.exe"),"changed");Check(adapter.Assess().Stage==PublicReadinessStage.RuntimeInputsInvalid,"changed runtime file fails actual SHA/size verification");
  var declarationJson=JsonSerializer.Serialize(declaration);File.WriteAllText(config,declarationJson.Replace("\"schema\":1","\"schema\":1,\"password\":\"not-allowed\""));

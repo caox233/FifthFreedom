@@ -65,3 +65,19 @@ FIREWALL_POLICY_UNAVAILABLE (InactiveProfile + Full; coverage UNKNOWN). This tas
 does not weaken that check, modify the user's firewall, deploy a service, execute
 a game/capture, or create a formal Release. Quick matching, three-client chat,
 C71 replay inputs, historical crashes and VSS lifecycle remain separate open work.
+
+## Hosted follow-up checkpoint
+
+The exact `7e9fff371bb4e0654bb73e5878d292378dcf36c7` complete Windows job
+passed with packaged UI182 and save27 checks. Its downloaded archive is an
+intermediate checkpoint, not the final revised delivery. See
+[the retained results and follow-up findings](../evidence/ui-mode-followup-7e9.json).
+Actual image review found a stale Local footer and an unapplied scrollbar style;
+shown-window input checks also exposed a probe viewport-restoration defect.
+The follow-up fixes retain the checks and require a new exact-SHA hosted run.
+
+Independent review additionally requires local-only deployment-file/runtime
+paths before filesystem access: reject UNC/device/ADS/network mappings and
+inspect ancestors root-to-leaf before any descendant. Runtime pins and Public
+readiness gates stay unchanged; sequential checks are not claimed to eliminate
+concurrent filesystem mutation races.

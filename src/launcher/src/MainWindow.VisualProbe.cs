@@ -206,7 +206,7 @@ public partial class MainWindow
             var rect = element.TransformToAncestor(surface).TransformBounds(new Rect(new Point(), element.RenderSize));
             checks.Add(new("input-hit-test", name,
                 OwnsHit(surface.InputHitTest(new Point(rect.X+rect.Width/2, rect.Y+rect.Height/2)) as DependencyObject, element),
-                $"actual shown HWND; display DPI={VisualTreeHelper.GetDpi(surface).PixelsPerInchX}"));
+                $"actual shown HWND; content DPI={VisualTreeHelper.GetDpi(surface).PixelsPerInchX}; HWND device DPI={(PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 ?? 0)*96}"));
         }
         foreach (string name in VisualActionNames(scenario.State)) CheckActualInputHit(name);
         if (scenario.State is "main" or "cancel") return checks.ToArray();
@@ -333,6 +333,18 @@ public partial class MainWindow
                         "production implicit title foreground retained");
         }
         Check("privacy", "password-fields", elements.OfType<PasswordBox>().All(password => password.Password.Length == 0));
+        if (productionHook)
+        {
+            bool local = scenario.State is not ("main" or "settings-public");
+            Check("mode-presentation", "mode-selector", FindName("cmbNetworkEnvironment") is System.Windows.Controls.Primitives.Selector mode &&
+                Equals(mode.SelectedValue, local ? "Lan" : "Public"), "synthetic scenario selects its actual production mode");
+            string expectedPresence = local ? L("在线玩家 / 联机质量", "Players / quality")
+                : L("公网连接尚未就绪", "Public connection not ready");
+            Check("mode-presentation", "btnPlayersSummary", FindName("btnPlayersSummary") is Button presence &&
+                Equals(presence.Content, expectedPresence), local
+                    ? "Local immediately displays its neutral presence caption without stale Public state"
+                    : "Public displays its unavailable connection caption without LAN presence");
+        }
         string[] required = scenario.State.StartsWith("settings", StringComparison.Ordinal)
             ? ["toolsOverlay", "toolsCard", "btnToolsClose"]
             : scenario.State is "discovery" or "join" or "create" && productionHook
@@ -411,6 +423,7 @@ public partial class MainWindow
             var scroll = VisualElements(card).OfType<ScrollViewer>().FirstOrDefault();
             if (scroll != null)
             {
+                double initialVertical = scroll.VerticalOffset, initialHorizontal = scroll.HorizontalOffset;
                 scroll.ScrollToEnd(); surface.UpdateLayout();
                 foreach (string name in new[] { "btnServerSettingsSave", "btnServerSettingsReset", "btnGameplaySave", "btnGameplayCancel" })
                 {
@@ -424,6 +437,13 @@ public partial class MainWindow
                         Check("visual-hit-test", name, OwnsHit(VisualHit(surface, new Point(rect.X+rect.Width/2, rect.Y+rect.Height/2)), element));
                 }
                 additional[id + "-scrolled-bottom.png"] = SaveScreenshot(id + "-scrolled-bottom.png");
+                // Supplementary screenshots must not change the starting state
+                // of the independent real-window input/focus checks.
+                scroll.ScrollToVerticalOffset(initialVertical);
+                scroll.ScrollToHorizontalOffset(initialHorizontal);
+                surface.UpdateLayout();
+                Check("scroll-restoration", "toolsScrollViewer", Math.Abs(scroll.VerticalOffset-initialVertical) < .5 &&
+                    Math.Abs(scroll.HorizontalOffset-initialHorizontal) < .5, "supplementary capture restores its initial viewport");
             }
         }
         return new(id, scenario.State, scenario.Language, scenario.Dpi, scenario.Width, scenario.Height, kind,

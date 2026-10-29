@@ -68,10 +68,8 @@ public sealed record PublicDeploymentConfiguration(PublicDeploymentProfile Profi
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(path) || !Path.IsPathFullyQualified(path)) throw Invalid();
+            PublicLocalPath.RequirePlain(path);
             string full = Path.GetFullPath(path);
-            for (string? item = full; item is not null; item = Path.GetDirectoryName(item))
-                if ((File.GetAttributes(item) & FileAttributes.ReparsePoint) != 0) throw Invalid();
             using var file = new FileStream(full, FileMode.Open, FileAccess.Read, FileShare.Read);
             if (file.Length is <= 0 or > 32768) throw Invalid();
             byte[] bytes = new byte[checked((int)file.Length)]; file.ReadExactly(bytes);
@@ -81,7 +79,7 @@ public sealed record PublicDeploymentConfiguration(PublicDeploymentProfile Profi
             if (value.GetProperty("schema").GetInt32() != 1) throw Invalid();
             var runtime = value.GetProperty("runtime"); Shape(runtime, ["version", "directory", "pins"]);
             string directory = runtime.GetProperty("directory").GetString() ?? throw Invalid();
-            if (!Path.IsPathFullyQualified(directory) || Path.GetFullPath(directory) != directory) throw Invalid();
+            if (!PublicLocalPath.IsAllowed(directory)) throw Invalid();
             string transportName = value.GetProperty("transport").GetString() ?? "";
             if (transportName is not ("Fast" or "Compatible")) throw Invalid();
             var pins = new List<PublicRuntimePin>();
@@ -169,7 +167,11 @@ public sealed class PublicNetworkEnvironmentAdapter(Func<LauncherSettings> readS
                 throw new IOException("PUBLIC_DEPLOYMENT_ENDPOINT_MISMATCH");
         }
         catch (IOException) { return new(PublicReadinessStage.DeploymentConfigurationInvalid, true, false, false); }
-        try { configuration.Profile.RuntimePins.VerifyFiles(configuration.RuntimeDirectory); }
+        try
+        {
+            PublicLocalPath.RequirePlain(configuration.RuntimeDirectory);
+            configuration.Profile.RuntimePins.VerifyFiles(configuration.RuntimeDirectory);
+        }
         catch (IOException) { return new(PublicReadinessStage.RuntimeInputsInvalid, true, true, false); }
         return new(PublicReadinessStage.OwnedNetworkAdmissionRequired, true, true, true);
     }

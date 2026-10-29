@@ -35,11 +35,13 @@ public partial class MainWindow
         if (!local)
         {
             _lastPresence = null;
-            RenderPresence();
             txtServerStatus.Text = GetPublicReadinessMessage();
             serverStatusLight.Fill = System.Windows.Media.Brushes.Goldenrod;
             btnLaunch.IsEnabled = false;
         }
+        // Refresh both directions immediately; a previous Public caption must
+        // not remain while Local waits for its first asynchronous probe.
+        RenderPresence();
         txtServerLabel.Text = local ? L("房主地址", "Host address") : L("公网服务器", "Public server");
         AutomationProperties.SetName(cmbNetworkEnvironment, txtNetworkModeLabel.Text);
         AutomationProperties.SetName(txtServer, txtServerLabel.Text);

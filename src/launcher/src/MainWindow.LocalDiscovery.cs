@@ -234,7 +234,7 @@ public partial class MainWindow
         {
             localHostList.ItemsSource = new[] {
                 new LocalHostRow(new("192.0.2.10", 50051, "PreviewHost A", "synthetic-a")),
-                new LocalHostRow(new("192.0.2.11", 50051, "PreviewHost B", "synthetic-b")) };
+                new LocalHostRow(new("192.0.2.11", 50051, "PreviewHost B — long synthetic host name for layout verification", "synthetic-b")) };
             localHostList.SelectedIndex = 0;
         }
     }

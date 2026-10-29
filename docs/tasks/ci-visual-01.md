@@ -90,3 +90,36 @@ window. No hit assertion was waived. A new validator regression rejects a curren
 receipt that substitutes geometric hit testing for shown-window input testing.
 The corrected core cross-compiled without warnings/errors; nine validator tests
 passed. Corrected Windows rendering and manual visual acceptance remain pending.
+
+## Second hosted execution
+
+Run [40813823778](https://github.com/caox233/FifthFreedom/actions/runs/40813823778)
+tested `7e9fff371bb4e0654bb73e5878d292378dcf36c7` through PR merge checkout
+`fca8d38c3e10113177b1ffd34858b8a2ee78e4bc`. All 608 downloaded PNG hashes matched
+their receipts. Production title resources are now retained, and manual inspection
+of the Chinese/English 200% root-DPI small-window main, public settings and gameplay
+settings images confirmed the prior black-text probe artifact was gone.
+
+Each modified phase had eight remaining failures: the shown-window hit test for
+`btnToolsClose` in English public settings, at both sizes and all four DPI values.
+The probe had left the page scrolled to its bottom after the supplementary image;
+that same viewport was reused for the initial header-input check. The bottom PNG
+shows the header outside the viewport while the Save/Defaults actions are visible.
+The correction restores the exact original scroll offsets after the supplementary
+capture and explicitly checks restoration. It retains both the header input test
+and bottom-action accessibility/input tests. Other geometry, clipping, visual
+hit tests, keyboard, draft and long-address checks passed on this run.
+
+With the correct resource context, baseline/rollback each reproduced 82 layout
+failures: 40 small action hit areas and 42 clipped status texts. Their 48 missing
+`toolsCard` state checks are recorded separately. Original first/second-run
+evidence remains unchanged; the viewport correction still needs a hosted rerun.
+
+Manual review also found a stale Public presence caption behind the Local
+join/cancel fixture. Product inspection confirmed the real mode renderer refreshed
+presence only when switching to Public; the product correction refreshes both
+directions. The next modified/reapplied probe asserts the selected mode and the
+actual neutral Local or unavailable Public footer caption without assigning that
+caption itself. The viewport and footer-check changes cross-compiled with zero
+warnings/errors; this is compilation evidence, not a replacement for the next
+Windows render and input run.
