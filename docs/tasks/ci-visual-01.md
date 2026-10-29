@@ -1,6 +1,8 @@
 # CI visual evidence — actual WPF
 
-Status: ready-for-agent; implementation and cross-compilation are not Windows rendering evidence.
+Status: ready-for-human; hosted root-DPI rendering and HWND input checks passed at
+`9c029cd`; physical-display, IME, GPU and live-network acceptance remain outside
+this evidence.
 
 The dedicated `visual-layout.yml` workflow builds the real launcher on a
 GitHub-hosted Windows 2022 runner. It executes `--visual-probe` only, with the
@@ -123,3 +125,35 @@ actual neutral Local or unavailable Public footer caption without assigning that
 caption itself. The viewport and footer-check changes cross-compiled with zero
 warnings/errors; this is compilation evidence, not a replacement for the next
 Windows render and input run.
+
+## Third hosted execution: passed
+
+Run [40815530494](https://github.com/caox233/FifthFreedom/actions/runs/40815530494)
+passed on Windows at head `9c029cd021d829c8c06ad8d32fd244dee64e8b4f`.
+Its PR merge checkout `2873f6f84700f5d98175ba7b071d4f835da93f52` has the same
+tree, `fdd504d59bfd1ca1c01d151c2acd4e6e2807216c`. The downloaded 608 PNG hashes
+and dimensions were independently verified. The source, artifact identity,
+phase counts, executable hashes and 18 visually inspected sample hashes are in
+[`hosted-ui-visual-9c029cd.json`](../evidence/hosted-ui-visual-9c029cd.json).
+
+Baseline and rollback each reproduced the same 82 measured layout failures
+(40 small action areas and 42 clipped status-text measurements), plus 48 absent
+new-state checks recorded separately. Modified and reapplied each passed all
+128 scenarios and 10,160 assertions, including 384 actual shown-window input
+checks, 784 keyboard/draft checks, 48 scroll-restoration checks and 256 mode/footer
+checks. The retained baseline/rollback and modified/reapplied single-file
+executable hashes match within each pair.
+
+Image inspection covered Chinese/English main, settings, Public settings,
+gameplay, discovery, join, create and cancel states, including the small window
+at 200% root DPI and representative 100/125/150% images. The dark scrollbar is
+now rendered; the Public page's header close button and its bottom Save/Defaults
+actions are reachable. Local join/cancel show their correct presence caption.
+The long synthetic host name is fully visible, although it fits one line and
+does not establish wrapping behavior. Main panels and sampled action groups have
+no visible overlap. Small-window secondary text remains small after Viewbox
+scaling; automated geometry does not establish every user's readability preference.
+
+This is real WPF rendering plus hosted HWND input evidence. It does not claim
+physical-monitor DPI, IME, GPU/game, disk-persistence or live-network acceptance.
+Original failed runs and their screenshots remain preserved.

@@ -13,6 +13,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -28,6 +29,25 @@ finally:
 
 SUPPORTED = sys.platform == "linux" and hasattr(os, "pidfd_open") and hasattr(signal, "pidfd_send_signal")
 SLEEP = "import time; time.sleep(60)"
+SETTLED_SLEEP = r'''
+import os,sys,time
+with open(sys.argv[1]+'.tmp','x') as stream:stream.write('settled')
+# Publish only after imports and this fixture's temporary descriptor are closed.
+os.rename(sys.argv[1]+'.tmp',sys.argv[1])
+time.sleep(60)
+'''
+CONTROLLED_FD_CLOSE = r'''
+import os,sys,time
+root=sys.argv[1]
+fd=os.open(root+'/transient-local',os.O_CREAT|os.O_EXCL|os.O_RDWR,0o600)
+with open(root+'/opened.tmp','x') as stream:stream.write(str(fd))
+os.rename(root+'/opened.tmp',root+'/opened')
+while not os.path.exists(root+'/close-request'):time.sleep(.001)
+os.close(fd)
+with open(root+'/closed.tmp','x') as stream:stream.write('closed')
+os.rename(root+'/closed.tmp',root+'/closed')
+time.sleep(60)
+'''
 IGNORE_TERM = "import signal,time; signal.signal(signal.SIGTERM,signal.SIG_IGN); time.sleep(60)"
 NATIVE = r'''
 import json,os,selectors,socket,sys
@@ -769,8 +789,17 @@ time.sleep(60)
         import struct
         monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
         await monitor.prepare()
-        child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SLEEP))
+        ready = self.directory / "no-tun-settled"
+        self.assertFalse(ready.exists())
+        child = await OwnedChild.spawn(self.program, ("-I", "-S", "-c", SETTLED_SLEEP, str(ready)))
         self.addAsyncCleanup(child.stop)
+        # Exec acknowledgement does not mean interpreter startup descriptors
+        # have settled. This absence-of-TUN test needs a complete inventory;
+        # the separate real-close control below exercises incomplete inventory.
+        async with asyncio.timeout(2):
+            while not ready.exists():
+                self.assertTrue(child.alive, "synthetic child exited before settled acknowledgement")
+                await asyncio.sleep(.001)
         cases = [(number, up, None, "OVERLAY_ADDRESS_QUERY_UNAVAILABLE")
                  for number in (errno.EPERM, errno.EIO, errno.ENODEV, errno.EACCES)
                  for up in (False, True)]
@@ -796,6 +825,65 @@ time.sleep(60)
                     await monitor.observe(child)
             self.assertIsNone(monitor._index)
             self.assertTrue(child.image_matches())
+
+    async def test_real_initial_fd_close_is_pending_then_complete_absence_still_rejects(self):
+        import fcntl
+        import struct
+        monitor = KernelTunMonitor("ffsynabsent09", "10.23.0.1")
+        await monitor.prepare()
+        child = await OwnedChild.spawn(self.program,
+            ("-I", "-S", "-c", CONTROLLED_FD_CLOSE, str(self.directory)))
+        self.addAsyncCleanup(child.stop)
+        opened, closed = self.directory / "opened", self.directory / "closed"
+        async with asyncio.timeout(2):
+            while not opened.exists():
+                self.assertTrue(child.alive)
+                await asyncio.sleep(.001)
+        entry = opened.read_text()
+        self.assertTrue(entry.isascii() and entry.isdecimal())
+        original_listdir = os.listdir
+        transitions = []
+
+        def ioctl(_fd, request, _value):
+            value = bytearray(256)
+            if request == 0x8913:
+                struct.pack_into("H", value, 16, 1)
+            elif request == 0x8915:
+                value[20:24] = socket.inet_aton(monitor.address)
+            else:
+                raise AssertionError("unexpected ioctl")
+            return bytes(value)
+
+        def close_after_actual_enumeration(folder):
+            self.assertEqual(os.readlink(f"/proc/self/fd/{folder}"), f"/proc/{child.pid}/fdinfo")
+            entries = original_listdir(folder)
+            self.assertIn(entry, entries)
+            (self.directory / "close-request").touch()
+            deadline = time.monotonic() + 1
+            while not closed.exists():
+                self.assertTrue(child.alive)
+                self.assertLess(time.monotonic(), deadline, "child did not close its actual descriptor")
+                time.sleep(.001)
+            self.assertFalse((Path(f"/proc/{child.pid}/fdinfo") / entry).exists())
+            transitions.append(True)
+            return entries
+
+        # Only interface observations are synthetic. fdinfo enumeration, the
+        # exact child's close and subsequent ENOENT are actual kernel events.
+        with patch("socket.if_nametoindex", return_value=123), patch.object(fcntl, "ioctl", side_effect=ioctl):
+            with patch("os.listdir", side_effect=close_after_actual_enumeration):
+                self.assertIsNone(await monitor.observe(child))
+            self.assertEqual(transitions, [True])
+            self.assertIsNone(monitor._index)
+            self.assertTrue(child.image_matches())
+            # No retry converts an ownership error to readiness: a new complete
+            # inventory still rejects this actual child that owns no TUN.
+            with self.assertRaisesRegex(LifecycleError, "^OVERLAY_TUN_NOT_OWNED$"):
+                await monitor.observe(child)
+        self.assertIsNone(monitor._index)
+        await child.stop()
+        self.assertTrue(child.closed)
+        self.assertFalse(Path(f"/proc/{child.pid}").exists())
 
     async def test_created_down_no_address_stays_pending_then_requires_full_owned_observation(self):
         import fcntl

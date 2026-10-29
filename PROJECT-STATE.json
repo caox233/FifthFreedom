@@ -1737,7 +1737,7 @@
   "active_ui_revision": {
     "baseline": "12d394086a22c04e7e1defc7678ceccfe02ee004",
     "task": "docs/tasks/ui-mode-flow-review.md",
-    "status": "implemented_followup_hosted_visual_and_package_verification_pending",
+    "status": "actual_wpf_matrix_passed_final_source_and_package_verification_pending",
     "prior_delivered_candidate_source": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
     "new_complete_package_verified": false,
     "public_runtime_ready": false,
@@ -1746,6 +1746,10 @@
     "intermediate_complete_windows_job": 123250356296,
     "intermediate_ui_checks": 182,
     "intermediate_save_checks": 27,
-    "retained_followup_evidence": "docs/evidence/ui-mode-followup-7e9.json"
+    "retained_followup_evidence": "docs/evidence/ui-mode-followup-7e9.json",
+    "visual_source": "9c029cd021d829c8c06ad8d32fd244dee64e8b4f",
+    "visual_run": 40815530494,
+    "visual_record": "docs/evidence/hosted-ui-visual-9c029cd.json",
+    "linux_fixture_correction": "docs/evidence/tun-absence-fixture-9c029cd.json"
   }
 }
