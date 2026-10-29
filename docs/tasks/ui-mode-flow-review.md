@@ -1,0 +1,67 @@
+# Launcher modes, settings and local connection flow
+
+Status: ready-for-agent — implementation and hosted visual/package verification in progress.
+
+The user tested the complete da180 Windows LAN candidate and requested these
+changes on the original integration branch. The fixed review baseline is
+`12d394086a22c04e7e1defc7678ceccfe02ee004`; the six migration milestones and accepted
+F3/MAC-11/Chinese/world-camera/VSS results remain in force.
+
+- Remove the renderer selector entirely. Normalize old DX9 settings to DX11 and
+  keep the actual launch executable restricted to DX11.
+- Offer one Public / Local mode choice, defaulting to Public for absent/invalid
+  preferences. Persist explicit choices without silent environment fallback.
+  Selection and editable server configuration are separate from runtime Ready.
+- Entering Local starts one bounded discovery. Normal empty completion, network
+  error and timeout have different explanations. One valid response pre-fills a
+  confirmation; multiple responses require selection. Retry, manual input,
+  create confirmation and cancellation remain available. No automatic host/game
+  launch; mode/bind/close changes invalidate late results. Existing owned lease
+  cleanup and active-game locks are retained.
+- Use one settings entry with donor stable/test endpoints, update ports and
+  Fast/Compatible transport semantics, plus retained local/OB, recovery, default
+  saves, players and diagnostics. Public readiness must never borrow LAN status,
+  credentials, players or latency. Configuration import verifies declared profile
+  and local component pins; it cannot grant Windows network/session authority.
+- MOD/FOV edits are drafts. Save commits; Cancel/Escape or changing settings page
+  discards the draft. Reset changes only the draft. Preserve range 1.00–1.30 and
+  default 1.20 and existing game behavior.
+- Save descriptions use the embedded manifest date and the approved public
+  default-template source. Retain exact template bytes, backup/confirmation,
+  separate Official/MOD locations and pending live unlock-progress verification.
+- Source tests explicitly decode UTF-8. Local review reported Python **3.14.7**,
+  cp936, UTF-8 mode 0: the old implicit reader failed (12 tests, 1 error), while
+  `-X utf8` passed. The cloud regression injects that non-UTF8 default at the real
+  reader boundary; it does not require changing the user's regional settings.
+
+## Current evidence and required delivery
+
+Baseline source checks fail the requested single-menu/default-Public/no-DX9/
+bounded-flow contracts. Independent production settings Load harness: baseline
+11/15 versus modified15/15. Original controller contracts passed34/34. Bounded
+protocol discovery passed46 cases, including actual loopback UDP, with isolated
+baseline/modified/rollback/reapply evidence retained locally. The old version has
+no bounded-flow API: its baseline/rollback capability failure executed zero flow
+cases, rather than being presented as a live-network reproduction. UTF-8 reader
+regression fails before explicit decoding and passes afterwards.
+
+The Windows visual workflow must produce actual WPF renders at 100/125/150/200%
+root DPI, Chinese/English and 1120x680/900x580 DIP windows. It records main,
+settings including Public/gameplay, discovery/join/create/cancel, scroll reach,
+text/layout/hit targets, and actual window keyboard focus/Tab/ShiftTab/Escape.
+Root DPI render checks and host-display keyboard checks are distinct from physical
+monitor, IME and game/GPU acceptance. Screenshots contain synthetic fixtures only;
+the user's screenshot is not uploaded. Inspect actual images before accepting.
+
+After reviewed source push, require exact-SHA source checks, Windows component
+and complete-package build, packaged no-game UI/save smoke, UTF-8 manifest and
+component validation, then download and hash the actual complete program ZIP.
+Do not relabel the earlier da180 package as this UI revision. Record retained
+baseline failures, any new CI failures, and corrected run identities.
+
+Ordinary Public remains blocked until the independent owned startup/NIC/WFP and
+native-session chain is admitted. Hosted da180 run40594743222 still failed at
+FIREWALL_POLICY_UNAVAILABLE (InactiveProfile + Full; coverage UNKNOWN). This task
+does not weaken that check, modify the user's firewall, deploy a service, execute
+a game/capture, or create a formal Release. Quick matching, three-client chat,
+C71 replay inputs, historical crashes and VSS lifecycle remain separate open work.

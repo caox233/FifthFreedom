@@ -744,25 +744,7 @@
    </Grid>
   </Border>
   <StackPanel x:Name="spTitleButtons" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,24,0">
-   <Button x:Name="btnSettings" Content="设置" Width="60" Style="{StaticResource CinematicLinkButton}" Click="SettingsButton_Click"/>
-   <Button x:Name="btnShellMenu" Content="▾" Width="28" Style="{StaticResource WindowChromeButton}"
-           Click="OpenShellSettingsMenu_Click" ToolTip="快捷菜单 / Quick menu" AutomationProperties.Name="快捷菜单 / Quick menu">
-    <Button.ContextMenu>
-     <ContextMenu x:Name="settingsMenu" Placement="Bottom" HorizontalOffset="-230"
-                  Style="{StaticResource SettingsContextMenuStyle}" Opened="ShellSettingsMenu_Opened">
-      <MenuItem x:Name="miGuide" Header="使用指引 / Guide" Style="{StaticResource SettingsMenuItemStyle}" Click="GuideButton_Click"/>
-      <MenuItem x:Name="miLanguageToggle" Header="中文 / English" Style="{StaticResource SettingsMenuItemStyle}" Click="LanguageToggleButton_Click"/>
-      <MenuItem x:Name="miMusicToggle" Header="背景音乐 / Music" Style="{StaticResource SettingsMenuItemStyle}" Click="MusicToggleButton_Click"/>
-      <Separator Margin="9,4" Background="#35FFFFFF"/>
-      <MenuItem x:Name="miLanSettings" Header="LAN / OB 设置" Style="{StaticResource SettingsMenuItemStyle}" Click="SettingsButton_Click"/>
-      <MenuItem x:Name="miRestoreSaves" Header="恢复存档 / Restore saves" Style="{StaticResource SettingsMenuItemStyle}" Click="RestoreSavesButton_Click"/>
-      <MenuItem x:Name="miPlayers" Header="在线玩家 / Players" Style="{StaticResource SettingsMenuItemStyle}" Click="PlayersButton_Click"/>
-      <Separator Margin="9,4" Background="#35FFFFFF"/>
-      <MenuItem x:Name="miExportDiagnostics" Header="导出诊断包 / Export diagnostics" Style="{StaticResource SettingsMenuItemStyle}" Click="ExportDiagnosticsMenuItem_Click"/>
-      <MenuItem x:Name="miAdvancedDiagnostics" Header="高级诊断 / Advanced diagnostics" Style="{StaticResource SettingsMenuItemStyle}" Click="AdvancedDiagnosticsButton_Click"/>
-     </ContextMenu>
-    </Button.ContextMenu>
-   </Button>
+   <Button x:Name="btnSettings" Content="设置" Width="76" Height="44" Style="{StaticResource CinematicLinkButton}" Click="SettingsButton_Click"/>
    <Button x:Name="btnLanguageToggle" Content="中文 / EN" Width="78" Style="{StaticResource CinematicLinkButton}" Click="LanguageToggleButton_Click"/>
    <Button x:Name="btnMusicToggle" FontFamily="Segoe MDL2 Assets" Content="&#xE767;" ToolTip="背景音乐" AutomationProperties.Name="{Binding ToolTip, RelativeSource={RelativeSource Self}}" Style="{StaticResource WindowChromeButton}" Click="MusicToggleButton_Click"/>
    <Button x:Name="btnGuide" Content="?" ToolTip="使用指引" AutomationProperties.Name="使用指引" Style="{StaticResource WindowChromeButton}" Click="GuideButton_Click"/>
@@ -772,56 +754,37 @@
   </StackPanel>
   <Grid Grid.Row="1" Margin="76,12,42,18">
    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="66"/><ColumnDefinition Width="376"/></Grid.ColumnDefinitions>
-   <StackPanel x:Name="heroPanel" Grid.Column="0" Width="396" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,36">
-    <StackPanel Margin="0,0,0,18">
-     <TextBlock Text="联机环境 / Environment" FontSize="10" Foreground="#778289" Margin="0,0,0,5"/>
-     <ListBox x:Name="cmbNetworkEnvironment" Style="{StaticResource ModeListBox}" Width="360" Tag="310"
-              SelectedValue="Lan" SelectedValuePath="Tag" AutomationProperties.Name="联机环境 / Environment">
-      <ListBoxItem Grid.Row="0" Content="LAN · 局域网" Tag="Lan"/>
-      <ListBoxItem Grid.Row="1" Content="Public · 公网（尚未接线 / unavailable）" Tag="Public" IsEnabled="False"
-                   ToolTip="公网适配器接入后开放；不会自动回落 LAN。Public adapter is not connected; no automatic LAN fallback."/>
+   <StackPanel x:Name="heroPanel" Grid.Column="0" Width="396" HorizontalAlignment="Left" VerticalAlignment="Center">
+    <StackPanel x:Name="networkModePanel" Margin="0,0,0,18">
+     <TextBlock x:Name="txtNetworkModeLabel" Text="联机模式" FontSize="12" Foreground="#A5ADB2" Margin="0,0,0,8"/>
+     <ListBox x:Name="cmbNetworkEnvironment" Style="{StaticResource ModeListBox}" Width="380" Height="48" Tag="170"
+              SelectedValue="Public" SelectedValuePath="Tag" SelectionChanged="NetworkEnvironment_SelectionChanged" AutomationProperties.Name="联机模式">
+      <ListBox.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" Columns="2"/></ItemsPanelTemplate></ListBox.ItemsPanel>
+      <ListBoxItem x:Name="itemPublicEnvironment" Content="公网模式" Tag="Public" FontSize="20"/>
+      <ListBoxItem x:Name="itemLocalEnvironment" Content="本地模式" Tag="Lan" FontSize="20"/>
      </ListBox>
+     <TextBlock x:Name="networkModeDescription" Text="配置公网服务器后，检查连接前置条件。" TextWrapping="Wrap" FontSize="12" LineHeight="20" Foreground="#A5ADB2" Margin="0,12,0,6"/>
+     <Grid Height="44">
+      <Button x:Name="btnPublicConfiguration" Content="服务器设置" HorizontalAlignment="Left" Height="44" Padding="0,0,18,0" Style="{StaticResource CinematicLinkButton}" Click="ServerSettingsPage_Click"/>
+      <Button x:Name="btnLocalConnection" Content="查找 / 连接房主" Visibility="Collapsed" HorizontalAlignment="Left" Height="44" Padding="0,0,18,0" Style="{StaticResource CinematicLinkButton}" Click="LocalConnection_Click"/>
+     </Grid>
     </StackPanel>
-    <Border x:Name="bdStatusPanel" Background="Transparent" Margin="0,0,0,16">
+    <Border x:Name="bdStatusPanel" Background="#8C080B0D" BorderBrush="#2EFFFFFF" BorderThickness="1,0,0,0" Padding="14,10" Margin="0,0,0,22">
      <StackPanel Orientation="Horizontal">
-      <Ellipse x:Name="serverStatusLight" Width="8" Height="8" Fill="#788289" Margin="0,0,9,0" VerticalAlignment="Center"/>
+      <Ellipse x:Name="serverStatusLight" Width="8" Height="8" Fill="#788289" Margin="0,0,9,0" VerticalAlignment="Top"/>
       <TextBlock x:Name="txtConnectionStatusCaption" Visibility="Collapsed"/>
-      <TextBlock x:Name="txtServerStatus" Text="未检测" FontSize="14" MaxWidth="350" TextWrapping="Wrap"/>
+      <TextBlock x:Name="txtServerStatus" Text="尚未就绪" FontSize="13" Width="330" LineHeight="21" TextWrapping="Wrap"/>
      </StackPanel>
     </Border>
-    <Grid x:Name="launchOptionsPanel" Width="358" HorizontalAlignment="Left" Margin="0,0,0,18">
-     <Grid.ColumnDefinitions><ColumnDefinition Width="126"/><ColumnDefinition Width="20"/><ColumnDefinition Width="96"/><ColumnDefinition Width="20"/><ColumnDefinition Width="96"/></Grid.ColumnDefinitions>
-     <StackPanel>
-      <TextBlock x:Name="txtConnectionModeLabel" Text="联机模式" FontSize="11" Foreground="#9CA8AD" Margin="0,0,0,5"/>
-      <ListBox x:Name="cmbConnectionMode" Style="{StaticResource ModeListBox}" Width="124" Tag="112" SelectedIndex="0" SelectionChanged="ConnectionMode_SelectionChanged" AutomationProperties.Name="联机模式">
-       <ListBoxItem x:Name="itemClientMode" Grid.Row="0" Content="加入房主"/>
-       <ListBoxItem x:Name="itemHostMode" Grid.Row="1" Content="创建房主"/>
-      </ListBox>
-     </StackPanel>
-     <Border Grid.Column="1" Width="1" Height="58" Background="#35FFFFFF" VerticalAlignment="Bottom"/>
-     <StackPanel Grid.Column="2">
-      <TextBlock x:Name="txtGameplayModeLabel" Text="游戏模式" FontSize="11" Foreground="#9CA8AD" Margin="0,0,0,5"/>
-      <ListBox x:Name="cmbGameplayMode" Style="{StaticResource ModeListBox}" SelectedValue="MOD" SelectedValuePath="Tag" SelectionChanged="GameplayMode_SelectionChanged" AutomationProperties.Name="游戏模式" ToolTip="官方：不加载玩法插件；MOD：需要完整的本版 gameplay 模块。队友请使用相同游戏模式。">
-       <ListBoxItem x:Name="itemGameplayMod" Grid.Row="0" Content="MOD" Tag="MOD"/><ListBoxItem x:Name="itemGameplayOfficial" Grid.Row="1" Content="官方" Tag="Official"/>
-      </ListBox>
-     </StackPanel>
-     <Border Grid.Column="3" Width="1" Height="58" Background="#35FFFFFF" VerticalAlignment="Bottom"/>
-     <StackPanel Grid.Column="4">
-      <TextBlock Text="渲染 / Renderer" FontSize="10" Foreground="#778289" Margin="0,0,0,5"/>
-      <ListBox x:Name="cmbGameExecutable" Style="{StaticResource ModeListBox}" Width="96" Tag="80"
-               SelectedValue="DX11" SelectedValuePath="Tag" AutomationProperties.Name="渲染 / Renderer">
-       <ListBoxItem Grid.Row="0" Content="DX11" Tag="DX11"/>
-       <ListBoxItem Grid.Row="1" Content="DX9" Tag="DX9" IsEnabled="False" ToolTip="当前玩法仅支持 DX11 / This gameplay baseline requires DX11"/>
-      </ListBox>
-     </StackPanel>
-    </Grid>
-    <Grid x:Name="fovPanel" Width="344" Margin="0,0,0,14">
-     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-     <TextBlock x:Name="txtFovLabel" Text="视野范围（FOV）" FontSize="11" Foreground="#A5ADB2"/>
-     <TextBlock x:Name="txtFovValue" Grid.Column="1" Text="1.20×" FontSize="12" Foreground="{StaticResource ReadyAccentBrush}" Margin="0,0,14,0"/>
-     <Button x:Name="btnFovReset" Grid.Column="2" Content="默认" Style="{StaticResource CinematicLinkButton}" FontSize="11" Click="FovReset_Click" ToolTip="默认 1.20×；1.00× 为原始视野"/>
-     <Slider x:Name="fovSlider" Grid.Row="1" Grid.ColumnSpan="3" Minimum="1.0" Maximum="1.3" Value="1.2" SmallChange="0.05" LargeChange="0.1" TickFrequency="0.05" IsSnapToTickEnabled="True" Style="{StaticResource ModFovSlider}" ValueChanged="FovSlider_ValueChanged" AutomationProperties.Name="FOV 视野倍率" ToolTip="1.00–1.30 倍，默认 1.20。官方与 MOD 均可使用，下次启动生效。"/>
+    <!-- LAN role is selected only after a discovery/manual/create confirmation. -->
+    <TextBlock x:Name="txtConnectionModeLabel" Visibility="Collapsed"/>
+    <ListBox x:Name="cmbConnectionMode" Visibility="Collapsed" SelectedIndex="0" SelectionChanged="ConnectionMode_SelectionChanged">
+     <ListBoxItem x:Name="itemClientMode" Content="加入房主"/><ListBoxItem x:Name="itemHostMode" Content="创建房主"/>
+    </ListBox>
+    <Grid Margin="0,0,0,22">
+     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+     <TextBlock x:Name="txtGameplaySummary" Text="MOD · FOV 1.20× · DX11" FontSize="13" Foreground="#A5ADB2" VerticalAlignment="Center"/>
+     <Button x:Name="btnOpenGameOptions" Grid.Column="1" Content="调整玩法" Height="44" Style="{StaticResource CinematicLinkButton}" Click="GameplaySettingsPage_Click"/>
     </Grid>
     <Button x:Name="btnLaunch" Content="启动游戏" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Click="LaunchButton_Click" AutomationProperties.Name="{Binding Content, RelativeSource={RelativeSource Self}}"/>
    </StackPanel>
@@ -865,15 +828,75 @@
    <Button x:Name="btnCheckNetwork" Content="检测网络" Style="{StaticResource BottomStatusButton}" FontSize="12" Click="CheckNetworkButton_Click"/>
   </StackPanel>
 <Grid x:Name="toolsOverlay" Grid.RowSpan="3" Panel.ZIndex="95" Visibility="Collapsed" Background="#CC000000" KeyboardNavigation.TabNavigation="Cycle" PreviewKeyDown="ToolsOverlay_PreviewKeyDown">
- <Border Width="660" MaxHeight="530" Padding="28,22" Background="#F20B0F11" BorderBrush="#55FFFFFF" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+ <Border x:Name="toolsCard" Width="760" MaxHeight="570" Padding="28,22" Background="#F20B0F11" BorderBrush="#55FFFFFF" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
   <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
    <StackPanel>
-    <DockPanel Margin="0,0,0,16"><Button x:Name="btnToolsClose" DockPanel.Dock="Right" Content="×" Style="{StaticResource WindowChromeCloseButton}" Click="ToolsClose_Click"/><TextBlock x:Name="txtToolsTitle" Text="设置" FontSize="24" FontWeight="SemiBold"/></DockPanel>
-    <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
-     <Button x:Name="btnRecoveryPage" Content="忘记密码" Style="{StaticResource CinematicLinkButton}" Click="ForgotPasswordButton_Click" Margin="0,0,22,0"/>
-     <Button x:Name="btnSavesPage" Content="恢复完整存档" Style="{StaticResource CinematicLinkButton}" Click="RestoreSavesButton_Click" Margin="0,0,22,0"/>
-     <Button x:Name="btnPlayersPage" Content="在线玩家 / 联机质量" Style="{StaticResource CinematicLinkButton}" Click="PlayersButton_Click" Margin="0,0,22,0"/>
-     <Button x:Name="btnAdvancedDiagnosticsPage" Content="高级诊断" Style="{StaticResource CinematicLinkButton}" Click="AdvancedDiagnosticsButton_Click"/>
+    <DockPanel Margin="0,0,0,16"><Button x:Name="btnToolsClose" DockPanel.Dock="Right" Content="×" Width="44" Height="44" Style="{StaticResource WindowChromeCloseButton}" Click="ToolsClose_Click"/><TextBlock x:Name="txtToolsTitle" Text="设置" FontSize="24" FontWeight="SemiBold"/></DockPanel>
+    <WrapPanel x:Name="settingsNavigation" Margin="0,0,0,12">
+     <Button x:Name="btnServerSettingsPage" Content="公网服务器" Height="44" Style="{StaticResource CinematicLinkButton}" Click="ServerSettingsPage_Click" Margin="0,0,24,0"/>
+     <Button x:Name="btnGameplaySettingsPage" Content="玩法 / FOV" Height="44" Style="{StaticResource CinematicLinkButton}" Click="GameplaySettingsPage_Click" Margin="0,0,24,0"/>
+     <Button x:Name="btnLanSettingsPage" Content="本地 / OB" Height="44" Style="{StaticResource CinematicLinkButton}" Click="LanSettingsPage_Click" Margin="0,0,24,0"/>
+     <Button x:Name="btnRecoveryPage" Content="忘记密码" Height="44" Style="{StaticResource CinematicLinkButton}" Click="ForgotPasswordButton_Click" Margin="0,0,24,0"/>
+     <Button x:Name="btnSavesPage" Content="恢复完整存档" Height="44" Style="{StaticResource CinematicLinkButton}" Click="RestoreSavesButton_Click" Margin="0,0,24,0"/>
+     <Button x:Name="btnPlayersPage" Content="在线玩家 / 联机质量" Height="44" Style="{StaticResource CinematicLinkButton}" Click="PlayersButton_Click" Margin="0,0,24,0"/>
+     <Button x:Name="btnAdvancedDiagnosticsPage" Content="高级诊断" Height="44" Style="{StaticResource CinematicLinkButton}" Click="AdvancedDiagnosticsButton_Click"/>
+    </WrapPanel>
+    <StackPanel x:Name="gameplaySettingsPanel" Visibility="Collapsed">
+     <TextBlock x:Name="txtGameplaySettingsHelp" Text="修改先作为草稿；确认保存后用于下次启动。" TextWrapping="Wrap" LineHeight="22" Margin="0,0,0,18"/>
+    <Grid x:Name="launchOptionsPanel" Width="380" HorizontalAlignment="Left" Margin="0,0,0,18">
+     <StackPanel>
+      <TextBlock x:Name="txtGameplayModeLabel" Text="游戏模式" FontSize="12" Foreground="#A5ADB2" Margin="0,0,0,6"/>
+      <ListBox x:Name="cmbGameplayMode" Style="{StaticResource ModeListBox}" Width="260" Height="44" Tag="112" SelectedValue="MOD" SelectedValuePath="Tag" SelectionChanged="GameplayMode_SelectionChanged" AutomationProperties.Name="游戏模式" ToolTip="队友请使用相同游戏模式。">
+       <ListBox.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" Columns="2"/></ItemsPanelTemplate></ListBox.ItemsPanel>
+       <ListBoxItem x:Name="itemGameplayMod" Content="MOD" Tag="MOD"/><ListBoxItem x:Name="itemGameplayOfficial" Content="官方" Tag="Official"/>
+      </ListBox>
+     </StackPanel>
+    </Grid>
+    <Grid x:Name="fovPanel" Width="380" HorizontalAlignment="Left" Margin="0,0,0,14">
+     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+     <TextBlock x:Name="txtFovLabel" Text="视野范围（FOV）" FontSize="11" Foreground="#A5ADB2"/>
+     <TextBlock x:Name="txtFovValue" Grid.Column="1" Text="1.20×" FontSize="12" Foreground="{StaticResource ReadyAccentBrush}" Margin="0,0,14,0"/>
+     <Button x:Name="btnFovReset" Grid.Column="2" Content="默认" Style="{StaticResource CinematicLinkButton}" FontSize="11" Click="FovReset_Click" ToolTip="默认 1.20×；1.00× 为原始视野"/>
+     <Slider x:Name="fovSlider" Grid.Row="1" Grid.ColumnSpan="3" Minimum="1.0" Maximum="1.3" Value="1.2" SmallChange="0.05" LargeChange="0.1" TickFrequency="0.05" IsSnapToTickEnabled="True" Style="{StaticResource ModFovSlider}" ValueChanged="FovSlider_ValueChanged" AutomationProperties.Name="FOV 视野倍率" ToolTip="1.00–1.30 倍，默认 1.20。官方与 MOD 均可使用，下次启动生效。"/>
+    </Grid>
+     <TextBlock x:Name="txtGameplaySettingsMessage" TextWrapping="Wrap" LineHeight="22" Foreground="{StaticResource ReadyAccentBrush}" Margin="0,0,0,14"/>
+     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button x:Name="btnGameplayCancel" Content="取消" Height="44" MinWidth="80" Style="{StaticResource CinematicLinkButton}" Click="CancelGameplayDraft_Click" Margin="0,0,24,0"/>
+      <Button x:Name="btnGameplaySave" Content="保存" Height="44" Style="{StaticResource CinematicDialogAction}" Click="SaveGameplayDraft_Click"/>
+     </StackPanel>
+    </StackPanel>
+    <StackPanel x:Name="serverSettingsPanel" Visibility="Collapsed">
+     <TextBlock x:Name="txtServerSettingsDescription" TextWrapping="Wrap" LineHeight="21" Foreground="#A5ADB2" Margin="0,0,0,14"/>
+     <Grid>
+      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="20"/><ColumnDefinition Width="150"/></Grid.ColumnDefinitions>
+      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+      <TextBlock x:Name="txtServerEndpointLabel" Text="正式服务器地址"/>
+      <TextBlock x:Name="txtServerUpdatePortLabel" Grid.Column="2" Text="更新端口"/>
+      <TextBox x:Name="txtServerEndpoint" Grid.Row="1" Style="{StaticResource CinematicTextBox}" Margin="0,0,0,12" MaxLength="253" AutomationProperties.Name="正式公网服务器地址"/>
+      <TextBox x:Name="txtServerUpdatePort" Grid.Row="1" Grid.Column="2" Style="{StaticResource CinematicTextBox}" MaxLength="5" AutomationProperties.Name="正式更新端口"/>
+      <TextBlock x:Name="txtTestServerEndpointLabel" Grid.Row="2" Text="测试服务器地址"/>
+      <TextBlock x:Name="txtTestServerUpdatePortLabel" Grid.Row="2" Grid.Column="2" Text="测试更新端口"/>
+      <TextBox x:Name="txtTestServerEndpoint" Grid.Row="3" Style="{StaticResource CinematicTextBox}" Margin="0,0,0,12" MaxLength="253" AutomationProperties.Name="测试公网服务器地址"/>
+      <TextBox x:Name="txtTestServerUpdatePort" Grid.Row="3" Grid.Column="2" Style="{StaticResource CinematicTextBox}" MaxLength="5" AutomationProperties.Name="测试更新端口"/>
+     </Grid>
+     <Grid Margin="0,0,0,12">
+      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="220"/></Grid.ColumnDefinitions>
+      <TextBlock x:Name="txtPublicTransportLabel" Text="公网传输方式" VerticalAlignment="Center"/>
+      <ComboBox x:Name="cmbPublicTransport" Grid.Column="1" Height="38" SelectedValuePath="Tag" SelectedValue="Fast" AutomationProperties.Name="公网传输方式">
+       <ComboBoxItem x:Name="itemPublicFast" Content="快速" Tag="Fast"/><ComboBoxItem x:Name="itemPublicCompatible" Content="兼容" Tag="Compatible"/>
+      </ComboBox>
+     </Grid>
+     <TextBlock x:Name="txtPublicDeploymentLabel" Text="部署配置"/>
+     <DockPanel Margin="0,0,0,10">
+      <Button x:Name="btnPublicDeploymentBrowse" DockPanel.Dock="Right" Content="导入…" Height="44" Margin="18,0,0,0" Style="{StaticResource CinematicLinkButton}" Click="PublicDeploymentBrowse_Click"/>
+      <TextBox x:Name="txtPublicDeploymentPath" Style="{StaticResource CinematicTextBox}" Height="44" MaxLength="4096" AutomationProperties.Name="部署配置路径"/>
+     </DockPanel>
+     <TextBlock x:Name="txtServerSettingsMessage" TextWrapping="Wrap" LineHeight="20" Foreground="{StaticResource ReadyAccentBrush}" Margin="0,0,0,12"/>
+     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button x:Name="btnServerSettingsReset" Content="恢复默认" Height="44" Style="{StaticResource CinematicLinkButton}" Click="ServerSettingsReset_Click" Margin="0,0,22,0"/>
+      <Button x:Name="btnServerSettingsSave" Content="保存" Height="44" Style="{StaticResource CinematicDialogAction}" Click="ServerSettingsSave_Click"/>
+     </StackPanel>
     </StackPanel>
     <StackPanel x:Name="toolsHomePanel"><CheckBox x:Name="chkObserverMode" Content="开启 OB 模式（仅本次）" IsChecked="False" Style="{StaticResource CinematicCheckBox}" Checked="ObserverMode_Changed" Unchecked="ObserverMode_Changed" Margin="0,0,0,12"/><TextBlock x:Name="txtObserverModeHelp" TextWrapping="Wrap" LineHeight="22" Margin="0,0,0,18"/><TextBlock x:Name="txtToolsIntro" Text="选择上方功能。存档按官方和 MOD 分开恢复；不会在正常启动时自动覆盖。" TextWrapping="Wrap" LineHeight="24"/></StackPanel>
     <StackPanel x:Name="recoveryPanel" Visibility="Collapsed">
@@ -905,6 +928,28 @@
     </StackPanel>
    </StackPanel>
   </ScrollViewer>
+ </Border>
+</Grid>
+<Grid x:Name="localDiscoveryOverlay" Grid.RowSpan="3" Panel.ZIndex="96" Visibility="Collapsed" Background="#CC000000" KeyboardNavigation.TabNavigation="Cycle" PreviewKeyDown="LocalDiscovery_PreviewKeyDown">
+ <Border x:Name="localDiscoveryPanel" Width="660" MaxHeight="560" Padding="28,24" Background="#F20B0F11" BorderBrush="#55FFFFFF" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+  <StackPanel>
+   <TextBlock x:Name="txtLocalTitle" Text="本地模式" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,14"/>
+   <TextBlock x:Name="txtLocalMessage" TextWrapping="Wrap" LineHeight="22" Foreground="#B6BEC3" Margin="0,0,0,16"/>
+   <ListBox x:Name="localHostList" MaxHeight="170" Background="#65080B0D" Foreground="#DDE3E6" BorderBrush="#35FFFFFF" DisplayMemberPath="DisplayName" SelectionChanged="LocalHost_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,14" AutomationProperties.Name="发现的房主">
+    <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="12,10"/><Setter Property="MinHeight" Value="44"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/></Style></ListBox.ItemContainerStyle>
+   </ListBox>
+   <TextBlock x:Name="txtLocalEndpointLabel" Text="房主地址（IPv4 或域名:端口）" FontSize="12" Foreground="#A5ADB2"/>
+   <TextBox x:Name="txtLocalEndpoint" Style="{StaticResource CinematicTextBox}" MaxLength="253" Margin="0,0,0,14" AutomationProperties.Name="确认连接的房主地址"/>
+   <WrapPanel Margin="0,0,0,14">
+    <Button x:Name="btnLocalRescan" Content="重新扫描" Height="44" Style="{StaticResource CinematicLinkButton}" Click="LocalRescan_Click" Margin="0,0,24,0"/>
+    <Button x:Name="btnLocalManual" Content="手动输入" Height="44" Style="{StaticResource CinematicLinkButton}" Click="LocalManual_Click" Margin="0,0,24,0"/>
+    <Button x:Name="btnLocalCreate" Content="创建房主…" Height="44" Style="{StaticResource CinematicLinkButton}" Click="LocalCreate_Click"/>
+   </WrapPanel>
+   <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+    <Button x:Name="btnLocalCancel" Content="取消" Height="44" MinWidth="80" Style="{StaticResource CinematicLinkButton}" Click="LocalCancel_Click" Margin="0,0,24,0"/>
+    <Button x:Name="btnLocalConfirm" Content="确认连接" Height="44" Style="{StaticResource CinematicDialogAction}" Click="LocalConfirm_Click"/>
+   </StackPanel>
+  </StackPanel>
  </Border>
 </Grid>
 <Grid x:Name="dialogOverlay" Grid.RowSpan="3" Panel.ZIndex="100" Visibility="Collapsed" Background="#B8000000" KeyboardNavigation.TabNavigation="Cycle">

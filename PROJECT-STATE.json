@@ -5,7 +5,7 @@
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
   "LAST_CONFIRMED_RESULT": "The complete Windows LAN development candidate from source da1805e6764ac202bf6b8c1a9548fa2c44d4c085 passed full build, packaged smoke and upload in run40594742870/job122508092763. Official artifact12777311164 was downloaded and independently verified: program ZIP73,276,517bytes, SHA256b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4. All65 files,63 manifest entries,64 checksum rows,four embedded PE component identities and50 notice/source files match. Actual packaged UI166 and LAN/save26 checks pass; input gate20/20 passes. Source checks pass Linux672+2skips and Windows558+116skips; Linux LAN523 passes. The first6f package failure is retained and the strictUTF-8 repair is verified by the new full build. Default restoration remains included; actual quick matching, Public,C71 and the full six milestones remain open. No game or downloaded binary was executed during review.",
-  "NEXT_EXECUTABLE_ACTION": "Use the delivered exact da180 Windows LAN candidate for the next user-led two-client quick-match (existing room and empty lobby) and three-client chat acceptance described in docs/DEVELOPMENT-CANDIDATE-TESTING.md; no automatic game/capture or repeat of accepted gameplay. Independently continue docs/tasks/windows-core-firewall-prerequisite.md and reviewed C71 fixture/source closure, then Capture equivalence/provenance and safe migration closure. Preserve the genuine artifact/checksum, original failures and all six goals; a delivered test package is not completion of the whole migration or ordinary Public admission.",
+  "NEXT_EXECUTABLE_ACTION": "Complete docs/tasks/ui-mode-flow-review.md from baseline12d: integrate DX11 migration, selectable/default Public with honest readiness, one-shot local confirmation flow, unified settings and MOD/FOV drafts; inspect actual Windows WPF DPI/language/small-window screenshots and keyboard checks, then build/download/verify the new complete candidate. Keep previous da180 delivery evidence distinct and all six goals/live boundaries.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -1733,5 +1733,14 @@
     "formal_release": false,
     "evidence": "docs/evidence/hosted-complete-package-da1805e.json",
     "download_verification": "docs/evidence/complete-package-download-da1805e.json"
+  },
+  "active_ui_revision": {
+    "baseline": "12d394086a22c04e7e1defc7678ceccfe02ee004",
+    "task": "docs/tasks/ui-mode-flow-review.md",
+    "status": "implementation_and_hosted_verification_pending",
+    "prior_delivered_candidate_source": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
+    "new_complete_package_verified": false,
+    "public_runtime_ready": false,
+    "accepted_gameplay_preserved": true
   }
 }

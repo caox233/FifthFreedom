@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <SourceRoot Condition="'$(SourceRoot)' == ''">../../src/launcher/src</SourceRoot>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NuGetAudit>false</NuGetAudit>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="$(SourceRoot)/Services/HostDiscoveryTargets.cs" Link="HostDiscoveryTargets.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="Exists('$(SourceRoot)/Services/LocalHostDiscovery.cs') and Exists('$(SourceRoot)/Services/LocalHostDiscoveryFlow.cs')">
+    <Compile Include="$(SourceRoot)/Services/LocalHostDiscovery.cs" Link="LocalHostDiscovery.cs" />
+    <Compile Include="$(SourceRoot)/Services/LocalHostDiscoveryFlow.cs" Link="LocalHostDiscoveryFlow.cs" />
+    <Compile Include="Checks.cs" />
+  </ItemGroup>
+</Project>

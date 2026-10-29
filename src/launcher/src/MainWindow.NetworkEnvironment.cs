@@ -14,12 +14,143 @@ public partial class MainWindow
     private bool _networkEnvironmentChanging;
     private bool _networkEnvironmentClosing;
     private bool _restoreJoinAddressAfterHost;
+    private bool _renderingNetworkEnvironment;
+    private bool _publicSettingsSaving;
+    private PublicNetworkEnvironmentAdapter? _publicNetworkAdapter;
+    private NetworkEnvironmentKind SelectedNetworkEnvironment => NetworkEnvironmentPreferences.Environment(_settings.NetworkEnvironment);
 
     private void InitializeNetworkEnvironment()
     {
         Dispatcher.VerifyAccess();
+        _publicNetworkAdapter ??= new PublicNetworkEnvironmentAdapter(() => _settings);
         _networkEnvironment ??= new NetworkEnvironmentController(new LauncherLanAdapter(this),
-            () => new NetworkEnvironmentActivity(_isGameRunning, _isGameStarting || _ownedGameLaunchActive));
+            () => new NetworkEnvironmentActivity(_isGameRunning, _isGameStarting || _ownedGameLaunchActive), _publicNetworkAdapter);
+    }
+
+    private async void NetworkEnvironment_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_renderingNetworkEnvironment || !IsLoaded || App.PreviewMode || _networkEnvironmentChanging) return;
+        if (_isBusy || _toolsOperation || _publicSettingsSaving || _statusRefreshRunning || _networkEnvironmentClosing)
+        { RenderNetworkEnvironment(); return; }
+        try
+        {
+            var mode = NetworkEnvironmentPreferences.Environment(cmbNetworkEnvironment.SelectedValue as string);
+            var result = await ChangeSelectedNetworkEnvironmentAsync(mode);
+            if (result.Outcome is not (NetworkEnvironmentChangeOutcome.Applied or NetworkEnvironmentChangeOutcome.Unchanged))
+                await ShowInfoDialogAsync(L("未能切换模式", "Mode Unchanged"),
+                    L("当前游戏或网络会话尚未停止，或设置未能保存。请稍后重试。", "The current game/network session has not stopped, or the preference could not be saved. Retry after it closes."));
+        }
+        catch (Exception) { LogService.Error("Network environment selection failed without publishing readiness."); RenderNetworkEnvironment(); }
+    }
+
+    private Task<NetworkEnvironmentChangeResult> ChangeSelectedNetworkEnvironmentAsync(NetworkEnvironmentKind mode, bool persist = true)
+        => ChangeNetworkSelectionAsync(mode == NetworkEnvironmentKind.Lan ? NetworkEnvironmentSelection.ForLan(LanRole.Join)
+            : NetworkEnvironmentSelection.ForPublic(NetworkEnvironmentPreferences.Transport(_settings.NetworkMode)), persist,
+            requestLocalDiscovery: persist);
+
+    private async Task<NetworkEnvironmentChangeResult> ChangeNetworkSelectionAsync(NetworkEnvironmentSelection requested, bool persist,
+        bool preserveLocalConfirmation = false, bool requestLocalDiscovery = false)
+    {
+        Dispatcher.VerifyAccess(); InitializeNetworkEnvironment();
+        _ownedGameLaunchActive = _gameLaunchService.SessionId.HasValue;
+        if (_networkEnvironmentChanging) return new(NetworkEnvironmentChangeOutcome.ConnectionFailed, NetworkEnvironmentRollback.NotNeeded, requested, _networkEnvironment!.Snapshot);
+        string previousPreference = _settings.NetworkEnvironment;
+        var previousSelection = _networkEnvironment!.Snapshot.Selection;
+        bool beginLocalDiscovery = false;
+        if (preserveLocalConfirmation && (requested.Environment != NetworkEnvironmentKind.Lan || requested.LanRole != LanRole.Join))
+            throw new ArgumentException("Only an already-confirmed LAN join may retain its discovery generation.");
+        _networkEnvironmentChanging = true;
+        if (!preserveLocalConfirmation) CancelLocalDiscovery();
+        RenderNetworkEnvironment();
+        try
+        {
+            var result = await _networkEnvironment.ChangeAsync(requested, _windowOneShotCts.Token);
+            if (result.Outcome is not (NetworkEnvironmentChangeOutcome.Applied or NetworkEnvironmentChangeOutcome.Unchanged)) return result;
+            _settings.NetworkEnvironment = requested.Environment.ToString();
+            try { if (persist) _settingsService.Save(_settings); }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+            {
+                _settings.NetworkEnvironment = previousPreference;
+                var restore = previousSelection ?? (NetworkEnvironmentPreferences.Environment(previousPreference) == NetworkEnvironmentKind.Lan
+                    ? NetworkEnvironmentSelection.ForLan(LanRole.Join) : NetworkEnvironmentSelection.ForPublic(NetworkEnvironmentPreferences.Transport(_settings.NetworkMode)));
+                var rollback = await _networkEnvironment.ChangeAsync(restore, _windowOneShotCts.Token);
+                return new(NetworkEnvironmentChangeOutcome.ConnectionFailed,
+                    rollback.Outcome is NetworkEnvironmentChangeOutcome.Applied or NetworkEnvironmentChangeOutcome.Unchanged ? NetworkEnvironmentRollback.Restored : NetworkEnvironmentRollback.Failed,
+                    requested, _networkEnvironment.Snapshot);
+            }
+            if (requested.Environment == NetworkEnvironmentKind.Public)
+            {
+                await _hostDiscovery.StopAsync(); await _lanMonitor.StopAsync();
+                SetCredentialEnvironment(CredentialEnvironmentContext.UnconfiguredPublic);
+                RevertConnectionModeSelection(0);
+                SetServerAddressProgrammatically(_settings.PublicEndpoint, null, resetStatus: false);
+                _lastLanLocalReady = false; _lastServerReachable = false;
+            }
+            else
+            {
+                SetCredentialEnvironment(CredentialEnvironmentContext.Lan);
+                if (NetworkEnvironmentPreferences.Environment(previousPreference) != NetworkEnvironmentKind.Lan)
+                    SetServerAddressProgrammatically(_settings.ServerAddress, null, resetStatus: false);
+                if (!App.PreviewMode) { StartLanMonitor(); StartHostDiscoveryListener(); }
+                beginLocalDiscovery = requestLocalDiscovery && previousSelection?.Environment != NetworkEnvironmentKind.Lan && !preserveLocalConfirmation;
+            }
+            return result;
+        }
+        finally
+        {
+            _networkEnvironmentChanging = false; RenderNetworkEnvironment();
+            if (beginLocalDiscovery && IsLoaded && !App.PreviewMode && SelectedNetworkEnvironment == NetworkEnvironmentKind.Lan
+                && _networkEnvironment.Snapshot.Selection?.LanRole == LanRole.Join && !_closingBackgroundTasks)
+                _ = BeginLocalDiscoveryAsync();
+        }
+    }
+
+    private string GetPublicReadinessMessage()
+    {
+        InitializeNetworkEnvironment();
+        return _publicNetworkAdapter!.CurrentReadiness.Stage switch
+        {
+            PublicReadinessStage.ServerConfigurationRequired => L("请在服务器设置中填写公网地址和更新端口。", "Configure the public endpoint and update port in Server Settings."),
+            PublicReadinessStage.DeploymentConfigurationRequired => L("公网地址已保存；还需导入经审查的部署配置（服务身份和组件校验信息）。", "Endpoint saved; import a reviewed deployment configuration with service identity and component hashes."),
+            PublicReadinessStage.DeploymentConfigurationInvalid => L("部署配置无法读取、格式无效，或与当前服务器/传输模式不一致。", "The deployment configuration is unavailable, invalid, or does not match the server/transport."),
+            PublicReadinessStage.RuntimeInputsInvalid => L("部署配置已读取，但所需公网组件缺失或校验不匹配。", "Deployment configuration loaded; required public components are missing or fail verification."),
+            _ => L("服务器和组件配置已校验；Windows 公网连接的安全启动、专用网卡及游戏会话验证尚未完成，暂不能启动公网游戏。", "Server and component configuration verified; Windows public connection startup, owned adapter and game-session admission are not yet complete. Public game launch remains unavailable.")
+        };
+    }
+
+    private async Task<bool> ApplyPublicServerSettingsAsync(ValidatedPublicServerSettings stable,
+        ValidatedPublicServerSettings test, PublicTransport transport, string? configurationPath = null)
+    {
+        if (_publicSettingsSaving || _isBusy || _isGameRunning || _isGameStarting || _gameLaunchService.SessionId.HasValue
+            || _networkEnvironmentChanging || _closingBackgroundTasks) return false;
+        _publicSettingsSaving = true;
+        RenderNetworkEnvironment();
+        try
+        {
+        if (!Enum.IsDefined(transport)) return false;
+        if (!string.IsNullOrWhiteSpace(configurationPath))
+        {
+            try { _ = PublicDeploymentConfiguration.Load(configurationPath); }
+            catch (IOException) { return false; }
+        }
+        var previous = (_settings.PublicEndpoint, _settings.PublicUpdatePort, _settings.TestPublicEndpoint,
+            _settings.TestPublicUpdatePort, _settings.NetworkMode, _settings.PublicDeploymentConfigurationPath);
+        bool saved = TryPersistInteractiveSetting(() =>
+        {
+            _settings.PublicEndpoint = stable.PublicEndpoint; _settings.PublicUpdatePort = stable.UpdatePort;
+            _settings.TestPublicEndpoint = test.PublicEndpoint; _settings.TestPublicUpdatePort = test.UpdatePort;
+            _settings.NetworkMode = transport.ToString(); _settings.PublicDeploymentConfigurationPath = configurationPath?.Trim() ?? "";
+        }, () => (_settings.PublicEndpoint, _settings.PublicUpdatePort, _settings.TestPublicEndpoint,
+            _settings.TestPublicUpdatePort, _settings.NetworkMode, _settings.PublicDeploymentConfigurationPath) = previous);
+        if (!saved) return false;
+        InitializeNetworkEnvironment();
+        await _publicNetworkAdapter!.RefreshAsync(_windowOneShotCts.Token);
+        if (SelectedNetworkEnvironment == NetworkEnvironmentKind.Public)
+            await ChangeSelectedNetworkEnvironmentAsync(NetworkEnvironmentKind.Public, persist: false);
+        RenderNetworkEnvironment();
+        return true;
+        }
+        finally { _publicSettingsSaving = false; RenderNetworkEnvironment(); }
     }
 
     /// <summary>All WPF reads and runtime mutations execute on the owning dispatcher.</summary>
@@ -97,24 +228,12 @@ public partial class MainWindow
         return owned;
     }
 
-    private async Task<NetworkEnvironmentChangeResult> ChangeLanRoleAsync(LanRole role)
+    private async Task<NetworkEnvironmentChangeResult> ChangeLanRoleAsync(LanRole role, bool preserveLocalConfirmation = false)
     {
-        Dispatcher.VerifyAccess();
-        InitializeNetworkEnvironment();
-        _ownedGameLaunchActive = _gameLaunchService.SessionId.HasValue;
-        _networkEnvironmentChanging = true;
-        RenderNetworkEnvironment();
-        try
-        {
-            var result = await _networkEnvironment!.ChangeAsync(NetworkEnvironmentSelection.ForLan(role), _windowOneShotCts.Token);
-            RevertConnectionModeSelection(result.Snapshot.Selection?.LanRole == LanRole.Host ? 1 : 0);
-            return result;
-        }
-        finally
-        {
-            _networkEnvironmentChanging = false;
-            RenderNetworkEnvironment();
-        }
+        var result = await ChangeNetworkSelectionAsync(NetworkEnvironmentSelection.ForLan(role), persist: !App.PreviewMode,
+            preserveLocalConfirmation: preserveLocalConfirmation);
+        RevertConnectionModeSelection(result.Snapshot.Selection?.LanRole == LanRole.Host ? 1 : 0);
+        return result;
     }
 
     private void RenderNetworkEnvironment()
@@ -122,14 +241,16 @@ public partial class MainWindow
         Dispatcher.VerifyAccess();
         if (_networkEnvironment is null || cmbNetworkEnvironment is null) return;
         var snapshot = _networkEnvironment.Snapshot;
-        // Only LAN is available. The disabled Public item remains explicit.
-        cmbNetworkEnvironment.SelectedValue = "Lan";
-        cmbNetworkEnvironment.IsEnabled = snapshot.CanSwitch && !_isBusy && !_networkEnvironmentChanging && !_networkEnvironmentClosing && !_statusRefreshRunning;
-        cmbConnectionMode.IsEnabled = cmbNetworkEnvironment.IsEnabled;
-        cmbBindAdapter.IsEnabled = cmbNetworkEnvironment.IsEnabled && !IsDedicatedServerRunning();
-        cmbNetworkEnvironment.ToolTip = snapshot.IsReady
+        _renderingNetworkEnvironment = true;
+        try { cmbNetworkEnvironment.SelectedValue = SelectedNetworkEnvironment.ToString(); }
+        finally { _renderingNetworkEnvironment = false; }
+        cmbNetworkEnvironment.IsEnabled = snapshot.CanSwitch && !_isBusy && !_toolsOperation && !_publicSettingsSaving && !_networkEnvironmentChanging && !_networkEnvironmentClosing && !_statusRefreshRunning;
+        cmbConnectionMode.IsEnabled = cmbNetworkEnvironment.IsEnabled && SelectedNetworkEnvironment == NetworkEnvironmentKind.Lan;
+        cmbBindAdapter.IsEnabled = cmbConnectionMode.IsEnabled && !IsDedicatedServerRunning();
+        cmbNetworkEnvironment.ToolTip = SelectedNetworkEnvironment == NetworkEnvironmentKind.Public ? GetPublicReadinessMessage() : snapshot.IsReady
             ? L("LAN 服务器已通过兼容性检测", "LAN server compatibility check passed")
             : L("LAN 已选择，服务器尚未就绪", "LAN selected; server is not ready");
+        RenderModePresentation();
     }
 
     private bool TryPublishLanCapabilities(LanEnvironmentLease? checkedLease, string checkedEndpoint,
@@ -179,6 +300,7 @@ public partial class MainWindow
     private async Task<bool> CloseNetworkEnvironmentAsync()
     {
         if (_networkEnvironment is null) return true;
+        CancelLocalDiscovery();
         _networkEnvironmentClosing = true;
         RenderNetworkEnvironment();
         try { await _networkEnvironment.DisposeAsync(); return true; }

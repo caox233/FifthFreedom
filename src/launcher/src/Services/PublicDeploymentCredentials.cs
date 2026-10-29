@@ -6,14 +6,18 @@ namespace SplinterCellCNLauncher.Services;
 public sealed class CredentialEnvironmentContext : IEquatable<CredentialEnvironmentContext>
 {
     public static CredentialEnvironmentContext Lan { get; } = new(null);
+    public static CredentialEnvironmentContext UnconfiguredPublic { get; } = new(null, true);
     private readonly PublicDeploymentProfile? _deployment;
-    public NetworkEnvironmentKind Environment => _deployment is null ? NetworkEnvironmentKind.Lan : NetworkEnvironmentKind.Public;
-    private CredentialEnvironmentContext(PublicDeploymentProfile? deployment) => _deployment = deployment;
+    private readonly bool unconfiguredPublic;
+    public NetworkEnvironmentKind Environment => _deployment is null && !unconfiguredPublic ? NetworkEnvironmentKind.Lan : NetworkEnvironmentKind.Public;
+    private CredentialEnvironmentContext(PublicDeploymentProfile? deployment, bool unconfigured = false)
+        => (_deployment, unconfiguredPublic) = (deployment, unconfigured);
     public static CredentialEnvironmentContext ForPublic(PublicDeploymentProfile deployment)
         => new(deployment ?? throw new ArgumentException("PUBLIC_CREDENTIAL_DEPLOYMENT_REQUIRED"));
 
     public CredentialIdentity CreateIdentity(string server, string username)
     {
+        if (unconfiguredPublic) throw new ArgumentException("PUBLIC_CREDENTIAL_DEPLOYMENT_REQUIRED");
         if (_deployment is null) return new CredentialIdentity(Environment, CredentialStore.Scope(server, username));
         if (string.IsNullOrWhiteSpace(username) || username.Length > 256 || username.Any(char.IsControl) || !username.Trim().All(c => char.IsAsciiLetterOrDigit(c) || c is '_' or '-' or '.'))
             throw new ArgumentException("PUBLIC_CREDENTIAL_IDENTITY_INVALID");

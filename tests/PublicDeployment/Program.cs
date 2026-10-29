@@ -25,6 +25,12 @@ static class Program
         => Path.Combine(root, "credentials", Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(identity.ScopeValue))) + ".bin");
     private static void Main()
     {
+        Case("selected unconfigured Public never loads a LAN credential identity", () =>
+        {
+            var context = CredentialEnvironmentContext.UnconfiguredPublic;
+            Check(context.Environment == NetworkEnvironmentKind.Public && !context.Equals(CredentialEnvironmentContext.Lan), "unconfigured Public aliased LAN");
+            Reject(() => context.CreateIdentity("192.0.2.1:50051", "fixture"));
+        });
         Case("LAN scope bytes remain compatible with existing filenames and DPAPI entropy", () =>
         {
             const string expected = "SCBL-LAN-DPAPI-v1\nexample.test:50051\nfixture";

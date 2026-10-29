@@ -195,7 +195,7 @@ def windows_components(receipt: dict) -> None:
     run_build_step("ci-wpf-compile", [build.dotnet(), "publish", ROOT / "src/launcher/src/SplinterCellCNLauncher.csproj",
               "-c", "Release", "-r", "win-x86", "--self-contained", "true", "--nologo", "-o", launcher])
     receipt["launcher_probes"] = [run_launcher_probe(launcher, "--self-test", ART / "ci/windows-components/ui-smoke")]
-    for name in ("PortPlan", "BackgroundTaskRegression", "ObserverSession", "NetworkEnvironment", "PublicDeployment", "PublicSessionControl", "PublicNativeReturn", "FinalLaunchPreparation"):
+    for name in ("PortPlan", "BackgroundTaskRegression", "ObserverSession", "NetworkEnvironment", "NetworkPreferences", "HostDiscoveryFlow", "GameplaySettingsDraft", "PublicDeployment", "PublicSessionControl", "PublicNativeReturn", "FinalLaunchPreparation"):
         run_build_step("ci-test-" + name, [build.dotnet(), "run", "--project", ROOT / f"tests/{name}/{name}.csproj",
                   "-c", "Release", "--no-launch-profile"])
     stream_log = run_build_step("ci-test-DiagnosticTextStreaming", [build.dotnet(), "run", "--project",

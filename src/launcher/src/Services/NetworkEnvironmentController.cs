@@ -189,7 +189,8 @@ public sealed class NetworkEnvironmentController : IAsyncDisposable
 
     private static bool CanActivate(NetworkEnvironmentSelection selection, INetworkEnvironmentLease lease)
         => lease.IsReady || (selection.Environment == NetworkEnvironmentKind.Lan && selection.LanRole == LanRole.Join
-            && lease is IConfiguredLanJoinLease { IsConfigured: true });
+            && lease is IConfiguredLanJoinLease { IsConfigured: true })
+            || (selection.Environment == NetworkEnvironmentKind.Public && lease is IConfiguredPublicLease { IsConfigured: true });
 
     private bool IsClosed { get { lock (_sync) return _closed; } }
     private static long? SafeLatency(INetworkEnvironmentLease lease)

@@ -23,12 +23,14 @@ public partial class App : Application
         bool hookCheck=e.Args.Length==2 && e.Args[0]=="--hook-self-test";
         bool musicCheck=e.Args.Length==2 && e.Args[0]=="--music-self-test";
         bool toolsCheck=e.Args.Length==2 && e.Args[0]=="--lan-tools-self-test";
+        bool visualProbe=e.Args.Length==2 && e.Args[0]=="--visual-probe";
         bool toolsPreview=e.Args.Length==2 && new[]{"--preview-settings","--preview-recovery","--preview-saves","--preview-players"}.Contains(e.Args[0]);
-        PreviewMode=musicCheck || toolsCheck || toolsPreview || captureCheck || hookCheck || fusionFixCheck || fovCheck || endCheck || modeCheck || handoffCheck || loaderCheck || HostCheckMode || (e.Args.Length==2 && (e.Args[0]=="--diagnostics-self-test" || e.Args[0]=="--preview" || e.Args[0]=="--preview-host" || e.Args[0]=="--preview-guide" || e.Args[0]=="--preview-en" || e.Args[0]=="--self-test" || e.Args[0]=="--preview-dialog" || e.Args[0]=="--preview-dialog-long"));
+        PreviewMode=visualProbe || musicCheck || toolsCheck || toolsPreview || captureCheck || hookCheck || fusionFixCheck || fovCheck || endCheck || modeCheck || handoffCheck || loaderCheck || HostCheckMode || (e.Args.Length==2 && (e.Args[0]=="--diagnostics-self-test" || e.Args[0]=="--preview" || e.Args[0]=="--preview-host" || e.Args[0]=="--preview-guide" || e.Args[0]=="--preview-en" || e.Args[0]=="--self-test" || e.Args[0]=="--preview-dialog" || e.Args[0]=="--preview-dialog-long"));
         if(PreviewMode)
         {
             try
             {
+            if(visualProbe) {Shutdown(SplinterCellCNLauncher.MainWindow.RunVisualProbe(e.Args[1]));return;}
             if(captureCheck) {System.IO.File.WriteAllText(System.IO.Path.GetFullPath(e.Args[2]),await Services.PackagedCaptureProbe.RunAsync(e.Args[1],e.Args[2]));Shutdown();return;}
             if(hookCheck) {string report=System.IO.Path.GetFullPath(e.Args[1]); string result=HookDeploymentProbe.Run(System.IO.Path.GetDirectoryName(report)!);System.IO.File.WriteAllText(report,result);Shutdown(result.Contains("FAIL ")?1:0);return;}
             if(fusionFixCheck) {await FusionFixPackageProbe.RunAsync(e.Args[1]);Shutdown();return;}

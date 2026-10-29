@@ -12,7 +12,7 @@ LAUNCHER = ROOT / 'src/launcher/src'
 DONOR = ROOT / 'integration/scbl3/client/ScblPublicLauncher/MainWindow.xaml'
 P = '{http://schemas.microsoft.com/winfx/2006/xaml/presentation}'
 X = '{http://schemas.microsoft.com/winfx/2006/xaml}'
-CONTRACT = json.loads(Path(__file__).with_name('lan-shell-contract.json').read_text())
+CONTRACT = json.loads(Path(__file__).with_name('lan-shell-contract.json').read_text(encoding='utf-8'))
 EVENTS = {'Click', 'Loaded', 'Closing', 'SelectionChanged', 'Checked', 'Unchecked',
           'ValueChanged', 'PreviewTextInput', 'DataObject.Pasting', 'TextChanged',
           'LostKeyboardFocus', 'PasswordChanged', 'DropDownOpened',
@@ -106,20 +106,20 @@ class ShellContractTests(unittest.TestCase):
                                     'OverwriteSavesMenuItem_Click'})
         partial = LAUNCHER / 'MainWindow.DonorShell.cs'
         if partial.exists():
-            code = partial.read_text()
+            code = partial.read_text(encoding='utf-8')
             for forbidden in ['NetworkOrchestrator', 'WriteAuthFile', 'Process.Start', 'HttpClient', 'SaveSettingsFromUi']:
                 self.assertNotIn(forbidden, code)
 
-    def test_shell_adopts_donor_menu_and_footer_styles(self):
-        donor = ET.parse(DONOR).getroot()
-        donor_keys = {element.get(X + 'Key') for element in donor.iter()}
-        keys = {element.get(X + 'Key') for element in self.root.iter()}
-        for key in ['SettingsMenuItemStyle', 'SettingsContextMenuStyle', 'BottomStatusButton']:
-            self.assertIn(key, donor_keys)
-            self.assertIn(key, keys)
-        self.assertEqual(self.controls['settingsMenu'].get('Style'), '{StaticResource SettingsContextMenuStyle}')
-        for name, handler in [('miLanSettings', 'SettingsButton_Click'), ('miRestoreSaves', 'RestoreSavesButton_Click'),
-                              ('miPlayers', 'PlayersButton_Click'), ('miExportDiagnostics', 'ExportDiagnosticsMenuItem_Click')]:
+    def test_single_settings_entry_preserves_all_tool_routes(self):
+        self.assertNotIn('btnShellMenu', self.controls)
+        self.assertNotIn('settingsMenu', self.controls)
+        self.assertEqual(self.controls['btnSettings'].get('Click'), 'SettingsButton_Click')
+        for name, handler in [('btnServerSettingsPage', 'ServerSettingsPage_Click'),
+                              ('btnLanSettingsPage', 'LanSettingsPage_Click'),
+                              ('btnSavesPage', 'RestoreSavesButton_Click'),
+                              ('btnPlayersPage', 'PlayersButton_Click'),
+                              ('btnAdvancedDiagnosticsPage', 'AdvancedDiagnosticsButton_Click'),
+                              ('btnExportDiagnostics', 'ExportDiagnostics_Click')]:
             self.assertEqual(self.controls[name].get('Click'), handler)
 
     def test_donor_snapshot_and_transplanted_resources_are_preserved(self):
@@ -134,25 +134,35 @@ class ShellContractTests(unittest.TestCase):
             self.assertIn(key, resources)
             self.assertEqual(shape(resources[key]), shape(donor_resources[key]))
 
-    def test_environment_is_separate_from_lan_role_and_public_is_unavailable(self):
+    def test_one_mode_choice_defaults_public_and_local_roles_are_not_main_choices(self):
         environments = self.controls['cmbNetworkEnvironment']
-        self.assertEqual(environments.get('SelectedValue'), 'Lan')
-        self.assertIsNone(environments.get('SelectionChanged'))
+        self.assertEqual(environments.get('SelectedValue'), 'Public')
+        self.assertEqual(environments.get('SelectionChanged'), 'NetworkEnvironment_SelectionChanged')
         choices = {item.get('Tag'): item for item in environments if item.tag == P + 'ListBoxItem'}
         self.assertEqual(set(choices), {'Lan', 'Public'})
-        self.assertEqual(choices['Public'].get('IsEnabled'), 'False')
-        self.assertEqual(self.controls['cmbConnectionMode'].get('SelectionChanged'), 'ConnectionMode_SelectionChanged')
-        self.assertEqual([item.get(X + 'Name') for item in self.controls['cmbConnectionMode']], ['itemClientMode', 'itemHostMode'])
+        self.assertNotEqual(choices['Public'].get('IsEnabled'), 'False')
+        self.assertEqual(choices['Public'].get('Content'), '公网模式')
+        self.assertEqual(choices['Lan'].get('Content'), '本地模式')
+        self.assertEqual(self.controls['cmbConnectionMode'].get('Visibility'), 'Collapsed')
+        self.assertEqual(self.controls['btnLocalConnection'].get('Click'), 'LocalConnection_Click')
 
-    def test_renderer_remains_dx11_only_and_fov_contract_is_preserved(self):
-        renderer = self.controls['cmbGameExecutable']
-        self.assertEqual(renderer.get('SelectedValue'), 'DX11')
-        options = {item.get('Tag'): item for item in renderer if item.tag == P + 'ListBoxItem'}
-        self.assertEqual(options['DX9'].get('IsEnabled'), 'False')
-        self.assertIsNone(renderer.get('SelectionChanged'))
+    def test_renderer_choice_is_removed_and_fov_contract_is_preserved(self):
+        self.assertNotIn('cmbGameExecutable', self.controls)
+        self.assertFalse(any(e.get('Tag') == 'DX9' for e in self.root.iter()))
         slider = self.controls['fovSlider']
         self.assertEqual((slider.get('Minimum'), slider.get('Maximum'), slider.get('Value')), ('1.0', '1.3', '1.2'))
         self.assertEqual(slider.get('ValueChanged'), 'FovSlider_ValueChanged')
+
+    def test_local_discovery_has_confirmation_retry_manual_and_cancel(self):
+        overlay = self.controls['localDiscoveryOverlay']
+        self.assertEqual(overlay.get('Visibility'), 'Collapsed')
+        self.assertEqual(overlay.get('KeyboardNavigation.TabNavigation'), 'Cycle')
+        for name, handler in [('btnLocalConfirm', 'LocalConfirm_Click'),
+                              ('btnLocalRescan', 'LocalRescan_Click'),
+                              ('btnLocalManual', 'LocalManual_Click'),
+                              ('btnLocalCreate', 'LocalCreate_Click'),
+                              ('btnLocalCancel', 'LocalCancel_Click')]:
+            self.assertEqual(self.controls[name].get('Click'), handler)
 
     def test_local_static_resources_resolve_and_names_are_unique(self):
         keys = [element.get(X + 'Key') for element in self.root.iter() if element.get(X + 'Key')]

@@ -202,12 +202,17 @@ public partial class MainWindow
                 "Join selection without a capability observation does not claim readiness");
             RenderNetworkEnvironment();
             Check(Equals(cmbNetworkEnvironment.SelectedValue, "Lan") && cmbNetworkEnvironment.Items.OfType<System.Windows.Controls.ListBoxItem>()
-                .Single(x => Equals(x.Tag, "Public")).IsEnabled == false,
-                "production environment presentation keeps Public unavailable");
+                .Single(x => Equals(x.Tag, "Public")).IsEnabled,
+                "production presentation permits explicit Public selection without claiming readiness");
             var lease = _activeLanEnvironmentLease;
             var rejected = await _networkEnvironment!.ChangeAsync(NetworkEnvironmentSelection.ForPublic(PublicTransport.Fast));
-            Check(rejected.Outcome == NetworkEnvironmentChangeOutcome.Unavailable && ReferenceEquals(lease, _activeLanEnvironmentLease),
-                "Public request leaves the existing LAN generation intact");
+            Check(rejected.Outcome == NetworkEnvironmentChangeOutcome.Applied && !rejected.Snapshot.IsReady
+                && rejected.Snapshot.Selection?.Environment == NetworkEnvironmentKind.Public && _activeLanEnvironmentLease is null && !lease!.IsConfigured,
+                "Public configuration selection drains LAN ownership and cannot fake ready");
+            var backToLan = await _networkEnvironment.ChangeAsync(NetworkEnvironmentSelection.ForLan(LanRole.Join));
+            Check(backToLan.Outcome == NetworkEnvironmentChangeOutcome.Applied && _activeLanEnvironmentLease is not null,
+                "explicit return to LAN creates its own new lease");
+            lease = _activeLanEnvironmentLease;
             _isGameRunning = true;
             var blocked = await _networkEnvironment.ChangeAsync(NetworkEnvironmentSelection.ForLan(LanRole.Host));
             Check(blocked.Outcome == NetworkEnvironmentChangeOutcome.RejectedGameActive && !IsDedicatedServerRunning(),
@@ -294,8 +299,9 @@ public partial class MainWindow
             Check(CurrentCredentialIdentity(txtServer.Text, txtUsername.Text).ScopeValue == CredentialStore.Scope(txtServer.Text, txtUsername.Text)
                 && !CanUseCapturedPassword(publicScope, txtServer.Text, txtUsername.Text),
                 "returning to LAN preserves legacy scope and rejects Public credentials");
-            Check(cmbNetworkEnvironment.Items.OfType<System.Windows.Controls.ListBoxItem>().Single(x => Equals(x.Tag, "Public")).IsEnabled == false,
-                "credential namespace support does not enable the Public network adapter");
+            Check(cmbNetworkEnvironment.Items.OfType<System.Windows.Controls.ListBoxItem>().Single(x => Equals(x.Tag, "Public")).IsEnabled
+                && !string.IsNullOrWhiteSpace(GetPublicReadinessMessage()),
+                "Public remains selectable with an explicit prerequisite status");
 
         }
         finally
@@ -308,6 +314,10 @@ public partial class MainWindow
 
     internal string RunIsolatedChecks()
     {
+        // This retained suite explicitly exercises LAN; default-Public policy is checked separately.
+        _settings.NetworkEnvironment = "Lan";
+        cmbNetworkEnvironment.SelectedValue = "Lan";
+        SetCredentialEnvironment(CredentialEnvironmentContext.Lan);
         var results=new List<string>();
         void Check(bool b,string label) {if(!b)throw new Exception(label);results.Add("PASS "+label);}
         Check(txtTopBadge.Text==LauncherVersion.Badge,"visible version badge matches published assembly: "+txtTopBadge.Text);
@@ -363,13 +373,11 @@ public partial class MainWindow
         Check(persisted?.FovScale==1.25,"FOV setting serialization round trip");
         FovReset_Click(this,new RoutedEventArgs());Check(GetSelectedFovScale()==1.2,"FOV reset restores default");
         Check(GetSelectedGameplayMode()=="MOD","gameplay mode defaults to MOD");
-        Check(GetSelectedGameExecutable()=="Blacklist_DX11_game.exe","DX11 remains fixed despite the presentation-only renderer selector");
+        Check(GetSelectedGameExecutable()=="Blacklist_DX11_game.exe","DX11 remains the only launch executable");
         cmbGameplayMode.SelectedValue="MOD";
         Check(GetSelectedGameplayMode()=="MOD" && GetSelectedGameExecutable()=="Blacklist_DX11_game.exe","MOD is independent of renderer choice");
-        Check(FindName("cmbGameExecutable")==cmbGameExecutable && Equals(cmbGameExecutable.SelectedValue,"DX11") &&
-              cmbGameExecutable.Items.OfType<System.Windows.Controls.ListBoxItem>().Single(x => Equals(x.Tag,"DX9")).IsEnabled==false &&
-              GetSelectedGameExecutable()=="Blacklist_DX11_game.exe" && GetSelectedGameplayMode()=="MOD",
-              "renderer presentation selects DX11, disables DX9, and cannot replace the fixed executable or MOD selection");
+        Check(FindName("cmbGameExecutable") is null && GetSelectedGameExecutable()=="Blacklist_DX11_game.exe" && GetSelectedGameplayMode()=="MOD",
+              "renderer selector is absent and fixed DX11 cannot replace the MOD selection");
         SetBusy(true);Check(!cmbGameplayMode.IsEnabled,"gameplay selection locked while busy");SetBusy(false);
         SetGameStartingState(true);Check(!cmbGameplayMode.IsEnabled,"gameplay selection locked while starting");
         Check(!fovSlider.IsEnabled && !btnFovReset.IsEnabled,"FOV controls locked while starting");

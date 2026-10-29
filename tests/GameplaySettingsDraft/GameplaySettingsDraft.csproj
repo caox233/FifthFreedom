@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <SourceRoot Condition="'$(SourceRoot)' == ''">../../src/launcher/src</SourceRoot>
+    <OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><NuGetAudit>false</NuGetAudit>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" /><Compile Include="OwnedLogRoot.cs" />
+    <Compile Include="$(SourceRoot)/Models/LauncherSettings.cs" Link="LauncherSettings.cs" />
+    <Compile Include="$(SourceRoot)/Services/NetworkEnvironment.cs" Link="NetworkEnvironment.cs" />
+    <Compile Include="$(SourceRoot)/Services/NetworkEnvironmentPreferences.cs" Link="NetworkEnvironmentPreferences.cs" />
+    <Compile Include="$(SourceRoot)/Services/LauncherSettingsService.cs" Link="LauncherSettingsService.cs" />
+    <Compile Include="$(SourceRoot)/Services/LocalData.cs" Link="LocalData.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="Exists('$(SourceRoot)/Services/GameplaySettingsDraft.cs')">
+    <Compile Include="$(SourceRoot)/Services/GameplaySettingsDraft.cs" Link="GameplaySettingsDraft.cs" />
+    <Compile Include="Checks.cs" />
+  </ItemGroup>
+</Project>

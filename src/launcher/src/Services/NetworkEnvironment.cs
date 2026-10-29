@@ -84,6 +84,12 @@ public interface IConfiguredLanJoinLease : INetworkEnvironmentLease
     bool IsConfigured { get; }
 }
 
+/// <summary>A selected Public configuration is retained without claiming a connected runtime.</summary>
+public interface IConfiguredPublicLease : INetworkEnvironmentLease
+{
+    bool IsConfigured { get; }
+}
+
 public interface INetworkEnvironmentAdapter
 {
     NetworkEnvironmentKind Environment { get; }

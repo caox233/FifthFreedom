@@ -55,6 +55,7 @@ public partial class MainWindow
     private void ApplyToolsLocalization()
     {
         btnSettings.Content = L("设置", "Settings");
+        ApplyUnifiedSettingsLocalization();
         txtToolsTitle.Text = L("设置", "Settings");
         chkObserverMode.Content = L("开启 OB 模式（仅本次）", "OB mode (this session only)");
         txtObserverModeHelp.Text = L("房主：允许加入者 OB，自己正常游玩。加入者：以 OB 身份进入，占一个阵营名额。当前候选仍在验证自由镜头与角色移除，暂不开放 OB 启动。", "Host: allow joining observers, remain a player. Client: join as observer using one team slot. Native camera and character removal are still under validation; OB launch is blocked in this candidate.");
@@ -71,7 +72,11 @@ public partial class MainWindow
         lblNewPassword.Text = L("新密码（至少一个字符）", "New password (at least one character)");
         lblConfirmPassword.Text = L("再次输入新密码", "Confirm new password");
         btnResetPassword.Content = L("重置密码", "Reset password");
-        txtSavesInfo.Text = L("使用本机 2026-10-04 的完整磁盘快照替换对应模式的两个存档槽。MOD 包含独立配装文件，不能与官方混用。覆盖前自动备份；请先退出游戏。快照的解锁进度尚未经游戏内核验。", "Replace both save slots using the local 2026-10-04 disk snapshot. MOD includes its separate loadout file and cannot be mixed with Official. Existing saves are backed up first. Exit the game before restoring. Unlock progress has not been verified in-game.");
+        string templateDate;
+        try { templateDate = SaveGameService.ReadBundledSnapshotDate(); }
+        catch (Exception ex) when (ex is IOException or System.Text.Json.JsonException or KeyNotFoundException)
+        { templateDate = L("清单日期不可用", "manifest date unavailable"); }
+        txtSavesInfo.Text = L($"使用已准入的包内公共默认模板（清单日期：{templateDate}）替换对应模式的两个存档槽。MOD 包含独立配装文件，不能与官方混用。覆盖前自动备份；请先退出游戏。模板的解锁进度尚未经游戏内核验。", $"Restore both slots from the admitted bundled public default templates (manifest date: {templateDate}). MOD includes a separate loadout file and must not be mixed with Official. Existing saves are backed up first; exit the game before restoring. Template unlock progress has not been verified in-game.");
         txtSavePaths.Text = "Official: " + _saveGameService.DirectoryFor("Official") + "\nMOD: " + _saveGameService.DirectoryFor("MOD");
         btnRestoreOfficial.Content = L("恢复官方存档", "Restore Official");
         btnRestoreMod.Content = L("恢复 MOD 存档", "Restore MOD");
@@ -88,16 +93,24 @@ public partial class MainWindow
     {
         if (_toolsOperation || _isBusy || _dialogTcs != null) return;
         if (_toolsPage == "recovery" && page != "recovery") ClearRecoveryFields();
+        if (page != "gameplay") CancelGameplayDraft();
+        CancelLocalDiscovery();
         _toolsPage = page; guideOverlay.Visibility = Visibility.Collapsed;
         toolsOverlay.Visibility = Visibility.Visible;
         toolsHomePanel.Visibility = page == "home" ? Visibility.Visible : Visibility.Collapsed;
+        serverSettingsPanel.Visibility = page == "server" ? Visibility.Visible : Visibility.Collapsed;
+        gameplaySettingsPanel.Visibility = page == "gameplay" ? Visibility.Visible : Visibility.Collapsed;
         recoveryPanel.Visibility = page == "recovery" ? Visibility.Visible : Visibility.Collapsed;
         savesPanel.Visibility = page == "saves" ? Visibility.Visible : Visibility.Collapsed;
         playersPanel.Visibility = page == "players" ? Visibility.Visible : Visibility.Collapsed;
         advancedDiagnosticsPanel.Visibility = page == "advanced" ? Visibility.Visible : Visibility.Collapsed;
         btnToolsClose.Focus();
     }
-    private void SettingsButton_Click(object sender, RoutedEventArgs e) => ShowTools("home");
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (IsLocalUiMode) ShowTools("home"); else ServerSettingsPage_Click(sender, e);
+    }
+    private void LanSettingsPage_Click(object sender, RoutedEventArgs e) => ShowTools("home");
     private void AdvancedDiagnosticsButton_Click(object sender, RoutedEventArgs e) => ShowTools("advanced");
     private void AdvancedCaptureOnce_Click(object sender, RoutedEventArgs e)
     {
@@ -114,6 +127,7 @@ public partial class MainWindow
     private void ToolsClose_Click(object sender, RoutedEventArgs e)
     {
         if (_toolsOperation) return;
+        CancelGameplayDraft();
         ClearRecoveryFields(); toolsOverlay.Visibility = Visibility.Collapsed; btnSettings.Focus();
     }
     private void ToolsOverlay_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -136,9 +150,11 @@ public partial class MainWindow
     {
         _toolsOperation = value; SetBusy(value);
         btnToolsClose.IsEnabled = btnRecoveryPage.IsEnabled = btnSavesPage.IsEnabled = btnPlayersPage.IsEnabled = btnAdvancedDiagnosticsPage.IsEnabled = !value;
+        btnServerSettingsPage.IsEnabled = btnLanSettingsPage.IsEnabled = btnGameplaySettingsPage.IsEnabled = !value;
         btnResetPassword.IsEnabled = btnRestoreOfficial.IsEnabled = btnRestoreMod.IsEnabled = !value;
         btnCaptureOnce.IsEnabled = btnExportCapture.IsEnabled = !value;
         recoveryCode.IsEnabled = recoveryPassword.IsEnabled = recoveryConfirm.IsEnabled = !value;
+        RenderModePresentation();
     }
     private async void ResetPassword_Click(object sender, RoutedEventArgs e)
     {
@@ -213,14 +229,20 @@ public partial class MainWindow
     private async Task RefreshPresenceCoreAsync()
     {
         if (App.PreviewMode || _presencePending || _toolsCts.IsCancellationRequested) return;
+        if (!IsLocalUiMode) { _lastPresence = null; RenderPresence(); return; }
         _presenceMode = GetSelectedGameplayMode(); _presenceInGame = _isGameRunning;
         string server = txtServer.Text.Trim(), bind = _settings.BindOverride;
         if (string.IsNullOrWhiteSpace(server)) { _lastPresence = null; RenderPresence(); return; }
+        var checkedLease = _activeLanEnvironmentLease;
+        var checkedEnvironment = _credentialEnvironment;
+        if (checkedLease is null || !checkedLease.IsConfigured) return;
         _presencePending = true;
         try
         {
             var snapshot = await _presenceClient.ProbeAsync(server, bind, txtUsername.Text, _presenceMode, _presenceInGame, _toolsCts.Token);
-            if (_toolsCts.IsCancellationRequested || server != txtServer.Text.Trim() || bind != _settings.BindOverride) return;
+            if (_toolsCts.IsCancellationRequested || !IsLocalUiMode || !ReferenceEquals(checkedLease, _activeLanEnvironmentLease)
+                || !checkedLease.IsConfigured || !checkedEnvironment.Equals(_credentialEnvironment)
+                || server != txtServer.Text.Trim() || bind != _settings.BindOverride) return;
             _lastPresence = snapshot; RenderPresence();
         }
         catch (OperationCanceledException) { }
@@ -230,6 +252,13 @@ public partial class MainWindow
     private void RenderPresence()
     {
         if (btnPlayersSummary == null) return;
+        if (!IsLocalUiMode)
+        {
+            _lastPresence = null; playersList.ItemsSource = null;
+            btnPlayersSummary.Content = L("公网连接尚未就绪", "Public connection not ready");
+            txtQualityDetails.Text = L("公网会话尚未建立，没有可报告的在线列表或延迟。", "No public session is established; online players and latency are unavailable.");
+            return;
+        }
         var snapshot = _lastPresence;
         btnPlayersSummary.Content = snapshot?.Replied == true ? L($"在线 {snapshot.Players.Length} · RTT {snapshot.Quality.RttMs:0} ms", $"Online {snapshot.Players.Length} · RTT {snapshot.Quality.RttMs:0} ms") : L("在线玩家 / 联机质量", "Players / quality");
         if (snapshot == null) { txtQualityDetails.Text = L("填写房主地址后开始检测。", "Enter a host address to start probing."); playersList.ItemsSource = null; return; }

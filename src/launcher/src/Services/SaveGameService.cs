@@ -39,6 +39,15 @@ public sealed class SaveGameService
         if (s.Length is <= 0 or > 16777216) throw new IOException("内置存档大小异常。");
         byte[] bytes = new byte[checked((int)s.Length)]; s.ReadExactly(bytes); return bytes;
     }
+    public static string ReadBundledSnapshotDate()
+    {
+        using var document = JsonDocument.Parse(Resource("manifest.json"));
+        string? value = document.RootElement.GetProperty("SnapshotDate").GetString();
+        if (!DateOnly.TryParseExact(value, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None, out var date)) throw new IOException("Bundled save manifest date is invalid.");
+        return date.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+    }
+
     private Dictionary<string, byte[]> Template(string mode, string runtimeRoot)
     {
         var names = Names(mode);
