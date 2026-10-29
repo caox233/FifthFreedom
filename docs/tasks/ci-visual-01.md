@@ -1,7 +1,7 @@
 # CI visual evidence — actual WPF
 
 Status: ready-for-human; hosted root-DPI rendering and HWND input checks passed at
-`9c029cd`; physical-display, IME, GPU and live-network acceptance remain outside
+`dcb97d0`; physical-display, IME, GPU and live-network acceptance remain outside
 this evidence.
 
 The dedicated `visual-layout.yml` workflow builds the real launcher on a
@@ -157,3 +157,26 @@ scaling; automated geometry does not establish every user's readability preferen
 This is real WPF rendering plus hosted HWND input evidence. It does not claim
 physical-monitor DPI, IME, GPU/game, disk-persistence or live-network acceptance.
 Original failed runs and their screenshots remain preserved.
+
+## Final source-bound follow-up
+
+Run [40816467332](https://github.com/caox233/FifthFreedom/actions/runs/40816467332)
+independently passed at head `dcb97d0295c9c8700fd390249f2d617430d89dcf`, using PR
+merge checkout `b14d145c590cfbe2338283adc78d2b869d19f4f9`. These two revisions share
+tree `ba87ba223d22700ff2a28decc9247984ffd52da8`. That full tree differs from
+`9c029cd`; the entire `src/launcher` subtree, visual runner and visual workflow
+are unchanged. The changes comprise the server TUN test fixture and documentation.
+
+All 608 new PNG hashes and dimensions were independently verified. Modified and
+reapplied each passed 128 scenarios and 10,160 checks with zero failures; baseline
+and rollback each reproduced the same 82 measured layout failures and 48 absent
+new-state checks. Three newly downloaded images were visually inspected: English
+Public settings, English join and Chinese cancel at 192 root DPI in the small
+window. The dark scrollbar, complete bounded host name, settings close control
+and correct Local footer remained visible without a new observed regression.
+
+[`hosted-ui-visual-dcb97d0.json`](../evidence/hosted-ui-visual-dcb97d0.json)
+records exact source/artifact identities, phase results and sampled image hashes,
+and references the preceding fixed matrix. This follow-up retains the same
+physical-display, IME, GPU/game, disk-persistence and live-network boundaries.
+All earlier failed and successful evidence remains preserved.

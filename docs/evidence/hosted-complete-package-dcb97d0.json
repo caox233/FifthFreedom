@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+  "source_tree": "ba87ba223d22700ff2a28decc9247984ffd52da8",
+  "candidate_run": 40816624490,
+  "candidate_event": "workflow_dispatch",
+  "actual_package_checkout": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+  "full_windows_job": 123259140125,
+  "full_windows_job_conclusion": "success",
+  "artifact": {
+    "id": 12872324166,
+    "name": "windows-complete-candidate-dcb97d0295c9c8700fd390249f2d617430d89dcf",
+    "size_in_bytes": 73041759,
+    "digest": "sha256:7f4912ad1f9d6ee99d59c447c6186571d590f9826502f7133ac885537204ac4a",
+    "expired": false,
+    "created_at": "2026-10-29T04:25:42Z",
+    "expires_at": "2026-11-12T04:25:39Z",
+    "url": "https://github.com/caox233/FifthFreedom/actions/runs/40816624490/artifacts/12872324166",
+    "downloaded_sha256_verified": true
+  },
+  "complete_package": {
+    "job": 123259140125,
+    "artifact": 12872324166,
+    "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/40816624490/artifacts/12872324166",
+    "outer_bytes": 73041759,
+    "outer_sha256": "7f4912ad1f9d6ee99d59c447c6186571d590f9826502f7133ac885537204ac4a",
+    "downloaded_digest_matches": true,
+    "program_zip": "fifth-freedom-1.1.0-migration1-program.zip",
+    "program_zip_bytes": 73314154,
+    "program_zip_sha256": "62a324f300f259b9de716f05368fa4c7bd1bfb8e22eda7b17c8b22b3c35d8cf6",
+    "build_result_sha_matches": true,
+    "official_smoke_receipt": {
+      "schema": 1,
+      "lane": "windows-package-smoke",
+      "commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+      "tracked_source_dirty": false,
+      "github_actions": true,
+      "run_id": "40816624490",
+      "run_attempt": "1",
+      "complete_package": true,
+      "game_executed": false,
+      "live_acceptance": false,
+      "deployed": false,
+      "published": false,
+      "launcher_probes": [
+        {
+          "flag": "--self-test",
+          "passed": 182,
+          "failed": 0,
+          "exit_code": 0,
+          "game_executed": false
+        },
+        {
+          "flag": "--lan-tools-self-test",
+          "passed": 27,
+          "failed": 0,
+          "exit_code": 0,
+          "game_executed": false
+        }
+      ],
+      "archive_sha256": "62a324f300f259b9de716f05368fa4c7bd1bfb8e22eda7b17c8b22b3c35d8cf6",
+      "status": "package_no_game_checks_passed",
+      "exit_code": 0
+    },
+    "build_components": {
+      "launcher": {
+        "path": "FifthFreedom.exe",
+        "sha256": "1609949b3cd8055efb41c5b217b37b12a13e3b05ab1777350be9abd25be2b15e"
+      },
+      "main": {
+        "path": "runtime/uplay_r1_loader.dll",
+        "sha256": "f217524dc29c2338899e3886b0075535fcff9099905ee3a2f1004ed3742eedd3"
+      },
+      "gameplay": {
+        "path": "runtime/scbl_gameplay.dll",
+        "sha256": "d5db74bf08334fc9a4d62e1a379f32bcc1c37b89df441a62b0612cc40a74def7"
+      },
+      "server": {
+        "path": "runtime/FifthFreedom.Server.exe",
+        "sha256": "9cde1049c5ff3783ec169f78bfcff9ed6ee5cce424859d0bca3a829cc2a406f8"
+      }
+    },
+    "root_independent_readonly_verification_passed": true
+  },
+  "source_checks_run": 40816467316,
+  "source_checks_pr_merge": "b14d145c590cfbe2338283adc78d2b869d19f4f9",
+  "source_checks": [
+    {
+      "platform": "linux",
+      "artifact_id": 12872517023,
+      "executed": 688,
+      "passed": 686,
+      "skipped": 2,
+      "failed_test_cases": 0,
+      "exit_code": 0
+    },
+    {
+      "platform": "windows",
+      "artifact_id": 12872357597,
+      "executed": 688,
+      "passed": 569,
+      "skipped": 119,
+      "failed_test_cases": 0,
+      "exit_code": 0
+    }
+  ],
+  "strict_inputs": {
+    "required": 20,
+    "verified": 20,
+    "tests_passed": 2,
+    "donor_holds": 4
+  },
+  "linux_public_control": {
+    "job": 123259098146,
+    "artifact": 12871993660,
+    "suites": [
+      {
+        "suite": "linux-public-control",
+        "executed": 150,
+        "passed": 150,
+        "failed_test_cases": 0,
+        "failed_method_ids": [],
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "successful": true
+      },
+      {
+        "suite": "public-candidate-builder",
+        "executed": 10,
+        "passed": 10,
+        "failed_test_cases": 0,
+        "failed_method_ids": [],
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "successful": true
+      }
+    ],
+    "scope": "read_only_control_service",
+    "native_public_game_server_enabled": false
+  },
+  "visual_evidence": "docs/evidence/hosted-ui-visual-dcb97d0.json",
+  "download_evidence": "docs/evidence/complete-package-download-dcb97d0.json",
+  "native_replay": {
+    "retained": 13,
+    "executed": 0,
+    "status": "blocked_missing_reviewed_external_input"
+  },
+  "candidate_overall_is_not_claimed_success": true,
+  "windows_component_job": {
+    "id": 123259098088,
+    "conclusion": "success",
+    "evidence": "docs/evidence/hosted-windows-components-dcb97d0.json"
+  },
+  "full_six_goals_complete": false,
+  "public_game_ready": false,
+  "game_executed": false,
+  "formal_release": false,
+  "production_deployed": false,
+  "retained_full_job_log_sha256": "ee4ba771e32f8f74fb13b9d1db80d28b88cadd34f369033cf485f93ec7112100",
+  "independent_final_review_receipt_sha256": "eee10c58092d8f1ff018e5bfac84329a2a86ddd774fd3b34a0cd73a7f9d2a5d0"
+}

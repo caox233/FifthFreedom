@@ -4,7 +4,7 @@
 
 **当前为迁移中的开发源码，不是已经整合完成的新正式版。**
 
-完整 Windows LAN 开发测试包、SHA256 和简短测试步骤见[下载与测试说明](docs/DEVELOPMENT-CANDIDATE-TESTING.md)。默认存档恢复已保留；Public 和真实多人验收仍按各自边界推进。
+完整 Windows LAN 开发测试包、SHA256 和简短测试步骤见[下载与测试说明](docs/DEVELOPMENT-CANDIDATE-TESTING.md)。默认存档恢复已保留。新版统一为“公网模式 / 本地模式”，有界房主发现、单一设置入口和 MOD/FOV 草稿已接入；公网可选择和配置，实际公网启动及真实多人验收仍按各自边界推进。
 
 ## 确定的方向
 

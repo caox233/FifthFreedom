@@ -1,98 +1,40 @@
-# Unified development candidate testing
+# Fifth Freedom 开发候选测试说明
 
-The complete **Windows LAN development candidate** is now available from
-[GitHub Actions](https://github.com/caox233/FifthFreedom/actions/runs/40594742870/artifacts/12777311164). It includes the launcher, both native DLLs, Windows LAN
-server and the admitted default templates; default-save restoration is retained.
-It does not include the retail game or enable ordinary Public service. All six
-migration goals remain in progress; this delivery is not a formal Release.
+本次完整 **Windows 本地联机测试包**包含启动器、两份原生 DLL、Windows 本地服务端和已准入的公共默认存档。使用更新后的 SCBL3 界面；不包含游戏本体，不是正式 Release。公网模式已经可以选择和配置，但公网游戏启动仍须通过尚未完成的独立安全与会话验收，不能把本地联机通过当作公网可用。
 
-## Verified download — 2026-10-28 (Asia/Hong_Kong)
+## 下载与校验
 
-- Built source: `da1805e6764ac202bf6b8c1a9548fa2c44d4c085`; actual PR checkout merge
-  `4c6e345ca195dfaea1a37662d62e8338090f647a` has the same source tree.
-- Hosted run `40594742870`, full Windows job `122508092763`: full build,
-  packaged no-game smoke and upload all succeeded.
-- Sign in to GitHub to download the artifact. Extract its inner
-  `fifth-freedom-1.1.0-migration1-program.zip` (73,276,517 bytes), then unpack
-  that program ZIP completely into a new writable directory. Artifact retention
-  currently expires **2026-11-11 06:41 (Asia/Hong_Kong)**.
-- Program ZIP SHA256 (not the outer artifact ZIP):
-  `b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4`
-- Outer artifact SHA256:
-  `12da5a82e4f3580b9a530a047cb3fb140eb5474bc178ddcc4d418b401dcaf358`.
+- [下载完整候选产物](https://github.com/caox233/FifthFreedom/actions/runs/40816624490/artifacts/12872324166)，需登录 GitHub。保留期限至 **2026-11-12 12:25（香港时间）**。
+- 实际构建源码：`dcb97d0295c9c8700fd390249f2d617430d89dcf`；手动工作流 `40816624490`，完整 Windows 作业 `123259140125`。
+- 从下载产物中取出 `fifth-freedom-1.1.0-migration1-program.zip`，大小 **73,314,154 字节**，SHA256：
+  `62a324f300f259b9de716f05368fa4c7bd1bfb8e22eda7b17c8b22b3c35d8cf6`
+- 外层 GitHub artifact ZIP 的 SHA256 为 `7f4912ad1f9d6ee99d59c447c6186571d590f9826502f7133ac885537204ac4a`，不要与内层程序 ZIP 混淆。
 
-On Windows, `Get-FileHash .\fifth-freedom-1.1.0-migration1-program.zip -Algorithm SHA256`
-checks the inner archive. Keep all `runtime`, `package` and `licenses` files
-alongside `FifthFreedom.exe`; do not mix DLLs or overwrite previous player data.
-The outer artifact also carries `BUILD-RESULT.json`, checksum lists and actual
-smoke/build evidence. Read the program's `README.txt` for the verified LAN setup.
+先校验内层 ZIP，再完整解压到一个新的可写目录。保留 `runtime`、`package`、`licenses` 和所有随包文件；不要覆盖旧版玩家数据或混用 DLL。
 
-Actual packaged checks passed **166 UI/protocol + 26 LAN-tools/save checks**,
-with zero failures and no game execution. Official/MOD restoration used isolated
-temporary fixtures and exact authorized template bytes. Independent read-only
-download checks verified all **65 files**, 63 manifest entries, 64 checksum rows,
-four embedded component identities/PE architectures and all 50 FusionFix notice
-and corresponding-source files. See [hosted proof](evidence/hosted-complete-package-da1805e.json)
-and [download verification](evidence/complete-package-download-da1805e.json).
+```powershell
+Get-FileHash .\fifth-freedom-1.1.0-migration1-program.zip -Algorithm SHA256
+```
 
-The same source passed Linux 672 + 2 skips and Windows 558 + 116 skips; its Linux LAN
-suite passed 523 with 0 failures/ignored, including the four new empty-lobby protocol
-cases. Those cases do not establish retail matchmaking order or live same-game
-entry. The first full build at `6f720` failed at the update-note checksum path and
-remains recorded; strict UTF-8 reader correction `45b5c6b` is verified by this new
-complete Windows build. No old failure artifact or compile-only payload is
-presented as this complete program ZIP.
+本次实际包内 UI **182** 项、存档/本地工具 **27** 项通过；官方与 MOD 默认模板在隔离目录中实际恢复并核对原字节。下载后独立复核了全部 **65** 个文件、63 条清单、64 条校验行、四个 PE 组件身份及 50 份第三方说明/源码文件。[构建证据](evidence/hosted-complete-package-dcb97d0.json)与[下载校验](evidence/complete-package-download-dcb97d0.json)分别记录，构建及审查均未启动游戏或采集游戏画面。
 
-## Brief LAN test
+同一提交的 [Windows 组件检查](evidence/hosted-windows-components-dcb97d0.json)也已通过，包含实际网络配置 111 项、本地发现 46 项、MOD/FOV 草稿 21 项；源码检查在 Windows 和 Linux 均无失败。独立 C71 输入门禁本轮仍失败；它与已通过的完整 Windows 包作业分开记录。
 
-1. All participants use this same complete candidate and select LAN, their actual
-   IPv4 adapter, distinct accounts, and the same Official/MOD/gameplay mode.
-2. One participant creates the host; others join that host's real IPv4:50051.
-   Follow `README.txt` for the manual trusted-network firewall rules, then start
-   the game manually. The cloud build has not started a game or capture.
-3. At least two players test quick matching with an existing room and an empty
-   lobby, confirming the same roster and game. Three MOD players test all/team
-   chat relay. Report a short pass/fail and affected stage; new logs/captures are
-   not requested. Do not repeat accepted F3/MAC-11/Chinese/world-camera/VSS checks.
+## 本轮集中测试
 
-## Input admission and remaining independent gates
+1. 首次启动、配置缺失/损坏或环境字段缺失/非法时默认“公网模式”；已保存的有效本地选择会保留。打开唯一的“设置”入口，可以查看服务器、玩法/FOV、本地/OB、密码恢复、默认存档、玩家和诊断。公网未就绪时应显示具体原因并阻止启动，不显示本地房主的连接成功或延迟。
+2. 切换“本地模式”，等待一轮有界房主发现。有一个房主时确认预填地址；多个房主时手动选择。未响应时可重新扫描、手动输入或确认创建房主；取消、切回公网、关闭窗口均不得迟到弹窗或自动创建。多网卡时选择实际可达的 IPv4；广播被隔离时使用手动地址。创建前仍有确认，不自动启动游戏。
+3. 在“玩法/FOV”改变草稿，试一次取消或 Escape：持久值应不变。重置只改草稿；确认保存后重启应保留。FOV 范围和已有游戏行为不变。新设置输入框的真实显示缩放、Enter/Escape、输入法及焦点表现仍可随本轮一并确认；无需重复已通过的游戏内中文输入验收。
+4. 多人使用同一完整候选、同一服务器和 Official/MOD 模式，手动启动游戏后再测试尚未完成的多人项目：至少两人快速匹配（已有房间与空大厅均需进入同局）；三人测试 MOD 全体/队伍聊天。单客户端成功不算多人通过。只需记录通过/失败及卡住的阶段，本轮不要求重复采集私人日志。
 
-All 20 required Windows build inputs are present, including the eight original
-default SAV/META paths admitted from owner-confirmed public templates on
-2026-10-28. The [handoff receipt](development-reference/default-save-inputs-20261028/receipt.json)
-records unchanged sizes/hashes and the review limits. Default-save restoration
-remains included. Four donor-only privacy holds remain; no personal saves were
-admitted. Actual input-gate and full-build results must be recorded separately.
+默认存档恢复继续保留覆盖确认、原存档备份和 Official/MOD 分离。说明日期来自真实清单 `2026-10-15`，不是本机磁盘快照；解锁进度仍未在游戏中核验。首次尝试恢复前保留自己的原件。
 
-The separate C71 gate still requires thirteen reviewed fixture/native/provenance
-inputs and has executed zero replay checks. It is not a dependency of the
-Windows complete-package job. A full Windows candidate can be produced while
-this distinct replay gap and ordinary Public service admission remain open.
+## 已验证范围与保留事项
 
-## Delivery requirements
+实际 WPF 检查覆盖中英、1120×680/900×580 DIP、100/125/150/200% 根 DPI，以及首页、设置、发现、加入、创建、取消状态。四阶段保留原基线与修正版证据，代表画面已人工查看；这不等同于改变物理显示器缩放或完成真实 IME/GPU/多人验收。见[实际画面验证](tasks/ci-visual-01.md)。
 
-The delivery entry must identify the source commit, actual successful hosted
-package run, complete candidate ZIP, `SHA256SUMS.txt`, `BUILD-RESULT.json` and
-download location. Verify the ZIP digest and package admission from the same run.
-Windows packaging uses `python -B scripts/build.py all` followed by
-`python -B scripts/ci_candidate.py windows-package-smoke`; this is distinct from
-the compile-only component lane. The Windows package does not by itself certify
-Linux Public service readiness. Public remains unavailable until its independent
-ownership, network and runtime acceptance is satisfied.
+20 项 Windows 打包输入全部按原哈希准入；四条 donor-only 保留项不变。C71 的 13 项审查回放输入仍缺失、执行数为零，它独立于完整 Windows 打包。普通公网、快速匹配同局、三人聊天、历史闪退和 VSS 生命周期仍按原待办保留；六项整合目标没有被缩成 UI 或 CI 工作。
 
-## Focused user checks after delivery
+已通过的 F3、MAC11 HUD、中文/世界相机和用户 VSS EMF 范围继续保留，不要求整套重测。不自动发布正式 Release、部署生产、启动游戏或采集。
 
-- Confirm Fifth Freedom branding, SCBL3 presentation and retained LAN create/join,
-  save separation/restoration, diagnostics and observer entry points are usable.
-- For [quick matching](tasks/quick-match-same-session.md), use at least two clients
-  on the same server and mode; confirm independent queue entry leads to the same
-  room/game. One successful client or two separate lobbies does not pass.
-- For chat relay, retain the pending three-client all/team/opponent checks. A
-  sender and host alone cannot prove delivery to another joining client.
-- Check only the still-open or newly affected issues in
-  [remaining bugs](tasks/remaining-bugs.md). Preserve accepted F3 alignment,
-  MAC-11 HUD, Chinese input/world camera and VSS EMF results; no blanket repeat is
-  requested. No game or capture is launched automatically by cloud delivery.
-
-Record unverified Windows/GPU/real multiplayer behavior as pending. Offline
-protocol, unit, build and isolated hosted probes are separate evidence levels.
+此前的 da180、7e9、9c 完整包及失败记录是历史证据，不冒充这次 dcb 下载；[7e9 复核](evidence/ui-mode-followup-7e9.json)、[保留的 Linux 测试时序失败](evidence/tun-absence-fixture-9c029cd.json)可追溯。新版完整产物与源码检查结果按确切 SHA 记录，不用组件成功替代完整包。

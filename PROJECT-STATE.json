@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "The complete Windows LAN development candidate from source da1805e6764ac202bf6b8c1a9548fa2c44d4c085 passed full build, packaged smoke and upload in run40594742870/job122508092763. Official artifact12777311164 was downloaded and independently verified: program ZIP73,276,517bytes, SHA256b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4. All65 files,63 manifest entries,64 checksum rows,four embedded PE component identities and50 notice/source files match. Actual packaged UI166 and LAN/save26 checks pass; input gate20/20 passes. Source checks pass Linux672+2skips and Windows558+116skips; Linux LAN523 passes. The first6f package failure is retained and the strictUTF-8 repair is verified by the new full build. Default restoration remains included; actual quick matching, Public,C71 and the full six milestones remain open. No game or downloaded binary was executed during review.",
-  "NEXT_EXECUTABLE_ACTION": "Complete docs/tasks/ui-mode-flow-review.md from baseline12d: integrate DX11 migration, selectable/default Public with honest readiness, one-shot local confirmation flow, unified settings and MOD/FOV drafts; inspect actual Windows WPF DPI/language/small-window screenshots and keyboard checks, then build/download/verify the new complete candidate. Keep previous da180 delivery evidence distinct and all six goals/live boundaries.",
+  "LAST_CONFIRMED_RESULT": "Revised complete Windows Local candidate from dcb97d0295c9c8700fd390249f2d617430d89dcf passed manual run40816624490/fulljob123259140125 build, packaged UI182/save27 and upload. Artifact12872324166 was downloaded and independently verified: inner ZIP73,314,154bytes SHA25662a324f300f259b9de716f05368fa4c7bd1bfb8e22eda7b17c8b22b3c35d8cf6;65files/63manifest/64checksum/four PE identities/50 notice-source files. Source688 checks pass Linux686+2skips and Windows569+119skips. WPF run40816467332 verifies608PNGs and modified/reapplied128scenarios each with10160assertions/0fail. Public selection/configuration works separately from actual startup, which remains blocked by the exact dcb Windows FIREWALL_POLICY_UNAVAILABLE prerequisite; C71 and live multiplayer remain open. No game or capture executed.",
+  "NEXT_EXECUTABLE_ACTION": "Continue docs/tasks/owned-core-runtime.md and UI-09 from the exact dcb Windows prerequisite refusal (docs/evidence/hosted-public-firewall-dcb97d0.json): determine the supported per-profile/enforcement and owned NIC/session proof without weakening UNKNOWN coverage or altering user firewall policy. Keep the delivered UI/Local candidate available for focused new-flow and multiplayer checks; continue quick-match empty-lobby/protocol investigation and C71 source closure in parallel, preserving all six goals and accepted gameplay.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -23,12 +23,12 @@
     {
       "id": 2,
       "name": "SCBL3 UI with retained LAN behavior",
-      "status": "donor_ui_retained_lan_integrated_actual_native_ipc_and_source_contracts_passed_windows_session_prerequisites_verified_full_owned_chain_pending"
+      "status": "Unified Public/Local UI, bounded confirmed discovery, DX11 migration and draft settings delivered in actual complete Windows candidate; physical/live checks and ordinary Public execution remain open"
     },
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "Complete Windows LAN candidate delivered; Linux components and finite native/overlay checks verified; ordinary Public and Windows core/NIC admission remain open"
+      "status": "Revised complete Windows Local candidate verified; Linux reference/control builds pass; ordinary Public owned Windows/NIC/WFP/session admission remains open"
     },
     {
       "id": 4,
@@ -97,7 +97,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Normal gh api, git fetch, non-force push and remote SHA verification succeeded using inherited platform access; prior401 preserved as history",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40594742870",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40816624490",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -245,13 +245,13 @@
     "candidate_windows_source": "Exact source 329f18a Windows component stage/upload succeeded; the official 61-file download and all 50 notice/source files were verified, including 5 hidden inputs. Four Windows component hashes independently bind to the same-run assembly. Source tests: 554 passed, 116 skipped, zero failures/errors. This is not the full Windows client.",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
     "candidate_linux_matrix": "Exact source 329f18a matrix 40420957466 passed all 9 QUIC/WSS/TCP phases; six namespaces removed, core reaped, TUN absent and new traffic denied. Finite guard3 development evidence, not native lease, peer-map71 or ordinary Public/live acceptance.",
-    "validated_implementation_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
-    "candidate_component_result": "da180 actual completeWindowsjob122508092763 fullbuild/smoke/upload succeeded;UI166+LANsave26;actualdownload65files/4roles/50notice-source closure verified. SeparateC71 and Public remainpending; overallcandidate may still be running its separatePublic jobs.",
-    "knowledge_snapshot_commit": "23970b93bb61763caf43c6e6ab4e1fbc2040810b",
-    "knowledge_snapshot_source": "329f18a40f9959cfb06939c26150cd50126c26ee",
-    "knowledge_snapshot_files": 296,
-    "last_verified_remote_source_commit": "329f18a40f9959cfb06939c26150cd50126c26ee",
-    "latest_reviewed_local_implementation_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
+    "validated_implementation_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+    "candidate_component_result": "Exact dcb Windows components123259098088 and complete package123259140125 both succeeded. PackageUI182/save27; WindowsNetworkPreferences111/discovery46/draft21; download65files/63manifest/64checksums/four identities/50 notice-source entries verified. Linux component lanes pass; C71 remains13missing/0executed and ordinary Public is not admitted.",
+    "knowledge_snapshot_commit": "57a7e23bc46b37e5118a94a14abb43ae82d65c28",
+    "knowledge_snapshot_source": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+    "knowledge_snapshot_files": 314,
+    "last_verified_remote_source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+    "latest_reviewed_local_implementation_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
     "latest_reviewed_local_implementation_pushed": true,
     "authentication_recovery": {
       "status": "recovered_actual_operations_verified",
@@ -1718,28 +1718,28 @@
     "default_restore_included": true
   },
   "complete_windows_candidate": {
-    "source_commit": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
-    "run_id": 40594742870,
-    "job_id": 122508092763,
-    "artifact_id": 12777311164,
-    "download_url": "https://github.com/caox233/FifthFreedom/actions/runs/40594742870/artifacts/12777311164",
+    "source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+    "run_id": 40816624490,
+    "job_id": 123259140125,
+    "artifact_id": 12872324166,
+    "download_url": "https://github.com/caox233/FifthFreedom/actions/runs/40816624490/artifacts/12872324166",
     "archive": "fifth-freedom-1.1.0-migration1-program.zip",
-    "archive_bytes": 73276517,
-    "archive_sha256": "b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4",
-    "ui_passed": 166,
-    "lan_save_passed": 26,
+    "archive_bytes": 73314154,
+    "archive_sha256": "62a324f300f259b9de716f05368fa4c7bd1bfb8e22eda7b17c8b22b3c35d8cf6",
+    "ui_passed": 182,
+    "lan_save_passed": 27,
     "live_game_verified": false,
     "default_restoration_included": true,
     "formal_release": false,
-    "evidence": "docs/evidence/hosted-complete-package-da1805e.json",
-    "download_verification": "docs/evidence/complete-package-download-da1805e.json"
+    "evidence": "docs/evidence/hosted-complete-package-dcb97d0.json",
+    "download_verification": "docs/evidence/complete-package-download-dcb97d0.json"
   },
   "active_ui_revision": {
     "baseline": "12d394086a22c04e7e1defc7678ceccfe02ee004",
     "task": "docs/tasks/ui-mode-flow-review.md",
-    "status": "actual_wpf_matrix_passed_final_source_and_package_verification_pending",
+    "status": "complete_candidate_delivered_actual_wpf_verified_physical_and_public_execution_open",
     "prior_delivered_candidate_source": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
-    "new_complete_package_verified": false,
+    "new_complete_package_verified": true,
     "public_runtime_ready": false,
     "accepted_gameplay_preserved": true,
     "intermediate_implementation": "7e9fff371bb4e0654bb73e5878d292378dcf36c7",
@@ -1747,9 +1747,35 @@
     "intermediate_ui_checks": 182,
     "intermediate_save_checks": 27,
     "retained_followup_evidence": "docs/evidence/ui-mode-followup-7e9.json",
-    "visual_source": "9c029cd021d829c8c06ad8d32fd244dee64e8b4f",
-    "visual_run": 40815530494,
-    "visual_record": "docs/evidence/hosted-ui-visual-9c029cd.json",
-    "linux_fixture_correction": "docs/evidence/tun-absence-fixture-9c029cd.json"
+    "visual_source": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+    "visual_run": 40816467332,
+    "visual_record": "docs/evidence/hosted-ui-visual-dcb97d0.json",
+    "linux_fixture_correction": "docs/evidence/tun-absence-fixture-9c029cd.json",
+    "validated_implementation": "dcb97d0295c9c8700fd390249f2d617430d89dcf"
+  },
+  "complete_windows_candidate_history": [
+    {
+      "source_commit": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
+      "run_id": 40594742870,
+      "job_id": 122508092763,
+      "artifact_id": 12777311164,
+      "download_url": "https://github.com/caox233/FifthFreedom/actions/runs/40594742870/artifacts/12777311164",
+      "archive": "fifth-freedom-1.1.0-migration1-program.zip",
+      "archive_bytes": 73276517,
+      "archive_sha256": "b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4",
+      "ui_passed": 166,
+      "lan_save_passed": 26,
+      "live_game_verified": false,
+      "default_restoration_included": true,
+      "formal_release": false,
+      "evidence": "docs/evidence/hosted-complete-package-da1805e.json",
+      "download_verification": "docs/evidence/complete-package-download-da1805e.json"
+    }
+  ],
+  "verification": {
+    "revised_complete_windows_dcb": "docs/evidence/hosted-complete-package-dcb97d0.json",
+    "revised_wpf_dcb": "docs/evidence/hosted-ui-visual-dcb97d0.json",
+    "retained_public_firewall_dcb": "docs/evidence/hosted-public-firewall-dcb97d0.json",
+    "revised_windows_components_dcb": "docs/evidence/hosted-windows-components-dcb97d0.json"
   }
 }

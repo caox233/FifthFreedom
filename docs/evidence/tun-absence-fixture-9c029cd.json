@@ -34,7 +34,20 @@
   ],
   "four_role_receipt_sha256": "db4e23ea8f2d67132d830dce9b256f344de96af57fcb4539a9f78510f7b2bc31",
   "independent_review_receipt_sha256": "c98b120a10744517133e4e2999b0c52f1fc2b1de63bf388e6176441e36999360",
-  "new_exact_sha_hosted_pending": true,
+  "new_exact_sha_hosted_pending": false,
   "game_executed": false,
-  "tun_or_network_configuration_modified": false
+  "tun_or_network_configuration_modified": false,
+  "hosted_followup": {
+    "source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+    "source_run": 40816467316,
+    "linux_source_passed": 686,
+    "linux_source_skipped": 2,
+    "windows_source_passed": 569,
+    "windows_source_skipped": 119,
+    "candidate_control_job": 123259098146,
+    "server_passed": 150,
+    "candidate_builder_passed": 10,
+    "failures": 0,
+    "earlier_failure_retained": true
+  }
 }

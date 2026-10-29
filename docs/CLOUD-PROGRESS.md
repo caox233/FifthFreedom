@@ -1,5 +1,44 @@
 # Cloud implementation evidence
 
+The revised complete Windows Local development candidate from source
+`dcb97d0295c9c8700fd390249f2d617430d89dcf` is now
+[downloadable](https://github.com/caox233/FifthFreedom/actions/runs/40816624490/artifacts/12872324166).
+Manual run40816624490/full Windows job123259140125 passed build, packaged
+UI182/save27 and upload. The actual program ZIP is73,314,154 bytes, SHA256
+`62a324f300f259b9de716f05368fa4c7bd1bfb8e22eda7b17c8b22b3c35d8cf6`.
+[Hosted proof](evidence/hosted-complete-package-dcb97d0.json) and
+[independent ZIP verification](evidence/complete-package-download-dcb97d0.json)
+bind the exact source, 65 files, 63 manifest entries, 64 checksum rows, four
+component identities and50 notice/source files. No payload/game was executed
+by the read-only download review. [Current test instructions](DEVELOPMENT-CANDIDATE-TESTING.md)
+cover the changed mode/discovery/settings/draft flows and remaining multiplayer checks.
+
+The new shell defaults to selectable/configurable Public, removes DX9, uses one
+settings entry and bounded confirmed Local discovery, and implements MOD/FOV
+drafts. Hosted source688 checks passed on both platforms (Linux686+2 skips,
+Windows569+119 skips). Actual WPF run40816467332 produced608 verified PNGs;
+modified/reapplied128-scenario phases each passed10,160 assertions, with
+representative actual pictures inspected. The exact Windows component lane also
+passed with network/configuration111, discovery46 and draft21 managed checks;
+[its receipt](evidence/hosted-windows-components-dcb97d0.json) retains native
+fixture scope separately. Physical monitor/IME/game acceptance remains separate. Public actual startup is still blocked by the independent
+[Windows prerequisite refusal](evidence/hosted-public-firewall-dcb97d0.json);
+C71 retains13 missing reviewed inputs and zero executed replays. The six goals
+and prior accepted game results remain intact.
+
+First/second visual-probe failures and the old collapsed-control self-test failure
+are retained. The separate Linux TUN fixture failure at9c was reproduced with a
+real owned descriptor closing during observation; the correction waits for a
+settled fixture and retains the strict production guard and negative controls.
+[The receipt](evidence/tun-absence-fixture-9c029cd.json) does not infer an
+unrecorded historical FD state. The corrected150-case server suite passes in
+both the final source and control-service jobs.
+
+## Earlier delivery and migration observations
+
+The following entries retain their original source-bound status; they are not
+claims about the revised candidate above.
+
 The complete Windows LAN development package is now
 [downloadable](https://github.com/caox233/FifthFreedom/actions/runs/40594742870/artifacts/12777311164) from source `da1805e6764ac202bf6b8c1a9548fa2c44d4c085`.
 Actual full Windows job 122508092763 succeeded in build, packaged smoke and

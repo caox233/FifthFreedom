@@ -1,6 +1,6 @@
 # Launcher modes, settings and local connection flow
 
-Status: ready-for-agent — implementation and hosted visual/package verification in progress.
+Status: ready-for-human for the delivered UI/Local candidate checks; ready-for-agent for the independent Public execution chain.
 
 The user tested the complete da180 Windows LAN candidate and requested these
 changes on the original integration branch. The fixed review baseline is
@@ -81,3 +81,26 @@ paths before filesystem access: reject UNC/device/ADS/network mappings and
 inspect ancestors root-to-leaf before any descendant. Runtime pins and Public
 readiness gates stay unchanged; sequential checks are not claimed to eliminate
 concurrent filesystem mutation races.
+
+## Verified revised delivery
+
+Source `dcb97d0295c9c8700fd390249f2d617430d89dcf` now has a complete Windows
+package from manual run40816624490/job123259140125: actual packaged UI182 and
+save27 checks passed. The downloaded ZIP was independently checked for exact
+65-file contents, UTF-8 manifests/checksums, four component identities and
+50 notice/source files. [Download and focused tests](../DEVELOPMENT-CANDIDATE-TESTING.md)
+contain the exact artifact link, hash and retention date.
+
+[The final actual WPF run](../evidence/hosted-ui-visual-dcb97d0.json) verified608
+PNGs; modified/reapplied phases each passed128 scenarios/10,160 assertions.
+Representative current images were inspected. Root DPI and hosted HWND focus
+checks do not establish physical-monitor/IME/game/network acceptance. The
+original and intermediate failures remain linked above.
+
+Public path checks and MOD/FOV draft regression preserve hash and persistence
+boundaries. The separate [current firewall prerequisite](../evidence/hosted-public-firewall-dcb97d0.json)
+still refuses FIREWALL_POLICY_UNAVAILABLE with InactiveProfile/Full and UNKNOWN
+WFP coverage. Its temporary owned rules were removed; original policy was not
+enabled or changed. Public configuration can be selected and saved, while
+actual Public game startup remains blocked. C71, multiplayer matching/chat and
+the original live/gameplay boundaries are not closed by this delivery.
