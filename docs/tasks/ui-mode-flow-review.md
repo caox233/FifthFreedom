@@ -148,3 +148,27 @@ Local dialog checks remain. Packaged self-tests also exercise busy/transition
 refusal without dropping a pending draft. Hosted execution and inspection of its
 actual rendered images are required before the unified candidate is delivered;
 Linux cross-compilation is not a screenshot or live gameplay result.
+
+The first actual direct-controls visual run, **41191825904**, is retained as a
+failure in [its receipt](../evidence/hosted-ui-direct-failure-72e92af.json). All
+672 downloaded PNG hashes/dimensions and the official outer ZIP digest match.
+Baseline/rollback each reproduce the two requested state failures 48 times, with
+zero layout failures. Modified/reapplied each complete 128 scenarios but fail144
+checks: 96 shared-row-edge overlap reports, 32 tight status-text measurements and
+16 keyboard round-trip assumptions. None is silently marked passed.
+
+Recomputation from the actual WPF rectangles proves the 96 overlap reports are
+shared edges (maximum numerical height `5.7e-14` DIP), not covering area. The
+observer now rejects positive-area intersections and includes a tiny-positive-
+area negative control, retaining pairwise and real input-hit checks. The existing
+status column receives a fixed350 DIP width, with wrapping and clipping checks
+preserved. Keyboard validation now records actual bounded forward/backward focus
+routes and requires every direct editor/action to be reachable in both directions;
+the old undetailed failure does not establish which transition differed.
+
+Representative actual PNGs also show missing chrome/footer glyphs in some96DPI
+captures while the corresponding192DPI image is complete. Render work is now
+flushed before capture, without modifying the bitmap afterwards. These follow-up
+changes cross-compile and pass16 portable UI contracts; new hosted renders and
+inspection are still required. No overall visual or complete-candidate pass is
+claimed for72e92af.

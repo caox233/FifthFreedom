@@ -776,7 +776,7 @@
      <StackPanel Orientation="Horizontal">
       <Ellipse x:Name="serverStatusLight" Width="8" Height="8" Fill="#788289" Margin="0,6,9,0" VerticalAlignment="Top"/>
       <TextBlock x:Name="txtConnectionStatusCaption" Visibility="Collapsed"/>
-      <TextBlock x:Name="txtServerStatus" Text="尚未就绪" FontSize="14" MaxWidth="350" TextWrapping="Wrap"/>
+      <TextBlock x:Name="txtServerStatus" Text="尚未就绪" FontSize="14" Width="350" TextWrapping="Wrap"/>
      </StackPanel>
     </Border>
     <Grid x:Name="launchOptionsPanel" Width="358" HorizontalAlignment="Left" Margin="0,0,0,4">

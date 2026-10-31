@@ -38,5 +38,36 @@
   "new_hosted_execution_pending": true,
   "schema": 1,
   "recorded_date_hong_kong": "2026-10-31",
-  "candidate_cancellation": "After preserving the Windows failure, superseded candidate work was cancelled; cancelled package/component steps are not passes. Independent actual WPF run41191825904 retained."
+  "candidate_cancellation": "Run41191825957 terminal cancelled after preserving the failed Windows source job. Cancelled package/component steps are not passes. Independent actual WPF run41191825904 completed with its own retained failures.",
+  "independent_source_workflow": {
+    "run_id": 41191825981,
+    "head_sha": "72e92af58c09bb04e00a6a7466b9f45890c098b3",
+    "pr_merge_checkout": "86543655351f616d3302e2e079ce43f0bcf55ec5",
+    "tree_matches_source": true,
+    "downloaded_artifact_digests_verified": true,
+    "results": [
+      {
+        "artifact": 13039505515,
+        "sha256": "069dc71ad0514a23a5bddc20a9f92a3a44eafaf0ac4635edbf7e090c75dd69fd",
+        "executed": 713,
+        "passed": 711,
+        "skipped": 2,
+        "failed": 0,
+        "exit_code": 0,
+        "failed_methods": []
+      },
+      {
+        "artifact": 13039311018,
+        "sha256": "37bf22c852df9defc916c7318778c1880c8f9ec7d10d970ee27ad4c949e53364",
+        "executed": 713,
+        "passed": 593,
+        "skipped": 119,
+        "failed": 1,
+        "exit_code": 1,
+        "failed_methods": [
+          "test_native_production_replay.TestCargoIdentity.test_archive_refuses_symlinks_and_path_escape_before_extraction"
+        ]
+      }
+    ]
+  }
 }

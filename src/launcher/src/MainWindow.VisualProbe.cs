@@ -182,6 +182,14 @@ public partial class MainWindow
 
     private bool IsDirectGameplayScenario(string state) => state == "settings-gameplay" && FindName("gameplayDraftActions") != null;
 
+    private static bool PositiveAreaOverlap(Rect first, Rect second)
+    {
+        // WPF IntersectsWith also returns true for a shared row edge. Reject
+        // positive area, allowing only floating-point noise from Viewbox scaling.
+        Rect overlap = Rect.Intersect(first, second);
+        return !overlap.IsEmpty && overlap.Width > .000001 && overlap.Height > .000001;
+    }
+
     private string[] VisualActionNames(string state) => state is "main" or "cancel" || IsDirectGameplayScenario(state)
         ? ["btnLaunch", "btnSettings", "btnLocalConnection", "btnPublicConfiguration", "itemGameplayMod", "itemGameplayOfficial", "fovSlider", "btnFovReset", "btnGameplaySave", "btnGameplayCancel"]
         : state.StartsWith("settings", StringComparison.Ordinal) ? ["btnToolsClose"]
@@ -245,7 +253,7 @@ public partial class MainWindow
                 Equals(cmbGameplayMode.SelectedValue, nextMode) && Math.Abs(_settings.FovScale-nextFov) < .00001 && _settings.GameplayMode == nextMode);
             Check("cancel-keeps-main-screen", toolsOverlay.Visibility != Visibility.Visible &&
                 FindName("gameplayDraftActions") is UIElement actions && actions.Visibility == Visibility.Hidden);
-            var targets = new[] { cmbGameplayMode as Control, fovSlider, save, cancel };
+            var targets = new[] { cmbGameplayMode as Control, fovSlider, btnFovReset, save, cancel };
             fovSlider.Value = savedFov;
             surface.UpdateLayout();
             bool allReachable = true;
@@ -253,12 +261,43 @@ public partial class MainWindow
             {
                 if (target == null) { allReachable = false; continue; }
                 target.Focus();
-                allReachable &= OwnsHit(Keyboard.FocusedElement as DependencyObject, target);
-                (Keyboard.FocusedElement as UIElement)?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
-                (Keyboard.FocusedElement as UIElement)?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
-                allReachable &= OwnsHit(Keyboard.FocusedElement as DependencyObject, target);
+                bool focused = OwnsHit(Keyboard.FocusedElement as DependencyObject, target);
+                Check("direct-focus-" + target.Name, focused);
+                allReachable &= focused;
             }
-            Check("direct-controls-keyboard-reachable", allReachable, "actual shown HWND; focus, Tab then Shift+Tab");
+            // Keyboard navigation through a ListBox is not an inverse function:
+            // selection determines its entry item. Follow real focus transitions
+            // from each end of the main screen and require every edit/action in
+            // both directions instead of assuming Next then Previous is identity.
+            foreach (var direction in new[] { FocusNavigationDirection.Next, FocusNavigationDirection.Previous })
+            {
+                var entry = direction == FocusNavigationDirection.Next ? btnSettings : btnCheckNetwork;
+                entry.Focus();
+                bool entryFocused = OwnsHit(Keyboard.FocusedElement as DependencyObject, entry);
+                Check("direct-" + direction + "-entry-focus", entryFocused, entry.Name);
+                allReachable &= entryFocused;
+                var visited = new HashSet<string>();
+                var trace = new List<string>();
+                for (int step = 0; step < 100; step++)
+                {
+                    var focus = Keyboard.FocusedElement as DependencyObject;
+                    trace.Add(focus is FrameworkElement element && !string.IsNullOrEmpty(element.Name)
+                        ? element.Name : focus?.GetType().Name ?? "none");
+                    foreach (var target in targets)
+                        if (target != null && OwnsHit(focus, target)) visited.Add(target.Name);
+                    if (visited.Count == targets.Length) break;
+                    if (focus is not UIElement current || !current.MoveFocus(new TraversalRequest(direction))) break;
+                    Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                }
+                string route = string.Join(" -> ", trace);
+                foreach (var target in targets)
+                {
+                    bool reached = target != null && visited.Contains(target.Name);
+                    Check("direct-" + direction + "-reaches-" + target?.Name, reached, route);
+                    allReachable &= reached;
+                }
+            }
+            Check("direct-controls-keyboard-reachable", allReachable, "actual shown HWND; every direct control reached by Tab and Shift+Tab");
             cancel?.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             return checks.ToArray();
         }
@@ -366,6 +405,10 @@ public partial class MainWindow
         surface.Measure(size);
         surface.Arrange(new Rect(new Point(), size));
         surface.UpdateLayout();
+        // Drain deferred text/template rendering at the requested root DPI before
+        // reading geometry or drawing the bitmap. Do not repaint PNGs afterwards.
+        Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+        surface.UpdateLayout();
         var elements = VisualElements(surface).Where(element => Presented(element, surface)).ToArray();
         var named = elements.Where(element => !string.IsNullOrEmpty(element.Name)).GroupBy(element => element.Name)
                             .ToDictionary(group => group.Key, group => group.First());
@@ -377,6 +420,11 @@ public partial class MainWindow
             $"x={rectangle.X:F2},y={rectangle.Y:F2},w={rectangle.Width:F2},h={rectangle.Height:F2}");
         var dpi = VisualTreeHelper.GetDpi(surface);
         Check("dpi", "root", Math.Abs(dpi.PixelsPerInchX - scenario.Dpi) < .01, $"observed={dpi.PixelsPerInchX}");
+        Check("geometry-control", "shared-edge-is-not-overlap",
+            !PositiveAreaOverlap(new Rect(0, 0, 44, 44), new Rect(0, 44, 44, 44)));
+        Check("geometry-control", "positive-area-is-overlap",
+            PositiveAreaOverlap(new Rect(0, 0, 44, 44), new Rect(0, 43.9999, 44, 44)),
+            "even 0.0001 DIP of overlap is rejected; only floating-point edge noise is tolerated");
         if (kind == "launcher-content")
         {
             Check("resource-scope", "logical-window-owner", ReferenceEquals(LogicalTreeHelper.GetParent(surface), this));
@@ -451,8 +499,13 @@ public partial class MainWindow
         }
         for (int a = 0; a < actionRects.Count; a++)
             for (int b = a + 1; b < actionRects.Count; b++)
+            {
+                Rect intersection = Rect.Intersect(actionRects[a].Bounds, actionRects[b].Bounds);
                 Check("overlap", actionRects[a].Name + "/" + actionRects[b].Name,
-                    !actionRects[a].Bounds.IntersectsWith(actionRects[b].Bounds));
+                    !PositiveAreaOverlap(actionRects[a].Bounds, actionRects[b].Bounds),
+                    intersection.IsEmpty ? "empty" : string.Create(CultureInfo.InvariantCulture,
+                        $"intersection={intersection.Width:F9}x{intersection.Height:F9}"));
+            }
         // Check the measured production TextBlocks, including labels introduced
         // by control templates. Explicit ellipsis is permitted and recorded by
         // the production template; other clipped text is a layout failure.
@@ -472,6 +525,8 @@ public partial class MainWindow
         var bounds = named.Select(pair => { var rect = Bounds(pair.Value); return new ElementBounds(pair.Key, rect.X, rect.Y, rect.Width, rect.Height); }).ToArray();
         string SaveScreenshot(string name)
         {
+            Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+            surface.UpdateLayout();
             var bitmap = new RenderTargetBitmap((int)Math.Ceiling(size.Width*scale), (int)Math.Ceiling(size.Height*scale),
                 scenario.Dpi, scenario.Dpi, PixelFormats.Pbgra32);
             bitmap.Render(surface);
