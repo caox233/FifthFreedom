@@ -1,0 +1,293 @@
+{
+  "schema": 1,
+  "date_utc": "2026-11-01",
+  "status": "exact_public_pe_static_disable_mapping_complete_native_stack_argument_mismatch_identified",
+  "scope": "Read-only inspection of already downloaded public gameplay DLLs and exact committed source. No game binary, crash dump, raw player log, binary execution, production code edit or test execution in this analysis.",
+  "binaries": [
+    {
+      "label": "e4",
+      "source_commit": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+      "public_package_receipt": "docs/evidence/complete-package-download-e4f8990.json",
+      "gameplay_sha256": "60f6eee1d8c68bd4d1692510128ec4b347434917a4d54f47c587b532f6e7222e",
+      "bytes": 2424832,
+      "machine": "0x14c",
+      "preferred_image_base": "0x10000000",
+      "coff_symbol_count": 0,
+      "codeview": [
+        {
+          "guid": "9a06a6f8-6864-444e-a8bf-d688c489ddc7",
+          "age": 1,
+          "pdb_name": "scbl_gameplay.pdb"
+        }
+      ],
+      "exact_source_file": "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs",
+      "exact_source_sha256": "80e2841654924909e017bc97d3b11d1606d39cc11bfcfb3ca63cbf5653e338ba",
+      "entry_mapping": {
+        "detour_ffi_rva": "0xd59f0",
+        "reported_register_value_rva": "0xd5a54",
+        "reported_rva_file_offset": "0xd4e54",
+        "section": ".text",
+        "preceding_instruction": {
+          "rva": "0xd5a51",
+          "hex": "ff5014",
+          "assembly": "call dword ptr [eax+0x14]"
+        },
+        "at_reported_rva": {
+          "hex": "83c408",
+          "assembly": "add esp,0x8"
+        },
+        "ffi_return_rva": "0xd5a67",
+        "ffi_return_hex": "c3"
+      },
+      "static_disable_binding": {
+        "native_target_va_from_initializer": "0x00b52610",
+        "initializer_target_instruction_rva": "0x86c2",
+        "ffi_data_rva": "0x236664",
+        "initial_ffi_data_value": "0x100d59f0",
+        "closure_atomic_rva": "0x236668",
+        "detour_atomic_rva": "0x23666c",
+        "closure_initializer_store_rva": "0x87ad",
+        "closure_vtable_rva": "0x1c3d80",
+        "closure_slot_offset": "0x14",
+        "closure_slot_target_rva": "0x2520",
+        "closure_shim": "mov ecx,[esp+8]; jmp disable body",
+        "disable_body_rva": "0xd86b0",
+        "original_trampoline_call_rva": "0xd8791",
+        "original_trampoline_call_hex": "89f1ff5710",
+        "original_trampoline_call": "mov ecx,esi; call dword ptr [edi+0x10]",
+        "native_stack_argument_forwarded": false,
+        "first_instruction_after_original_call": "mov eax,[ebp-0x18]",
+        "body_return_rva": "0xd87a4",
+        "body_return_hex": "c3",
+        "return_register_preservation_claimed": false
+      },
+      "exception_handler_thunk_rva": "0x1b5690",
+      "disassembly_receipts": {
+        "e4-closure_shim.objdump.txt": "fb9841124fb9629012b099e92376839fb6b8fae91ddce2eeb2fe18518ac9e6f1",
+        "e4-disable_body.objdump.txt": "805310f5e06e6ca86fd0d6c39fb1d3a1faf61abfd48a3fc6de986dcfa3359172",
+        "e4-ffi.objdump.txt": "5e09cf355f6a527e5df06c87e6dda3005e4490c7df642595936afd449b881ede",
+        "e4-initializer.objdump.txt": "c4e2c5fd8a36339de688cce3008b96fd0ebcd152d0788dfb6989d4ae7a3b8ae6",
+        "e4-seh_handler.objdump.txt": "40efb92e45df9ecdf5227a059ce39b4121656d42c529221dc349a229e027fb5f"
+      }
+    },
+    {
+      "label": "dcb",
+      "source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+      "public_package_receipt": "docs/evidence/complete-package-download-dcb97d0.json",
+      "gameplay_sha256": "d5db74bf08334fc9a4d62e1a379f32bcc1c37b89df441a62b0612cc40a74def7",
+      "bytes": 2430976,
+      "machine": "0x14c",
+      "preferred_image_base": "0x10000000",
+      "coff_symbol_count": 0,
+      "codeview": [
+        {
+          "guid": "095e6bd5-e521-4ee8-8290-6f577c9480a9",
+          "age": 1,
+          "pdb_name": "scbl_gameplay.pdb"
+        }
+      ],
+      "exact_source_file": "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs",
+      "exact_source_sha256": "202748ac41da0803190f166201137116e15b5fe82e976c312d0bb4d580f18e69",
+      "entry_mapping": {
+        "detour_ffi_rva": "0x113a00",
+        "reported_register_value_rva": "0x113a64",
+        "reported_rva_file_offset": "0x112e64",
+        "section": ".text",
+        "preceding_instruction": {
+          "rva": "0x113a61",
+          "hex": "ff5014",
+          "assembly": "call dword ptr [eax+0x14]"
+        },
+        "at_reported_rva": {
+          "hex": "83c408",
+          "assembly": "add esp,0x8"
+        },
+        "ffi_return_rva": "0x113a77",
+        "ffi_return_hex": "c3"
+      },
+      "static_disable_binding": {
+        "native_target_va_from_initializer": "0x00b52610",
+        "initializer_target_instruction_rva": "0x86c2",
+        "ffi_data_rva": "0x23d2b4",
+        "initial_ffi_data_value": "0x10113a00",
+        "closure_atomic_rva": "0x23d2b8",
+        "detour_atomic_rva": "0x23d2bc",
+        "closure_initializer_store_rva": "0x87ad",
+        "closure_vtable_rva": "0x1c5dd0",
+        "closure_slot_offset": "0x14",
+        "closure_slot_target_rva": "0x2520",
+        "closure_shim": "mov ecx,[esp+8]; jmp disable body",
+        "disable_body_rva": "0x1164c0",
+        "original_trampoline_call_rva": "0x1165a1",
+        "original_trampoline_call_hex": "89f1ff5710",
+        "original_trampoline_call": "mov ecx,esi; call dword ptr [edi+0x10]",
+        "native_stack_argument_forwarded": false,
+        "first_instruction_after_original_call": "mov eax,[ebp-0x18]",
+        "body_return_rva": "0x1165b4",
+        "body_return_hex": "c3",
+        "return_register_preservation_claimed": false
+      },
+      "exception_handler_thunk_rva": "0x1b7180",
+      "disassembly_receipts": {
+        "dcb-closure_shim.objdump.txt": "938ee0f8206755f84f4808fbdc6fdc960ac77ccb8dc5b1225688d1c0fae89aea",
+        "dcb-disable_body.objdump.txt": "22cc3656461c09aa667d3d095e542a332f380c50244ae2a243f368d0c605f198",
+        "dcb-ffi.objdump.txt": "3188b3c473649b376fb6ee1c1dfb5f936845b6eba1c8f0c14f4c2560c896ada6",
+        "dcb-initializer.objdump.txt": "2aba0bd49a6827bb8d76aa1ccd8be5afe8b5a4bef207a964bd2647b810077472",
+        "dcb-seh_handler.objdump.txt": "590d213bcc538992a899fae7369a4165d2884959726730063e3a88f9e205cb3f"
+      }
+    },
+    {
+      "label": "da180",
+      "source_commit": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
+      "public_package_receipt": "docs/evidence/complete-package-download-da1805e.json",
+      "gameplay_sha256": "50ce67c22069544f45f3453e67b388207621385e8009e69a758fafc597699d7e",
+      "bytes": 2430976,
+      "machine": "0x14c",
+      "preferred_image_base": "0x10000000",
+      "coff_symbol_count": 0,
+      "codeview": [
+        {
+          "guid": "8da69f4a-8c56-4e38-94e7-dcde03c1b1b0",
+          "age": 1,
+          "pdb_name": "scbl_gameplay.pdb"
+        }
+      ],
+      "exact_source_file": "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs",
+      "exact_source_sha256": "202748ac41da0803190f166201137116e15b5fe82e976c312d0bb4d580f18e69",
+      "entry_mapping": {
+        "detour_ffi_rva": "0x113a00",
+        "reported_register_value_rva": "0x113a64",
+        "reported_rva_file_offset": "0x112e64",
+        "section": ".text",
+        "preceding_instruction": {
+          "rva": "0x113a61",
+          "hex": "ff5014",
+          "assembly": "call dword ptr [eax+0x14]"
+        },
+        "at_reported_rva": {
+          "hex": "83c408",
+          "assembly": "add esp,0x8"
+        },
+        "ffi_return_rva": "0x113a77",
+        "ffi_return_hex": "c3"
+      },
+      "static_disable_binding": {
+        "native_target_va_from_initializer": "0x00b52610",
+        "initializer_target_instruction_rva": "0x86c2",
+        "ffi_data_rva": "0x23d2b4",
+        "initial_ffi_data_value": "0x10113a00",
+        "closure_atomic_rva": "0x23d2b8",
+        "detour_atomic_rva": "0x23d2bc",
+        "closure_initializer_store_rva": "0x87ad",
+        "closure_vtable_rva": "0x1c5dd0",
+        "closure_slot_offset": "0x14",
+        "closure_slot_target_rva": "0x2520",
+        "closure_shim": "mov ecx,[esp+8]; jmp disable body",
+        "disable_body_rva": "0x1164c0",
+        "original_trampoline_call_rva": "0x1165a1",
+        "original_trampoline_call_hex": "89f1ff5710",
+        "original_trampoline_call": "mov ecx,esi; call dword ptr [edi+0x10]",
+        "native_stack_argument_forwarded": false,
+        "first_instruction_after_original_call": "mov eax,[ebp-0x18]",
+        "body_return_rva": "0x1165b4",
+        "body_return_hex": "c3",
+        "return_register_preservation_claimed": false
+      },
+      "exception_handler_thunk_rva": "0x1b7180",
+      "disassembly_receipts": {
+        "da180-closure_shim.objdump.txt": "11c979d32540c1f4d65883e885999637a9dd59e6da4b8f6e0324ebfa32974932",
+        "da180-disable_body.objdump.txt": "1d5d2b7a56b8fdb59fdcbf7fcd89487d2a7ad1fa6d75d9a9c36a1fff82197742",
+        "da180-ffi.objdump.txt": "69a74c1e8d6266a63d83a80b221b87a386c1b104c5bd26415db7491a4b6019d5",
+        "da180-initializer.objdump.txt": "6927267ad2cb0a787bba44145ef552367a338731a100129935eed6058d6a4de1",
+        "da180-seh_handler.objdump.txt": "6a0b94a7cf664785df126abe004ad3b361c2f25ece2a914c15701d5c3593eeb0"
+      }
+    }
+  ],
+  "old_da180_dcb_text_raw_bytes_equal": true,
+  "old_da180_dcb_text_raw_sha256": "f533e13cfe193bf9a900ff8eeaaeb9b50d202c2cbd44ced1e3a91b148c693e25",
+  "independently_observed_e4_handler": {
+    "reported_rva": "0x1b5690",
+    "file_offset": "0x1b4a90",
+    "instructions": "mov eax,0x1022c770; jmp 0x101b8145; latter jmp dword ptr [0x101c2130]",
+    "import_at_iat_rva_0x1c2130": "VCRUNTIME140.dll!__CxxFrameHandler3",
+    "eh_metadata_magic": "0x19930522",
+    "registered_by_disable_ffi_rva": "0xd5a03",
+    "classification": "Compiler-generated C++ exception handling thunk for the Disable ffi function; not the gameplay callback or a caller address."
+  },
+  "source_binding": {
+    "crate": "retour 0.4.0-alpha.4",
+    "reviewed_dependency_sources_sha256": {
+      "macros.rs": "ce92e44e0b2cace56c6d4f513d2aa8b64f6028f5e5d41cfc1f0691e2e7692b91",
+      "detours/statik.rs": "6339e48ffe9113567073ffa7935ef47fa1ba8b57b94c77aa4537072d7dfaad9a",
+      "detours/generic.rs": "21c74368d5699b6c9f2ece109b55cc64fb7671f09fa587f53671d3e66df9b0ea"
+    },
+    "ffi_macro": "src/macros.rs generates __ffi_detour with the declared ABI and invokes (__detour())(arguments).",
+    "closure_storage": "StaticDetour stores an AtomicPtr<Box<dyn Fn<Arguments, Output=Output>>>. The observed +0x14 slot belongs to the Rust closure vtable, not a game-object vtable.",
+    "original_call": "StaticDetour::call transmutes the generated trampoline to the declared native function type, then calls it with the declared arguments."
+  },
+  "user_supplied_retail_observations_not_independently_redecoded_in_cloud": {
+    "module_vtable_va": "0x02ab095c",
+    "disable_slot_offset": "0x4d0",
+    "disable_slot_target": "0x00b52610",
+    "outer_dispatch": "0x00ef1a2b push 1; call 0x00eda030",
+    "selection": "0x00eda216 tests [ebp+8]; nonzero selects vtable +0x4d0",
+    "leaf_call": "0x00eda243 push eax; 0x00eda244 call edx; return address 0x00eda246",
+    "disable_return": "0x00b5271f c2 04 00 (ret 4)",
+    "cleanup_target_and_return": "0x00b52570; 0x00b52608 c3 (ret)",
+    "other_reported_calls": [
+      "0x00ce1d8d call 0x00ef1a00",
+      "0x005c9514 call 0x0042dab0"
+    ],
+    "validation_boundary": "These specific retail facts were supplied by the user through the parent task; this agent neither possessed nor disassembled a retail executable. The earlier EBP-derived RVAs only selected locations for static inspection.",
+    "game_sha256": "c6b9f330fac1412f19f32a6fd86edb4c66291a6902611e9433b9b0ea659eb4bc",
+    "all_reported_disable_exit_branches": [
+      "0x00b52617 jne 0x00b5271e",
+      "0x00b526c9 jne 0x00b5271e",
+      "0x00b526d2 jl 0x00b5271e"
+    ],
+    "shared_disable_epilogue": "0x00b5271e pop esi; 0x00b5271f ret 4",
+    "tail_jumps_reported": false,
+    "direct_read_of_incoming_dword_reported": false,
+    "b526f3_movss_esp_xmm0": "Outgoing argument to the next call, not evidence of reading the incoming argument.",
+    "leaf_argument_producer": "0x00eda240 mov eax,[eax+esi*8]; 0x00eda243 push eax",
+    "observed_postcall": "0x00eda246 mov ecx,[ebp-0x1c]; 0x00eda249 mov eax,[ebp-0x20]",
+    "this_observed_caller_consumes_native_eax": false,
+    "all_callers_return_type_proven": false
+  },
+  "assessment": {
+    "declared_and_built_disable_abi": "unsafe extern \"thiscall\" fn(usize), ECX receiver only, unit return",
+    "identified_mismatch": "The public DLL receives/forwards no native stack argument and returns with C3. The supplied retail Disable boundary pushes one 32-bit argument and returns with C2 04 00. Those two stack contracts differ; this is a concrete ABI defect when combined with the user-verified retail instructions.",
+    "two_sides_requiring_consistency": [
+      "The incoming native call into the detour ffi must consume and preserve the extra 32-bit stack argument.",
+      "The outgoing Disable.call into the original trampoline must forward that same actual argument."
+    ],
+    "parameter_value": "The actual leaf argument is the DWORD loaded at EDA240 from [eax+esi*8] then pushed at EDA243. The upper mode value 1 selects a slot and must not replace that opaque argument. User inspection found no direct use of the incoming DWORD in B52610, but ret4 still requires exact stack forwarding and cleanup.",
+    "native_return_type": "The user-inspected caller overwrites EAX at EDA249 after the call and does not consume it. This supports retaining the existing unit return declaration for this observed boundary; it does not prove every caller or establish a universal native return type.",
+    "cleanup": "User-provided Cleanup ret C3 is a separate no-stack-argument boundary; do not mechanically apply the Disable signature change to Cleanup.",
+    "dynamic_causality": "A register value equal to a post-call instruction does not establish a valid frame chain, that this call executed at the crash, or the exact null transfer origin. No claim that this ABI fix alone resolves every Access=8, Access=1 or multiplayer crash."
+  },
+  "symbol_availability": {
+    "exact_pe_codeview_records_recorded": true,
+    "public_complete_candidate_archives_checked": [
+      "e4 official-artifact.zip",
+      "da180 artifact-12777311164.zip",
+      "dcb artifact-12872324166.zip"
+    ],
+    "pdb_or_map_members_in_checked_archives": 0,
+    "workflow_evidence": "candidate-build.yml full candidate upload includes program ZIP, BUILD-RESULT.json, smoke receipts and logs; artifacts/symbols is not included. BUILD-RESULT names a runner-local symbol directory; that path does not make the PDB downloadable.",
+    "matching_pdb_available_to_this_analysis": false,
+    "rebuilding_same_source_is_not_exact_symbol_binding": true,
+    "next_symbol_step": "Preserve separately reviewed PDBs with PE CodeView GUID/age and binary SHA in future candidate artifacts; do not use a rebuilt or unrelated PDB to claim this exact mapping."
+  },
+  "remaining_information_boundary": {
+    "retail_disable_full_body_available_in_public_sources": false,
+    "source_pin": "B52610 first 32 bytes SHA256 57c35b730dd8b37d9b0e169704b430bcb817ac22a85f31eff54941bc0fa5c23f",
+    "pin_limitation": "A 32-byte digest cannot reconstruct instruction bytes or validate the full control flow through the supplied B5271F return 0x10f bytes after entry.",
+    "unresolved": [
+      "Cloud does not possess the retail body to independently redecode the user-reported argument/branch/epilogue facts",
+      "Return-value use by other native callers, if any",
+      "Dynamic ownership/lifetime state at the reported crash"
+    ]
+  },
+  "verification": "A local read-only script asserted each PE SHA against the retained public package receipt; exact section mapping, initial ffi pointer, native-target immediate, closure initializer/vtable/shim, indirect original-call bytes, return opcodes, EH thunk and old text equality all passed. No downloaded binary was executed."
+}

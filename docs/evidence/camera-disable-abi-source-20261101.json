@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "date": "2026-11-01",
+  "timezone": "Asia/Hong_Kong",
+  "source_base": "0e691519b878a8fbbb0695392eb2a2ba9616e841",
+  "status": "source_fix_and_cross_typecheck_complete_hosted_windows_pending",
+  "source_files": {
+    "src/native/client/hooks/gameplay/Cargo.toml": "104702092bc9c8efeb1c6a8e9201bb180dd5f89a68a86b2bebeb1923d2c75167",
+    "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs": "84cc171028fa57ace068b1b65bf977f815155811815eb798216d4ec042476197",
+    "src/native/client/hooks/gameplay/src/sticky_camera_abi_tests.rs": "37672f29e3cb9dce5b85007f6abf5cbbe3294a8ef58b1d476390cd84eed713a6"
+  },
+  "baseline_runtime_sha256": "80e2841654924909e017bc97d3b11d1606d39cc11bfcfb3ca63cbf5653e338ba",
+  "baseline_with_same_test_module_sha256": "40edc8ab4d42db975609c20413a80b7b7f4302615bfbed12f45aca2175735c4e",
+  "test_module_append": "\n#[cfg(all(test, feature = \"camera-abi-fixture\"))]\n#[path = \"sticky_camera_abi_tests.rs\"]\nmod abi_replay;\n",
+  "test_instrumentation": {
+    "baseline": "Exact canonical source plus opt-in test module suffix only. Same Cargo feature, fixture and dependencies across roles.",
+    "modified": "Canonical fixed source with same opt-in module; no extra ABI or branch transformation.",
+    "native_leaf": "Owned synthetic x86 ECX receiver plus opaque DWORD, true ret 4 on three fabricated early-return branches. Actual retail instructions not copied.",
+    "cleanup": "Separately executed original ECX-only/ret 0 contract.",
+    "fault_observer": "Same test-only VEH for every role; observes exact first armed wrong-argument execute fault after native leaf and prior controls, writes bounded receipt, exits 86. Never resumes context or counts unexecuted cases.",
+    "release_paths_instrumented": false,
+    "test_rustflags_changed": false
+  },
+  "user_provided_native_facts": {
+    "source": "Local independent read-only inspection reported by user; no retail binary, private WER dump or player logs uploaded to cloud.",
+    "retail_sha256": "c6b9f330fac1412f19f32a6fd86edb4c66291a6902611e9433b9b0ea659eb4bc",
+    "camera_vtable": "0x02ab095c",
+    "slot": "0x4d0",
+    "entry": "0x00b52610",
+    "argument_callsite": "0x00eda240 mov eax,[eax+esi*8]; 0x00eda243 push eax; 0x00eda244 call edx",
+    "return": "0x00b5271e pop esi; 0x00b5271f c2 04 00",
+    "reported_early_branches": [
+      "0x00b52617 jne 0x00b5271e",
+      "0x00b526c9 jne 0x00b5271e",
+      "0x00b526d2 jl 0x00b5271e"
+    ],
+    "tail_jumps_in_inspected_range": false,
+    "direct_reads_of_incoming_dword_in_inspected_range": false,
+    "outgoing_argument_write_not_incoming_read": "0x00b526f3 movss [esp],xmm0",
+    "cleanup_return": "0x00b52608 c3",
+    "observed_caller_return_use": "0x00eda246 mov ecx,[ebp-1c]; 0x00eda249 mov eax,[ebp-20], so this inspected caller does not consume returned EAX.",
+    "all_callers_return_semantics_claimed": false
+  },
+  "confirmed_fix": {
+    "before": "Disable thiscall fn(usize), ECX only, replacement forwarded no stack argument.",
+    "after": "Disable thiscall fn(usize,usize), replacement forwards opaque incoming DWORD unchanged.",
+    "return_declaration": "Existing void retained; inspected native caller ignores EAX, no claim about all callers.",
+    "cleanup_unchanged": true,
+    "native_signature_pins_byte_unchanged": true,
+    "slot_4d8_changed": false,
+    "gesture_ui_changed": false
+  },
+  "local_report_separate": {
+    "source": "User local i686 Rust entry plus independent assembly vtable, native leaf record stub; not reproduced by cloud and not live retail game acceptance.",
+    "sentinels": [
+      "0x12345678",
+      "0x76543210"
+    ],
+    "baseline": {
+      "exit": 1,
+      "receiver_preserved": true,
+      "argument_forwarded": false,
+      "esp_delta": -4
+    },
+    "modified": {
+      "exit": 0,
+      "receiver_preserved": true,
+      "argument_forwarded": true,
+      "esp_delta": 0
+    },
+    "rollback_exit": 1,
+    "reapplied_exit": 0
+  },
+  "cross_typechecks": {
+    "baseline": {
+      "command": "cargo check --offline --locked -p scbl-gameplay --lib --tests --features camera-abi-fixture",
+      "target": "i686-pc-windows-msvc",
+      "host": "Linux",
+      "exit_code": 0,
+      "streams": {
+        "baseline-check-final.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "baseline-check-final.stderr.txt": "2247042a6229061d66e0a964d9eec0946fe0eee672aae8919813f6796f9124ba"
+      }
+    },
+    "modified": {
+      "command": "cargo check --offline --locked -p scbl-gameplay --lib --tests --features camera-abi-fixture",
+      "target": "i686-pc-windows-msvc",
+      "host": "Linux",
+      "exit_code": 0,
+      "streams": {
+        "modified-check-final.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "modified-check-final.stderr.txt": "78d289e3cd1d59896ad8b9826d4d5336ebeb200dfa16428b36ed441b8904a2a5"
+      }
+    }
+  },
+  "assembly_observation": {
+    "scope": "Actual baseline crate emitted i686 MSVC development assembly on Linux; linking then refused because link.exe is absent. Not Windows execution.",
+    "force_frame_pointers_alone": "Generated original-call helper, replacement and FFI retain add/pop epilogues; cannot safely assume restoration after a real ret 4 mismatch.",
+    "force_frame_pointers_with_llvm_stackrealign": "Same decisive add/pop epilogues; not used to claim controlled returns or to alter final test flags.",
+    "full_emit_commands_exit": 101,
+    "link_failure_expected_as_test_result": false,
+    "snippets": {
+      "baseline-frame-pointer-asm.txt": "9c4f3db37e07dcd31e9b767b2d966bed92771a66bcfbb7958046e9e70fc57bec",
+      "baseline-stack-realign-asm.txt": "1c1e4c662c5737117afe277b70411ec043608544576ce75712c8fe173676e8c2",
+      "baseline-original-call-helper-asm.txt": "5ae413303643a9703bc362c860c104d5ff2fabfbf1e24e9f570a7219e7868e7f",
+      "baseline-emit-asm.stderr.txt": "a0adb6e58dce93ecc97fe97ccb98bf1d60209f742f6716d6b84176a3e703c722",
+      "baseline-realign-asm.stderr.txt": "2a52b67331d49e6088e1b479619dd1a9a4b92155021acab8f15e3481deedfcc3",
+      "machine-code-hex.txt": "787d5b2cca1dca326f6b9d59de64b099460751bc3d2bc335c087428f04b2fd65",
+      "fixture-disassembly.txt": "3870e5575ed9877376ed9c1999c072908d215eeae5dca40cd652801ec10e3445"
+    }
+  },
+  "hosted_expected_contract": {
+    "full_cases": 64,
+    "hooked": 32,
+    "unhooked": 32,
+    "cleanup": 64,
+    "checks": 515,
+    "negative_controls": 1,
+    "values_order": [
+      324508639,
+      0,
+      4294967295,
+      610839776
+    ],
+    "roles": [
+      "baseline",
+      "modified",
+      "rollback",
+      "reapplied"
+    ],
+    "baseline_rollback_allowed": "Either complete matrix with exactly 32 stack-cleanup failures and only bounded argument-forwarding failures, or exact observer-recorded partial fault after 16 successful controls and first hooked native leaf. Compilation failure or uncontrolled crash rejected.",
+    "modified_reapplied_required": "All 64 cases normally return, all 515 checks pass, no ignored test/fault.",
+    "actual_hosted_execution": "pending"
+  },
+  "preserved_evidence": [
+    "docs/evidence/hosted-native-production-e4f8990.json",
+    "docs/evidence/native-disable-binary-map-20261101.json"
+  ],
+  "boundaries": {
+    "new_wer_eip": 1,
+    "new_wer_parameters": [
+      8,
+      1
+    ],
+    "old_zero_log_tuple_is_exception_context": false,
+    "stack_scan_is_full_callstack": false,
+    "game_started": false,
+    "raw_private_evidence_uploaded": false,
+    "full_live_crash_cause_claimed": false,
+    "c71_inputs_changed": false,
+    "windows_execution_claimed_from_typecheck": false
+  }
+}

@@ -13,6 +13,7 @@
     <Compile Include="../../src/launcher/src/Services/GameLaunchPreparation.cs" Link="GameLaunchPreparation.cs" />
     <Compile Include="../../src/launcher/src/Services/HookConfigService.cs" Link="HookConfigService.cs" />
     <Compile Include="../../src/launcher/src/Services/AuthService.cs" Link="AuthService.cs" />
+    <Compile Include="../../src/launcher/src/Services/PackageAdmissionMessages.cs" Link="PackageAdmissionMessages.cs" />
     <Compile Include="../../src/launcher/src/Models/AuthResults.cs" Link="AuthResults.cs" />
     <Compile Include="../../src/launcher/src/Services/LanConnection.cs" Link="LanConnection.cs" />
     <Compile Include="../../src/launcher/src/Services/ServerAddress.cs" Link="ServerAddress.cs" />

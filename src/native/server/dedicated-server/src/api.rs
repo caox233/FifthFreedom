@@ -1496,6 +1496,10 @@ pub struct MyMisc {
     socket_policy: quazal::socket_policy::SocketPolicy,
 }
 
+#[cfg(test)]
+#[path = "api_quick_match_fixture.rs"]
+pub(crate) mod quick_match_fixture;
+
 #[tonic::async_trait]
 impl Misc for MyMisc {
     /// Handles event requests, primarily for retrieving pending friend invites.

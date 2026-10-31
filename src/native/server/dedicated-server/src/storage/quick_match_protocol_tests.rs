@@ -447,4 +447,5 @@ mod quick_match_protocol {
     fn quick_match_protocol_mod_empty_lobby_overlapping_search_then_create() { empty_lobby_overlapping_search_then_create(2); }
 
     include!("quick_match_filter_trace_tests.rs");
+    include!("quick_match_follow_route_tests.rs");
 }

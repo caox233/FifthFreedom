@@ -278,6 +278,18 @@ def windows_components(receipt: dict) -> None:
         "baseline": replay_receipt["baseline_commit"], "game_executed": False,
         "retail_instruction_replay": False, "c71_inputs_replaced": False,
     }
+    abi_output = ART / "ci/windows-components/camera-abi-replay"
+    run_build_step("ci-camera-abi-replay", [sys.executable, "-B", ROOT / "scripts/ci_camera_abi_replay.py",
+        "--output", abi_output])
+    abi_receipt = json.loads((abi_output / "receipt.json").read_text(encoding="utf-8"))
+    if abi_receipt.get("status") != "passed" or abi_receipt.get("source_commit") != receipt["commit"]:
+        raise RuntimeError("CAMERA_ABI_SOURCE_OR_RESULT_MISMATCH")
+    receipt["camera_disable_abi_replay"] = {
+        "status": "passed", "receipt": "camera-abi-replay/receipt.json",
+        "receipt_sha256": hashlib.sha256((abi_output / "receipt.json").read_bytes()).hexdigest(),
+        "baseline": abi_receipt["baseline_commit"], "game_executed": False,
+        "retail_instruction_replay": False, "c71_inputs_replaced": False,
+    }
     for label, args in (
         ("hooks", ["-p", "hooks", "--lib", "--features", "patch-free,lan-goal-origin"]),
         ("gameplay", ["-p", "scbl-gameplay", "--lib", "--features", "goggle-feedback"]),

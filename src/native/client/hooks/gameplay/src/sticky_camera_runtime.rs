@@ -23,7 +23,10 @@ static_detour!{
     static Receive:unsafe extern "thiscall" fn(usize,usize)->u32;
     static Tick:unsafe extern "thiscall" fn(usize,f32,u32)->u32;
     static Cleanup:unsafe extern "thiscall" fn(usize);
-    static Disable:unsafe extern "thiscall" fn(usize);
+    // Native B52610 receives ECX plus one opaque DWORD and returns with ret 4.
+    // Preserve the existing void return declaration: the observed ret 4 proves
+    // stack cleanup, not a semantic EAX return type.
+    static Disable:unsafe extern "thiscall" fn(usize,usize);
 }
 /// The companion core refreshes this only from its foreground gameplay frame.
 /// Opening chat/rename or losing focus revokes it immediately. Unknown/missing
@@ -236,7 +239,7 @@ unsafe fn forget(camera:usize){
     GESTURE.with(|s|{let mut g=s.borrow_mut();if g.owner().is_some_and(|o|o.camera[0]as usize==camera){g.cancel();}});
 }
 fn cleanup(camera:usize){unsafe{forget(camera);Cleanup.call(camera);}}
-fn disable(camera:usize){unsafe{forget(camera);Disable.call(camera);}}
+fn disable(camera:usize,argument:usize){unsafe{forget(camera);Disable.call(camera,argument);}}
 unsafe fn signature(address:usize,size:usize,hash:&str)->bool{
     readable(address,size)&&format!("{:x}",Sha256::digest(std::slice::from_raw_parts(address as*const u8,size)))==hash
 }
@@ -331,3 +334,7 @@ mod camera_world_regression;
 #[cfg(test)]
 #[path="sticky_camera_lifecycle_runtime_fixture.rs"]
 pub(crate) mod lifecycle_fixture;
+
+#[cfg(all(test, feature = "camera-abi-fixture"))]
+#[path = "sticky_camera_abi_tests.rs"]
+mod abi_replay;

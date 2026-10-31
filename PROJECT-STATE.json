@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Exact e4f8990 complete Windows candidate built, downloaded and independently verified: UI197/save27,65files/fouridentities/UTF8checksums. Same-source Windows native four roles now execute: camera B/R87checks with35specified failures, M/RP87with0failures; progression B/R2specified failures and M/RP2passes,ignored0. Actual WPF M/RP128scenarios12944checks each pass,672PNG verified. Hosted source/Linux components pass their stated scopes. All72e/d40 failures and original checkpoints remain. No live camera/matching/performance root cause or ordinaryPublic admission is claimed.",
-  "NEXT_EXECUTABLE_ACTION": "Read terminal evidence for same-run composition job124524375647 in41195418269 if still pending, without promoting in-progress or skipped work. Continue all six goals: retained source/notice and Capture equivalence closure, strict ordinaryPublic Windows/NIC/WFP/session prerequisites, and targeted live candidate camera/matching/chat/performance outcomes when available. Keep C71 reviewed-input gap, exact package identity, original files and prior accepted gameplay scope; do not automatically start game/capture or deploy/release.",
+  "LAST_CONFIRMED_RESULT": "Original cloud checkout and remote are 0e691519 with knowledge2044879 preserved. New November1 local evidence proves e4 installed and loaded, and reports execute AV EIP=1 (not recovered EIP0). Retail +4D0 Disable has ECX plus one DWORD/ret4 while e4 detour lacks that argument; independent public PE mapping associates the reported wrapper offsets with Disable. Production parameter-forwarding correction is in progress with strict hosted x86 replay pending. Prior e4 composition now independently verified successful; it does not cover gameplay. Original six milestones and accepted gameplay scope remain.",
+  "NEXT_EXECUTABLE_ACTION": "Finish isolated actual Win32x86 Disable virtual-dispatch B/M/R/RP without mistaking a premature harness crash for complete case coverage; preserve Cleanup ret0 and opaque argument. Run new exact-SHA hosted unified Windows candidate and source/Linux checks, download and verify ZIP identities/checksums and packaged save/UI smoke, publish reviewed source/DevDocs. Keep matching same-room, valid-viewport performance, distinct LAN availability and other-player release rejection open; no automatic game/capture/deployment/Release.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -306,7 +306,17 @@
     "candidate_windows_source_historical_before_329f": "Exact 9a Windows components built; downloaded four hashes independently recomputed, launcher166/diagnostic12/authentication19/native-return8/interop3/source-transport8 passed. Separate prerequisites return28/final9/dependency13/read22+8+4 have zero skips. New source-copy inclusion awaits repaired-checkpoint hosted run.",
     "candidate_linux_matrix_historical_before_329f": "Exact 9139 matrix40397583543 passed nine QUIC/WSS/TCP phases; six namespaces removed, exact core exit/TUN absence/new-traffic refusal verified. This is guard3 finite development evidence, not peer-map71/native-lease/Public/live acceptance.",
     "validated_implementation_commit_historical_before_329f": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
-    "candidate_component_result_historical_before_329f": "Exact 9139 candidate: six success, four failure, one skipped complete package. Windows component and assembly runner builds succeeded but uploaded artifacts omit five declared hidden source files (45/50 notices and 57/62 candidate files). Read-only production validation reproduces the same early missing-input failure; lifecycle and composition have no new runtime success. Eight save and thirteen C71 gates remain distinct."
+    "candidate_component_result_historical_before_329f": "Exact 9139 candidate: six success, four failure, one skipped complete package. Windows component and assembly runner builds succeeded but uploaded artifacts omit five declared hidden source files (45/50 notices and 57/62 candidate files). Read-only production validation reproduces the same early missing-input failure; lifecycle and composition have no new runtime success. Eight save and thirteen C71 gates remain distinct.",
+    "crash_dispatch_20261101": {
+      "status": "implementation_and_test_harness_in_progress_not_hosted_pass",
+      "baseline": "0e691519b878a8fbbb0695392eb2a2ba9616e841",
+      "report": "docs/evidence/camera-dispatch-feedback-20261101.json",
+      "independent_binary_map": "docs/evidence/native-disable-binary-map-20261101.json",
+      "prior_composition_final": "docs/evidence/hosted-e4-composition-final-20261101.json",
+      "signature_fix": "Disable(receiver, opaque_argument), forwarding unchanged; Cleanup remains receiver-only; no +4D8 change",
+      "live_crash_fix_proven": false,
+      "full_goal_complete": false
+    }
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",

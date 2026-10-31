@@ -1,7 +1,9 @@
 # EMF frame-time feedback and separate zero-size overlay errors
 
 Status: **needs-triage**; frame-time comparison input: **needs-info**.
-Updated 2026-10-31 (Asia/Hong_Kong), against source `d207fc611be3a89351f8517fcbc37aeb18610dd4`.
+Updated 2026-11-01 (Asia/Hong_Kong). Initial review used
+`d207fc611be3a89351f8517fcbc37aeb18610dd4`; the follow-up below checks
+`0e691519b878a8fbbb0695392eb2a2ba9616e841` and the delivered e4 candidate.
 
 The user's local four-endpoint review reports EMF performance concerns and one
 client with 4,039 zero-dimension drawing errors. Raw logs, player identifiers and
@@ -9,6 +11,16 @@ screenshots are not available as public fixtures and are not uploaded here.
 That count establishes neither elapsed render time nor an EMF cause. Preserve the
 accepted VSS EMF display result, F3 alignment and stable world camera. A new
 performance complaint does not withdraw their existing, narrower acceptance.
+
+The **2026-11-01 user-delegated local review**, clarified by the user, reports
+that all three existing e4 traces contain **neither `0×0` drawing errors nor
+`Render error` records**, not merely an absence of a flood. This task did not
+receive or reread the private traces; the absence is the user's existing-log
+summary, not an independent cloud log count or continuous viewport measurement.
+The earlier 4,039 count and another machine's minimize errors belong to previous
+reports and cannot explain this round's EMF slowdown. Absence of these errors
+does not establish improved frame times or identify a performance fix; real
+matched per-frame data remains unavailable.
 
 ## Source findings and limits
 
@@ -93,6 +105,77 @@ measurements and must not appear in release notes as a speedup.
   result to report, and no invented rollback performance receipt.
 
 See [the scoped receipt](../evidence/emf-frame-review-20261031.json).
+
+## 2026-11-01 valid-viewport hot-path review
+
+The current review distinguishes a native vision **view**, a classifier/material
+invocation, an upload batch/item, an overlay draw command and a swap-chain
+**Present**. They are not interchangeable frame counters. No live frequency,
+CPU duration or GPU duration for these paths is available here.
+
+| Production boundary | Source-established work | Interpretation and measurement boundary |
+| --- | --- | --- |
+| `vision_native_view::draw` | One shared owner invokes its original native view once through the existing middleware. | Views can be nested or occur several times per presentation; no one-view-per-frame assumption. |
+| `vision_transparency::classify/reroute` | Preserves native classifier first. Large queues (`primary.len + mask.len >= 256`) build two local `HashSet` indexes; a capacity-shortage preflight can build another two before a native grow callback. Small queues use existing scans. | Repeated CPU allocation sites are confirmed by source, but their runtime count/cost is not measured. These indexes prevent repeated linear membership walks; removing them or retaining native-pointer facts across views/callbacks is not a justified optimisation. |
+| `vision_transparency::material` | Existing exact glass exclusion or one original material call, then guarded constant adjustments. | No D3D resource creation or new draw submission appears in this hook. Per-material pointer checks and native material work need separate counts, not attribution from overlay errors. |
+| `vision_constant_reuse` | Fixed per-thread 32-slot payload cache; ordinary clear changes its epoch. Item snapshots use stack scratch. A hit reuses the admitted resource; misses/fallback call native upload. Six queue admissions and existing backoff bound work. | There is no per-item heap cache allocation in this adapter. Native driver/resource creation behind a miss is not inspected by the pure cache test. |
+| Reuse environment/shader proof | Addon files are read/hashed once on first admitted EMF activation; shader snapshots, disassembly and registry allocation occur at shader construction. | First-use latency and later shader creation remain separate from warmed steady-state view work. A constructor may still occur during play; it is not assumed free. |
+| Locked `hudhook 0.8.1` DX11 Present path | One overlay render attempt precedes one original Present call. With valid dimensions, the backend creates a render-target view, uploads vertex/index/projection buffers and emits `DrawIndexed` for nonempty clipped element commands. | Common overlay cost is not EMF-specific. There is no observed calls-per-second value or proof that this explains EMF on/off differences. Multiple swap chains must not be pooled as one frame stream. |
+| Locked DX11 overlay buffers | CPU vectors are cleared with capacity retained; D3D vertex/index/projection buffers are recreated only when capacity grows. Upload uses three Map/Unmap pairs on a successful backend pass, even when geometry is empty; projection remains populated. | Distinguish repeated RTV creation/upload from buffer reallocation. Caching the RTV without a verified resize/device-loss lifetime would risk retained back-buffer references, so no speculative dependency patch is made. |
+
+The new locked-backend inspection was compared byte-for-byte to the Cargo-pinned
+crate. It identifies work sites, not an executed D3D trace. A Linux allocator
+probe used the **unchanged production `constant_reuse_policy.rs`** with a positive
+allocation control: 10,000 synthetic cache cycles / 40,000 value checks observed
+zero allocations, reallocations and frees inside construction/clear/insert/lookup.
+This excludes repeated heap allocation in that pure cache workload only; it is
+not the Windows adapter, shader registry, classifier, driver or game. No timing
+numbers were produced. See [the follow-up receipt](../evidence/emf-valid-viewport-review-20261101.json).
+
+The existing causal diagnostic build is **not a transparent measurement of the
+shipping reuse path**: `SCBL_VISION_CAUSAL_BUILD=1` makes reuse's `built()` return
+false. Production `scripts/build.py` clears that flag and enables reuse. Its
+sampled native-call CPU segments can aid a separate diagnostic investigation,
+but must not be presented as unchanged-production before/after frame timing.
+The material/final-pixel-shader observers are likewise opt-in build paths.
+
+### Isolated comparison when an already-reviewed input exists
+
+No new user capture or repeated display acceptance is requested. The existing
+offline analyzer remains the entry point; no game, observer or capture is armed.
+
+1. First use an A/A quartet with the **same exact package build** in baseline and
+   modified positions, EMF off/on in each. Keep machine, scene/camera, resolution,
+   graphics/present settings, addon set and acquisition method identical. This
+   tests measurement noise; it is not a performance fix. Repeated samples stay
+   separate. Record order and any warm-up rule in the private acquisition receipt.
+2. For a later supported implementation change, use the same four cells with
+   exact baseline/modified builds and only that change. Each analyzed steady-state
+   window must have the same finite positive viewport and at least 100 frames per
+   cell (minimum percentile rank resolution, not sufficient statistical power).
+   Do not merge machines, scenes or the three trace summaries into these cells.
+3. Preserve whole-run frames, first EMF activation, shader creation and resize/
+   zero-size intervals. Analyze predeclared warm-state positive-viewport windows
+   separately, while retaining the whole-run report and excluded interval counts;
+   never silently drop a stall. No zero-size error message is not itself a viewport
+   sample. Any absent viewport/timing field remains an input gap.
+4. Use separate documents for `present_interval_ms`, `cpu_frame_ms` and genuine
+   `gpu_frame_ms`. Present intervals can include pacing/wait and are not GPU
+   execution time. `view_us`, `tail_wall_us` and 1/128 causal-call samples are not
+   whole frames and cannot populate those fields. Compare p95/p99 only after the
+   analyzer's exact quartet, build, resolution and sample-count gates pass.
+5. If reviewed low-level counters become available, associate them with that same
+   presentation stream and interval: native views/classifier/material calls;
+   primary/colour/mask sizes and temporary allocation counts; reuse eligibility,
+   hits/misses/fallbacks; shader creations; overlay RTV creation, buffer capacity
+   growth, uploads and element draw calls. Keep constructor/cold work separate.
+   Such counters explain candidate mechanisms only after correlation; the frame
+   analyzer deliberately does not accept arbitrary counters as frame durations.
+
+Current outcome: **no reproducible timing defect or live performance improvement
+established; no runtime/UI/camera/viewport policy changed**. The two repeat-work
+sites above remain profiling candidates, not confirmed causes. Accepted VSS EMF
+visuals and all prior gameplay acceptance remain intact.
 
 ## Lower-priority launcher music
 

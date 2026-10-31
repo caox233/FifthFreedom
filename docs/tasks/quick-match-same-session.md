@@ -255,3 +255,65 @@ cases; [its artifact evidence](../evidence/hosted-feedback-linux-e4f8990.json)
 records actual source/merge binding and raw-output hashes. This is a new hosted
 result, not reuse of the earlier31 selected local tests. It does not identify
 opaque filters as real rank or establish the players' same-game outcome.
+
+## Follow routing and current runtime feedback, 2026-11-01 (Asia/Hong_Kong)
+
+Status remains **needs-triage** for the reported multiplayer failure. Three new
+local traces from the e4 candidate all enable `max_level=999`, without the former
+`allocation-range` or missing-dx9 messages. This is new runtime evidence for the
+local progression/address-table paths, not a same-room matching result. There is
+no corresponding new-version host log: the host package was the preceding
+candidate. The earlier25 host searches remain evidence from the earlier run;
+they must not be relabeled as e4 results.
+
+The additional local review finds four `eGoal_QuickMatch` transitions reaching
+SearchSessions → JoinSession → `eGoal_Run` within10 seconds each. Neither the
+character levels nor whether those players reached the same room is established.
+The available local server.log ends at22:11:19, before these four searches, and
+therefore cannot supply their host responses. A local successful transition is
+not proof that a second client entered the same game. No new private log upload,
+player contact, capture or game start is requested.
+
+Current source review and new actual handler tests distinguish two routing gaps:
+
+- The inner search's nonempty result can become empty in the existing outer
+  gameplay-mode/release filter. A new bounded DEBUG `QuickMatchResultSummary`
+  reports only pre-filter candidate count, exclusion count and final returned
+  count at `stage=post_mode`. This complements the earlier pre-mode summary;
+  neither record includes player/session IDs, endpoints or property values.
+  No admission/filter rule changes.
+- A Party member's ordinary Join to a different returned room consumes that
+  member's pending, unaccepted leader-follow invitation under the retained
+  `consume_all_invites_for_receiver` contract. The Party can remain intact while
+  its members are in separate rooms. A later explicit leader Join can create a
+  new follow generation; joining the leader's room still does not implicitly
+  remove another room membership. These are now observed production-protocol
+  outcomes, not an established defect in the users' actual request sequence.
+  No automatic room merging, forced selection, invitation-retention policy or
+  background leader retry is introduced on this evidence.
+
+The new Official/MOD schedules start with no game rooms and distinct native
+tickets. They create a Party through real Create/accept/Join calls, then combine
+serialized room protocols with actual MyMisc SetGameSession/Event/AcceptInvite
+handlers. The API fixture signs and verifies synthetic identity at the existing
+interceptor boundary; it does not open a real HTTP transport. Ordered Party plus
+solo entry reaches a stored three-member room through the returned target. The
+competing-room schedule verifies the consumed-follow split, stale acknowledgement
+refusal, new follow generation, explicit subsequent Join and explicit Leave of
+the old room before all three members converge. Another control destroys a room
+after Search and requires both Join and follow acceptance to refuse. Delayed
+delivery is made due by changing only owned fixture timestamps; production delay
+and generation checks still run.
+
+The test controller supplies these schedules and any subsequent room selection.
+No retail target-selection state machine, native notification delivery, NAT/P2P
+entry or real multiplayer game is executed. The progression improvement and
+these new handler controls do not close multiplayer matching. Current test
+commands, counts and the retained first fixture-shutdown failure are recorded in
+[the follow-route receipt](../evidence/quick-match-follow-route-20261101.json).
+The corrected expanded selection passed38, failed0, ignored0, including19
+serialized matching-protocol cases. The final-result summary's isolated
+baseline/modified/rollback/reapply use one test: baseline and rollback stop at
+the first absent post-mode record; modified and reapplied pass both mode controls.
+These diagnostic-contract failures are not reproduced player
+failures. No new hosted or real multiplayer result is implied by these runs.

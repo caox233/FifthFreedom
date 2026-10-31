@@ -16,6 +16,8 @@ scis-runtime-diagnostics = []
 # Private manual event only; no key hooks and no automatic capture.
 vss-emf-witness = []
 default = ["extended-player-capacity"]
+# Isolated owned x86 ABI fixtures only; no retail image or normal-build activation.
+camera-abi-fixture = []
 # Eight total participants, including the photographer. Native allocation stays four per team.
 extended-player-capacity = []
 # Private OB adapters. Launch remains gated until complete character isolation.
@@ -59,4 +61,4 @@ features = [
 # Native-memory fixtures need this feature even when invoked from the workspace root.
 [target.'cfg(target_os = "windows")'.dev-dependencies.windows]
 version = "0.54.0"
-features = ["Win32_System_Memory"]
+features = ["Win32_System_Memory", "Win32_System_Diagnostics_Debug", "Win32_System_Kernel"]

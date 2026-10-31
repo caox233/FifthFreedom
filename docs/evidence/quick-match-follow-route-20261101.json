@@ -1,0 +1,277 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-11-01",
+  "date_timezone": "Asia/Hong_Kong",
+  "base_commit": "0e691519b878a8fbbb0695392eb2a2ba9616e841",
+  "task_status": "needs-triage",
+  "current_feedback": {
+    "candidate": "e4f8990",
+    "local_traces_with_max_level_999": 3,
+    "allocation_range_in_those_traces": false,
+    "missing_dx9_in_those_traces": false,
+    "new_corresponding_host_log_available": false,
+    "host_package_report": "previous candidate; no new exact host package identity established here",
+    "prior_host_25_searches_reused_as_new_candidate_evidence": false,
+    "local_quickmatch_transitions": 4,
+    "observed_sequence": [
+      "SearchSessions",
+      "JoinSession",
+      "eGoal_Run"
+    ],
+    "each_transition_within_seconds": 10,
+    "per_transition_level_known": false,
+    "same_room_between_players_proven": false,
+    "available_local_server_log_end_time": "22:11:19",
+    "available_local_server_log_ends_before_four_searches": true,
+    "raw_logs_or_player_identifiers_published": false
+  },
+  "scope": {
+    "live_game_started": false,
+    "private_capture_started": false,
+    "real_udp_dispatch": false,
+    "http_transport_executed": false,
+    "native_invitation_delivery": false,
+    "retail_target_selection_verified": false,
+    "rank_values_or_saves_changed": false,
+    "filters_authentication_or_matching_policy_changed": false,
+    "new_production_behavior": "DEBUG-only final search result counts after existing mode/release filter",
+    "new_test_cases": 7,
+    "api_bridge": "cfg(test) only; synthetic signed and verified identity at interceptor boundary; real MyMisc SetGameSession/Event/AcceptInvite handlers"
+  },
+  "unchanged_production_matching_sources": [
+    {
+      "path": "src/native/server/dedicated-server/src/game_session_ex.rs",
+      "sha256": "a3e6ed294fb4efa562c00e1cd33ad9d7100e99983bceb07a1309c50a832bfb22"
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/game_session.rs",
+      "sha256": "6757a01acafc8a212c7808ed536f8b10ed4e67dacf49a1808126749ee590e496"
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/storage/mod.rs",
+      "sha256": "528b3114c50a32323ae8697a8690b9714a8f642e4ef57869093f2da13c9b6894"
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/storage/gameplay.rs",
+      "sha256": "c2114a25f78aff439a119d4421e57a2d7ac66a29132ee2bfd5dc9649a2a4d3fe"
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/storage/sessions.rs",
+      "sha256": "dd922718a96253a35a3fc3b91e8499e49c1ad6dd72ff57aeba062d558061fcb0"
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/storage/parties.rs",
+      "sha256": "5b03653fe32140ca3a83d3112badc2e0f1bc868af2804b0597cf0eedc689c77a"
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/storage/invites.rs",
+      "sha256": "206892dde7963017993b7be8f9dcde730ce859d43fb3b6ee9a5af462276583f1"
+    }
+  ],
+  "api_production_source_unchanged_except_cfg_test_module": true,
+  "scenarios": [
+    {
+      "name": "ordered Party plus solo from no game rooms",
+      "modes": [
+        "Official",
+        "MOD"
+      ],
+      "independent_native_clients": 3,
+      "actual_protocol_and_misc_calls": true,
+      "delivered_follow_kind": 3,
+      "accepted_target_from_real_participant_search": true,
+      "final_stored_room_members": 3,
+      "synthetic_payload_bytes": 496,
+      "retail_payload": false
+    },
+    {
+      "name": "member ordinary Join selects another real search result",
+      "modes": [
+        "Official",
+        "MOD"
+      ],
+      "initial_game_rooms": 0,
+      "competing_created_rooms": 2,
+      "pending_unaccepted_follow_consumed": true,
+      "party_members_remain_together": true,
+      "room_member_counts_after_split": [
+        1,
+        2
+      ],
+      "late_acknowledgement_refused": true,
+      "explicit_leader_rejoin_creates_new_follow_generation": true,
+      "joining_leader_alone_does_not_retire_old_membership": true,
+      "explicit_test_controller_target_selection_and_leaves": true,
+      "eventual_stored_room_members": 3,
+      "classification": "production contract characterization under supplied schedule; not established player failure or repaired matching policy"
+    },
+    {
+      "name": "target destroyed after Search",
+      "modes": [
+        "Official",
+        "MOD"
+      ],
+      "actual_DeleteSession": true,
+      "stale_JoinSession_denied": true,
+      "follow_acceptance_denied": true
+    },
+    {
+      "name": "inner room result removed by outer mode filter",
+      "modes": [
+        "Official",
+        "MOD"
+      ],
+      "inner_returned": 1,
+      "actual_serialized_returned": 0,
+      "wrong_mode_JoinSession_denied": true,
+      "final_debug_summary_bound_to_serialized_result": true
+    }
+  ],
+  "first_fixture_attempt": {
+    "command": "cargo test --offline --locked -p dedicated_server quick_match_protocol_ -- --nocapture",
+    "exit_code": 101,
+    "complete_summary_available": false,
+    "log_sha256": "59faff93722ef83c3afa4ca73188488366dacb19b34f3749480bc177a1849ffd",
+    "owned_test_process_terminated": "SIGTERM",
+    "reason": "New test-only current-thread runtime stalled during fixture cleanup after body assertions; changed fixture to owned two-worker runtime. No production runtime or timeout changed.",
+    "termination_record_sha256": "91a8f90f18f9530688da3504faf8c62a0c01cdb2be9de439f36c924bba4001bd",
+    "unique_low_level_stall_cause_traced": false
+  },
+  "corrected_protocol_attempt": {
+    "exit_code": 0,
+    "passed": 18,
+    "failed": 0,
+    "ignored": 0,
+    "new_follow_cases": 6,
+    "final_post_mode_case_added_after_this_build": true,
+    "log_sha256": "57af056e03300172e9ad28f752c764acb63b894804e2131aee8ef16a6db22e22"
+  },
+  "final_expanded_selection": {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "-p",
+      "dedicated_server",
+      "quick_match_",
+      "--",
+      "--nocapture"
+    ],
+    "exit_code": 0,
+    "sources": {
+      "src/native/server/dedicated-server/src/api.rs": "e87b2924cf3283e6621f9f6444edb00a8f9461639caf7f671b6a5217ae0c53a5",
+      "src/native/server/dedicated-server/src/api_quick_match_fixture.rs": "074686dcb38f0434333b286aa60f119c8e7ffbc5deafd4de3474558928fede23",
+      "src/native/server/dedicated-server/src/gameplay_modes.rs": "70e49f6570e3ce6f326b60ab6e8f05f61549af5a38c0ffc76dcc8f4b9033510f",
+      "src/native/server/dedicated-server/src/storage/quick_match_protocol_tests.rs": "b85a9f4e21118addff716e1fbcdfb773e698237564b109e26a29637c9d7f200f",
+      "src/native/server/dedicated-server/src/storage/quick_match_filter_trace_tests.rs": "4d4e616230701ac9e528ebada65736f515e7281216a25d015b0fb146cdd5352f",
+      "src/native/server/dedicated-server/src/storage/quick_match_follow_route_tests.rs": "36e7d4dc152df553a9767748953d4e826c21cf9d7c0ebf12f77a09d84ecd5230"
+    },
+    "sources_unchanged_during_run": true,
+    "log_sha256": "56fc2ba5ea988f329744accfc90f83c673f1f606fa0e16d88e6ec72e26a41601",
+    "passed": 38,
+    "failed": 0,
+    "ignored": 0,
+    "protocol_cases_included": 19,
+    "default_parallelism": true
+  },
+  "post_mode_four_roles": {
+    "base": "0e691519b878a8fbbb0695392eb2a2ba9616e841",
+    "production_file": "src/native/server/dedicated-server/src/gameplay_modes.rs",
+    "original_sha256": "e0f45593046c5c13146502b9b5c8b50c0075b839007e8a96967fa2fbee5157cd",
+    "modified_sha256": "70e49f6570e3ce6f326b60ab6e8f05f61549af5a38c0ffc76dcc8f4b9033510f",
+    "fixed_test_sources": [
+      {
+        "path": "src/native/server/dedicated-server/src/api.rs",
+        "sha256": "e87b2924cf3283e6621f9f6444edb00a8f9461639caf7f671b6a5217ae0c53a5"
+      },
+      {
+        "path": "src/native/server/dedicated-server/src/api_quick_match_fixture.rs",
+        "sha256": "074686dcb38f0434333b286aa60f119c8e7ffbc5deafd4de3474558928fede23"
+      },
+      {
+        "path": "src/native/server/dedicated-server/src/storage/quick_match_protocol_tests.rs",
+        "sha256": "b85a9f4e21118addff716e1fbcdfb773e698237564b109e26a29637c9d7f200f"
+      },
+      {
+        "path": "src/native/server/dedicated-server/src/storage/quick_match_filter_trace_tests.rs",
+        "sha256": "4d4e616230701ac9e528ebada65736f515e7281216a25d015b0fb146cdd5352f"
+      },
+      {
+        "path": "src/native/server/dedicated-server/src/storage/quick_match_follow_route_tests.rs",
+        "sha256": "36e7d4dc152df553a9767748953d4e826c21cf9d7c0ebf12f77a09d84ecd5230"
+      }
+    ],
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "-p",
+      "dedicated_server",
+      "quick_match_protocol_final_mode_can_remove_all_inner_search_results",
+      "--",
+      "--nocapture"
+    ],
+    "roles": [
+      {
+        "role": "baseline",
+        "exit_code": 101,
+        "log_sha256": "21539564e669d68f6268fa8138f52aabebae3f35d7440a4fb2ea8f02a2d0e9c0",
+        "summary": [
+          "FAILED",
+          "0",
+          "1",
+          "0"
+        ],
+        "production_sha256": "e0f45593046c5c13146502b9b5c8b50c0075b839007e8a96967fa2fbee5157cd",
+        "missing_post_mode_summary_marker": true
+      },
+      {
+        "role": "modified",
+        "exit_code": 0,
+        "log_sha256": "dc3e45dd1f619a658a82190c00c907a1401eccf0799ae0da04260a9aaaec8365",
+        "summary": [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ],
+        "production_sha256": "70e49f6570e3ce6f326b60ab6e8f05f61549af5a38c0ffc76dcc8f4b9033510f",
+        "missing_post_mode_summary_marker": false
+      },
+      {
+        "role": "rollback",
+        "exit_code": 101,
+        "log_sha256": "8d60962b13ffd9ae26bc401c1e881c3d3f404f607aeaf3468f78b6c3d21acb4d",
+        "summary": [
+          "FAILED",
+          "0",
+          "1",
+          "0"
+        ],
+        "production_sha256": "e0f45593046c5c13146502b9b5c8b50c0075b839007e8a96967fa2fbee5157cd",
+        "missing_post_mode_summary_marker": true
+      },
+      {
+        "role": "reapplied",
+        "exit_code": 0,
+        "log_sha256": "99619603a5e901368ef14b6d8d0e2c0827f1da14d1e4d00d36c4fa111ca49393",
+        "summary": [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ],
+        "production_sha256": "70e49f6570e3ce6f326b60ab6e8f05f61549af5a38c0ffc76dcc8f4b9033510f",
+        "missing_post_mode_summary_marker": false
+      }
+    ],
+    "scope": "final debug summary binds to real serialized mode filter result; no matching policy repair or player reproduction claim",
+    "execution_boundary": "Baseline/rollback stop at first mode control on absent post-mode summary; modified/reapplied execute both Official/MOD controls successfully."
+  },
+  "post_mode_four_role_receipt_sha256": "bce1d37fd830525746983c7faa6d022f61750bcb9d7efd4ec75b679e340c118b",
+  "user_issue_reproduced": false,
+  "live_matching_fixed": false,
+  "new_hosted_result_pending": true
+}

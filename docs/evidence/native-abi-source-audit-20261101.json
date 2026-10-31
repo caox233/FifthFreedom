@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "date_utc": "2026-11-01",
+  "status": "source_inventory_and_targeted_review_complete_native_abi_verification_open",
+  "source_commit": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+  "source_basis": "immutable_git_tree_no_checkout_or_production_changes",
+  "actual_new_run_identity": {
+    "source": "user_review_summary_and_public_package_receipt",
+    "receipt": "docs/evidence/complete-package-download-e4f8990.json",
+    "main_sha256": "1d5f661db61ca10954d53a140031e4359e57e5044e811ca50ef56a4f359f9893",
+    "gameplay_sha256": "60f6eee1d8c68bd4d1692510128ec4b347434917a4d54f47c587b532f6e7222e",
+    "earlier_package_mismatch_not_assumed": true
+  },
+  "table": "docs/evidence/native-abi-source-audit-20261101.md",
+  "inventory": {
+    "script": "scripts/audit_native_abi.py",
+    "script_sha256": "0a2dfbc95da192a22fbd4c25cbc5f9dcb357fe66c583dfc5b2cd4c00c3f3dfe3",
+    "command": "python3 -B scripts/audit_native_abi.py --revision e4f899072c53e2ea1079b8dd1e54616026357b21 --output .local/evidence/cloud/protocol-feedback-20261101/abi-declarations-e4.json",
+    "exit_code": 0,
+    "output_sha256": "4d60e8b24443487d42c04a0f5bd334d24e328e673a82ca1bbd3bf29d4cc18224",
+    "declarations": 245,
+    "files": 68,
+    "calling_conventions": {
+      "thiscall": 219,
+      "C": 8,
+      "cdecl": 7,
+      "stdcall": 11
+    },
+    "unknown_layouts": [
+      {
+        "file": "src/native/client/hooks/gameplay/src/ats_counter.rs",
+        "name": "RangeHook",
+        "arguments": [
+          "*mut u8",
+          "AtsEntry",
+          "*mut f32",
+          "*mut f32",
+          "*mut u32"
+        ],
+        "status": "unknown_stack_type"
+      }
+    ],
+    "scope": "Lexical static_detour declarations, including test and feature-disabled code; cfg activation unresolved.",
+    "limitations": [
+      "No retail signature/ret opcode verification or runtime execution.",
+      "Declared cleanup is not evidence that the native target uses that cleanup.",
+      "Lexical Rust subset only, not a type resolver; simple named pointer targets are treated as sized.",
+      "Raw callsite patches, indirect native function pointers and manually built vtables require separate review."
+    ]
+  },
+  "source_tool_checks": {
+    "file": "tests/ci/test_native_abi_audit.py",
+    "sha256": "5a2ad163b2d035fa0dc944d2258ffc8909a619ddc0d54675e8330b91291a8d5b",
+    "command": "python3 -B -m unittest discover -s tests/ci -p test_native_abi_audit.py -v",
+    "exit_code": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "native_execution": false,
+    "controls": [
+      "immutable Git tree reading preserves modified working file",
+      "comments and string literals excluded, disabled cfg declarations included",
+      "unsupported declaration or macro shape fails",
+      "unknown aggregate/fat pointer/aggregate return not assigned cleanup",
+      "fastcall and unsupported float receiver register allocation not guessed"
+    ]
+  },
+  "additional_confirmed_native_abi_mismatch": false,
+  "separate_confirmed_disable_evidence": "docs/evidence/native-disable-binary-map-20261101.json",
+  "open_boundaries": [
+    "EventHandler diagnostic name lookup can invoke a native virtual method before forwarding; not an established EIP=1 cause.",
+    "SCIS XML parent void/u8 declaration difference has no demonstrated stack-pop difference or native caller AL-use evidence.",
+    "Production event, receive, catalog and scope wrappers need independent assembly caller/target checks; none executed by this audit.",
+    "Same-declaration Rust fixtures and ignored external native fixtures are not proof of retail ABI.",
+    "Source inventory does not establish activation, native object lifetime, concurrent safety or retail first-throw/replication behavior.",
+    "No complete native bodies/callsite proof for reported game fingerprints; no speculative names or slot type assignment."
+  ],
+  "manually_reviewed_source_sha256": {
+    "src/native/client/hooks/src/hooks.rs": "c03c10382f7f1b991c79750c5ef7162b8dd8a6085a7762c23dcdd9afc4504b1f",
+    "src/native/client/hooks/src/hooks/storm.rs": "84a4450dfefa4e129cf03099a87107b17244076c02a0aef89bc46f142fc2d0af",
+    "src/native/client/hooks/src/hooks/quazal.rs": "15f2205d6d70496dd72da6543d742ed3faf0356ed4bfdd503b3d8b01a4fb2d44",
+    "src/native/client/hooks/src/hooks/datatypes.rs": "fd126d98cab16f42946c6a8501dd0247def1513b9962f8b9cbbaf5e459f19f82",
+    "src/native/client/hooks/hooks-config/src/lib.rs": "30f2e198c89f8731d45acbc17edc316eb5c3ed6f9168d6cd1bb3bd7887d428fb",
+    "src/native/client/hooks/gameplay/src/mac11_catalog.rs": "66fd3aac84d18cf40c55f5ce963451067d7e043dbb37a0b8a31d702d768f4045",
+    "src/native/client/hooks/gameplay/src/scis_catalog.rs": "a6949cf6cf1ebc7c7ad992200f63909179547ed9c4e6a7b3dd1851eda359c870",
+    "src/native/client/hooks/gameplay/src/scis_campaign_tests.rs": "51bc619a7df6c10e67727bc52fc350aeffd4c512c9b698280da4d260609fc8f6",
+    "src/native/client/hooks/gameplay/src/scis_scope_actor.rs": "968623e3053199e601a7591baacc3dd60fa7cbddc9924c4188c834cb4eeaa43c",
+    "src/native/client/hooks/gameplay/src/scis_preload.rs": "79f32956ba6b791f0d61267372e54753b3c571211c680d03125f8b8b8855c971",
+    "src/native/client/hooks/gameplay/src/scis_render_bank.rs": "56cc8765f17c68dc2834aacecd3fdcd0448112eceffc06ea6aa56e4188602e4d",
+    "src/native/client/hooks/gameplay/src/scis_resource_request.rs": "fae29eafc1809782de4c385c73193e12866feefb339433b43e16897a6b53ac6c",
+    "src/native/client/hooks/gameplay/src/scis_texture_request.rs": "c62503ed1c63402c923b91595fe677d822d96c8acc59b8504f348f226fda316c",
+    "src/native/client/hooks/gameplay/src/scis_sound.rs": "9166dfe228f4bdf86c83a11215391f06740d79a27f2312c0d2db2972277f330e",
+    "src/native/client/hooks/gameplay/src/scis_frame_install.rs": "6ebfd7e526137d6527145e455c65dce76bacd4ac600f51da24f3f756f9694c48",
+    "src/native/client/hooks/gameplay/src/vss_vfx.rs": "edc17018b60003ae657aa99483315f45943d9b993b39417f6b2b9c4fd6dbb7b0",
+    "src/native/client/hooks/gameplay/src/vss_attachment.rs": "eda45b7916c1d12a14adee47e58144871aeb4a2e1edc54b6d29ab522918cb5d9",
+    "src/native/client/hooks/gameplay/src/progression.rs": "d6d421a13f92fc488b1d40965b0f71a698444e7a70bfbbee4584dc126e4a025b"
+  },
+  "game_executed": false,
+  "socket_traffic_generated": false,
+  "private_logs_or_dumps_published": false,
+  "production_source_modified_by_this_audit": false
+}

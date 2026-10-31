@@ -1,6 +1,6 @@
 # 联测包身份与 DX11 定制地址表
 
-Date: 2026-10-31 (Asia/Hong_Kong). Parent baseline: `d207fc611be3a89351f8517fcbc37aeb18610dd4`.
+Updated: 2026-11-01 (Asia/Hong_Kong). Parent baseline: `d207fc611be3a89351f8517fcbc37aeb18610dd4`.
 
 ## DX11-only 表解析：可复现，最小修正等待候选实测
 
@@ -26,7 +26,7 @@ DX11 仍必需；已出现但格式错误的 DX9 不静默忽略；DX11 字段�
 
 ## 包身份：待定位，保持严格一致性
 
-Status: **needs-triage**. 用户截图中的 `RELEASE_MISMATCH` 已保留，实际截图对应的
+Status: **needs-triage** for the new-player screenshot; the November 1 local e4 installation is independently scoped below. 用户先前截图中的 `RELEASE_MISMATCH` 已保留，实际截图对应的
 启动器与房主四组件身份尚未证明；不得因为文字显示“SCBL LAN”就归咎玩家旧版或混装。
 
 本地审查补交指出九份运行记录的主 DLL `34183282…` / 玩法 DLL `50ce67c2…`
@@ -52,3 +52,38 @@ Account / Official / MOD 请求被相应错误拒绝，账号、last_login、gam
 [完整包修复步骤](../COMPLETE-PACKAGE-REPAIR.md) 给出同一内层 ZIP 校验、全新目录、
 保留原件和私人 data、正常退出旧房主、从配套服务端创建房主，以及旧组件阻断时的操作。
 修复包一致性不等于摄影机、等级匹配或电磁镜性能已修复。原日志与玩家标识不公开。
+
+## 11 月 1 日：本机 e4 身份已明确，不能再归为旧包
+
+用户在本地逐字节核验的两份内层 ZIP 均为
+`36228f99ec05938bb20addcb9891987d318991234251214da6c2b8cfda125d6e`，
+与公开 `e4f8990` 完整包一致；四个安装组件均对应该包。三次真实运行加载的主 DLL 为
+`1d5f661db61ca10954d53a140031e4359e57e5044e811ca50ef56a4f359f9893`，
+玩法 DLL 为 `60f6eee1d8c68bd4d1692510128ec4b347434917a4d54f47c587b532f6e7222e`。
+本机新启动器未观察到 `RELEASE_MISMATCH`。本轮用户端事实来自已脱敏交接；
+云端复核的是已下载官方包，未读取用户 ZIP、安装目录或私人日志。
+
+因此，不再为这台已核实机器建议重复安装，也不把其摄影机崩溃归为旧包/混装。
+这不补全另一位新玩家截图中尚未知的两端身份，也不宣称该玩家准入问题已解决。
+包身份通过不能代替摄影机、快速匹配、多人聊天或性能验收。
+
+用户另以三个真实 ZIP 的 catalog 调用 e4 生产 `ReleaseIdentity::admit`：
+SCBL LAN 1.1 与 Fifth Freedom e4 双向为 `RELEASE_MISMATCH`；前一个 Fifth Freedom
+候选向 e4 为 `PACKAGE_CATALOG_MISMATCH`；e4 对 e4 为 `Ok`。这是用户完成的离线
+合同核验，不是云端重新运行，也不是未知截图现场身份的证明。
+
+新增启动器修复提示仅在登录/注册明确收到两种拒绝时区分“发行版本不同”和
+“完整包目录校验不同”，再指导房主与加入端从**同一个完整 ZIP**启动配套组件。
+RPC 必须是 `FailedPrecondition` 且 detail 是精确 reason 或现有 `REASON: explanation`
+格式；其它状态、嵌入子串或相似前缀均不改写。兼容字符串相同不会放行，
+原生准入、账号/存档和 UI 布局均未改。
+
+真实链接生产 `AuthService` 的纯内存 transport 回归共 43 项：基线 27 通过/16 失败，
+修改 43 通过；隔离源码回滚/重应用仍为 27/16 与 43/0，退出 1/0/1/0。
+覆盖 Login/Register 的 RPC 与 response 分支、两种原因、有无说明、未知代码/相似子串、
+Unavailable/Cancelled/Internal、成功路径和 capability 取消。Python source-suite wrapper
+实际执行 C# 程序；未启动任何服务器或游戏。既有 `FinalLaunchPreparation` 只重新构建，
+未运行其 loopback 服务测试。详细输出摘要见[11/1 收据](../evidence/package-capability-feedback-20261101.json)。
+
+六条 capability `Unavailable`、一条 `Cancelled` 及首次未发现可用房主另列
+[LAN capability 与首次发现](lan-capability-discovery-feedback.md)，不并入包版本拒绝。

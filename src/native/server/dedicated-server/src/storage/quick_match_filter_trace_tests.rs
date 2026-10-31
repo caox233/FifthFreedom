@@ -8,7 +8,7 @@ impl slog::Drain for FilterTraceDrain {
     type Err = std::convert::Infallible;
     fn log(&self, record: &slog::Record, _: &slog::OwnedKVList) -> std::result::Result<(), Self::Err> {
         let message = record.msg().to_string();
-        if message.starts_with("QuickMatchFilterSummary ") {
+        if message.starts_with("QuickMatchFilterSummary ") || message.starts_with("QuickMatchResultSummary ") {
             assert_eq!(record.level(), slog::Level::Debug, "no extra routine INFO traffic");
             self.0.lock().unwrap().push(message);
         }
@@ -38,7 +38,9 @@ fn search_with_filter_trace(storage: &Arc<Storage>, client: &mut quazal::ClientI
     }).collect::<Vec<_>>();
     rows.sort_by_key(|row| row.1);
     let records = messages.lock().unwrap();
-    assert_eq!(records.len(), 1, "QUICK_MATCH_ONE_DEBUG_FILTER_SUMMARY");
+    assert_eq!(records.len(), 2, "QUICK_MATCH_PRE_AND_POST_MODE_SUMMARIES");
+    assert!(records[1].starts_with("QuickMatchResultSummary stage=post_mode "));
+    assert!(records[1].ends_with(&format!("returned={}", rows.len())), "final summary must bind to actual serialized rows");
     let record = records[0].clone();
     assert!(!record.contains("192.0.2.") && !record.contains("prudp:")
         && !record.contains("user_id") && !record.contains("session_id")
@@ -128,3 +130,27 @@ fn numeric_filter_trace_mixed_party_and_solo(mode: i64) {
 fn quick_match_protocol_official_numeric_filter_trace_mixed_party_and_solo() { numeric_filter_trace_mixed_party_and_solo(1); }
 #[test]
 fn quick_match_protocol_mod_numeric_filter_trace_mixed_party_and_solo() { numeric_filter_trace_mixed_party_and_solo(2); }
+
+#[test]
+fn quick_match_protocol_final_mode_can_remove_all_inner_search_results() {
+    for mode in [1, 2] {
+        let storage = Arc::new(create_test_storage(&format!("quick-match-final-mode-{mode}")));
+        insert_accounts(&storage, 2);
+        for user in 1..=2 {
+            maintenance_begin_run(&storage, user, &format!("{user:032x}"), if user == 1 { 3 - mode } else { mode });
+            storage.register_urls(user, vec![format!("prudp:/address=192.0.2.{user};port=13000;sid={user};type=2")]).unwrap();
+        }
+        let mut host = maintenance_native_client(&storage, 1);
+        let mut caller = maintenance_native_client(&storage, 2);
+        assert!(discover_all_rooms(&storage, &mut caller).is_empty());
+        let room = create_public_room(&storage, &mut host);
+        let (rows, pre_mode) = search_with_filter_trace(&storage, &mut caller,
+            vec![Property { id: 113, value: 0 }, Property { id: 103, value: 2_165_463_540 }]);
+        assert!(pre_mode.contains("returned=1"), "real inner filter found a compatible-attribute room");
+        assert!(rows.is_empty(), "the caller receives the actual post-mode result");
+        assert!(matches!(call_room(&storage, &mut caller, 42, 22, join_request(room)), Err(Error::AccessDenied)));
+        assert_eq!(storage.game_session_diagnostics(room.0, room.1).unwrap().unwrap().2, vec![1]);
+        println!("QUICK_MATCH_FINAL_MODE mode={mode} inner_returned=1 serialized_returned=0 wrong_mode_join_denied=true levels_not_inferred=true");
+        run(storage.pool.close()).unwrap();
+    }
+}
