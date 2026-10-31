@@ -5,8 +5,7 @@ Date: 2026-10-31 (Asia/Hong_Kong). Parent baseline: `d207fc611be3a89351f8517fcbc
 ## DX11-only 表解析：可复现，最小修正等待候选实测
 
 Status: **ready-for-human** for the corrected candidate's actual loader acceptance.
-Hosted Windows verification of this revision is still pending here; use the final
-candidate delivery receipt for the actual hosted result.
+Hosted Windows now verifies the actual eight custom-file controls and five release-admission controls; see the [exact e4 evidence](../evidence/hosted-native-production-e4f8990.json) and [complete candidate](../DEVELOPMENT-CANDIDATE-TESTING.md). This is not a reconstruction of the unknown real launcher/server identities.
 
 用户交接：两台机器、四份运行记录各三条 `missing field dx9`。本地先前已用实际
 `SavedAddresses` / `load_custom_addresses` 做 Windows only-DX11 B1/M0/R1；

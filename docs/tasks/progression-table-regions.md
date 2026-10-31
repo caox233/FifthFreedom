@@ -1,6 +1,6 @@
 # Progression table allocation-range refusal
 
-Status: **ready-for-agent**. Recorded2026-10-31 (Asia/Hong_Kong).
+Status: **needs-triage** for the four live refusals; controlled Windows source correction verified. Recorded2026-10-31 (Asia/Hong_Kong).
 
 The private-log review reports four runs keeping the retail56-row curve after
 `allocation-range` and five enabling the999-row curve. It does not retain the
@@ -47,3 +47,15 @@ The shared native production replay runner provides this lane; Linux protocol
 tests alone cannot establish its result. Even after that controlled regression
 passes, the four real `allocation-range` cases and actual multiplayer matching
 remain unconfirmed until a candidate's targeted runtime outcome is available.
+
+
+The exact `e4f8990` Windows component job `41195418269 / 124520488334`
+now executes this lane in all four roles. Baseline/rollback each reproduce the
+two specified failed assertions; modified/reapplied each pass both real Windows
+memory tests, with zero ignored tests. The original production bytes and compiled
+test source hashes are bound separately in the
+[official four-role receipt](../evidence/hosted-native-production-e4f8990.json).
+This progression source needs no address translation. It establishes the bounded
+single-allocation/multiple-region correction and negative controls; it does not
+execute the retail allocator, prove actual heap-block extent or explain the four
+reported allocation-range refusals or real greater-than56 matching symptom.

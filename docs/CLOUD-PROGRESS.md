@@ -1,5 +1,22 @@
 # Cloud implementation evidence
 
+## Current feedback candidate — e4f8990, 2026-10-31 (Asia/Hong_Kong)
+
+[Download and focused tests](DEVELOPMENT-CANDIDATE-TESTING.md) now identify the
+complete e4 Windows Local package. Actual build197UI/27save checks and independent
+65file/fouridentity/UTF8 checksum verification pass. The program ZIP SHA256 is
+`36228f99ec05938bb20addcb9891987d318991234251214da6c2b8cfda125d6e`.
+The [new native four-role result](evidence/hosted-native-production-e4f8990.json)
+executes87camera checks per role: baseline/rollback exactly35specified failures,
+modified/reapplied zero; progression reproduces2failures before/rollback and
+passes2checks after/reapply. All8lane outputs are independently revalidated.
+This verifies bounded production decisions with shared synthetic address/leaf
+instrumentation, not a retail first-throw body or the reported crash cause.
+[New WPF](evidence/hosted-ui-direct-e4f8990.json) and
+[source](evidence/hosted-feedback-source-e4f8990.json) evidence bind the same source;
+672images equal the already inspected d40 images. The original evidence below,
+C71 gap, Public prerequisites and all live boundaries remain preserved.
+
 ## Playtest feedback in progress — 2026-10-31 (Asia/Hong_Kong)
 
 The original d207fc6 workspace, d05f584 knowledge snapshot and both recovery

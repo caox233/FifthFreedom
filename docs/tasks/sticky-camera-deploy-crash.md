@@ -1,7 +1,7 @@
 # 摄影机投出闪退与音频回调生命周期
 
-Status: **needs-triage**（原始多端闪退）；本轮有界源码防护等待 Windows
-四角色执行及联测，不能登记为投出闪退已经修复。
+Status: **needs-triage**（原始多端闪退）；本轮有界源码防护已通过真实 Windows
+四角色回归，等待集中联测，不能登记为投出闪退已经修复。
 
 ## 联测反馈保留
 
@@ -67,7 +67,7 @@ End/Start 回调销毁或替换、资源/世界变更、嵌套发布，以及引
 二进制由本次 Cargo JSON 选择并校验 i386 PE，源文件、可执行文件、输出均记录 SHA256。
 它独立于 C71 的 13 份尚缺审核输入，不代替、放松或填充那些输入。
 
-云端已实际执行的结果、编译范围及 Windows 待执行状态见
+早期云端结果、编译范围及当时的 Windows 待执行状态见
 [源码收据](../evidence/sticky-camera-lifecycle-source-20261031.json)。
 原手势 5 项在 Linux 实际通过；这不等于原生 Windows/游戏运行通过。
 最初 Python runner 的拒绝控制 10 项通过；动态转接修正后的拒绝/可逆转换控制
@@ -109,10 +109,41 @@ port 0 元数据 1 项等实际成功结果一并保留在
 
 同一可逆转接函数用于 B/M/R/RP；只修改私有测试源码副本，release 生产文件不改。
 未经过转接的直接 callback 测试会在前置条件处明确失败，不跳过也不访问原地址。
-新 Windows 执行仍待正式 CI；87/35 只是固定预期，不能因为 Linux typecheck 或
-Python 13 项通过而记成摄影机回放、progression 或原始闪退已经通过。
+这项修正提交前，87/35 仍只是固定预期，Linux typecheck 和 Python 13 项通过
+不能证明 Windows 执行。后续正式 CI 的实际四角色结果单独记录如下。
 
 开发者请按 [构建文档的专用 Windows 命令](../BUILD.md#摄影机与等级表的专用-windows-四角色回归)
 运行 `python -B scripts/ci_native_production_replay.py --output <新的输出目录>`。
 它要求已提交源码和已获取的固定公开基线；普通 `cargo test` 没有测试地址转接，
 会明确报 `STICKY_SHARED_TEST_ADDRESS_TRANSLATION_REQUIRED`，不会跳过后输出通过。
+
+## 实际 Windows 四角色闭环（e4f8990）
+
+源码 `e4f899072c53e2ea1079b8dd1e54616026357b21` 的官方候选运行
+[`41195418269`](https://github.com/caox233/FifthFreedom/actions/runs/41195418269)
+中，Windows 组件任务 `124520488334` 成功。实际 checkout 的 PR merge 为
+`abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d`，与源码 HEAD 的 tree 完全一致。
+四角色均真实编译成功并执行，不再停在固定地址申请前置条件：
+
+| 角色 | 摄影机 Rust 测试 | 新 callback 检查 | progression Rust 测试 |
+| --- | --- | --- | --- |
+| baseline | 9 通过、1 个预期失败 | 87 项，精确 35 个指定断言失败 | 0 通过、2 个指定失败 |
+| modified | 10 通过、0 失败 | 87 项，0 失败 | 2 通过、0 失败 |
+| rollback | 9 通过、1 个预期失败 | 87 项，精确 35 个指定断言失败 | 0 通过、2 个指定失败 |
+| reapplied | 10 通过、0 失败 | 87 项，0 失败 | 2 通过、0 失败 |
+
+所有列出的测试 `ignored=0`。新 callback 子进程包含在外层 10 个 Rust 测试内，
+不另加一次通过数。B/R 的负控退出码为 101，编译全部退出 0；M/RP 退出 0。
+progression 的 M/RP 实际完成八种无效内存/容量反例；B/R 在容量 998 的
+`variant=5` 与同分配跨 region 正例分别触发指定失败。
+
+云端已下载组件证据 artifact `13041390637`，校验 ZIP CRC、官方 SHA256、
+全部四角色的编译/执行输出哈希，并用该提交的严格 parser 再次核对原始输出。
+三份生产源码的原字节、追加测试模块后的字节、共同地址转接后的编译字节分别
+核对 SHA256；逆变换逐字节还原到公开 Git 对象。可执行文件 i386/哈希由官方
+Windows runner 记录，证据 ZIP 不含该测试 PE，云端未另行下载或执行它。
+详见[正式执行收据](../evidence/hosted-native-production-e4f8990.json)。
+
+这闭合了有界同步重入与等级表内存准入的源码回归；它没有建立原始首投闪退、
+另一次写异常或高等级快速匹配失败的因果关系。真实投出/复制/声音/引爆指令、
+多端联测和 C71 的 13 个保留输入仍保持原边界；前两轮真实失败记录继续保留。

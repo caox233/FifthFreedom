@@ -203,3 +203,14 @@ manual audit. The small-window96DPI text remains smaller under the retained
 Viewbox. Physical-monitor/IME/game acceptance, Public readiness, camera and
 multiplayer/performance issues remain separate; this visual artifact is not the
 complete development candidate.
+
+
+The next source `e4f8990` keeps the entire launcher and visual runner unchanged.
+Its new actual WPF run **41195418280** also passed. [The new artifact receipt](../evidence/hosted-ui-direct-e4f8990.json)
+binds the PR merge `abdc1c2b` to the exact source tree and independently checks the
+new downloaded ZIP digest/CRC plus all672 PNG hashes/dimensions. All672 images
+and all512 scenario frame records (geometry, focus and checks) are identical to
+the reviewed d40 artifact. Therefore the prior representative image review
+applies to these same pixels; no repeated manual review of unchanged images is
+claimed. B/R still have96 expected state failures each; M/RP each pass12,944
+checks with no frame errors. No UI source was changed for this follow-up.

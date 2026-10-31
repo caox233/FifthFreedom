@@ -125,3 +125,10 @@ game-run admission/heartbeat outcomes against the distinct refusal transitions
 with the local reviewer. A public candidate should preserve these guards and
 the focused regressions. No new private-log upload or repeated user capture is
 requested by this task.
+
+
+The exact e4 Windows component lane now executes the four authenticated protocol
+feedback controls and one actual port-zero metadata-reader test successfully;
+[the official native result](../evidence/hosted-native-production-e4f8990.json)
+retains their output hashes. This does not explain the799 distinct live requests
+or prove the upstream origin or harmlessness of the nine port-zero sends.

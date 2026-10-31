@@ -237,7 +237,7 @@ erase or explain the earlier SQLite initialization failure.
 
 Four reviewed runtime records retained the56-row progression curve after
 `allocation-range`; five enabled the999-row extension. A concrete single-memory-
-region refusal is being addressed independently in
+region refusal now has an independent controlled Windows regression in
 [the progression task](progression-table-regions.md). This is neither proof that
 all four real rejections share that cause nor proof of a matching failure.
 No real level, XP, token count or save is changed to make clients converge.
@@ -247,3 +247,11 @@ mixed Parties on the same server/mode, checking the actual same-room outcome.
 It must distinguish empty search, filtered rooms, client target choice, departure
 restoration and P2P/game entry. Existing offline controls do not replace this
 multiplayer check, and no new private capture or automatic game start is requested.
+
+
+The exact e4 hosted Linux LAN suite also executes547 tests successfully,
+including the12 serialized matching-protocol controls and retained empty-lobby
+cases; [its artifact evidence](../evidence/hosted-feedback-linux-e4f8990.json)
+records actual source/merge binding and raw-output hashes. This is a new hosted
+result, not reuse of the earlier31 selected local tests. It does not identify
+opaque filters as real rank or establish the players' same-game outcome.
