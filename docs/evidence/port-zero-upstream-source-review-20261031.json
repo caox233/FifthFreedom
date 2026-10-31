@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "status": "upstream_source_trace_complete_observed_port_zero_origin_unconfirmed",
+  "reviewed_at_utc": "2026-10-31T10:44:48.921262+00:00",
+  "source_commit": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+  "reviewer": "independent protocol-feedback agent",
+  "reported_observation": {
+    "trace_summaries": 9,
+    "send_failures_per_trace": 1,
+    "destination_port": 0,
+    "winsock_error": 10049,
+    "raw_traces_read_or_published": false
+  },
+  "source_sha256": {
+    "src/native/client/hooks/src/hooks/storm.rs": "84a4450dfefa4e129cf03099a87107b17244076c02a0aef89bc46f142fc2d0af",
+    "src/native/client/hooks/src/hooks.rs": "c03c10382f7f1b991c79750c5ef7162b8dd8a6085a7762c23dcdd9afc4504b1f",
+    "src/native/client/hooks/src/hooks/quazal.rs": "15f2205d6d70496dd72da6543d742ed3faf0356ed4bfdd503b3d8b01a4fb2d44",
+    "src/native/client/hooks/src/lib.rs": "06a7ab49f91803749f23e39ca35e9d01f5a9d4bad2de9f53f0d3b3e3f1f3db31",
+    "src/native/client/hooks/src/api/source_transport.rs": "69798548e7f8db92dae3ea0b9324560451f5583ce92feaf786ae7b220039811a",
+    "src/native/server/quazal/src/config.rs": "d9751e60a5ead345faadd8ab9ffafa1ff38ffb56931c365ff6429c27cd4d6eaa",
+    "src/native/server/quazal/src/rmc/types.rs": "6ed12fd37f5e17defbab51120b546687adf1ae0968a6414ce426dcb0bc57d5cf",
+    "src/native/server/quazal/src/lib.rs": "615b3b972ed50a7cd87fbd2f003d1949a9daa7eb8af7a4290661047b4eca8add",
+    "src/native/server/quazal/src/prudp.rs": "eb909de22efb611c2545756bc552af182c2c831774b67487befeb04d91a1c56f",
+    "src/native/server/dedicated-server/config/src/lib.rs": "f7436f0ad3f1ef124527b39a8220bc9985e89cb0a4b858ddee2bd33aaf928b37",
+    "src/native/server/dedicated-server/src/lan_runtime.rs": "7848ed32f85bd1dcba8da261212fbe78c7b2a61456702ff169a2eff5d3845a02",
+    "src/native/server/dedicated-server/src/public_preflight.rs": "2aca4cd59c99fde806f8a5726ca6bb0f856ee4bd5da34f55490ee83ef4f8578a",
+    "src/native/server/dedicated-server/src/ticket.rs": "1a1fef39f77f44a223b30bc51a79d3130722d59d8b273aa608da131b30baa66b",
+    "src/native/server/dedicated-server/src/secure.rs": "afa94c56a0791d18af1dbec3b060ba98de1a934bda6f9a99dd4709b8f956d477",
+    "src/native/server/dedicated-server/src/main.rs": "8e24f791617aa8f24e0bb323ef98d87b604ac41e4ed060405ee93843ae98f278",
+    "src/native/server/dedicated-server/src/nat_traversal.rs": "ccc1c03264a982204bae7239ae417eb06f55156aa239d36af196d3494090db1b",
+    "src/native/server/dedicated-server/src/game_session.rs": "6757a01acafc8a212c7808ed536f8b10ed4e67dacf49a1808126749ee590e496",
+    "src/native/server/dedicated-server/src/game_session_ex.rs": "a3e6ed294fb4efa562c00e1cd33ad9d7100e99983bceb07a1309c50a832bfb22",
+    "src/native/server/dedicated-server/src/storage/station_urls.rs": "d8b5428ee3195e31cea07631873f5bb860852f4bcf6704a85ea59528cd619921",
+    "src/launcher/src/Services/LanConnection.cs": "6a9f96ed7d86daa331424850be03e65ac28885a55aaa94a90e9a23f4656f751a",
+    "src/launcher/src/Services/LanPresenceService.cs": "3171a8dcc859e07164c2b38212f30ce43ca966995bf97b28b44414b489e6592c",
+    "docs/development-reference/historical-replays/INDEX.json": "9fc3d3f1055f92eba036d5a274741c7afca344eccf7348a2b3a988b2b0c3afc4"
+  },
+  "production_chains": [
+    {
+      "name": "Winsock boundary",
+      "at": [
+        "src/native/client/hooks/src/hooks/storm.rs:207",
+        "src/native/client/hooks/src/hooks/storm.rs:299",
+        "src/native/client/hooks/src/hooks/storm.rs:329",
+        "src/native/client/hooks/src/hooks/storm.rs:535",
+        "src/native/client/hooks/src/hooks/storm.rs:1365"
+      ],
+      "result": "The process ws2_32 sendto detour snapshots a complete caller IPv4 sockaddr, optionally binds the configured local address, then forwards original destination/payload arguments. Read failure produces None, not Some(0). Explicit bind preserves its requested port; forced bind uses local port 0 for ephemeral source assignment. Neither assigns a zero destination. The captured error follows the actual SendToHook call and is restored after logging.",
+      "limit": "The detour does not identify the upstream instruction or the station/config field consumed by the native sender. It observes all hooked sends in the process, not an identified RMC method."
+    },
+    {
+      "name": "Config and default endpoints",
+      "at": [
+        "src/native/client/hooks/src/hooks.rs:1383",
+        "src/native/server/quazal/src/config.rs:197",
+        "src/native/server/dedicated-server/config/src/lib.rs:78",
+        "src/native/server/dedicated-server/src/lan_runtime.rs:47",
+        "src/native/server/dedicated-server/src/public_preflight.rs:53",
+        "src/launcher/src/Services/LanConnection.cs:85"
+      ],
+      "result": "Patch-free getaddrinfo redirection changes the online-config host for service 80 and retains the service argument. Generated LAN normal/smoke configs explicitly carry auth/secure ports 21126/21127 or 22126/22127. Public construction starts from typed defaults and validates 21126/21127. Launcher capability validation refuses zero service ports. No automatic zero service endpoint is created by these normal builders.",
+      "limit": "The real launcher/server config identities for the nine traces are not established here; validation of capability ports does not validate every native station URL or optional discovery setting."
+    },
+    {
+      "name": "Authentication return contains an optional zero-valued field",
+      "at": [
+        "src/native/server/dedicated-server/src/ticket.rs:103",
+        "src/native/server/quazal/src/rmc/types.rs:35",
+        "src/native/server/quazal/src/rmc/types.rs:65"
+      ],
+      "result": "get_connection_data builds the regular endpoint from configured listen/secure address. It also returns an empty lst_special_protocols with url_special_protocols=StationURL::default(), whose serializer emits an empty scheme/address and port 0.",
+      "limit": "This proves a zero-valued protocol field exists, not that native code consumes it as a UDP destination despite the empty special-protocol list. Its field must not be deleted or filled with a guessed port without the native consumer contract."
+    },
+    {
+      "name": "Secure registration and kernel peer ownership",
+      "at": [
+        "src/native/server/quazal/src/prudp.rs:312",
+        "src/native/server/quazal/src/prudp.rs:562",
+        "src/native/server/quazal/src/prudp.rs:591",
+        "src/native/server/quazal/src/lib.rs:109",
+        "src/native/server/dedicated-server/src/secure.rs:41",
+        "src/native/server/dedicated-server/src/main.rs:174"
+      ],
+      "result": "recv_from supplies the peer; ClientInfo preserves that endpoint through SYN/CONNECT ownership checks. Secure registration and user-packet echo derive returned address/port from that observed peer, not default StationURL or untrusted registration claims.",
+      "limit": "The reviewed source is not a replay of the observed handshake or proof of the peer values in the nine traces."
+    },
+    {
+      "name": "Room and NAT forwarding preserve explicit client ports",
+      "at": [
+        "src/native/server/quazal/src/rmc/types.rs:43",
+        "src/native/server/dedicated-server/src/game_session.rs:350",
+        "src/native/server/dedicated-server/src/storage/station_urls.rs:8",
+        "src/native/server/dedicated-server/src/game_session_ex.rs:64",
+        "src/native/server/dedicated-server/src/nat_traversal.rs:33"
+      ],
+      "result": "StationURL requires a parseable u16 port but permits explicit 0. RegisterURLs may normalize only the address; it persists the port. Search encodes nonempty parseable host URL lists, including an explicit zero if submitted. NAT forwarding clones url_station_to_probe while selecting the recipient socket from the authenticated connection registry. Missing ports fail parsing rather than becoming zero.",
+      "limit": "This is a possible propagation route for an explicit zero claim, not evidence that any reported client submitted one or that native peer code attempted its send. PRUDP virtual ports 1/15 are distinct from the UDP socket destination."
+    },
+    {
+      "name": "Raw online-config branch outside current builder chain",
+      "at": [
+        "src/native/server/quazal/src/config.rs:252",
+        "src/native/server/dedicated-server/src/public_preflight.rs:53",
+        "src/native/server/dedicated-server/src/lan_runtime.rs:58"
+      ],
+      "result": "The Raw set_ips branch replaces the entire SandboxUrlWS value with the public IP and therefore drops its port. The only reviewed production set_ips call constructs typed defaults; LAN writes the complete Raw value directly and does not then call set_ips. The typed branch preserves the port.",
+      "limit": "Source-only latent branch issue, not a demonstrated trigger of this candidate or the observed sends. No production patch made from this unrelated branch."
+    },
+    {
+      "name": "Separate source-port-zero paths",
+      "at": [
+        "src/native/client/hooks/src/api/source_transport.rs:110",
+        "src/launcher/src/Services/LanConnection.cs:72",
+        "src/launcher/src/Services/LanPresenceService.cs:80"
+      ],
+      "result": "Native API uses TCP local bind port 0, then a fixed destination. Launcher route selection sends no packet; its discovery/presence socket binds a local ephemeral port then sends to the configured discovery port. These source binds do not assign the game caller UDP destination."
+    }
+  ],
+  "remaining_unknowns": [
+    "No complete admitted native UDP endpoint-construction/consumption body or originating send callsite was identified in the reviewed source/reference index.",
+    "The aggregate one-per-trace count does not establish timing, payload length, an RMC request/response correlation, or whether initialization, an optional probe or a propagated station claim supplied the zero.",
+    "A complete zero-valued sockaddr snapshot does not by itself prove accidental zero initialization or establish that the failure is harmless.",
+    "The nine port-zero events are not causally joined to camera deployment, quick matching or the 799 distinct protocol-10/method-1 refusals. Those refusals retain their admission predicates and separate issue scope."
+  ],
+  "changes_and_execution": {
+    "production_changed": false,
+    "protocol_fields_removed": false,
+    "ports_rewritten": false,
+    "authentication_weakened": false,
+    "tests_executed_by_this_review": false,
+    "game_or_capture_started": false,
+    "native_fixture_or_real_handshake_replayed": false
+  },
+  "verification_scope": "Static production call/data-flow review plus source SHA checks. Existing parser regressions and unrelated hosted results are not presented as reproduction of this upstream origin."
+}

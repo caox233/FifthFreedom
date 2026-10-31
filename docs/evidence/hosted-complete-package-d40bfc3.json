@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "recorded_date_hong_kong": "2026-10-31",
+  "source_commit": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+  "source_tree": "7b626b0caeeddceff9bce19efdbdbe90284a8194",
+  "actual_package_checkout": "4778c5044738d34a43586587407f2ad93f315e1b",
+  "source_and_merge_tree_equal": true,
+  "candidate_run": 41193432848,
+  "candidate_event": "pull_request",
+  "full_windows_job": 124514732298,
+  "full_windows_job_conclusion": "success",
+  "artifact": {
+    "id": 13040138235,
+    "name": "windows-complete-candidate-4778c5044738d34a43586587407f2ad93f315e1b",
+    "size_in_bytes": 73028316,
+    "digest": "sha256:6405ec4b8a37dc73ea14fc44d43777b28d4d8e59e0351165cd782b05d9e190e2",
+    "created_at": "2026-10-31T10:52:17Z",
+    "expires_at": "2026-11-14T10:52:13Z",
+    "expired": false
+  },
+  "download_url": "https://github.com/caox233/FifthFreedom/actions/runs/41193432848/artifacts/13040138235",
+  "outer_download_digest_matches": true,
+  "complete_program": {
+    "archive": "fifth-freedom-1.1.0-migration1-program.zip",
+    "archive_bytes": 73302311,
+    "archive_sha256": "1feece94af31b9ce010457999c4c6da8314730a4093bf395c98a142a8bfb2bc2"
+  },
+  "build_result_sha_matches": true,
+  "official_smoke_receipt": {
+    "schema": 1,
+    "lane": "windows-package-smoke",
+    "commit": "4778c5044738d34a43586587407f2ad93f315e1b",
+    "tracked_source_dirty": false,
+    "github_actions": true,
+    "run_id": "41193432848",
+    "run_attempt": "1",
+    "complete_package": true,
+    "game_executed": false,
+    "live_acceptance": false,
+    "deployed": false,
+    "published": false,
+    "launcher_probes": [
+      {
+        "flag": "--self-test",
+        "passed": 197,
+        "failed": 0,
+        "exit_code": 0,
+        "game_executed": false
+      },
+      {
+        "flag": "--lan-tools-self-test",
+        "passed": 27,
+        "failed": 0,
+        "exit_code": 0,
+        "game_executed": false
+      }
+    ],
+    "archive_sha256": "1feece94af31b9ce010457999c4c6da8314730a4093bf395c98a142a8bfb2bc2",
+    "status": "package_no_game_checks_passed",
+    "exit_code": 0
+  },
+  "independent_verification": "complete-package-download-d40bfc3.json",
+  "delivery_status": "complete_package_built_and_download_verified_new_native_four_roles_not_yet_executed",
+  "separate_windows_components": "Failed at synthetic baseline fixed-address reservation before87 callback checks; progression and modified/rollback/reapplied were not executed. Do not count this as the expected behavioral baseline failure.",
+  "separate_c71": "13 reviewed fixture inputs absent;0executed. Not a Windows package input requirement.",
+  "visual_evidence": "hosted-ui-direct-d40bfc3.json",
+  "game_executed": false,
+  "formal_release": false
+}

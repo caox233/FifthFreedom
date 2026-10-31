@@ -94,6 +94,20 @@ boundary check, not a reproduction of the upstream caller or a claim that port
 fake successful send. Upstream producer and first-use lifecycle remain
 **needs-triage**.
 
+The [upstream source review](../evidence/port-zero-upstream-source-review-20261031.json)
+traces generated service endpoints, native authentication return fields,
+SYN/CONNECT peer ownership, room URL storage/search and NAT forwarding. Normal
+LAN/Public builders use explicit nonzero ports. Two zero-valued inputs remain
+distinct: the empty optional special-protocol endpoint returned with an empty
+special-protocol list, and an explicit client-supplied station port 0 that the
+room/NAT path can preserve. Neither is linked to the nine actual sends without
+the native consumer/callsite; no protocol field or port is changed on speculation.
+The Raw online-config IP-rewrite branch also drops a `SandboxUrlWS` port, but the
+current production rewrite uses typed defaults and LAN writes its complete Raw
+value directly, so this separate latent branch is not assigned as the cause.
+This follow-up is static review with file hashes, not another parser test or a
+real handshake replay. Authentication and all separate refusal boundaries remain.
+
 ## Version and remaining boundaries
 
 The reviewed real runs' main/native gameplay component hashes match the earlier

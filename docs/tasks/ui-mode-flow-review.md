@@ -107,8 +107,9 @@ the original live/gameplay boundaries are not closed by this delivery.
 
 ## 2026-10-31 direct-controls correction
 
-Status: **ready-for-agent** for the new hosted visual/full-package checks; the
-previous dcb package remains historical evidence, not validation of this change.
+Status: **hosted UI verification passed** for source `d40bfc3`; unified-package
+verification is tracked separately. The previous dcb package remains historical
+evidence, not validation of this change.
 The user clarified that general UI feedback did not authorize a redesigned main
 screen. The comparison baseline for this correction is the delivered source tree
 at `d207fc611be3a89351f8517fcbc37aeb18610dd4`.
@@ -172,3 +173,33 @@ flushed before capture, without modifying the bitmap afterwards. These follow-up
 changes cross-compile and pass16 portable UI contracts; new hosted renders and
 inspection are still required. No overall visual or complete-candidate pass is
 claimed for72e92af.
+
+
+The follow-up actual WPF run **41193432884** passed for source `d40bfc3`
+(PR merge `4778c504`, identical tree). [Its verified receipt](../evidence/hosted-ui-direct-d40bfc3.json)
+records the downloaded official ZIP, digest/CRC and all **672** PNG hashes and
+dimensions. Baseline/rollback each reproduce exactly96 requested state failures
+(48 per new direct-control requirement), with no unrelated failures. Modified/
+reapplied each pass128 scenarios and **12,944** checks, including all five direct
+editors/actions and both entry-focus checks on actual forward/backward HWND focus
+routes. Original 72e failures remain intact.
+
+The earlier missing-glyph observation above is **explicitly corrected**: it was
+a display-preview anomaly, not a confirmed product or PNG defect. All160
+modified/reapplied PNG pairs are byte-identical and each extracted PNG matches
+the official ZIP. Reopening the same bytes shows the complete title, top-right
+and footer. The cited Chinese96DPI gameplay image also has the exact same SHA
+`5df2044669205c1c57f41c2db812890fa3dc0cdcfda8586c0e54e0986527f99c`
+in the old72e run. Therefore the added Render flush is not claimed to have fixed
+missing glyphs. No image was edited and no further product/probe change was made
+for that viewing impression.
+
+Nineteen original representative images were inspected across all eight states,
+both languages, both sizes and96/120/144/192 root DPI, including dirty direct
+controls, compact settings, long Public addresses, discovery, multiple-host join,
+create confirmation and cancellation. This is representative manual review plus
+complete hash/dimension verification, not a claim that every image received
+manual audit. The small-window96DPI text remains smaller under the retained
+Viewbox. Physical-monitor/IME/game acceptance, Public readiness, camera and
+multiplayer/performance issues remain separate; this visual artifact is not the
+complete development candidate.

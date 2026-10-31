@@ -12,8 +12,26 @@ bundles remain preserved. This turn handles the user's
 [separate native ticket/port-zero investigation](tasks/protocol-feedback.md).
 [EMF frame comparison](tasks/emf-performance-feedback.md) has no real input and
 therefore no measured performance-improvement claim. The actual linked tests,
-initial failures and limited correction claims are retained per task; new
-Windows production replay, WPF pictures and unified package remain pending.
+initial failures and limited correction claims are retained per task.
+
+Published `d40bfc3` passes [hosted source checks](evidence/hosted-feedback-source-d40bfc3.json)
+and [Linux component contracts](evidence/hosted-feedback-linux-d40bfc3.json).
+[Actual WPF evidence](evidence/hosted-ui-direct-d40bfc3.json) contains672 verified
+PNGs; modified/reapplied each128scenarios and12,944checks pass, including direct
+controls, Reset and both actual keyboard routes. Representative original images
+were inspected. The earlier missing-glyph viewing impression is explicitly
+corrected: original PNG bytes contain the glyphs, and paired160images match.
+
+The [complete Windows job](evidence/hosted-complete-package-d40bfc3.json) also
+succeeds with packagedUI197/save27. Its actual downloaded ZIP has65files,
+63manifest entries,64UTF8 checksum rows and four verified component identities.
+This intermediate package remains separate from the failed component regression:
+the new camera fixture could not reserve an absolute synthetic page, so its87
+callback checks, progression and later roles did not execute. The strict parser
+refused to treat initialization failure as the expected35 behavioral assertions.
+The common test-only address instrumentation is being corrected; no live crash,
+matching or performance fix is inferred. Original checkpoints and new published
+source/knowledge recovery bundles remain independently restorable.
 
 The earlier dcb run has now ended: every full-package/component/composition job
 succeeded and the sole failed job is the independent C71 missing-input gate.

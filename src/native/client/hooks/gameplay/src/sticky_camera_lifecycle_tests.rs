@@ -2,7 +2,7 @@
 //! replaced. The fresh child owns synthetic memory; no game/native body replay,
 //! process attach, packet, GPU, asset import or capture is performed here.
 use super::*;
-use std::{cell::{Cell, RefCell}, ffi::c_void};
+use std::cell::{Cell, RefCell};
 
 const TEST_NAME: &str = "sticky_camera_sound::lifecycle_replay::sticky_camera_lifecycle_callbacks";
 const CHILD: &str = "FF_STICKY_CAMERA_FIXTURE_CHILD";
@@ -24,32 +24,21 @@ fn check(ok:bool,case:&str) {
     CHECKS.with(|c|c.set(c.get()+1));
     if !ok { FAILURES.with(|f|f.borrow_mut().push(case.to_owned())); }
 }
-#[link(name="kernel32")] extern "system" {
-    fn VirtualAlloc(p:*mut c_void,n:usize,kind:u32,protect:u32)->*mut c_void;
-    fn VirtualFree(p:*mut c_void,n:usize,kind:u32)->i32;
-    fn GetCurrentProcess()->*mut c_void;
-    fn FlushInstructionCache(h:*mut c_void,p:*const c_void,n:usize)->i32;
-}
-struct Pages(Vec<usize>);
-impl Pages {
+// The four-role runner translates only the two logical read addresses and
+// four synthetic native leaves to these process-owned dynamic allocations.
+// No retail-address reservation, memory protection change or machine-code
+// patch is required. Production decisions still use their original constants.
+struct OwnedBindings { _info_slot: Mem, _camera_vtable: Mem }
+impl OwnedBindings {
     unsafe fn new()->Self {
-        let mut p=Self(Vec::new());
-        for (base,protection) in [(0x3390000usize,0x04),(0x540000,0x40),(0x680000,0x40),
-            (0x2ab0000,0x04),(0xad0000,0x40),(0xaa0000,0x40)] {
-            assert_eq!(VirtualAlloc(base as _,0x10000,0x3000,protection) as usize,base,"owned fixture reservation");
-            p.0.push(base);
-        }
-        for (site,target) in [(0x544000usize,audio as usize),(0x6843d0,stop as usize),
-            (0xad3ea0,available as usize),(0xaa5280,trigger as usize)] {
-            let mut b=call(site,target);b[0]=0xe9;
-            std::ptr::copy_nonoverlapping(b.as_ptr(),site as *mut u8,b.len());
-            assert_ne!(FlushInstructionCache(GetCurrentProcess(),site as _,b.len()),0);
-        }
-        put(CAMERA as usize,0x7b0,0xad3ea0);put(CAMERA as usize,0x7b4,0xaa5280);
-        p
+        let info_slot=Mem::new(4);let mut camera_vtable=Mem::new(0x800);
+        camera_vtable.w(0x7b0,0xad3ea0);camera_vtable.w(0x7b4,0xaa5280);
+        crate::sticky_camera_runtime::lifecycle_fixture::bind_addresses(
+            info_slot.p(),camera_vtable.p(),[audio as usize,stop as usize,available as usize,trigger as usize]);
+        Self{_info_slot:info_slot,_camera_vtable:camera_vtable}
     }
 }
-impl Drop for Pages {fn drop(&mut self){unsafe{for &p in &self.0{assert_ne!(VirtualFree(p as _,0,0x8000),0);}}}}
+impl Drop for OwnedBindings {fn drop(&mut self){crate::sticky_camera_runtime::lifecycle_fixture::clear_addresses();}}
 unsafe fn put(p:usize,o:usize,v:u32) { ((p+o) as *mut u32).write_unaligned(v); }
 #[inline(never)]
 unsafe extern "thiscall" fn original(_:usize) { count(3); }
@@ -105,7 +94,18 @@ unsafe extern "thiscall" fn audio(camera:usize,event:usize,_:u32,_:f32,_:u32,_:u
 }
 struct Mem(Vec<u32>);
 impl Mem {
-    fn new(bytes:usize)->Self {Self(vec![0;bytes/4+1])}
+    fn from_words(words:Vec<u32>)->Self {
+        let p=words.as_ptr() as usize;
+        let end=p.checked_add(words.len().checked_mul(4).unwrap()).unwrap();
+        // A real heap object must never also look like a logical test token.
+        // A collision is an explicit fixture prerequisite failure, not a
+        // different class/offset or a silently translated actor read.
+        for logical in [0x339e5a0usize,0x02ab095c,0x544000,0x6843d0,0xad3ea0,0xaa5280] {
+            assert!(logical<p||logical>=end,"STICKY_OWNED_MEMORY_LOGICAL_TOKEN_COLLISION");
+        }
+        Self(words)
+    }
+    fn new(bytes:usize)->Self {Self::from_words(vec![0;bytes/4+1])}
     fn p(&self)->usize {self.0.as_ptr() as usize}
     fn w(&mut self,o:usize,v:u32) {self.0[o/4]=v;}
 }
@@ -121,7 +121,7 @@ impl Scene {
         s.pawn.w(0,0x02ad3234);s.pawn.w(0x20,4);s.pawn.w(0x144,s.world.p() as u32);s.pawn.w(0x374,0x40000);
         s.camera.w(0,CAMERA);s.camera.w(0x20,5);s.camera.w(0x144,s.world.p() as u32);s.camera.w(0x8d4,s.pawn.p() as u32);s.camera.w(0x860,2);
         s.start.w(0,EVENT);s.start.w(0x20,6);s.end.w(0,EVENT);s.end.w(0x20,7);
-        put(0x339e5a0,0,s.info.p() as u32);
+        put(crate::sticky_camera_runtime::lifecycle_fixture::info_slot(),0,s.info.p() as u32);
         let voice=Voice{start:object(s.start.p()).unwrap(),end:object(s.end.p()).unwrap(),delay:0.07};
         {let mut b=BANK.lock().unwrap();b.requests.clear();b.shots.clear();
             b.ready=Some(Ready{world:object(s.world.p()).unwrap(),manager:object(s.manager.p()).unwrap(),voices:[voice;4]});}
@@ -144,7 +144,15 @@ impl Drop for Scene {fn drop(&mut self){
 }}
 unsafe fn replay() {
     println!(); // keep case markers separate from Rust's nocapture test prefix
-    let _pages=Pages::new();
+    // A plain cargo-test invocation has not applied the reviewed test-only
+    // address translation. Refuse before any native leaf rather than touching
+    // retail addresses or silently counting an unexecuted fixture as a pass.
+    assert_eq!(word as *const () as usize,
+        crate::sticky_camera_runtime::lifecycle_fixture::read_word as *const () as usize,
+        "STICKY_SHARED_TEST_ADDRESS_TRANSLATION_REQUIRED");
+    assert!(crate::sticky_camera_runtime::lifecycle_fixture::translated_read_is_active(),
+        "STICKY_SHARED_TEST_ADDRESS_TRANSLATION_REQUIRED");
+    let _bindings=OwnedBindings::new();
     crate::sticky_camera_runtime::lifecycle_fixture::initialize(original,sender);
     // These are production eligibility boundaries, not an implementation of
     // retail throw/replication. Native leaves record calls instead of spawning.
@@ -165,7 +173,7 @@ unsafe fn replay() {
         check(s.counts()==[0,0,0,1,0],"unready_assets_keep_native_whistle_leaf");
     }
     {
-        let s=Scene::new();let mut copied=Mem(s.camera.0.clone());copied.w(0x20,31);
+        let s=Scene::new();let mut copied=Mem::from_words(s.camera.0.clone());copied.w(0x20,31);
         check(try_whistle(s.camera.p())&&try_whistle(copied.p()),"separate_replica_records");
         cancel(s.camera.p());check(BANK.lock().unwrap().shots.len()==1,"one_copy_cleanup_preserves_other");
         cancel(copied.p());check(s.counts()==[2,2,0,0,0],"two_copy_pairs_close_once");
@@ -241,8 +249,8 @@ fn sticky_camera_lifecycle_callbacks() {
     if std::env::var_os(CHILD).as_deref()==Some(std::ffi::OsStr::new("1")) {
         unsafe{replay();}return;
     }
-    // Fixed reservations belong to a dedicated process, not other concurrent
-    // unit tests and never another application. No callback panics across ABI.
+    // The address binding and detour state belong to a dedicated process, not
+    // other concurrent unit tests or another application. No callback panics across ABI.
     let result=std::process::Command::new(std::env::current_exe().unwrap())
         .args(["--exact",TEST_NAME,"--nocapture","--test-threads=1"]).env(CHILD,"1").output().unwrap();
     let out=String::from_utf8_lossy(&result.stdout);let err=String::from_utf8_lossy(&result.stderr);

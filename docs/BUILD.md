@@ -109,3 +109,20 @@ python scripts/build.py verify --package "C:\path\to\package"
 版本、发布身份和兼容身份必须同批更新。先运行 `python scripts/release_ci.py check --tag v1.1.0` 检查，再构建；`prepare` 和 `publish` 仅用于以后经确认的 GitHub Actions，不能伪造云端环境来给本地包标注云端来源。
 
 正式构建入口会清理继承的 RUSTFLAGS、CARGO_ENCODED_RUSTFLAGS、CARGO_BUILD_RUSTFLAGS 和 CARGO_TARGET_*_RUSTFLAGS，防止私有诊断配置混入正式包；开发者仍可直接使用 Cargo 显式选择诊断 feature。
+
+## 摄影机与等级表的专用 Windows 四角色回归
+
+在已提交、无源码改动的 Windows checkout 中准备上述 x86 MSVC/Rust 工具链后，
+使用专用入口；若是浅克隆，先获取固定的公开基线：
+
+```powershell
+git fetch --no-tags origin d207fc611be3a89351f8517fcbc37aeb18610dd4
+python -B scripts/ci_native_production_replay.py --output artifacts/ci/native-production-replay-manual
+```
+
+输出必须是新目录，重复运行请另取目录名，保留旧收据。runner 在私有副本中为
+四角色共同应用可逆的测试地址转接，实际执行 synthetic Windows fixture；
+不启动游戏，也不替代 C71 输入。直接运行普通 `cargo test` 不会应用该转接，
+摄影机 callback fixture 会在 native 叶之前明确报
+`STICKY_SHARED_TEST_ADDRESS_TRANSLATION_REQUIRED`，不能把它当成通过或游戏失败。
+详见[摄影机任务与验收边界](tasks/sticky-camera-deploy-crash.md)。

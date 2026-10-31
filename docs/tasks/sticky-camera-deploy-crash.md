@@ -51,7 +51,8 @@ Status: **needs-triage**（原始多端闪退）；本轮有界源码防护等�
 
 `sticky_camera_lifecycle_tests.rs` 调用实际 production sound、Whistle 和引爆
 execute 路径，只有原声音播放/停止、原 Whistle、发送和可用性/引爆叶函数换成
-同进程计数回调。固定内存页只在独立测试子进程中申请，测试不启动、附加或写入游戏。
+同进程计数回调。原固定页版本在独立测试子进程中申请地址，首次 Windows 执行在申请阶段失败；
+下面记录真实失败及动态内存修正。测试不启动、附加或写入游戏。
 场景包括本机/复制角色的边界、未部署/资源未就绪、两个独立设备、清理与重新部署、
 End/Start 回调销毁或替换、资源/世界变更、嵌套发布，以及引爆的正常和失效身份分支。
 这些不是实际投出、复制、引爆的原生指令回放。
@@ -59,7 +60,9 @@ End/Start 回调销毁或替换、资源/世界变更、嵌套发布，以及引
 固定预期为 87 条 callback 检查；既有手势/世界合同加该测试共 10 个 Rust 测试。
 [四角色 runner](../../scripts/ci_native_production_replay.py) 在独立临时源码副本中
 只切换 `d207fc6` 与修改后的三份生产文件（另含 progression lane），固定其余依赖和
-测试；旧文件只追加 `cfg(test)` 模块声明。编译失败不能计为基线失败。B/R 必须执行
+测试；旧文件追加 `cfg(test)` 模块声明，随后四角色共同应用明确记录的测试地址转接。
+原生产字节、追加模块后的字节与用于编译的测试字节分别记录 SHA256，并要求逆变换
+逐字节还原；插桩源码不能冒充零改动的 retail 指令。编译失败不能计为基线失败。B/R 必须执行
 原代码并出现指定的 35 条 callback 断言失败；M/RP 必须实际通过全部 87 条。
 二进制由本次 Cargo JSON 选择并校验 i386 PE，源文件、可执行文件、输出均记录 SHA256。
 它独立于 C71 的 13 份尚缺审核输入，不代替、放松或填充那些输入。
@@ -67,7 +70,8 @@ End/Start 回调销毁或替换、资源/世界变更、嵌套发布，以及引
 云端已实际执行的结果、编译范围及 Windows 待执行状态见
 [源码收据](../evidence/sticky-camera-lifecycle-source-20261031.json)。
 原手势 5 项在 Linux 实际通过；这不等于原生 Windows/游戏运行通过。
-Python runner 的拒绝控制 10 项通过，只证明结果解析和准入，不证明 Windows 执行。
+最初 Python runner 的拒绝控制 10 项通过；动态转接修正后的拒绝/可逆转换控制
+现为 13 项实际通过。这只证明结果解析和准入，不证明 Windows 执行。
 
 下一统一候选的集中联测只针对新失败：房主及两个客户端分别投出/收到摄影机、
 组件尚未就绪时取消/销毁、重复部署及换局，记录是否同窗退出；继续保留用户已通过
@@ -82,3 +86,33 @@ Windows 作业 `124509994860` 在 Python 源码检查阶段失败：TAR 成员 `
 POSIX/Windows 根路径、drive-relative、UNC、反斜杠及 ADS 反例。
 [实际失败与最小修正](../evidence/hosted-feedback-runner-path-72e92af.json)保留日志摘要、
 明确的 0 原生执行和新 SHA 的 Windows 待执行状态；生产源码、fixture、87/35 条件不变。
+
+
+## 首次真实 Windows 执行及动态 fixture 修正
+
+`d40bfc3` 的官方组件任务 `41193432848 / 124514693989` 已实际编译 baseline
+测试 PE 并执行：保留的 9 个手势/世界测试通过，新子进程却在第一项
+`VirtualAlloc(0x3390000)` 返回 NULL 时失败，**87 条新 callback 检查均未开始**，
+progression、M、R、RP 也未执行。没有记录 GetLastError/现有映射，不能唯一断言
+是 ASLR 或哪一块内存占用。严格 runner 因缺失指定断言而拒绝这一失败，
+没有把「9 通过、1 失败」误记为预期负控。源码门禁此前已通过，
+本轮的 DX11 地址文件 8 项、release admission 5 项、认证/重传 4 项、
+port 0 元数据 1 项等实际成功结果一并保留在
+[官方失败及成功收据](../evidence/hosted-native-fixture-failure-d40bfc3.json)。
+
+修正仅涉及 fixture/runner：用 Rust 自有动态内存保存测试全局槽和虚拟表，
+不再尝试占用 retail 绝对地址。三组精确的逻辑地址/偏移读被转接到这些槽，
+其余读仍原样进入 `equipment_native::word` 及真正的 Windows VirtualQuery。
+四个既定 native 叶调用的目标转为 synthetic `thiscall` 叶函数；原参数、签名、
+类常量、槽值比较、分支和执行顺序不变。自有内存若与逻辑 token 碰巧重叠，
+须明确拒绝该 fixture，不能把真实对象误译为测试全局。
+
+同一可逆转接函数用于 B/M/R/RP；只修改私有测试源码副本，release 生产文件不改。
+未经过转接的直接 callback 测试会在前置条件处明确失败，不跳过也不访问原地址。
+新 Windows 执行仍待正式 CI；87/35 只是固定预期，不能因为 Linux typecheck 或
+Python 13 项通过而记成摄影机回放、progression 或原始闪退已经通过。
+
+开发者请按 [构建文档的专用 Windows 命令](../BUILD.md#摄影机与等级表的专用-windows-四角色回归)
+运行 `python -B scripts/ci_native_production_replay.py --output <新的输出目录>`。
+它要求已提交源码和已获取的固定公开基线；普通 `cargo test` 没有测试地址转接，
+会明确报 `STICKY_SHARED_TEST_ADDRESS_TRANSLATION_REQUIRED`，不会跳过后输出通过。

@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Original d207fc6 source and d05f584 knowledge checkpoints and bundle hashes preserved. Current feedback implementation restores direct main MOD/Official/FOV with inline drafts; UI source contracts16 and persistence21 pass, WPF crossbuild passes. Actual address-loader four roles reproduce3 failures before/rollback and8 passes after/reapply; full crate18 and release admission5 pass. Quick-match selected31 and protocol feedback4 pass without changing matching/authentication policy. Camera/progression production boundaries and strict synthetic Windows four-role runner are implemented; hosted native execution, new actual WPF and full package remain pending. No live crash/matching/performance fix is claimed.",
-  "NEXT_EXECUTABLE_ACTION": "Publish the reviewed archive-path and actual-WPF observer corrections, rerun exact-source GitHub checks, require actual camera/progression Windows four-role evidence and inspected WPF renders, then download and verify the new complete candidate ZIP. Retain72e source/WPF failures and cancelled package work. Preserve six goals and separate live/C71/Public boundaries.",
+  "LAST_CONFIRMED_RESULT": "Published d40bfc3 source and52ed194 knowledge snapshots are preserved with new standalone verified recovery bundles. Exact d40 hosted source passes (Linux711+2skips,Windows594+119skips); actual WPF M/RP each128scenarios12944checks pass,672PNG verified and representative images inspected. Full Windows package job124514732298 succeeds with UI197/save27; downloaded65files/fouridentities/UTF8checksums verified. Component job124514693989 fails at synthetic fixed-address reservation before87callbacks; progression and laterroles not executed. This is fixture initialization failure, not a confirmed product crash or accepted behavioral baseline. Source/live investigations remain separate.",
+  "NEXT_EXECUTABLE_ACTION": "Publish the reviewed dynamically owned synthetic fixture after a clean source check, then rerun actual Windows four-role regression and full candidate. Shared address instrumentation roundtrips all12 role/source combinations; both i686 MSVC typechecks and13Pythoncontrols pass, but no newWindows result exists yet. Retain d40 package/WPF successes and fixture initialization failure separately. Deliver verified ZIP with precise live/C71/Public boundaries and preserve all sixgoals.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -1781,7 +1781,7 @@
   "active_playtest_feedback": {
     "task": "docs/tasks/playtest-feedback-20261031.md",
     "baseline": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
-    "status": "first_hosted_source_and_wpf_failures_retained_minimal_corrections_await_new_hosted_execution",
+    "status": "d40_source_wpf_complete_package_verified_native_fixture_initialization_failure_under_correction",
     "raw_private_evidence_received_in_cloud": false,
     "game_started": false,
     "live_root_causes_confirmed": false,
@@ -1798,12 +1798,18 @@
     "new_complete_candidate_verified": false,
     "first_hosted_failure": "docs/evidence/hosted-feedback-runner-path-72e92af.json",
     "source_clean_check": {
-      "commit": "5227af491d385bae7b25f21a3be25bf43f1650be",
+      "commit": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
       "executed": 713,
       "passed": 711,
       "skipped": 2,
       "exit_code": 0
     },
-    "first_hosted_visual_failure": "docs/evidence/hosted-ui-direct-failure-72e92af.json"
+    "first_hosted_visual_failure": "docs/evidence/hosted-ui-direct-failure-72e92af.json",
+    "latest_hosted_source": "docs/evidence/hosted-feedback-source-d40bfc3.json",
+    "latest_actual_wpf": "docs/evidence/hosted-ui-direct-d40bfc3.json",
+    "intermediate_complete_package": "docs/evidence/hosted-complete-package-d40bfc3.json",
+    "intermediate_zip_download_verified": true,
+    "new_feedback_native_regression_completed": false,
+    "native_fixture_failure": "docs/evidence/hosted-native-fixture-failure-d40bfc3.json"
   }
 }

@@ -30,6 +30,32 @@ INSTRUMENTATION = {
     PREFIX + "sticky_camera_runtime.rs": '\n#[cfg(test)]\n#[path="sticky_camera_lifecycle_runtime_fixture.rs"]\npub(crate) mod lifecycle_fixture;\n',
     PREFIX + "progression.rs": '\n#[cfg(test)]\n#[path = "progression_region_tests.rs"]\nmod region_tests;\n',
 }
+SHARED_ADDRESS_TRANSLATION = {
+    PREFIX + "sticky_camera_sound.rs": {
+        "word_import": "use crate::equipment_native::{float, patch, readable, signature, word, writable};",
+        "without_word": "use crate::equipment_native::{float, patch, readable, signature, writable};",
+        "leaf_literals": ["0x544000usize", "0x6843d0usize"],
+    },
+    PREFIX + "sticky_camera_runtime.rs": {
+        "word_import": "use crate::equipment_native::{word, float, readable};",
+        "without_word": "use crate::equipment_native::{float, readable};",
+        "leaf_literals": ["0x00ad3ea0usize", "0x00aa5280usize"],
+    },
+}
+TRANSLATED_WORD_IMPORT = """
+#[cfg(test)]
+use crate::sticky_camera_runtime::lifecycle_fixture::read_word as word;
+#[cfg(not(test))]
+use crate::equipment_native::word;"""
+TRANSLATED_LEAF_HELPER = """
+// Shared test-only address instrumentation; never applied to release sources.
+#[cfg(test)]
+fn lifecycle_replay_address(address:usize)->usize {
+    crate::sticky_camera_runtime::lifecycle_fixture::native_address(address)
+}
+#[cfg(not(test))]
+fn lifecycle_replay_address(address:usize)->usize {address}
+"""
 LANES = {
     "sticky-camera": {"selector": "sticky_camera", "modified_passed": 10, "baseline_passed": 9, "baseline_failed": 1,
                       "required_failure": "STICKY_CALLBACK_EXPECTATION_FAILED"},
@@ -61,6 +87,50 @@ def write(path: Path, value: dict) -> None:
 
 def git(*args: str) -> bytes:
     return subprocess.check_output(["git", *args], cwd=ROOT)
+
+
+def instrument_source(name: str, raw: bytes, baseline: bool) -> tuple[bytes, dict]:
+    """Identical reversible address-only seams for both real source versions."""
+    if name not in INSTRUMENTATION:
+        raise ValueError("PRODUCTION_REPLAY_SOURCE_NAME_INVALID")
+    module = raw + INSTRUMENTATION[name].encode("utf-8") if baseline else raw
+    text = module.decode("utf-8")
+    replacements = []
+    specification = SHARED_ADDRESS_TRANSLATION.get(name)
+    if specification:
+        old = specification["word_import"]
+        new = specification["without_word"] + TRANSLATED_WORD_IMPORT
+        replacements.append((old, new))
+        for literal in specification["leaf_literals"]:
+            replacements.append((f"std::mem::transmute({literal})",
+                                 f"std::mem::transmute(lifecycle_replay_address({literal}))"))
+        for old, new in replacements:
+            if text.count(old) != 1 or new in text:
+                raise ValueError("PRODUCTION_REPLAY_ADDRESS_SEAM_SOURCE_MISMATCH")
+            text = text.replace(old, new)
+        if "fn lifecycle_replay_address" in text:
+            raise ValueError("PRODUCTION_REPLAY_ADDRESS_SEAM_ALREADY_PRESENT")
+        text += TRANSLATED_LEAF_HELPER
+    compiled = text.encode("utf-8")
+    # Prove that no unrelated statement or native constant was rewritten.
+    restored = text
+    if specification:
+        if not restored.endswith(TRANSLATED_LEAF_HELPER):
+            raise ValueError("PRODUCTION_REPLAY_ADDRESS_SEAM_ROUNDTRIP_FAILED")
+        restored = restored[:-len(TRANSLATED_LEAF_HELPER)]
+        for old, new in reversed(replacements):
+            if restored.count(new) != 1:
+                raise ValueError("PRODUCTION_REPLAY_ADDRESS_SEAM_ROUNDTRIP_FAILED")
+            restored = restored.replace(new, old)
+    if restored.encode("utf-8") != module:
+        raise ValueError("PRODUCTION_REPLAY_ADDRESS_SEAM_ROUNDTRIP_FAILED")
+    original = module[:-len(INSTRUMENTATION[name].encode("utf-8"))] if baseline else module
+    if original != raw:
+        raise ValueError("PRODUCTION_REPLAY_MODULE_APPEND_ROUNDTRIP_FAILED")
+    return compiled, {"canonical_production_sha256": sha(raw), "module_appended_sha256": sha(module),
+                      "compiled_test_source_sha256": sha(compiled), "exact_reverse_to_module_source": True,
+                      "exact_reverse_to_canonical_source": True,
+                      "shared_address_replacements": [{"from": old, "to": new, "occurrences": 1} for old, new in replacements]}
 
 
 def inspect_result(lane: str, phase: str, exit_code: int, stdout: str, stderr: str) -> dict:
@@ -204,9 +274,19 @@ def main() -> int:
                 # changes CRLF to LF; no arbitrary production edits are hidden.
                 if (ROOT / name).read_bytes().replace(b"\r\n", b"\n") != modified[name].replace(b"\r\n", b"\n"):
                     raise RuntimeError("PRODUCTION_REPLAY_TRACKED_SOURCE_CHANGED")
+        compiled_baseline = {name: instrument_source(name, baseline[name], True) for name in INSTRUMENTATION}
+        compiled_modified = {name: instrument_source(name, modified[name], False) for name in INSTRUMENTATION}
         receipt["source_files"] = {name: {"baseline_sha256": sha(baseline[name]), "modified_sha256": sha(modified[name]),
-            "baseline_test_only_append": append, "instrumented_baseline_sha256": sha(baseline[name] + append.encode("utf-8"))}
+            "baseline_test_only_append": append,
+            "baseline_test_instrumentation": compiled_baseline[name][1], "modified_test_instrumentation": compiled_modified[name][1]}
             for name, append in INSTRUMENTATION.items()}
+        receipt["shared_test_address_translation"] = {
+            "same_transform_for_all_four_roles": True, "source_map": SHARED_ADDRESS_TRANSLATION,
+            "word_import": TRANSLATED_WORD_IMPORT, "leaf_helper": TRANSLATED_LEAF_HELPER,
+            "read_translation_tuples": [["0x339e5a0", "0"], ["0x02ab095c", "0x7b0"], ["0x02ab095c", "0x7b4"]],
+            "other_reads_forwarded_to_production": True, "release_tracked_source_changed": False,
+            "scope": "private cfg(test) source copy only; synthetic heap slots and native thiscall leaves, not relocated retail instructions",
+        }
         fixture_names = [PREFIX + name for name in ("sticky_camera_lifecycle_tests.rs", "sticky_camera_lifecycle_runtime_fixture.rs", "progression_region_tests.rs")]
         receipt["fixed_test_sources"] = {name: sha(git("show", head + ":" + name)) for name in fixture_names}
         import build
@@ -219,12 +299,13 @@ def main() -> int:
             receipt["unchanged_dependency_tree"] = git("rev-parse", head + "^{tree}").decode("ascii").strip()
             for phase in ("baseline", "modified", "rollback", "reapplied"):
                 old = phase in {"baseline", "rollback"}
-                role = {"name": phase, "production_files": {}, "lanes": {}}
+                role = {"name": phase, "canonical_production_files": {}, "compiled_test_source_files": {}, "lanes": {}}
                 receipt["roles"].append(role)
-                for name, append in INSTRUMENTATION.items():
-                    data = baseline[name] + append.encode("utf-8") if old else modified[name]
+                for name in INSTRUMENTATION:
+                    data, transformation = (compiled_baseline if old else compiled_modified)[name]
                     (checkout / name).write_bytes(data)
-                    role["production_files"][name] = sha(data)
+                    role["canonical_production_files"][name] = transformation["canonical_production_sha256"]
+                    role["compiled_test_source_files"][name] = sha(data)
                 command = [str(cargo), "test", "--locked", "-p", "scbl-gameplay", "--lib", "--no-run", "--message-format=json"]
                 built = run_command(command, checkout / "src/native", env, output, phase + "-compile", 1800)
                 role["compile"] = built
@@ -242,9 +323,10 @@ def main() -> int:
                         (output / result["stdout"]).read_text(encoding="utf-8"), (output / result["stderr"]).read_text(encoding="utf-8"))
                     write(output / "receipt.json", receipt)
                     print(f"PASS native-source-replay {phase} {lane} {result['checks']}", flush=True)
-            if (receipt["roles"][0]["production_files"] != receipt["roles"][2]["production_files"]
-                    or receipt["roles"][1]["production_files"] != receipt["roles"][3]["production_files"]):
-                raise RuntimeError("PRODUCTION_REPLAY_ROLE_SOURCE_MISMATCH")
+            for field in ("canonical_production_files", "compiled_test_source_files"):
+                if (receipt["roles"][0][field] != receipt["roles"][2][field]
+                        or receipt["roles"][1][field] != receipt["roles"][3][field]):
+                    raise RuntimeError("PRODUCTION_REPLAY_ROLE_SOURCE_MISMATCH")
         receipt["status"] = "passed"
         write(output / "receipt.json", receipt)
         return 0

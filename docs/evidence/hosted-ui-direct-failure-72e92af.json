@@ -231,5 +231,25 @@
   },
   "physical_monitor_IME_game_acceptance": false,
   "game_or_network_started": false,
-  "raw_private_logs_or_user_screenshots_published": false
+  "raw_private_logs_or_user_screenshots_published": false,
+  "followup_completion": {
+    "date_hong_kong": "2026-10-31",
+    "source_commit": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+    "run_id": 41193432884,
+    "conclusion": "success",
+    "receipt": "docs/evidence/hosted-ui-direct-d40bfc3.json",
+    "baseline_and_rollback_failures_each": 96,
+    "modified_and_reapplied_failures_each": 0,
+    "original_144_failures_unchanged": true,
+    "capture_observation_correction": {
+      "previous_impression": "A preview of Chinese 96-DPI gameplay-edit images appeared to omit title, top-right and footer text. This was initially interpreted as possible capture/glyph invalidation trouble.",
+      "status": "withdrawn_display_preview_anomaly_not_confirmed_product_or_png_defect",
+      "proof": "Official-ZIP member verification and byte comparisons show all 160 modified/reapplied PNG pairs identical. Reopening the same original bytes shows complete title/top-right/footer text. The cited Chinese 96-DPI image is also byte-identical to its old 72e run image, so the Render flush cannot be credited with repairing missing glyphs.",
+      "example_path": "settings-gameplay-zh-CN-96-1120x680.png",
+      "same_image_sha256_in_old72e_and_both_d40_phases": "5df2044669205c1c57f41c2db812890fa3dc0cdcfda8586c0e54e0986527f99c",
+      "images_edited": false,
+      "further_product_or_observer_code_change_made_for_impression": false,
+      "historical_144_check_failures_retained_in": "docs/evidence/hosted-ui-direct-failure-72e92af.json"
+    }
+  }
 }

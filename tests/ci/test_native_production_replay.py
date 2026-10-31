@@ -155,6 +155,56 @@ class TestCargoIdentity(unittest.TestCase):
             with self.subTest(name=name), self.assertRaises(ValueError):
                 replay.extract_checkout(archive.getvalue(), self.root / 'checkout')
 
+class TestSharedAddressInstrumentation(unittest.TestCase):
+    def sample(self, name):
+        spec = replay.SHARED_ADDRESS_TRANSLATION[name]
+        return (spec['word_import'] + '\n' + '\n'.join(
+            'let leaf = std::mem::transmute(' + literal + ');' for literal in spec['leaf_literals'])
+            + '\nconst UNRELATED_PIN: u32 = 0x02ab095c;\n').encode('utf-8')
+
+    def test_same_exact_address_seam_and_reverse_applies_to_both_source_roles(self):
+        for name in replay.SHARED_ADDRESS_TRANSLATION:
+            raw = self.sample(name)
+            base, before = replay.instrument_source(name, raw, True)
+            modified, after = replay.instrument_source(name, raw, False)
+            self.assertEqual(before['shared_address_replacements'], after['shared_address_replacements'])
+            self.assertEqual(before['canonical_production_sha256'], replay.sha(raw))
+            self.assertEqual(after['canonical_production_sha256'], replay.sha(raw))
+            for compiled, record, baseline in ((base, before, True), (modified, after, False)):
+                restored = compiled.decode('utf-8')
+                self.assertTrue(restored.endswith(replay.TRANSLATED_LEAF_HELPER))
+                restored = restored[:-len(replay.TRANSLATED_LEAF_HELPER)]
+                for change in reversed(record['shared_address_replacements']):
+                    self.assertEqual(restored.count(change['to']), 1)
+                    restored = restored.replace(change['to'], change['from'])
+                expected = raw + replay.INSTRUMENTATION[name].encode() if baseline else raw
+                self.assertEqual(restored.encode(), expected)
+                self.assertIn(b'const UNRELATED_PIN: u32 = 0x02ab095c;', compiled)
+                self.assertEqual(record['compiled_test_source_sha256'], replay.sha(compiled))
+
+    def test_unknown_duplicated_or_preinstrumented_address_sites_fail_closed(self):
+        for name, spec in replay.SHARED_ADDRESS_TRANSLATION.items():
+            raw = self.sample(name)
+            changes = (raw.replace(spec['word_import'].encode(), b'use unexpected::word;'),
+                       raw + ('\n' + spec['word_import']).encode(),
+                       raw.replace(spec['leaf_literals'][0].encode(), b'0xdeadbeefusize'))
+            compiled, _ = replay.instrument_source(name, raw, False)
+            for changed in (*changes, compiled):
+                with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'ADDRESS_SEAM'):
+                    replay.instrument_source(name, changed, False)
+
+    def test_actual_current_sources_preserve_non_test_imports_and_progression_bytes(self):
+        for name in replay.INSTRUMENTATION:
+            raw = (ROOT / name).read_bytes()
+            compiled, record = replay.instrument_source(name, raw, False)
+            self.assertEqual(record['canonical_production_sha256'], replay.sha(raw))
+            if name in replay.SHARED_ADDRESS_TRANSLATION:
+                self.assertIn(b'#[cfg(not(test))]\nuse crate::equipment_native::word;', compiled)
+                self.assertIn(b'#[cfg(not(test))]\nfn lifecycle_replay_address(address:usize)->usize {address}', compiled)
+            else:
+                self.assertEqual(compiled, raw)
+                self.assertEqual(record['shared_address_replacements'], [])
+
 
 if __name__ == '__main__':
     unittest.main()
