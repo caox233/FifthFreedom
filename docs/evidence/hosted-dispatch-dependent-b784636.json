@@ -180,18 +180,168 @@
       "job": {
         "id": 124606016432,
         "name": "Same-run owned overlay and native development composition",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "started_at": "2026-10-31T17:27:18Z",
-        "completed_at": null
+        "completed_at": "2026-10-31T17:39:12Z"
       },
-      "observed_at_utc": "2026-10-31T17:36:49.786309+00:00",
-      "active_steps": [
-        "Build this job's exact guard3 core and CLI after all 35 finite contracts"
-      ],
-      "receipt_verified": false,
-      "result_claimed": false,
-      "next_action": "If completed, independently download its exact receipt and verify cases/cleanup; current observation is not admission."
+      "artifact": {
+        "id": 13051637921,
+        "name": "owned-overlay-native-development-receipt-aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+        "size_in_bytes": 1752,
+        "digest": "sha256:0feb383fcd208ed3647ec546395f39a44266606044bb658d42874904fefd059e"
+      },
+      "official_digest_size_crc_verified": true,
+      "receipt_sha256": "96605eb7bbfee8fe042482f3929f298220c68c34e97fa1aa3bd9526780073fd8",
+      "containment_sha256": "59a61a5bb64e550a0629fd25bc4d6716519d410d3b51ae2624752fa658996569",
+      "receipt": {
+        "schema": "ff-owned-overlay-native-stack-development-v1",
+        "status": "owned_stack_development_verified",
+        "scope": {
+          "transport": "tcp",
+          "purpose": "owned-isolated-development",
+          "production_admission": false,
+          "ordinary_public_enabled": false,
+          "game_executed": false,
+          "complete_client_package": false,
+          "runtime_binary_uploaded": false,
+          "raw_runtime_output_retained": false
+        },
+        "cases": [
+          {
+            "case": "lease-revoke",
+            "status": "owned_stack_case_verified",
+            "cleanup_errors": [],
+            "namespaces_created": 2,
+            "namespaces_removed": 2,
+            "actual_native_ready": true,
+            "owned_listeners": 5,
+            "runtime_profile_sha256": "e1258a7cdd6be020c2ab610bf560d36f02dff7ac7ca5fdb453166988f8edd6e4",
+            "established_tcp": true,
+            "native_watchdog_exit": 92,
+            "ports_rebound": 5,
+            "held_tcp_eof_or_reset": true,
+            "overlay_alive_during_close": true,
+            "containment_after": [
+              {
+                "input": 0,
+                "output": 23,
+                "forward": 0
+              },
+              {
+                "input": 0,
+                "output": 24,
+                "forward": 0
+              }
+            ]
+          },
+          {
+            "case": "peer-loss",
+            "status": "owned_stack_case_verified",
+            "cleanup_errors": [],
+            "namespaces_created": 2,
+            "namespaces_removed": 2,
+            "actual_native_ready": true,
+            "owned_listeners": 5,
+            "runtime_profile_sha256": "1cbef9d3275e28ad2c030e4de39d163a823402e19e8c474fe98b7b4390a543ae",
+            "established_tcp": true,
+            "exact_peer_reaped": true,
+            "monitor_permanently_revoked": true,
+            "native_reaped": true,
+            "native_listeners_remaining": 0,
+            "remote_tcp_eof_claimed": false,
+            "containment_after": [
+              {
+                "input": 0,
+                "output": 23,
+                "forward": 0
+              },
+              {
+                "input": 0,
+                "output": 24,
+                "forward": 0
+              }
+            ]
+          }
+        ],
+        "precondition_failures": [],
+        "copied_package_native_verified": true,
+        "source_package_unchanged": true,
+        "private_stage_removed": true,
+        "source_commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+        "run_id": "41222450356",
+        "run_attempt": "1",
+        "runtime_candidate": {
+          "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+          "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+          "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+          "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+          "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+          "executable_sha256": "10d259fb47aebb9c1af74669d1e46d8d43ae134cc16c0465734230312f4a4f99",
+          "executable_size": 28593032,
+          "role": "easytier-core",
+          "target": "x86_64-unknown-linux-gnu"
+        },
+        "cli_identity": {
+          "bytes": 12261752,
+          "sha256": "b896029efb3cb38b9b0b3cd7725d0cf149b32ff50d628759d6b4dd37cc45c99c"
+        }
+      },
+      "containment": {
+        "checkout_commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+        "input_identity": "synthetic_profile_only_no_executable",
+        "precondition_failures": [],
+        "production_admission": false,
+        "raw_runtime_output_retained": false,
+        "runtime_binary_uploaded": false,
+        "runtime_executed": false,
+        "schema": "ff-easytier-containment-preflight-v1",
+        "status": "containment_preflight_verified",
+        "transports": [
+          {
+            "cleanup_errors": [],
+            "namespaces_created": 2,
+            "namespaces_removed": 2,
+            "status": "containment_pair_verified",
+            "transport": "quic"
+          },
+          {
+            "cleanup_errors": [],
+            "namespaces_created": 2,
+            "namespaces_removed": 2,
+            "status": "containment_pair_verified",
+            "transport": "wss"
+          },
+          {
+            "cleanup_errors": [],
+            "namespaces_created": 2,
+            "namespaces_removed": 2,
+            "status": "containment_pair_verified",
+            "transport": "tcp"
+          }
+        ]
+      },
+      "previous_observation_retained": {
+        "lane": "owned-overlay-native-composition",
+        "job": {
+          "id": 124606016432,
+          "name": "Same-run owned overlay and native development composition",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-31T17:27:18Z",
+          "completed_at": null
+        },
+        "observed_at_utc": "2026-10-31T17:36:49.786309+00:00",
+        "active_steps": [
+          "Build this job's exact guard3 core and CLI after all 35 finite contracts"
+        ],
+        "receipt_verified": false,
+        "result_claimed": false,
+        "next_action": "If completed, independently download its exact receipt and verify cases/cleanup; current observation is not admission."
+      },
+      "observed_at_utc": "2026-10-31T17:45:05.090358+00:00",
+      "receipt_verified": true,
+      "ordinary_public_admitted": false
     }
   ],
   "ordinary_public_admitted": false,
@@ -199,7 +349,7 @@
   "whole_workflow_success_claimed": false,
   "limits": [
     "Same-run component/preflight/owned lifecycle scopes only, not complete package or retail gameplay.",
-    "C71 is independently blocked; pending composition is not a success or failure.",
+    "C71 remains independently blocked with13 missing inputs and zero execution; successful isolated composition does not open ordinary Public admission.",
     "The complete Windows package and camera ABI results have separate exact receipts."
   ]
 }

@@ -1762,3 +1762,9 @@ See [candidate and concise instructions](DEVELOPMENT-CANDIDATE-TESTING.md),
 [actual ABI execution](evidence/hosted-camera-abi-b784636.json),
 [real built PE](evidence/camera-disable-built-abi-b784636.json), and
 [complete package](evidence/hosted-complete-package-b784636.json).
+
+The same-run composition job124606016432 later completed successfully at
+2026-10-31T17:39:12Z. Official artifact13051637921 was downloaded; its digest,
+CRC, source/run identity, lease-revoke and peer-loss cases, and cleanup fields
+were independently checked. The prior pending observation remains in the
+dependent receipt. No ordinary Public admission or retail game result follows.

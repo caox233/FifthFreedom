@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Exact b784636 complete Windows candidate built/downloaded/verified: programZIP d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd, UI197/save27,65files/fouridentities/UTF8checksums. Actual Windows Disable ABI B/R each stop after16 unhooked controls at first hooked wrong-argument executeAV (not retail EIP1 replay); M/RP each64calls/515checks0fail. Actual release PE confirms ret4/opaque forwarding and unchanged Cleanup ret0. Retained lifecycle/progression replay passes; source731 items and LinuxLAN554 pass stated scopes;672 WPF PNGs equal e4. No full live crash/matching/performance or Public admission claim.",
-  "NEXT_EXECUTABLE_ACTION": "Read any remaining same-run41222450356 dependent composition terminal result and verify its receipts without treating pending work as pass. Continue original six goals and distinct needs-triage records: LAN capability Unavailable/Cancelled vs discovery, actual multiplayer search/join target selection, valid-viewport EMF frame timing, other-player release admission, VSS/history/C71, ordinaryPublic owned Windows/NIC/WFP/session prerequisites and source/provenance closure. New camera ABI correction is delivered; live causal coverage remains open. Development-side missing evidence stays in handoff, not user technical questionnaires; no automatic game/capture/deployment/Release.",
+  "LAST_CONFIRMED_RESULT": "Exact b784636 complete Windows candidate built/downloaded/verified: programZIP d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd, UI197/save27,65files/fouridentities/UTF8checksums. Actual Windows Disable ABI B/R each stop after16 unhooked controls at first hooked wrong-argument executeAV (not retail EIP1 replay); M/RP each64calls/515checks0fail. Actual release PE confirms ret4/opaque forwarding and unchanged Cleanup ret0. Retained lifecycle/progression replay passes; source731 items and LinuxLAN554 pass stated scopes;672 WPF PNGs equal e4. No full live crash/matching/performance or Public admission claim. Same-run owned-overlay/native composition job124606016432 completed successfully; official artifact13051637921 independently verified for lease revocation, peer loss and cleanup, with ordinary Public admission still false.",
+  "NEXT_EXECUTABLE_ACTION": "Continue original six goals and distinct needs-triage records: LAN capability Unavailable/Cancelled vs discovery, actual multiplayer search/join target selection, valid-viewport EMF frame timing, other-player release admission, VSS/history/C71, ordinaryPublic owned Windows/NIC/WFP/session prerequisites and source/provenance closure. New camera ABI correction is delivered; live causal coverage remains open. Development-side missing evidence stays in handoff, not user technical questionnaires; no automatic game/capture/deployment/Release.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -33,7 +33,7 @@
     {
       "id": 4,
       "name": "Reviewed public source and development knowledge base",
-      "status": "Reviewed source and separate knowledge snapshots published; verified complete candidate delivery evidence is being synchronized"
+      "status": "Reviewed source and separate knowledge snapshots published; complete candidate delivery evidence synchronized, isolated composition terminal receipt verified"
     },
     {
       "id": 5,
@@ -323,7 +323,8 @@
       "program_zip_sha256": "d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd",
       "runtime_evidence": "docs/evidence/hosted-camera-abi-b784636.json",
       "built_pe_evidence": "docs/evidence/camera-disable-built-abi-b784636.json",
-      "complete_package_evidence": "docs/evidence/hosted-complete-package-b784636.json"
+      "complete_package_evidence": "docs/evidence/hosted-complete-package-b784636.json",
+      "dependent_evidence": "docs/evidence/hosted-dispatch-dependent-b784636.json"
     },
     "prior_current_pointers_20261101": {
       "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40816624490",
