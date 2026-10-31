@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39930667783",
+  "job_id": 120337826134,
+  "source_head_sha": "319bf445073b362acf8129a80ff0bf68f19e53a5",
+  "checkout_merge_sha": "1723ec2ad34b69a18ca5f9260ed9594488bd977a",
+  "conclusion": "success",
+  "portable_harness_tests": {
+    "passed": 15,
+    "skipped": 0
+  },
+  "artifact_id": 12490819687,
+  "artifact_zip_sha256": "ec4547d5eeb018122309f346de54ef3b447db8655d9bbe6b24ef9b141f485fd1",
+  "official_artifact_digest_matched": true,
+  "sanitized_receipt_sha256": "02018932c8f3dc4d42cede3bf857b5059881d3e1ddd19dbc8b56520c1ddd537f",
+  "sanitized_receipt": {
+    "after": {
+      "clean": false,
+      "code": "OK",
+      "driver_file": true,
+      "driver_registry": true,
+      "phase": "After",
+      "schema": 1,
+      "unrelated_pnp_count": 7,
+      "unrelated_pnp_sha256": "1f2c5bec50a0fe75416f2eb4c8c6654ca0ae88ea534f921a3dbb3d9b7866d5ef",
+      "wintun_devices": 0,
+      "wintun_packages": 1,
+      "wintun_services": 1
+    },
+    "before": {
+      "clean": true,
+      "code": "OK",
+      "driver_file": false,
+      "driver_registry": false,
+      "phase": "Before",
+      "schema": 1,
+      "unrelated_pnp_count": 7,
+      "unrelated_pnp_sha256": "1f2c5bec50a0fe75416f2eb4c8c6654ca0ae88ea534f921a3dbb3d9b7866d5ef",
+      "wintun_devices": 0,
+      "wintun_packages": 0,
+      "wintun_services": 0
+    },
+    "binary_uploaded": false,
+    "cargo_lock_sha256": "b3c4e5891a705c56b8fce08711b41ded44e0feac1333122d0a1ebb7f5e9288fa",
+    "checkout_commit": "1723ec2ad34b69a18ca5f9260ed9594488bd977a",
+    "compiler_codes": [],
+    "dll_sha256": "e5da8447dc2c320edc0fc52fa01885c103de8c118481f683643cacc3220dafce",
+    "executable_sha256": "ea3776533a87ac556d62fd3c8e744dd0d8a7fa842d780b7dcfaf89ba2e0e26f2",
+    "lock_sha256": "9f428873e785a76e61ee1de946629e6b86fb18db3576266fc059b506a1980dd4",
+    "network_configured": false,
+    "packets_sent": false,
+    "probe": {
+      "code": "OK",
+      "network_configured": false,
+      "packets_sent": false,
+      "passed": 2,
+      "public_admission": false,
+      "schema": 1,
+      "unrelated_identities_equal": true
+    },
+    "public_admission": false,
+    "run_attempt": "1",
+    "run_id": "39930667783",
+    "runtime_executed": true,
+    "schema": 1,
+    "source_tree_sha256": "832192192b329f78407db9e21982108753efcce97ee0399af40c5932e6420b47",
+    "stage": "COMPLETE",
+    "status": "two_real_sessions_verified_not_admitted"
+  },
+  "scope": {
+    "actual_owner_drop_case": true,
+    "actual_async_shutdown_case": true,
+    "actual_receive_worker_eof": true,
+    "explicit_worker_join": false,
+    "owned_adapters_absent_after": true,
+    "unrelated_kernel_and_pnp_identities_preserved": true,
+    "official_driver_remains_in_disposable_vm": true,
+    "driver_uninstalled": false,
+    "harness_network_configuration": false,
+    "harness_packet_send": false,
+    "secure_peer_verified": false,
+    "owned_overlay_verified": false,
+    "public_admission": false,
+    "production_runtime_assets_published": false
+  },
+  "limitations": [
+    "Two development session lifecycle cases only; no source address or route capability issued.",
+    "No secure peer, encryption, LAN game, public game, or retail GUI acceptance was exercised.",
+    "The normal official driver install and queued global orphan-cleanup side effects remain; this was a clean disposable hosted VM.",
+    "Npcap and final package redistribution/notice conditions remain separate."
+  ]
+}

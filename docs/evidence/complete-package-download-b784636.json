@@ -1,0 +1,54 @@
+{
+  "source_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+  "archive": "fifth-freedom-1.1.0-migration1-program.zip",
+  "archive_bytes": 73304533,
+  "archive_sha256": "d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd",
+  "zip_crc_checked": true,
+  "exact_payload_files": 65,
+  "manifest_files": 63,
+  "checksum_rows": 64,
+  "four_embedded_identities_rebuilt_and_equal": true,
+  "components": [
+    {
+      "bytes": 146374575,
+      "compat_id": "scbl-lan-1.1.0",
+      "path": "FifthFreedom.exe",
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "role": "launcher",
+      "sha256": "681ec9ab968385cdc70e469e8aaf06038430f334222269b4d2f7648484128edd",
+      "machine": "0x14c"
+    },
+    {
+      "bytes": 7746560,
+      "compat_id": "scbl-lan-1.1.0",
+      "path": "runtime/uplay_r1_loader.dll",
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "role": "main",
+      "sha256": "ad7a0af1fa736fe90c0d850cc15c698750e42ef41380abd5ab7dd887fe67a4e9",
+      "machine": "0x14c"
+    },
+    {
+      "bytes": 2424832,
+      "compat_id": "scbl-lan-1.1.0",
+      "path": "runtime/scbl_gameplay.dll",
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "role": "gameplay",
+      "sha256": "a4653a06f988d147c57e0b5f29cc65dc4293799f44b26d408efe35945eab102f",
+      "machine": "0x14c"
+    },
+    {
+      "bytes": 10876928,
+      "compat_id": "scbl-lan-1.1.0",
+      "path": "runtime/FifthFreedom.Server.exe",
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "role": "server",
+      "sha256": "52546f3ebe528249436106ca9d9852a41b31d29529fee949b2b8b80685e78c3f",
+      "machine": "0x8664"
+    }
+  ],
+  "fusionfix_notice_source_entries_verified": 50,
+  "readme_matches_exact_source": true,
+  "production_readonly_package_verification": true,
+  "downloaded_binaries_executed": false,
+  "game_executed": false
+}

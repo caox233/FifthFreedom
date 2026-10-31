@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official Windows job metadata with digest-verified sanitized streaming receipt",
+  "run_id": 39938418815,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39938418815",
+  "source_head": "b67af6ca1014510dfb16469a416f3e049be9b06b",
+  "checkout_commit": null,
+  "checkout_identity_limit": "Artifact revision label is opaque; this sanitized suite receipt does not attest the merge checkout SHA",
+  "job": {
+    "id": 120363584181,
+    "name": "Linked diagnostic stream boundaries without game or full ZIP export",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "id": 12494129997,
+    "name": "windows-diagnostic-stream-61323a20c02f1081988e30dac0d0fdcd89c48162",
+    "size_in_bytes": 466,
+    "digest": "sha256:c203db5c00f0d7bdee38ced6313098607d86a4b02ddde3e9e3809567faf4123b"
+  },
+  "official_zip_digest_verified": true,
+  "sanitized_receipt": {
+    "schema": 1,
+    "suite": "DiagnosticTextStreaming",
+    "passed": true,
+    "required_checks": 12,
+    "passed_checks": 12,
+    "skipped_checks": 0,
+    "game_executed": false,
+    "native_interop_exercised": false,
+    "full_diagnostic_zip_exercised": false,
+    "services_changed": false,
+    "raw_output_retained": false,
+    "process_succeeded": true,
+    "diagnostics": {
+      "compiler_codes": [],
+      "ui_checks": [],
+      "categories": [],
+      "exception_types": [],
+      "preflight_codes": [],
+      "owned_process_codes": [],
+      "managed_cases": [],
+      "tls_cases": [],
+      "return_phases": [],
+      "return_child_failures": [],
+      "return_directory_failures": [],
+      "native_interop_codes": [],
+      "native_failed_tests": [],
+      "final_preparation_codes": []
+    }
+  },
+  "execution_contract": {
+    "project": "tests/DiagnosticTextStreaming/DiagnosticTextStreaming.csproj",
+    "actual_windows_checks": 12,
+    "required_unique_source_case_labels": 12,
+    "exact_scope_summary_required": true,
+    "raw_test_output_published": false,
+    "fixed_port_or_iis_dependency": false
+  },
+  "limits": [
+    "The linked production streaming/redaction helper ran on actual hosted Windows; this is independent of the local Linux twelve-case result.",
+    "The complete diagnostic ZIP exporter and existing twenty-four byte-dump checks were not exercised by this project.",
+    "No game, driver, native/managed interoperability, production admission, deployment or release certification is implied."
+  ]
+}

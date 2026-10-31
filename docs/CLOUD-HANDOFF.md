@@ -2,10 +2,27 @@
 
 This is a migration checkpoint, not a completed UI or server integration.
 
+For subsequent cloud implementation and actual hosted outcomes, read
+[`CLOUD-PROGRESS.md`](CLOUD-PROGRESS.md) together with current project state.
+The initial observations below are retained as the handoff baseline.
+
 The user explicitly prefers subsequent code changes in the cloud. The local
 machine should finish source migration, privacy review, preservation and current
 build verification only; UI/server integration and continuing bug fixes belong
 to the cloud checkout whenever the platform permits them.
+
+## Development evidence coordination (November 1, 2026)
+
+The user does not act as a messenger between development environments. Do not
+open user question dialogs to request disassembly, registers, logs, hashes,
+build flags or test output. First inspect source, reviewed handoff material and
+isolated replays. If evidence exists only on the local machine and is unavailable
+here, record the exact technical gap for that development investigation and
+continue independent work. Ask the user in ordinary language, collectively,
+only for an actual product decision, additional authorization, or irreplaceable
+live acceptance. Do not request full dumps or private logs, or repeat accepted
+gameplay tests. The November 1 Disable return-path facts were supplied directly;
+no further user response to the earlier question dialog is needed.
 
 ## Work order
 

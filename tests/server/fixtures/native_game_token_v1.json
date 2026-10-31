@@ -1,0 +1,45 @@
+{
+  "claims": {
+    "auth_version": 3,
+    "expires_at": 1792789200,
+    "game_run": {
+      "instance": "0123456789abcdef0123456789abcdef",
+      "product": "scbl-lan/2/game/mod"
+    },
+    "issued_at": 1792702800,
+    "release": "1|native-bridge-synthetic|native-bridge-compat|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "source_ip": "10.66.0.10",
+    "user_id": 1000,
+    "username": "native-bridge-fixture"
+  },
+  "key_hex": "7171717171717171717171717171717171717171717171717171717171717171",
+  "now": 1792702800,
+  "package": {
+    "compat_id": "native-bridge-compat",
+    "gameplay_dll": {
+      "compat_id": "native-bridge-compat",
+      "release_id": "native-bridge-synthetic"
+    },
+    "launcher": {
+      "compat_id": "native-bridge-compat",
+      "release_id": "native-bridge-synthetic"
+    },
+    "main_dll": {
+      "compat_id": "native-bridge-compat",
+      "release_id": "native-bridge-synthetic"
+    },
+    "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "release_id": "native-bridge-synthetic",
+    "schema": 1,
+    "server": {
+      "compat_id": "native-bridge-compat",
+      "release_id": "native-bridge-synthetic"
+    }
+  },
+  "producer": "src/native/server/dedicated-server/src/api.rs::issue_auth_token after release_for_login",
+  "purpose": "Synthetic native producer / Python bridge fixture; never deploy these keys or identities",
+  "rotated_key_hex": "7272727272727272727272727272727272727272727272727272727272727272",
+  "rotated_token": "v1.eyJyZWxlYXNlIjoiMXxuYXRpdmUtYnJpZGdlLXN5bnRoZXRpY3xuYXRpdmUtYnJpZGdlLWNvbXBhdHxhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhIiwidXNlcl9pZCI6MTAwMCwidXNlcm5hbWUiOiJuYXRpdmUtYnJpZGdlLWZpeHR1cmUiLCJzb3VyY2VfaXAiOiIxMC42Ni4wLjEwIiwiaXNzdWVkX2F0IjoxNzkyNzAyODAwLCJleHBpcmVzX2F0IjoxNzkyNzg5MjAwLCJhdXRoX3ZlcnNpb24iOjMsImdhbWVfcnVuIjp7InByb2R1Y3QiOiJzY2JsLWxhbi8yL2dhbWUvbW9kIiwiaW5zdGFuY2UiOiIwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OWFiY2RlZiJ9fQ.MyPfD0SCDxai2qlOech0esXY2wgh9-TOwvYhW8N5tBc",
+  "schema": 1,
+  "token": "v1.eyJyZWxlYXNlIjoiMXxuYXRpdmUtYnJpZGdlLXN5bnRoZXRpY3xuYXRpdmUtYnJpZGdlLWNvbXBhdHxhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhIiwidXNlcl9pZCI6MTAwMCwidXNlcm5hbWUiOiJuYXRpdmUtYnJpZGdlLWZpeHR1cmUiLCJzb3VyY2VfaXAiOiIxMC42Ni4wLjEwIiwiaXNzdWVkX2F0IjoxNzkyNzAyODAwLCJleHBpcmVzX2F0IjoxNzkyNzg5MjAwLCJhdXRoX3ZlcnNpb24iOjMsImdhbWVfcnVuIjp7InByb2R1Y3QiOiJzY2JsLWxhbi8yL2dhbWUvbW9kIiwiaW5zdGFuY2UiOiIwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OWFiY2RlZiJ9fQ.zCVFnCNsmGA2bkR5pBSfxkQyUGa6TLyQXfhDVzTVBug"
+}

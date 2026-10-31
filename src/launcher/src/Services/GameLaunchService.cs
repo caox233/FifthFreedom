@@ -15,7 +15,7 @@ public sealed class GameLaunchService
     public void SetDiagnosticIntent(RunIntent intent) => session?.Diagnostics?.SetIntent(intent);
     public void MarkDiagnosticStable() => session?.Diagnostics?.MarkStable();
 
-    public async Task<Process> StartGameAsync(string gameDir,string gameExecutable,LaunchPipe pipe,CancellationToken cancellationToken=default,string? pluginDirectory=null,bool observerRequested=false)
+    public async Task<Process> StartGameAsync(string gameDir,string gameExecutable,LaunchPipe pipe,CancellationToken cancellationToken=default,string? pluginDirectory=null,bool observerRequested=false,PublicNativeReturn? publicReturn=null)
     {
         if (session != null) throw new IOException("上一次游戏配置会话尚未结束。");
         var prior = UnconfirmedLaunch;
@@ -24,7 +24,7 @@ public sealed class GameLaunchService
         string path=GameRuntime.ValidateExecutable(Path.Combine(gameDir,gameExecutable));
         bool captureOnce=CaptureNextLaunch;CaptureNextLaunch=false;
         var diagnostic=RunDiagnosticStore.Begin(path,DiagnosticDataRoot,new(pluginDirectory==null?RunGameMode.Official:RunGameMode.MOD,RequestedSource:pluginDirectory==null?ModuleSource.Unknown:ModuleSource.PackagedRuntime));
-        var current=new LaunchSession(pipe,Path.Combine(gameDir,"scbl-lan.toml"),diagnostic);
+        var current=new LaunchSession(pipe,Path.Combine(gameDir,"scbl-lan.toml"),diagnostic,publicReturn);
         session=current;
         using var timeout=CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeout.CancelAfter(TimeSpan.FromSeconds(90));
@@ -35,6 +35,9 @@ public sealed class GameLaunchService
             diagnostic?.TryWriteRequestedConfiguration(pipe.RequestedConfigurationProjection);
             current.Start();
             var psi=new ProcessStartInfo(path) {WorkingDirectory=gameDir,UseShellExecute=false};
+            // Ambient state cannot opt a normal LAN launch into Public IPC.
+            psi.Environment.Remove(PublicReturnProtocol.EnvironmentKey);
+            publicReturn?.Prepare(psi,current.Id);
             ObserverSession.ApplyLaunchEnvironment(psi.Environment,observerRequested);
             psi.Environment["SCBL_LAN_CLIENT_DATA_DIR"]=diagnostic?.NativeDataDirectory ?? LogService.AppDataDir;
             psi.Environment.Remove("SCBL_LAN_PLUGIN_DIR");
@@ -44,10 +47,11 @@ public sealed class GameLaunchService
                 // is suspended until the out-of-process debugger has bound the exact identity.
                 using var suspended=SuspendedDiagnosticLaunch.Start(psi);
                 process=suspended.Process;
-                try {diagnostic?.Observe(process,ProcessEvidence.CreatedByLauncher);}
+                try {publicReturn?.CaptureCreated(process,path);diagnostic?.Observe(process,ProcessEvidence.CreatedByLauncher);}
                 finally {suspended.Resume();}
             } else {
                 process=Process.Start(psi) ?? throw new IOException("游戏进程创建失败。");
+                publicReturn?.CaptureCreated(process,path);
                 diagnostic?.Observe(process,ProcessEvidence.CreatedByLauncher);
             }
             await current.FirstDelivery.WaitAsync(timeout.Token);
@@ -131,7 +135,7 @@ public sealed class GameLaunchService
         finally { Interlocked.CompareExchange(ref session,null,current); }
     }
 
-    private sealed class LaunchSession(LaunchPipe pipe,string reference,GameRunDiagnostics? diagnostics) : IAsyncDisposable
+    private sealed class LaunchSession(LaunchPipe pipe,string reference,GameRunDiagnostics? diagnostics,PublicNativeReturn? publicReturn) : IAsyncDisposable
     {
         public Guid Id { get; }=diagnostics?.Id ?? Guid.NewGuid();
         public GameRunDiagnostics? Diagnostics => diagnostics;
@@ -147,6 +151,7 @@ public sealed class GameLaunchService
         public void Start()
         {
             pipe.PeerValidated+=ObservePeer;
+            if(publicReturn!=null) pipe.ConfigurationAcknowledged+=publicReturn.ConfigurationAcknowledged;
             LocalData.AtomicWrite(reference,text);
             LogService.Info("LAN configuration session opened; retained across game startup handoffs.");
             // Process creation may wait for loader-time configuration when graphics tools hook it.
@@ -176,12 +181,15 @@ public sealed class GameLaunchService
         {
             diagnostics?.Close();
             pipe.PeerValidated-=ObservePeer;
+            if(publicReturn!=null) pipe.ConfigurationAcknowledged-=publicReturn.ConfigurationAcknowledged;
             stop.Cancel();
+            // Invalidate native contexts as soon as this owned run begins to stop.
+            Task publicDrain=publicReturn?.DisposeAsync().AsTask() ?? Task.CompletedTask;
             // Only remove this session's non-secret reference, never another writer's file.
             try {if(File.Exists(reference) && File.ReadAllText(reference)==text) File.Delete(reference);}
             catch(Exception e) when(e is IOException or UnauthorizedAccessException) {LogService.Error("LAN configuration reference cleanup: "+e.GetType().Name);}
             try {await pump.ConfigureAwait(false);}
-            finally {await pipe.DisposeAsync();stop.Dispose();LogService.Info("LAN configuration session closed; in-memory frame cleared.");}
+            finally {try {await pipe.DisposeAsync();} finally {await publicDrain;stop.Dispose();}LogService.Info("LAN configuration session closed; in-memory frame cleared.");}
         }
     }
 }

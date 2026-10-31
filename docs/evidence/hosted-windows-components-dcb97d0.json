@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+  "run_id": 40816624490,
+  "job_id": 123259098088,
+  "job_conclusion": "success",
+  "artifact_id": 12873930049,
+  "artifact_bytes": 113680,
+  "artifact_sha256": "0a7102627cf230c662067115138f4a995fab65a2e990b8e7f67df04ceb530c22",
+  "downloaded_digest_verified": true,
+  "counts": {
+    "commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+    "run_id": "40816624490",
+    "status": "components_built_and_selected_tests_passed",
+    "exit_code": 0,
+    "launcher_probes": [
+      {
+        "flag": "--self-test",
+        "passed": 182,
+        "failed": 0,
+        "exit_code": 0,
+        "game_executed": false
+      }
+    ],
+    "diagnostic_stream_checks": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "linked_production": true,
+      "full_diagnostic_zip_exercised": false
+    },
+    "native_authentication_checks": [
+      {
+        "filter": "native_bridge_fixture_tests",
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "native_observer_fixture_tests",
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "auth_key_file",
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "public_source",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "lan_source_tests",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "deployment_profile::tests",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      }
+    ],
+    "native_public_return_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "owned synthetic Windows processes and production named-pipe contracts"
+    },
+    "native_managed_interop": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "helper_relative_to_cargo_target": "i686-pc-windows-msvc/debug/deps/hooks-6ceb5aec3d25e2c0.exe",
+      "helper_sha256": "852a8603684ce0ae0e71aae059b379799d4632a8a255672964c7bcf7c5902c66",
+      "helper_bytes": 14704640,
+      "helper_selected_from_same_invocation_cargo_json": true,
+      "game_executed": false,
+      "package_and_loaded_dll_admission_exercised": false
+    },
+    "native_public_source_transport_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "production_admission": false,
+      "scope": "owned Windows loopback sockets, interface/source binding and revocation of retained API transports"
+    },
+    "focused_checks": {
+      "NetworkPreferences": 111,
+      "HostDiscoveryFlow": 46,
+      "GameplaySettingsDraft": 21
+    },
+    "official_receipt_sha256": "235e6051bf2c764c33e51529a74f2c8bd5a4086510ec5a742163f6d8c7309cfd"
+  },
+  "scope": "Actual hosted Windows component builds, production-linked managed tests and owned synthetic native process/socket tests; not a retail game or ordinary Public admission."
+}

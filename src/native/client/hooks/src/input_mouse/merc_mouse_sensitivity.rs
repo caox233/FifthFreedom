@@ -135,6 +135,9 @@ pub(crate) unsafe fn deinit() {
     LOGGED.store(false, Ordering::Relaxed);
 }
 
-#[cfg(test)]
+// These 13 retained replay tests execute preserved native instructions and need
+// SCBL_R58_C71_FIXTURE/native_fixture.rs. Explicit opt-in keeps that resource gate
+// strict without making every unrelated hooks test depend on unavailable inputs.
+#[cfg(all(test, feature = "native-replay-fixtures"))]
 #[path = "merc_mouse_sensitivity_tests.rs"]
 mod tests;

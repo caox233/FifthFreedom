@@ -1,0 +1,258 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official runtime job metadata and digest-verified entire sanitized matrix receipt; runtime binaries and raw runtime output were not downloaded",
+  "run_id": 39944703157,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39944703157",
+  "source_head": "4b49da73223b97e40ad4923325d45af1e3064684",
+  "checkout_commit": "b46c8fe56e1b160cbe7d1098843c7ac66eeb9249",
+  "job": {
+    "id": 120384530669,
+    "name": "Fresh reviewed build and isolated transport probes (no runtime publication)",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "artifact": {
+    "id": 12497593788,
+    "name": "owned-easytier-development-receipt-b46c8fe56e1b160cbe7d1098843c7ac66eeb9249",
+    "size_in_bytes": 1907,
+    "digest": "sha256:04fd93b7c4308909d08280a1955f31d3dd79bac6c2e9e43b2144e0a73c88a09f"
+  },
+  "official_zip_digest_verified": true,
+  "sanitized_receipt": {
+    "checkout_commit": "b46c8fe56e1b160cbe7d1098843c7ac66eeb9249",
+    "cli_identity": {
+      "bytes": 12261752,
+      "sha256": "e5c9ad81845727ca0fc959acfc65d24052de9676e4ad23ae0636f1fc0a3a6ac0"
+    },
+    "encryption_claim": "source contracts and bounded runtime observations are separate; no packet-capture proof",
+    "error": "TRANSPORT_MATRIX_INCOMPLETE",
+    "game_executed": false,
+    "native_owner_lease_verified": false,
+    "precondition_failures": [],
+    "private_stage_removed": true,
+    "production_admission": false,
+    "raw_runtime_output_retained": false,
+    "runtime_binary_uploaded": false,
+    "runtime_candidate": {
+      "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+      "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+      "executable_sha256": "c7d69bb4b29942a5163e8bd425700e8488511352657d206bec716249fa6eabd5",
+      "executable_size": 28593032,
+      "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+      "role": "easytier-core",
+      "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+      "target": "x86_64-unknown-linux-gnu",
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626"
+    },
+    "schema": "ff-easytier-isolated-development-probe-v1",
+    "socket_probe_identity": {
+      "bytes": 12833328,
+      "sha256": "291072184fb9f32b8285370df285ab87fb4a8270dc5a7233ddf00d3e8b791213"
+    },
+    "status": "failed",
+    "transports": [
+      {
+        "blocked_packets": {
+          "client": {
+            "forward": 0,
+            "input": 0,
+            "output": 75
+          },
+          "server": {
+            "forward": 0,
+            "input": 0,
+            "output": 38
+          }
+        },
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        },
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "phases": [
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-before",
+            "profile_sha256": "2d016cff1c654271c2b6671ea41e519114d82299883d3952e6f2b8e70f47ba2f"
+          },
+          {
+            "echo_rounds": [
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              }
+            ],
+            "minimum_observation_seconds": 8,
+            "peer_authenticated": false,
+            "phase": "wrong-pin",
+            "profile_sha256": "0e7c01da317630c5a48454fe1e6a30baa93db191799493e17947385060b55f8c",
+            "tun_owned": true
+          },
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-after",
+            "profile_sha256": "8bb7ed584feaae50dcaed110a3caffc3277425388b2c6c13eebb3cfdd7a2946a"
+          }
+        ],
+        "purpose": "product-transport-development-probe",
+        "status": "owned_overlay_probe_verified",
+        "transport": "quic"
+      },
+      {
+        "blocked_packets": {
+          "client": {
+            "forward": 0,
+            "input": 0,
+            "output": 57
+          },
+          "server": {
+            "forward": 0,
+            "input": 0,
+            "output": 38
+          }
+        },
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        },
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "phases": [
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-before",
+            "profile_sha256": "4548103cd96c6352d56c991c03b3a4b93949a41d6f1d977d45069372c4281e35"
+          },
+          {
+            "echo_rounds": [
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              }
+            ],
+            "minimum_observation_seconds": 8,
+            "peer_authenticated": false,
+            "phase": "wrong-pin",
+            "profile_sha256": "dfe3610c9fa4d693f6e0edc31bfd6ccbd96d7ec259eb681bc041ab4c53ee7b84",
+            "tun_owned": true
+          },
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-after",
+            "profile_sha256": "b498cf333e342a6d051f918d43ccbb393b9d8e1b49354a597c7017f79fa224da"
+          }
+        ],
+        "purpose": "product-transport-development-probe",
+        "status": "owned_overlay_probe_verified",
+        "transport": "wss"
+      },
+      {
+        "cleanup_errors": [],
+        "error": "WORKER_REPORTED_FAILURE",
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "phases": [
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-before",
+            "profile_sha256": "34ad60ebc2d3df7c90978783f1c66dd68a2d0aedd6631af5517f8d0de98ebc1a"
+          },
+          {
+            "echo_rounds": [
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              }
+            ],
+            "minimum_observation_seconds": 8,
+            "peer_authenticated": false,
+            "phase": "wrong-pin",
+            "profile_sha256": "a2165e5486ca63bdf309258caa46980325406afdb6bfaa7729df24f0954f2925",
+            "tun_owned": true
+          }
+        ],
+        "purpose": "development-only",
+        "status": "failed",
+        "transport": "tcp",
+        "worker_failure": {
+          "cleanup_code": null,
+          "cleanup_reaped": true,
+          "code": "OVERLAY_ADDRESS_QUERY_UNAVAILABLE",
+          "event": "failed",
+          "phase": "observe",
+          "schema": "ff-easytier-worker-failure-v1"
+        }
+      }
+    ]
+  },
+  "strict_receipt_consumer_exit_code": 1,
+  "scope_notes": [
+    "The later guard3 repetition failed after eight completed phases: QUIC and WSS each completed correct-pin-before, wrong-pin and correct-pin-after; TCP completed correct-pin-before and wrong-pin, then failed before a completed correct-pin-after.",
+    "The fixed failure is observe:OVERLAY_ADDRESS_QUERY_UNAVAILABLE with cleanup_reaped=true and no cleanup error code. The receipt does not identify the observing role, exact errno or whether that monitor had previously seen its address.",
+    "All three independent namespace pairs were removed and the private stage was removed. This cleanup result does not certify the incomplete transport matrix.",
+    "This source already includes the reviewed initial pre-ready EADDRNOTAVAIL pending case. No new address-policy relaxation or unique root cause is inferred from the broad failure code.",
+    "The earlier 05c127a nine-phase success remains authentic evidence for that run; it does not guarantee that this later repetition succeeds or establishes runtime stability.",
+    "The separate b67af6c native/stack success, newer owned-read finite Windows checks, build-only nonce candidate and production-admission gates retain their independent scopes.",
+    "Runtime identities are recorded by the runner; the verified local download contains only sanitized JSON and no independently rehashed runtime binary."
+  ]
+}

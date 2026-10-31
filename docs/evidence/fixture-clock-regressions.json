@@ -1,0 +1,230 @@
+{
+  "schema": 1,
+  "kind": "test-fixture-clock-regressions",
+  "historical_failed_clean_checkout": {
+    "source_commit": "c1b4317c5ef76a3af3e9b45a85b4e4c256adece6",
+    "initial_git_clean": true,
+    "tracked_source_unchanged": true,
+    "exit_code": 1,
+    "executed": 644,
+    "passed": 639,
+    "skipped": 2,
+    "complete_package_ready": false,
+    "source_report_sha256": "d196f4727ac14574e8d1996c4d8c5b4e54c23378e56e8844fe6334a4530b79f3",
+    "retained_log_sha256": "f72cb33bd487d433aadf33e0bd4bb9d660aa63ae7d3d0f3e6f273d2632d966d7"
+  },
+  "historical_bad_tests": 3,
+  "historical_failure_retained": true,
+  "overlay_fixture": {
+    "schema": 1,
+    "historical_clean_implementation": "c1b4317c5ef76a3af3e9b45a85b4e4c256adece6",
+    "historical_failure": "test_created_down_no_address_respects_supervisor_deadline_without_native_start expected STARTUP_TIMEOUT, received CHILD_START_FAILED",
+    "historical_failed_receipt_retained": true,
+    "controlled_first_ready_delay_seconds": 0.35,
+    "old_fixture_startup_seconds": 0.3,
+    "current_fixture_normal_startup_seconds": 3,
+    "old_control": {
+      "executed": 1,
+      "failures": 1,
+      "errors": 0
+    },
+    "current_controls": {
+      "link_and_fd_passed": 2,
+      "fd_separate_delayed_passed": 1
+    },
+    "after_monitor_suite": {
+      "executed": 28,
+      "passed": 28,
+      "skipped": 0,
+      "exit": 0
+    },
+    "baseline_test_source": {
+      "path": "tests/server/test_overlay_supervisor.py",
+      "commit": "c1b4317c5ef76a3af3e9b45a85b4e4c256adece6",
+      "sha256": "f93be0bbc41f4f69efd5999c416391a2151ba8bbeeff43020c5f85946e58b182"
+    },
+    "production_monitor_unchanged": {
+      "path": "src/public/fifth_freedom_control/overlay_supervisor.py",
+      "commit": "c1b4317c5ef76a3af3e9b45a85b4e4c256adece6",
+      "sha256": "5dffb5548c782784d1352b099e52b64dd1d03b1a893557c03b4f348297867a98"
+    },
+    "scope": {
+      "module_local_supervisor_deadline_clock_controlled": true,
+      "deadline_reached_after_actual_pending_observations": 2,
+      "stdlib_asyncio_and_owned_child_clocks_real": true,
+      "outer_real_watchdog_seconds": 8,
+      "exact_expected_failure": "STARTUP_TIMEOUT",
+      "native_started": false,
+      "owned_child_drained": true,
+      "wallclock_performance_proven": false,
+      "actual_prior_failure_unique_cause_proven": false
+    },
+    "logs": {
+      "before-controlled-delay.log": "957638d6b07e603a3a927706c59cbd087b03b940a89f1b114c13bf081eb5f6f5",
+      "after-controlled-delay.log": "5a9b66b1330759bd301ae7a7ba6f321d0b12073cf82f812464b0085e2351928b",
+      "after-fd-controlled-delay.log": "7a03b1133bc2ab1b995afcf5cdc4246803b882b1d1cb8cd0f08e78ca01ddaad6",
+      "monitor-suite.log": "f25650dd7f8786555a15aaae6282fcbc4103b4242e4547008434915347775efc"
+    },
+    "independent_controls": {
+      "before-link": {
+        "record": "independent-recheck-before-link.json",
+        "sha256": "b33a9bb531d511a282cf245930666136c3e3c92c45d83b0ce2c62e6622e42ee9"
+      },
+      "current-both": {
+        "record": "independent-recheck-current-both.json",
+        "sha256": "e42ddcc2843328c10ff583ae8e83c8d0ad31e48438cd668d591895af770c6a7c"
+      }
+    },
+    "repaired_test_source": {
+      "path": "tests/server/test_overlay_supervisor.py",
+      "sha256": "734947ef2e6342260e284be9bd58b5ddee7906c189b3064436c64de3b68020fd",
+      "commit": "cabe63611c9631943f16f53e726072011af5c724"
+    }
+  },
+  "native_lease_fixture": {
+    "baseline_commit": "c1b4317c5ef76a3af3e9b45a85b4e4c256adece6",
+    "configured_expiry_lease_ms": 100,
+    "configured_healthy_lease_ms": 400,
+    "expiry_boundary_ms": 100,
+    "five_wire_renewals_independently_consumed": true,
+    "fixture_after_sha256": "61066c44e7cfa7a95bf8dda7df07ad5c457d9ecb3ab9ccab4755611afa076434",
+    "fixture_before_sha256": "879bb6fe52a5c754cc962c7676f47a85dd653c41f9f5e1ac45caf70a270e1319",
+    "focused_suite": {
+      "command": "python3 -B -m unittest discover -s tests/server -p test_native_lease.py -v",
+      "elapsed_seconds": 6.636,
+      "errors": 0,
+      "execution_output_chunk": "6631f9",
+      "failures": 0,
+      "passed": 10,
+      "skipped": 0,
+      "tests": 10
+    },
+    "game_executed": false,
+    "historical_load_root_cause_confirmed": false,
+    "kind": "test-only-native-lease-clock-regression",
+    "production_changed": false,
+    "production_source_unchanged_sha256": "b9782663e636e6fe471c89c487dab06d8e87eeff0c69785fb1f49d9164fb50a0",
+    "real_io_watchdog_seconds": 10,
+    "real_native_deadline_acceptance_claimed": false,
+    "real_socket_credentials_pidfd_and_child_exit_exercised": true,
+    "schema": 1,
+    "stdlib_or_asyncio_clock_changed": false,
+    "synthetic_delay_controls": {
+      "after": [
+        {
+          "case": "baseline",
+          "errors": 0,
+          "failures": 0,
+          "lease_rejection_observed": false,
+          "log_sha256": "83fe19efd33b7ceb86eba51980a6a7011bb1dc7e84ebf5060f4ab3642832fd90",
+          "observations": [],
+          "passed": true,
+          "skips": 0,
+          "tests": 2,
+          "timeout_observed": false
+        },
+        {
+          "case": "delayed_ready",
+          "errors": 0,
+          "failures": 0,
+          "lease_rejection_observed": false,
+          "log_sha256": "e7402ca9e550adfd734fb58ac7425d65bdcb80d7721c6f93048ca0b9e8107751",
+          "observations": [],
+          "passed": true,
+          "skips": 0,
+          "tests": 1,
+          "timeout_observed": false
+        },
+        {
+          "case": "post_ready_pause",
+          "errors": 0,
+          "failures": 0,
+          "lease_rejection_observed": false,
+          "log_sha256": "bfba2f3ea60dda6b08dfd028805109a676599d3cdd55d13e06670a5791b658bb",
+          "observations": [
+            {
+              "binding_matches": true,
+              "child_alive": true,
+              "image_matches": true,
+              "parent_time_expired": false
+            }
+          ],
+          "passed": true,
+          "skips": 0,
+          "tests": 1,
+          "timeout_observed": false
+        }
+      ],
+      "before": [
+        {
+          "case": "baseline",
+          "errors": 0,
+          "failures": 0,
+          "lease_rejection_observed": false,
+          "log_sha256": "c6f79c85131c59eafb1e00d50242d29d6d49f0feb589c05a43e78e4d9b996aba",
+          "observations": [],
+          "passed": true,
+          "skips": 0,
+          "tests": 2,
+          "timeout_observed": false
+        },
+        {
+          "case": "delayed_ready",
+          "errors": 1,
+          "failures": 0,
+          "lease_rejection_observed": false,
+          "log_sha256": "2d80d070819b297a3846c4bf763259cee0e13eaf26a6a4c48f900ed7ec7a54a8",
+          "observations": [],
+          "passed": false,
+          "skips": 0,
+          "tests": 1,
+          "timeout_observed": true
+        },
+        {
+          "case": "post_ready_pause",
+          "errors": 1,
+          "failures": 0,
+          "lease_rejection_observed": true,
+          "log_sha256": "ccf00ce2492f1d75d4b5a74b6a473e29d859775008509352793c53037aa4f539",
+          "observations": [
+            {
+              "binding_matches": true,
+              "child_alive": true,
+              "image_matches": true,
+              "parent_time_expired": true
+            }
+          ],
+          "passed": false,
+          "skips": 0,
+          "tests": 1,
+          "timeout_observed": false
+        }
+      ],
+      "delayed_ready_seconds": 2.2,
+      "post_ready_pause_seconds": 0.46
+    },
+    "commit": "94768f33da695763b69ea3f50cc66b00d2442245"
+  },
+  "independent_review": {
+    "overlay_old_negative_and_current_controls_verified": true,
+    "native_old_negative_and_current_four_controls_verified": true
+  },
+  "corrected_clean_checkout": {
+    "source_commit": "94768f33da695763b69ea3f50cc66b00d2442245",
+    "initial_git_clean": true,
+    "tracked_source_unchanged": true,
+    "exit_code": 0,
+    "executed": 644,
+    "passed": 642,
+    "skipped": 2,
+    "complete_package_ready": false,
+    "source_report_sha256": "8168ff28ad2f0ac090bf50273daabbb6edb3cc3a6f49a9c21b6734e8c62a6a2f",
+    "retained_log_sha256": "5a1161cd38f95632e4efc051611ea3252212ff655b6e82916c49c9172ab89232"
+  },
+  "limits": {
+    "production_code_changed_by_fixture_corrections": false,
+    "real_native_deadline_or_wall_clock_performance_proven": false,
+    "unique_historical_load_cause_proven": false,
+    "complete_package_ready": false
+  }
+}

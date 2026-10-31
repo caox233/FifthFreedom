@@ -109,6 +109,19 @@ pub(crate) fn declaration()->io::Result<PackageIdentity> {
     }).clone().map_err(|()|invalid())
 }
 
+/// Return-channel owner admission uses the launcher role from the already
+/// verified whole package, never just a descriptor-supplied image digest.
+pub(crate) fn verify_return_launcher(path: &Path, expected_sha256: &str) -> io::Result<()> {
+    declaration()?;
+    let reference = hooks_config::get().and_then(|config| config.release.as_ref()).ok_or_else(invalid)?;
+    let actual = hash(path)?;
+    if actual != hash(&reference.package_root.join(ROLE_PATHS[0].1))?
+        || actual.1.iter().map(|byte| format!("{byte:02x}")).collect::<String>() != expected_sha256 {
+        return Err(invalid());
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -1,10 +1,23 @@
 # 3.0 界面整合：已核实入口与下一步
 
-状态：源码对照完成，**尚未整合界面**。本页是可执行迁移清单，不是构建或实机通过声明。
+状态：donor 外观已接入保留的 LAN 启动器，Windows hosted 无游戏界面检查已通过；
+生产 LAN 接入见 [UI-03](tasks/ui-03.md)，部署凭据及受保护会话读取见
+[UI-04](tasks/ui-04.md)、[UI-05](tasks/ui-05.md)，原生回传、最终登录及连接撤销见
+[UI-06](tasks/ui-06.md)、[UI-07](tasks/ui-07.md)、[UI-08](tasks/ui-08.md)，
+Windows 自有网络会话前置实现及配对源码构建见 [UI-09](tasks/ui-09.md)。
+当前公网模式可选择并配置，未就绪时明确阻止启动；真实 Windows 公网自有网络会话仍未完成。
+统一模式、本地有界发现、单一设置入口、MOD/FOV 草稿及 DX11 迁移见
+[当前 UI 整改](tasks/ui-mode-flow-review.md)。2026-10-31 用户明确要求保留原主屏的
+直接 MOD/官方及 FOV 控件；本轮移除“调整玩法”中转和额外说明，草稿保存/取消原位显示，
+不以 UI 整理为由改版或整体回退后端。新画面结果必须按新提交单独记录。
+[此前实际 WPF 检查](tasks/ci-visual-01.md)
+已生成中英、两种窗口尺寸及 100/125/150/200% 根 DPI 画面；物理显示器、IME 和实机边界另列。
+包下载、精确构建版本和集中验收见[候选测试说明](DEVELOPMENT-CANDIDATE-TESTING.md)。
+本文其余源码对照和步骤保留为迁移合同；已执行结果以具体任务收据为准。
 本文路径均相对于仓库根；`LAN` 指 `src/launcher/src`，`donor` 指
 `integration/scbl3/client/ScblPublicLauncher`。公开文档不包含原始个人路径、账号、服务器地址或运行日志。
 
-## 1. 已核实的源码事实
+## 1. 初始迁移基线的源码事实（不是当前 UI 控件清单）
 
 - 两端都是 .NET 10 WPF、x86、`win-x86`。可复用样式和布局，不需要另造一套 UI 技术栈。
 - LAN `MainWindow.xaml` 有 116 个命名控件，donor 有 150 个；交集仅 53 个。
@@ -17,7 +30,7 @@
 - donor `Application/GameLaunchCoordinator.cs` 调 `HookConfigService.WriteAuthFile`，
   而 LAN 使用命名管道交付凭据、不写旧认证文件。不得把 donor 启动流程当作 UI 一并覆盖。
 - LAN 固定 DX11，donor 提供 DX9/DX11。当前已接受 gameplay 不能因此宣称支持 DX9；
-  新界面保留渲染状态展示，但 DX9 不启用，除非另有明确实现和验收。
+  当前按用户明确要求彻底移除 DX9 选项，旧设置迁移为 DX11；实际启动路径继续固定 DX11。
 - LAN `MainWindow.xaml.cs::RunLaunchFlowAsync` 保留账号注册/恢复码、目标地址变更后的凭据作用域检查、
   主机就绪、Observer 权限检查、拥有者进程收尾、未确认启动状态。以上不能用 donor 同名方法替换。
 
@@ -31,7 +44,7 @@
 | 顶部样式、`SettingsButton_Click`、语言/音乐/窗口按钮 | LAN 同名事件及音乐暂停/恢复 | 不带入 donor 自动联网的 Loaded 事件 |
 | `btnLaunch` / `LaunchButton_Click` | LAN `LaunchButton_Click` → `RunLaunchFlowAsync` → `GameLaunchPreparation` | 原包校验、命名管道、启动/运行/结束/未确认状态均保留 |
 | `cmbGameplayMode` / `GameplayModePresentation_SelectionChanged` | LAN `GameplayMode_SelectionChanged` | 保留 Official/MOD 校验、FOV 1.0–1.3、缺玩法模块阻止启动 |
-| donor MOD/FOV 弹层 | LAN `fovSlider`、`GetSelectedFovScale`、`FovReset_Click` | 保存/取消应先在草稿值上操作，取消不能改变持久值 |
+| donor MOD/FOV 行为，按最新要求保留主屏直接控件 | LAN `fovSlider`、`GetSelectedFovScale`、`FovReset_Click` | 原位保存/取消先操作草稿，取消不能改变持久值；不能再用中转按钮藏起直接控件 |
 | `cmbNetworkMode` / `NetworkMode_SelectionChanged` | **不能直接复用事件**，见下一节 | 公网快速/兼容不是 LAN 加入/房主 |
 | 账号/密码呈现 | LAN `MainWindow.Credentials.cs` 与原输入事件 | 每服务器凭据作用域、DPAPI、取消记住后删除、切服务器不得复用旧密码 |
 | `ForgotPasswordButton_Click` 与恢复弹层 | LAN 同名入口、`ResetPassword_Click` | 新恢复码替代旧码的语义保留 |
@@ -47,7 +60,7 @@
 
 ## 3. 网络环境必须拆成两层
 
-**拟实现接口，当前尚不存在：**
+**已实现的类型和事务控制器，生产接入见 UI-02：**
 
 - `NetworkEnvironment = Lan | Public`：用户确定的两个部署场景。
 - LAN 内部 `LanRole = Join | Host`；公网内部 `PublicTransport = Fast | Compatible`。
@@ -55,14 +68,15 @@
 - 连接适配器输出本次会话的 endpoint/bind/capabilities，账号密码不放在可序列化状态快照中。
 
 LAN 适配器复用 `LanConnection`、`HostRuntimeService`、`LanPresenceService`、
-`NetworkAdapterService`。Public 适配器封装 donor `NetworkOrchestrator` 与
-`NetworkSessionCoordinator`，但把控制面认证和本次启动配置接到保留的安全启动路径。
+`NetworkAdapterService`。Public 的配置适配器已接入，验证明确的部署配置与本地组件 pin，并显示分阶段未就绪原因。
+实际执行适配仍须衔接 donor 网络会话与保留的安全启动路径；配置校验不能授予网卡、
+防火墙或游戏会话权限，不能因为模式可选就声称该执行链完成。
 
 donor `NetworkModeCoordinator.ChangeAsync` 有并发锁、游戏中拒绝切换、失败回退；这些是
 可移植的事务规则，不是把枚举改名就完成适配。LAN 模式不得启动 EasyTier、route guard、
 更新监听或公网控制面；公网不得启动本机 LAN 房主服务。关闭只处理本会话拥有的进程。
 
-## 4. 下一条可直接实施的 seam（UI-01）
+## 4. 初始 UI-01 实施步骤（历史方案，当前进度见上方任务）
 
 1. 在复制后的候选上固定现有 `MainWindow.xaml` 的命名控件/事件清单；给已有 LAN 业务入口加
    UI路由契约测试，特别是启动、诊断导出、恢复码、存档和OB。不启动游戏。
@@ -84,13 +98,13 @@ donor `NetworkModeCoordinator.ChangeAsync` 有并发锁、游戏中拒绝切换�
 | 启动生命周期 | canceled/auth失败/pipe准备失败/启动未确认/关闭中完成回调：不泄漏拥有者、不终止无关进程 |
 | 数据安全 | official/MOD存档分离、不自动覆盖；密码作用域；导出24项修复不退回 donor 实现 |
 | 网络隔离 | LAN不调用公网依赖；公网不创建LAN监听；切换时禁止进行中的会话；失败回退可观测 |
-| Windows呈现 | 中文/英文、最小窗口、100/150/200%DPI、焦点/候选框、覆盖层、托盘/音乐 |
+| Windows呈现 | 中文/英文、最小窗口、100/125/150/200%DPI、焦点/候选框、覆盖层、托盘/音乐；根DPI和物理显示器验收分开 |
 | 游戏回归 | 保留已有F3、MAC-11 HUD、中文、稳定世界相机、VSS EMF通过记录；不要求用户全量重复采集 |
 
 Linux云环境可检查源码/路由合同和纯逻辑；WPF UI、DPAPI、命名管道的Windows实现、DX11实际
 绘制及多人游戏不能以Linux单测代替。新界面由Windows runner出包，用户集中验收。
 
-## 6. 本轮只读审计边界
+## 6. 原始本地只读审计边界
 
 本轮没有改产品源码、编译、启动服务/游戏或采集。两端服务器同路径文件的字节级对照为
 2个相同、113个不同（含格式差异，**不是113个语义缺陷**），LAN独有37个，donor独有153个；
@@ -98,7 +112,7 @@ Linux云环境可检查源码/路由合同和纯逻辑；WPF UI、DPAPI、命名
 九个初始品牌文件另存差异；发现 `LanConnection.RefreshAsync` 的能力协议 product 不应改为
 显示名，已交主代理修正。不要把整合计划或文件搬运记作功能通过。
 
-## 7. 云端任务交接（现在不在本机实现）
+## 7. 原始云端任务交接（后续产品修改继续在云端）
 
 用户要求后续代码修改尽量放到云端。本轮只交文档；以下任务由拿到同一提交的云端执行：
 

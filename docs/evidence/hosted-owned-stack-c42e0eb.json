@@ -1,0 +1,278 @@
+{
+  "verified_utc": "2026-10-26T18:27:22.404682+00:00",
+  "run_id": 40371709938,
+  "job_id": 121755096661,
+  "source_head": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+  "checkout_merge": "64198de3d124a12152076754ec4cf88c6b6892f6",
+  "source_merge_parent_and_tree_verified": true,
+  "status": "owned_stack_development_verified",
+  "scope": {
+    "transport": "tcp",
+    "purpose": "owned-isolated-development",
+    "production_admission": false,
+    "ordinary_public_enabled": false,
+    "game_executed": false,
+    "complete_client_package": false,
+    "runtime_binary_uploaded": false,
+    "raw_runtime_output_retained": false
+  },
+  "artifact_id": 12674028927,
+  "artifact_sha256": "b4b60d37ef36e6c4c73744dfb1c6f34fe4450cff4ee5c74e9b76ed967f0948f0",
+  "official_digest_verified": true,
+  "cases": [
+    {
+      "case": "lease-revoke",
+      "status": "owned_stack_case_verified",
+      "cleanup_errors": [],
+      "namespaces_created": 2,
+      "namespaces_removed": 2,
+      "actual_native_ready": true,
+      "owned_listeners": 5,
+      "runtime_profile_sha256": "1a44cc61431ccbdf867877f46926600c44faa001232274ae0fdba9e47713158c",
+      "established_tcp": true,
+      "native_watchdog_exit": 92,
+      "ports_rebound": 5,
+      "held_tcp_eof_or_reset": true,
+      "overlay_alive_during_close": true,
+      "containment_after": [
+        {
+          "input": 0,
+          "output": 24,
+          "forward": 0
+        },
+        {
+          "input": 0,
+          "output": 25,
+          "forward": 0
+        }
+      ]
+    },
+    {
+      "case": "peer-loss",
+      "status": "owned_stack_case_verified",
+      "cleanup_errors": [],
+      "namespaces_created": 2,
+      "namespaces_removed": 2,
+      "actual_native_ready": true,
+      "owned_listeners": 5,
+      "runtime_profile_sha256": "37c8115f7b1579f8eb49224c7e5f9cf37d96265f7beb26fd9d62ee508452ed29",
+      "established_tcp": true,
+      "exact_peer_reaped": true,
+      "monitor_permanently_revoked": true,
+      "native_reaped": true,
+      "native_listeners_remaining": 0,
+      "remote_tcp_eof_claimed": false,
+      "containment_after": [
+        {
+          "input": 0,
+          "output": 24,
+          "forward": 0
+        },
+        {
+          "input": 0,
+          "output": 25,
+          "forward": 0
+        }
+      ]
+    }
+  ],
+  "same_run_component_identities_verified_by_harness": true,
+  "same_run_component_binary_bytes_independently_rehashed": false,
+  "precontrol_OPEN_required_and_observed_via_successful_exact_harness": true,
+  "precontrol_OPEN_evidence_scope": "Both successful run_case branches require client.command(open) acknowledgement plus live exact pidfd before revoke or exact peer stop; worker verifies same held socket without EOF/reset. Receipt does not carry a separate OPEN boolean. Exact tested harness bytes inspected and hashed.",
+  "harness_source_sha256": {
+    "scripts/ci_owned_stack.py": "e08206183509c16af3d803e3ff5956b29432115c4a464a9944edf8ba2e9ba79b",
+    "scripts/owned_stack_worker.py": "09615cbafe6db7f0928d93e7df7dae59c064a755a5fcd236c947a5ac62ab7413",
+    "scripts/ci_native_lifecycle.py": "8144e773c49d85fc718b01fcc2c1888e990acc220d17c723c3f696f5376f7fcf"
+  },
+  "owned_namespaces_created": 4,
+  "owned_namespaces_removed": 4,
+  "cleanup_errors": [],
+  "source_package_unchanged": true,
+  "private_stage_removed": true,
+  "query_exit_fix_ancestor_of_tested_source": true,
+  "previous_fe6_failure_retained": {
+    "run_id": 39947934694,
+    "artifact_id": 12500832142,
+    "case": "lease-revoke",
+    "phase": "observe",
+    "code": "QUERY_IMAGE_CHANGED",
+    "second_case_completed": false
+  },
+  "QUERY_IMAGE_CHANGED_observed_in_this_run": false,
+  "unique_root_cause_of_historical_failures_proven": false,
+  "stability_guaranteed": false,
+  "peer_map_71_runtime_exercised": false,
+  "ordinary_Public_enabled": false,
+  "complete_package_verified": false,
+  "overall_candidate_conclusion": "failure",
+  "overall_job_counts": {
+    "success": 8,
+    "failure": 2,
+    "skipped": 1
+  },
+  "only_failed_jobs": [
+    {
+      "id": 121744166893,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 121744167790,
+      "name": "Strict retained native replay input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "missing_package_SAV_META": 8,
+  "other_package_input_errors": [],
+  "C71_retained_unexecuted": 13,
+  "full_package_job_skipped": true,
+  "separate_native_lifecycle": {
+    "job_id": 121755096729,
+    "artifact_id": 12674476825,
+    "verified_cases": 5,
+    "owned_namespaces_removed": 3,
+    "all_owned_children_reaped": true,
+    "private_tree_removed": true
+  },
+  "all_four_artifact_digests_verified": true,
+  "jobs": [
+    {
+      "id": 121744166320,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 121744166893,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 121744166931,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 121744166937,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 121744167109,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 121744167271,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 121744167790,
+      "name": "Strict retained native replay input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 121744828741,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 121754782869,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 121755096661,
+      "name": "Same-run owned overlay and native development composition",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 121755096729,
+      "name": "Same-run native owned lifecycle in synthetic namespaces",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12674028927,
+      "name": "owned-overlay-native-development-receipt-64198de3d124a12152076754ec4cf88c6b6892f6",
+      "size_in_bytes": 1754,
+      "digest": "sha256:b4b60d37ef36e6c4c73744dfb1c6f34fe4450cff4ee5c74e9b76ed967f0948f0",
+      "official_digest_verified": true,
+      "files": [
+        {
+          "path": "containment.json",
+          "sha256": "c9a319378395b60ff7abf89cdc2ec45cbbba26fb54e64fbc93fab53239c03e31",
+          "bytes": 937
+        },
+        {
+          "path": "receipt.json",
+          "sha256": "61a198def74d56cc08424edae651847bb224a5d3eb8a21dd772f8c2399646307",
+          "bytes": 2988
+        }
+      ],
+      "unread_log_members": []
+    },
+    {
+      "id": 12672963079,
+      "name": "complete-package-input-gate-64198de3d124a12152076754ec4cf88c6b6892f6",
+      "size_in_bytes": 1657,
+      "digest": "sha256:ce923c643f45512cfb58d3bf9434eb79f48166cab62519999ca8240b8ace2d85",
+      "official_digest_verified": true,
+      "files": [
+        {
+          "path": "package-inputs-receipt.json",
+          "sha256": "b458237b45fe3f80eacbc08a07352a4d6143fc2110394cc469ff6f09e14e613a",
+          "bytes": 1388
+        }
+      ],
+      "unread_log_members": [
+        "test-logs/strict-package-inputs.txt"
+      ]
+    },
+    {
+      "id": 12673595412,
+      "name": "native-replay-input-gate-64198de3d124a12152076754ec4cf88c6b6892f6",
+      "size_in_bytes": 396,
+      "digest": "sha256:b750d6a42d2e5c56e3bcab685e6894d5c184b5c2fdd87b4c4491f351428c51f9",
+      "official_digest_verified": true,
+      "files": [
+        {
+          "path": "receipt.json",
+          "sha256": "05090879365719d1ad09cb74dd42ca5e91b439b9dcb693ae077202995e56b4ea",
+          "bytes": 531
+        }
+      ],
+      "unread_log_members": []
+    },
+    {
+      "id": 12674476825,
+      "name": "native-owned-lifecycle-receipt-64198de3d124a12152076754ec4cf88c6b6892f6",
+      "size_in_bytes": 661,
+      "digest": "sha256:c3ef56084e02e90736cca8149b6b5a07204523bb6d24ef04f7e19c5e2cf37be7",
+      "official_digest_verified": true,
+      "files": [
+        {
+          "path": "receipt.json",
+          "sha256": "01166c676c2f2dc8e5f0a147f4b4d63a7570b482653199b33afdb674914e725d",
+          "bytes": 1781
+        }
+      ],
+      "unread_log_members": []
+    }
+  ]
+}

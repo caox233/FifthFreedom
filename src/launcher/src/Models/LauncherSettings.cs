@@ -9,6 +9,14 @@ public sealed class LauncherSettings
     public string ServerAddress { get; set; } = "127.0.0.1";
     public string GameDirectory { get; set; } = "";
     public string GameExecutable { get; set; } = "Blacklist_DX11_game.exe";
+    public string NetworkEnvironment { get; set; } = "Public";
+    // Donor transport choice is independent of LAN/Public deployment selection.
+    public string NetworkMode { get; set; } = "Fast";
+    public string PublicEndpoint { get; set; } = "";
+    public int PublicUpdatePort { get; set; } = 18080;
+    public string TestPublicEndpoint { get; set; } = "";
+    public int TestPublicUpdatePort { get; set; } = 18081;
+    public string PublicDeploymentConfigurationPath { get; set; } = "";
     public string GameplayMode { get; set; } = "MOD";
     public double FovScale { get; set; } = 1.2;
     public bool RememberPassword { get; set; } = true;

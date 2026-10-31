@@ -1,9 +1,11 @@
-SCBL LAN - source and bundled build dependency notice
+Fifth Freedom - source and bundled build dependency notice
 
 The existing upstream GPL-3.0 LICENSE is retained. Native protocol/server code retains its upstream source notices (5th Echelon: https://github.com/unixoide/5th-echelon). This repository organization does not relicense third-party material.
 
 .NET/WPF, Rust crates, Google.Protobuf/gRPC and Tomlyn remain subject to their respective upstream licenses. Cargo.lock and the project files identify build dependencies. The Tomlyn notice is retained in src/launcher/src/ThirdPartyNotices.
 
-The launcher build also uses music/images, FusionFix, a diagnostic capture executable, an original Ubisoft loader and user-selected default save templates. The native audio build uses DirectX SDK headers. These 20 inputs are listed in scripts/local-assets.json and included in the repository to make complete source checkouts buildable. Publication of this repository does not relicense third-party material or change its original ownership or usage conditions.
+The launcher build also uses music/images, FusionFix, a diagnostic capture executable, an original Ubisoft loader and user-selected default save templates. The native audio build uses DirectX SDK headers. The 20 pinned build inputs are listed in scripts/local-assets.json; eight required SAV/META inputs remain outside the public checkout under the privacy hold in docs/ASSET-PUBLICATION.json (12 held files including donor inputs). A public checkout therefore cannot currently produce a complete package. The user's redistribution authorization is recorded separately from independent source/license verification. Publication does not relicense third-party material or change its original ownership or usage conditions.
+
+The frozen FusionFix archive's renamed version.dll is byte-identical to the official Ultimate ASI Loader v9.7.0 Win32 dinput8.dll at source commit f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc. Seven exact upstream notice texts and the source/provenance record are retained in docs/third-party and docs/fusionfix-provenance.json. Windows component artifacts and complete packages carry them under licenses/FusionFix. These notices do not resolve the separate embedded-binary terms, DirectX SDK, MPL source/distribution, ASI identity or independent rebuild holds recorded there.
 
 Program packages are rebuilt from the source using the documented build entry. No VPN client is bundled. Retained upstream notices and the original terms applicable to bundled resources remain in effect.

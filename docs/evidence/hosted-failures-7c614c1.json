@@ -1,0 +1,171 @@
+{
+  "observed_utc": "2026-10-26T19:12:42.852830+00:00",
+  "source_head": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
+  "checkout_merge": "d189ae87293d0fcdfc5233fe6d4cf86e8f5cceec",
+  "merge_parent_and_tree_verified": true,
+  "candidate_run": 40374533090,
+  "candidate_overall": "failure",
+  "candidate_job_counts": {
+    "success": 7,
+    "failure": 3,
+    "skipped": 1
+  },
+  "candidate_failed_jobs": [
+    {
+      "id": 121762654886,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        {
+          "number": 4,
+          "name": "Verify all pinned package inputs without substituting private saves",
+          "conclusion": "failure"
+        }
+      ]
+    },
+    {
+      "id": 121762655001,
+      "name": "Strict retained native replay input gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        {
+          "number": 4,
+          "name": "Require reviewed C71 native fixture source and provenance",
+          "conclusion": "failure"
+        }
+      ]
+    },
+    {
+      "id": 121775512496,
+      "name": "Same-run owned overlay and native development composition",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        {
+          "number": 13,
+          "name": "Verify real lease revocation and peer loss with the same-run native candidate",
+          "conclusion": "failure"
+        }
+      ]
+    }
+  ],
+  "composition": {
+    "run_id": 40374533090,
+    "job_id": 121775512496,
+    "artifact_id": 12678918602,
+    "artifact_sha256": "c8c66e6e2d2bd36ea7d418fb1fd8e29b30e05d5bed5151849ff9aaadd76c7b23",
+    "official_digest_verified": true,
+    "status": "failed",
+    "top_error": "STACK_CASES_INCOMPLETE",
+    "cases": [
+      {
+        "case": "lease-revoke",
+        "status": "failed",
+        "cleanup_errors": [
+          "STACK_WORKER_CLEANUP_FAILED"
+        ],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "error": "WORKER_REPORTED_FAILURE",
+        "worker_failure": {
+          "event": "failed",
+          "schema": "ff-easytier-worker-failure-v1",
+          "phase": "observe",
+          "code": "QUERY_IMAGE_CHANGED",
+          "cleanup_reaped": false,
+          "cleanup_code": "CHILD_START_CLEANUP_UNCONFIRMED"
+        }
+      }
+    ],
+    "native_READY_recorded": false,
+    "OPEN_control_reached": false,
+    "peer_loss_case_executed": false,
+    "source_package_unchanged": true,
+    "private_stage_removed": true,
+    "child_cleanup_confirmed": false,
+    "child_cleanup_boundary": "2 namespaces removed and private stage removed do not prove exact child drain; worker explicitly reported cleanup_reaped=false/CHILD_START_CLEANUP_UNCONFIRMED."
+  },
+  "matrix": {
+    "run_id": 40374509451,
+    "job_id": 121759875419,
+    "artifact_id": 12675063007,
+    "artifact_sha256": "b892275ea8b8aa06ff81ef480166b681793be216214e8824b4d182f418ff80e6",
+    "official_digest_verified": true,
+    "status": "failed",
+    "top_error": "TRANSPORT_MATRIX_INCOMPLETE",
+    "completed_phases": 0,
+    "transports": [
+      {
+        "cleanup_errors": [],
+        "error": "WORKER_REPORTED_FAILURE",
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "phases": [],
+        "purpose": "product-transport-development-probe",
+        "status": "failed",
+        "transport": "quic",
+        "worker_failure": {
+          "cleanup_code": null,
+          "cleanup_reaped": true,
+          "code": "OVERLAY_ADDRESS_QUERY_UNAVAILABLE",
+          "event": "failed",
+          "kernel_query": {
+            "errno_class": "EADDRNOTAVAIL",
+            "link_up": false,
+            "previously_observed": false,
+            "query_stage": "ipv4_address",
+            "role": "initiator"
+          },
+          "phase": "observe",
+          "schema": "ff-easytier-worker-failure-v1"
+        }
+      }
+    ],
+    "private_stage_removed": true
+  },
+  "exact_harness_and_production_source_mapping": [
+    {
+      "path": "scripts/ci_owned_stack.py",
+      "head_sha256": "e08206183509c16af3d803e3ff5956b29432115c4a464a9944edf8ba2e9ba79b",
+      "unchanged_from_successful_c42": true
+    },
+    {
+      "path": "scripts/owned_stack_worker.py",
+      "head_sha256": "09615cbafe6db7f0928d93e7df7dae59c064a755a5fcd236c947a5ac62ab7413",
+      "unchanged_from_successful_c42": true
+    },
+    {
+      "path": "scripts/ci_native_lifecycle.py",
+      "head_sha256": "8144e773c49d85fc718b01fcc2c1888e990acc220d17c723c3f696f5376f7fcf",
+      "unchanged_from_successful_c42": true
+    },
+    {
+      "path": "scripts/ci_easytier_probe.py",
+      "head_sha256": "7945b28db43a88660db200f975e84416578bfaab7de916095945f33263f2a122",
+      "unchanged_from_successful_c42": true
+    },
+    {
+      "path": "src/public/fifth_freedom_control/owned_process.py",
+      "head_sha256": "1339d4c1e2181ad3c88bbc4a524c64ff8f134921e3446b755a21771b2bbe4c1e",
+      "unchanged_from_successful_c42": true
+    },
+    {
+      "path": "src/public/fifth_freedom_control/owned_overlay.py",
+      "head_sha256": "ac514a84b708830655c707a5a64af9e57acc5bae8e197bb225d9fd5b33377240",
+      "unchanged_from_successful_c42": true
+    },
+    {
+      "path": "src/public/fifth_freedom_control/overlay_supervisor.py",
+      "head_sha256": "6e9e28a8d03ac2f493eace50a65eaa2cc965e8a48a835a5f163dfd332ac356fb",
+      "unchanged_from_successful_c42": true
+    }
+  ],
+  "prior_c42_successes_retained": true,
+  "prior_c42_success_establishes_stability": false,
+  "unique_failure_root_cause_proven": false,
+  "ordinary_public_enabled": false,
+  "full_candidate_package_exists": false,
+  "windows_firewall_diagnostic_separate": true
+}

@@ -1,0 +1,272 @@
+{
+  "schema": 1,
+  "scope": "local accepted authenticated Data receive observation; no Public admission",
+  "upstream": {
+    "repository": "https://github.com/EasyTier/EasyTier",
+    "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+    "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db",
+    "source_date_epoch": 1778588776
+  },
+  "baseline": {
+    "recipe": "scripts/easytier-source.lock.json",
+    "recipe_sha256": "c9135af75df006062141b9ecb209887d46a9b374ed0b3d52924c15220448ebeb",
+    "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+    "ordered_patches": [
+      {
+        "path": "docs/dependency-patches/easytier-2.6.4-secure-session/contract-tests.patch",
+        "sha256": "5673d6b3f24dd44a263b7863a491ec0c482b61feadd77cfc2534973d3d8d31c4",
+        "bytes": 3140,
+        "role": "contract-tests"
+      },
+      {
+        "path": "docs/dependency-patches/easytier-2.6.4-secure-session/require-encrypted-flag.patch",
+        "sha256": "06a16ca43e035eb1380c99ace8f19a8495bbd09b6413f0fe800752896aa3d2b3",
+        "bytes": 792,
+        "role": "production-guard"
+      },
+      {
+        "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/ingress-contract-tests.patch",
+        "sha256": "13a8719f4ff0679c3a0dcc56d1f61717f8659fcbf2337032656fd66889e072d9",
+        "bytes": 5365,
+        "role": "contract-tests"
+      },
+      {
+        "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/require-encrypted-data-ingress.patch",
+        "sha256": "676e9b9dbeaad45cab7e7b85f245091c5e0d2a683f1436e4a1955f2b6e4245a3",
+        "bytes": 637,
+        "role": "production-guard"
+      },
+      {
+        "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/explicit-pin-contract-tests.patch",
+        "bytes": 4765,
+        "sha256": "9a3d13a08259acbe11352ccb084a565e04df465f42dc6d16f4a805429705b7cb",
+        "role": "contract-tests"
+      },
+      {
+        "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/require-explicit-peer-pin.patch",
+        "bytes": 1744,
+        "sha256": "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328",
+        "role": "production-guard"
+      }
+    ],
+    "original_recipes_and_runtime_pins_changed": false
+  },
+  "source_files": [
+    {
+      "path": "easytier/src/peers/peer_conn.rs",
+      "guard3_base_sha256": "55be4e5f00acd548a9977e5d34874396a84888a7f00f08bbd8b43ab7d6cf85cc",
+      "production_sha256": "ba6b78c83b55a720b8656d55385df1b45d6560edfd556607e3910d1aaa0265bd",
+      "tested_sha256": "0b2d1cf719d7c61caecc967fa04326a86cd91cfb159059045d4d2c622f57b776"
+    },
+    {
+      "path": "easytier/src/peers/peer_session.rs",
+      "guard3_base_sha256": "fd673e334c65c0cc1c4edd7654b02d37e180b9f71466f45eed4ac5f411e0024d",
+      "production_sha256": "170cb8a4855378140a6b49fe5269099832cb0fcd5edc3b7330c82d71ca6c977a",
+      "tested_sha256": "c54ae663d61edbb2829d828c4d871966f0ec03e0000b0415f1faa7df035f0d41"
+    }
+  ],
+  "patches": [
+    {
+      "path": "record-authenticated-data.patch",
+      "role": "production-observation",
+      "bytes": 9663,
+      "sha256": "b8a22853644bc3c1e0d38a4dfdaa31db0bfe7805daad2d4a9ba8a42dcb9d4dc6"
+    },
+    {
+      "path": "authenticated-receive-tests.patch",
+      "role": "contract-tests",
+      "bytes": 12359,
+      "sha256": "091c02ced9456a738bb6917f712a84e209828fc315166ad6bc5241fabd64ebb6"
+    }
+  ],
+  "evidence": {
+    "runs": [
+      {
+        "stage": "first-tests",
+        "command": [
+          "cargo",
+          "+1.95.0",
+          "test",
+          "--offline",
+          "--locked",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-p",
+          "easytier",
+          "--lib",
+          "fifth_freedom_receive_contract",
+          "--",
+          "--test-threads=1"
+        ],
+        "exit_code": 0,
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "60f607b36d9f21de89b9b9105d4b64d6c49db8f526baf64a28566d5eb7464b75"
+      },
+      {
+        "stage": "sync-before",
+        "command": [
+          "cargo",
+          "+1.95.0",
+          "test",
+          "--offline",
+          "--locked",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-p",
+          "easytier",
+          "--lib",
+          "fifth_freedom_receive_contract",
+          "--",
+          "--test-threads=1"
+        ],
+        "exit_code": 101,
+        "passed": 12,
+        "failed": 2,
+        "ignored": 0,
+        "log_sha256": "f3e674c858a5cfa0eec7b7df11518dee961356ca38e3a76941be54edf0ca2dfa"
+      },
+      {
+        "stage": "sync-after",
+        "command": [
+          "cargo",
+          "+1.95.0",
+          "test",
+          "--offline",
+          "--locked",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-p",
+          "easytier",
+          "--lib",
+          "fifth_freedom_receive_",
+          "--",
+          "--test-threads=1"
+        ],
+        "exit_code": 0,
+        "passed": 15,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "99c19c4ffada938354da3413d7f1996080bb88c2e86a2161dfda450bc0225c7c"
+      }
+    ],
+    "retained_red_tests": [
+      "generation_roundtrip_cannot_restore_an_old_observation",
+      "same_arc_same_generation_root_sync_invalidates_observation"
+    ],
+    "discarded_compile_attempt": {
+      "test_evidence": false,
+      "error_code": "E0502",
+      "description": "temporary early-record mutation did not compile; not counted as a red test",
+      "log_sha256": "b52347daf97e72fbac2652bc41243c343b1d413297794dbdba61025778178030"
+    },
+    "regressions": [
+      {
+        "command": [
+          "fifth_freedom_secure_profile_contract",
+          "--test-threads=1"
+        ],
+        "log": "regression-0.log",
+        "exit_code": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "sha256": "f88a9c0fc815369ef7ac4781d2589764bf5e9ca77b04a373a0747ac5d01665cb"
+      },
+      {
+        "command": [
+          "fifth_freedom_ingress_contract",
+          "--test-threads=1"
+        ],
+        "log": "regression-1.log",
+        "exit_code": 0,
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0,
+        "sha256": "aa9510ac48b94a240f8f0c22a7c0ae242d9ae6269204b6abc86b04fbd377fb6d"
+      },
+      {
+        "command": [
+          "peers::secure_datagram::tests",
+          "--test-threads=1"
+        ],
+        "log": "regression-2.log",
+        "exit_code": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "sha256": "f83885f23351e3d658ab14f083df19a88f7c01d3eb8f5a379bd3c1cccadc2b92"
+      },
+      {
+        "command": [
+          "peers::peer_session::tests",
+          "--test-threads=1"
+        ],
+        "log": "regression-3.log",
+        "exit_code": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "sha256": "deb58ffb62620269680dcf7130e350e565a3270d69e760d6301644f3f11845cb"
+      },
+      {
+        "command": [
+          "ff_explicit_pin_contract",
+          "--test-threads=1"
+        ],
+        "log": "regression-4.log",
+        "exit_code": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "sha256": "367ba690821d432ea7a29a896905a97283279effb7a33f71e7a868279f441dba"
+      },
+      {
+        "command": [
+          "peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip",
+          "--test-threads=1",
+          "--exact"
+        ],
+        "log": "regression-5.log",
+        "exit_code": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "sha256": "64b8f0edf2615fe1f3ecc80eb432a3ec4add540ccd438d82430bbcd8f44520f0"
+      }
+    ],
+    "final_test_executable_sha256": "0f42c123f34ad645c87f667adfb2152a36ab12ecb02348e323d2e9d91bccde38",
+    "final_test_executable_bytes": 162107152
+  },
+  "patch_integrity": {
+    "apply_checks_passed": true,
+    "applied_bytes_match_tested_source": true,
+    "reverse_restores_exact_guard3": true,
+    "unchanged_cargo_lock_verified": true,
+    "entire_source_tree_only_two_files_changed": true
+  },
+  "toolchain": {
+    "rust": "1.95.0",
+    "target": "x86_64-unknown-linux-gnu",
+    "features": "unchanged upstream default; ring backend",
+    "cargo_locked_offline": true,
+    "target_cache_reused": true,
+    "incremental": false
+  },
+  "boundaries": {
+    "actual_production_filter_tests": true,
+    "actual_in_memory_noise_handshake": true,
+    "observation_not_serializable": true,
+    "session_key_material_in_observation": false,
+    "idle_or_active_challenge_freshness_proven": false,
+    "sync_receive_grace_policy_changed": false,
+    "crypto_or_packet_wire_changed": false,
+    "core_cli_runtime_started": false,
+    "network_socket_tun_driver_game_started": false,
+    "new_full_windows_build_verified": false,
+    "runtime_artifact_published": false,
+    "production_lease_issuer_enabled": false,
+    "public_gate_opened": false
+  }
+}

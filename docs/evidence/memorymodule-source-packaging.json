@@ -1,0 +1,105 @@
+{
+  "schema": "ff-memorymodule-source-packaging-local-v1",
+  "source_commit": "5f83e41c3a3e7c6e8284a5c1afa5a38790809461",
+  "git_tree": "4cf1cf78190c2bd40fcd88584d3f0be36a1af947",
+  "source_files": 38,
+  "source_bytes": 126092,
+  "canonical_execute_paths": [
+    "tests/generate-exports.sh",
+    "tests/runtests.sh",
+    "tests/runwine.sh"
+  ],
+  "reference_pins": {
+    "README.md": {
+      "bytes": 3547,
+      "sha256": "f680c1edac04712465891b0f3e3c1978eabb62bde543bbe3971968e3acb6b77b"
+    },
+    "SOURCE-MANIFEST.json": {
+      "bytes": 11141,
+      "sha256": "b94b1f2e9ff1cbbd7c982f31fee662148f4ec0b21358460bcebbbaf10ffcd7b8"
+    }
+  },
+  "bat_crlf_pin": {
+    "bytes": 1428,
+    "sha256": "2886757f5e8a66b03389913c47bf482dd4e8a1a535c307889af83566680fa445"
+  },
+  "focused_test_results": {
+    "test_corresponding_source": {
+      "run": 5,
+      "passed": 5,
+      "skipped": 0
+    },
+    "test_fusionfix_provenance": {
+      "run": 7,
+      "passed": 7,
+      "skipped": 0
+    },
+    "test_public_server_candidate": {
+      "run": 22,
+      "passed": 22,
+      "skipped": 0
+    }
+  },
+  "initial_candidate_fixture_missing_source": {
+    "errors": 5,
+    "fixed_by_including_reviewed_source": true
+  },
+  "packaged_notice_and_source_files": 50,
+  "upstream_scripts_executed": false,
+  "binaries_replaced": false,
+  "full_package_built": false,
+  "windows_execution_verified": false,
+  "provenance_holds_changed": false,
+  "implementation_commit": "4e633bd628c045767f459ad10800f4ceae840e1f",
+  "independent_review": {
+    "passed": 34,
+    "skipped": 0,
+    "receipt_sha256": "e15df1cc4293988ba119eb16a03c6970e1bc477752a4b2032a119049f1b97fd7"
+  },
+  "committed_upstream_tree_matches": true,
+  "retained_clean_failure": {
+    "source_commit": "4e633bd628c045767f459ad10800f4ceae840e1f",
+    "initial_git_clean": true,
+    "tracked_source_unchanged": true,
+    "exit_code": 1,
+    "executed": 649,
+    "passed": 639,
+    "skipped": 2,
+    "complete_package_ready": false,
+    "source_report_sha256": "54c97adcc72fd7a619b132679ee104138695f1888ddf3eded876634b228f6906",
+    "retained_log_sha256": "360a4cbe60025461fc5d8e0dab6f1ef30af5ca7473d40e41ec8de1ccac22966f",
+    "failed_methods": 8,
+    "error_events": 9,
+    "failure_code": "SOURCE_REFERENCE_MODE_INVALID"
+  },
+  "mode_correction": {
+    "commit": "ac89a7f8c10a1917f254a173e04d85b772439cb1",
+    "actual_restrictive_git_checkout_umask": "0077",
+    "actual_regular_mode": "0600",
+    "actual_executable_mode": "0700",
+    "old_source_rejected_exact_new_control": true,
+    "git_owner_execute_semantics_preserved": true,
+    "special_permission_bits_rejected": true,
+    "canonical_output_modes": [
+      "0644",
+      "0755"
+    ],
+    "upstream_tree_unchanged": true,
+    "source_or_asset_hashes_relaxed": false,
+    "local_and_independent_focused_passed": 36,
+    "skipped": 0,
+    "independent_receipt_sha256": "a05822ff4ae21df28cca4faed8580f1aba62ab0340e3e4192b1c8a0cd33de8f2"
+  },
+  "corrected_clean_checkout": {
+    "source_commit": "ac89a7f8c10a1917f254a173e04d85b772439cb1",
+    "initial_git_clean": true,
+    "tracked_source_unchanged": true,
+    "exit_code": 0,
+    "executed": 651,
+    "passed": 649,
+    "skipped": 2,
+    "complete_package_ready": false,
+    "source_report_sha256": "ab16711c3548a707e22fcdc9e2bf46cc09412c6e0c741b99b074a0ae36131d6c",
+    "retained_log_sha256": "a04823763b097acae5d2aaf5d31955f032e0d5529011e497a3f02f0bf84ec068"
+  }
+}

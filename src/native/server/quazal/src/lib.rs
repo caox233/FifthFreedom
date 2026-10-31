@@ -21,6 +21,8 @@ pub mod config;
 pub mod kerberos;
 pub mod prudp;
 pub mod rmc;
+pub mod socket_policy;
+pub mod source_policy;
 
 pub use crate::config::*;
 

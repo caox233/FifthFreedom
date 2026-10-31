@@ -21,8 +21,9 @@ public sealed class AuthService
             var release=await Task.Run(verifyRelease);
             using var c=await LanConnection.ConnectAsync(serverInput,localBindIp??"",CancellationToken.None);
             var r=await c.Api.LoginAsync(new LoginRequest { Username=username,Password=password,ClientProduct=LanConnection.ProductContract,PackageIdentity=release.Declaration() },deadline:DateTime.UtcNow.AddSeconds(8));
-            return string.IsNullOrEmpty(r.Error) && !string.IsNullOrEmpty(r.User?.Id)?LoginResult.Success(r.User.Id):new LoginResult { Status=LoginStatus.ServerError,Message=r.Error };
-        } catch(RpcException e) when(e.StatusCode==StatusCode.NotFound) { return new LoginResult {Status=LoginStatus.UserNotFound,Message="账号不存在。"}; }
+            return string.IsNullOrEmpty(r.Error) && !string.IsNullOrEmpty(r.User?.Id)?LoginResult.Success(r.User.Id):new LoginResult { Status=LoginStatus.ServerError,Message=PackageAdmissionMessages.ForDetail(r.Error)??r.Error };
+        } catch(RpcException e) when(e.StatusCode==StatusCode.FailedPrecondition && PackageAdmissionMessages.ForDetail(e.Status.Detail) is not null) { return new LoginResult {Status=LoginStatus.ServerError,Message=PackageAdmissionMessages.ForDetail(e.Status.Detail)!}; }
+          catch(RpcException e) when(e.StatusCode==StatusCode.NotFound) { return new LoginResult {Status=LoginStatus.UserNotFound,Message="账号不存在。"}; }
           catch(RpcException e) when(e.StatusCode==StatusCode.Unauthenticated) { return new LoginResult {Status=LoginStatus.InvalidPassword,Message="密码错误或账号不匹配。"}; }
           catch(Exception e) { return new LoginResult {Status=LoginStatus.ConnectionFailed,Message=e.Message}; }
     }
@@ -33,8 +34,9 @@ public sealed class AuthService
             var release=await Task.Run(verifyRelease);
             using var c=await LanConnection.ConnectAsync(serverInput,localBindIp??"",CancellationToken.None);
             var r=await c.Api.RegisterAsync(new RegisterRequest {Username=username,Password=password,UbiId=Guid.NewGuid().ToString(),ClientProduct=LanConnection.ProductContract,PackageIdentity=release.Declaration()},deadline:DateTime.UtcNow.AddSeconds(8));
-            return string.IsNullOrEmpty(r.Error)?new RegisterResult {Status=RegisterStatus.Success,RecoveryCode=r.RecoveryCode}:new RegisterResult {Status=RegisterStatus.ServerError,Message=r.Error};
-        } catch(RpcException e) when(e.StatusCode==StatusCode.AlreadyExists) { return new RegisterResult {Status=RegisterStatus.AlreadyExists,Message="账号已存在。"}; }
+            return string.IsNullOrEmpty(r.Error)?new RegisterResult {Status=RegisterStatus.Success,RecoveryCode=r.RecoveryCode}:new RegisterResult {Status=RegisterStatus.ServerError,Message=PackageAdmissionMessages.ForDetail(r.Error)??r.Error};
+        } catch(RpcException e) when(e.StatusCode==StatusCode.FailedPrecondition && PackageAdmissionMessages.ForDetail(e.Status.Detail) is not null) { return new RegisterResult {Status=RegisterStatus.ServerError,Message=PackageAdmissionMessages.ForDetail(e.Status.Detail)!}; }
+          catch(RpcException e) when(e.StatusCode==StatusCode.AlreadyExists) { return new RegisterResult {Status=RegisterStatus.AlreadyExists,Message="账号已存在。"}; }
           catch(Exception e) { return new RegisterResult {Status=RegisterStatus.ConnectionFailed,Message=e.Message}; }
     }
     public static string BuildGrpcAddress(string input) { var s=ServerAddress.Parse(input);return $"http://{s.Host}:{s.Port}"; }

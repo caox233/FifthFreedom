@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "purpose": "Verify already-retained hosted coverage for failed Capture reference output publication corrections",
+  "source_head": "7c614c10577eafdaf3727f9ba000f98f1fa355a5",
+  "checkout_merge": "d189ae87293d0fcdfc5233fe6d4cf86e8f5cceec",
+  "source_tree": "2cc7948deb5086d9af7cedc519103139951c8638",
+  "merge_parent_and_tree_verified": true,
+  "run_id": 40374521618,
+  "job_id": 121753823205,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/40374521618",
+  "conclusion": "success",
+  "corrective_commits": [
+    "134b49b7c702bc917e5e6b564d3ecc8613944947",
+    "78de05f41d5bf5cc8815af5a8a0474965f88aa94"
+  ],
+  "corrections_in_source_ancestry_verified": true,
+  "correction_paths_identical_at_current_source": "329f18a40f9959cfb06939c26150cd50126c26ee",
+  "path_sha256": {
+    ".github/workflows/capture-reference-build.yml": "11d4e9580a2f740b3047d2f7d70749c0bdb9165c9f29df342e6784cb2ab2e053",
+    "scripts/ci_capture_reference.py": "b1f0787997ca24bfb0d0dc4f66315bd5ef5c5087486622ffd00f232ff6a4ee13",
+    "tests/ci/test_ci_capture_reference.py": "75aa8738017cb02be057f539aa55f105a09359ec019a061f3ac9eccaf90f29ee"
+  },
+  "artifact_id": 12674082013,
+  "artifact_sha256": "218ad0b35d00f338f15f5584a44cd69d34f6a8df83c756fc028b7b833132e6e8",
+  "artifact_bytes": 328037,
+  "official_digest_verified": true,
+  "strict_three_file_inventory_verified": true,
+  "inventory": [
+    {
+      "path": "CaptureReference.exe",
+      "bytes": 809984,
+      "sha256": "9ab9917009db737aaf3ac44d1c8bca31acaf5a83d46383727844a122fd6b8cfe"
+    },
+    {
+      "path": "SHA256SUMS.txt",
+      "bytes": 166,
+      "sha256": "02612464352c6a475ef6f519d67d9847ca49b14d60e0af93fea65ae03f6f5e1d"
+    },
+    {
+      "path": "receipt.json",
+      "bytes": 2906,
+      "sha256": "3faa73ec7df278038984c09dca84c00de71133869f217ecfcacf9c9f2ae87743"
+    }
+  ],
+  "internal_sums_verified": true,
+  "pe_machine": 332,
+  "pe_optional_magic": 267,
+  "pe32_verified": true,
+  "required_checks": 19,
+  "passed_checks": 19,
+  "skipped_checks": 0,
+  "hosted_portable_regression_tests": 9,
+  "hosted_postcopy_failure_cleanup_regression_passed": true,
+  "publication_boundary": {
+    "whole_job_conclusion": "success",
+    "build_step_conclusion": "success",
+    "upload_step_conclusion": "success",
+    "success_path_exe_upload_exercised": true,
+    "failed_copy_cleanup_fixture_exercised_on_windows": true,
+    "outcome_success_guard_present_in_executed_workflow": true,
+    "actual_failed_build_upload_job_exercised": false,
+    "scope": "Windows fixture exercises exact postcopy error cleanup and receipt preservation. Successful hosted job exercises corrected build/upload lane. The unsuccessful-step EXE omission expression is source-reviewed, not a separate observed failed GitHub upload job."
+  },
+  "inputs": [
+    {
+      "path": "docs/development-reference/capture-helper/capture-helper.cpp",
+      "sha256": "bed779d4302b68e4397a8e3fe9afddfa886c9b96c8667a4a9279def85e11a43b",
+      "bytes": 16267,
+      "verified_at_source_and_current": true
+    },
+    {
+      "path": "src/launcher/src/Assets/SCBL.LAN.Capture.exe",
+      "sha256": "d34d192bb97a379c4b063c24f7cea6789005b9e5a5584404b701dfd4e7533a11",
+      "bytes": 810496,
+      "verified_at_source_and_current": true
+    }
+  ],
+  "retained_inputs_verified_after": true,
+  "msvc_full_version": 194435229,
+  "historical_msvc_full_version_matched": false,
+  "production_helper_replaced": false,
+  "capture_executed": false,
+  "debugger_attached": false,
+  "game_executed": false,
+  "source_binary_equivalence_verified": false,
+  "complete_package_ready": false,
+  "raw_logs_published": false,
+  "evidence_sha256": {
+    "job-raw.log": "4d9378573724794ebc4dc067db41fd5d769be0d84907876b11cbb41fcb8067b8",
+    "official-artifact.json": "16dd0d822a78e7240c6144ba204085ad288417e8c20df7ed3b4013e167c62f53",
+    "official-job.json": "b5b601c9a3c2977f24539a35130e4f80035d4ec44d04d94164dbf26429ff5f77",
+    "official-merge.json": "9ef469fc5368e17f9fc7cb05f1b8af38470ec5954eff9feb28f672f958e2c325",
+    "official-run.json": "d6fabc3168f7be26f9163ad173b89102bc7d264324e9ac531c31d71a613eb6eb"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "tun": {
+    "upstream": {
+      "repository": "https://github.com/EasyTier/rust-tun",
+      "commit": "12378839e7985283df0e4fb536b7137230356db5",
+      "tree": "b2d6df5fedf4641ff4c699e731901fd998ec75f8"
+    },
+    "archive": {
+      "bytes": 225280,
+      "sha256": "a09620fb120b1f55d6d3151629e3a859f39e4278b31331f2c41970d006499d03"
+    },
+    "materialized_links": [],
+    "omitted_files": []
+  },
+  "session_recipe": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-session/receipt.json",
+    "sha256": "ead3eb585a46be4346becf5d89f9a5cce5b58c385e32d31b0cc05276f98f5307",
+    "bytes": 6002
+  },
+  "patch": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-session/tun-session-observer.patch",
+    "bytes": 20743,
+    "sha256": "c61e570db8dd04d9c7dc182620a1ab5b586dd7c4e344aeac81e75f11331c3691"
+  },
+  "official_zip": {
+    "url": "https://www.wintun.net/builds/wintun-0.14.1.zip",
+    "bytes": 750540,
+    "sha256": "07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51"
+  },
+  "dll": {
+    "member": "wintun/bin/amd64/wintun.dll",
+    "bytes": 427552,
+    "sha256": "e5da8447dc2c320edc0fc52fa01885c103de8c118481f683643cacc3220dafce"
+  },
+  "probe_files": [
+    {
+      "path": "tests/native/wintun-session-probe/Cargo.toml",
+      "destination": "Cargo.toml",
+      "bytes": 506,
+      "sha256": "550054a3320cbdca7488c70b67d5f27458549f6fa23a997c53dc41380db864e6"
+    },
+    {
+      "path": "tests/native/wintun-session-probe/Cargo.lock",
+      "destination": "Cargo.lock",
+      "bytes": 11960,
+      "sha256": "b3c4e5891a705c56b8fce08711b41ded44e0feac1333122d0a1ebb7f5e9288fa"
+    },
+    {
+      "path": "tests/native/wintun-session-probe/src/main.rs",
+      "destination": "src/main.rs",
+      "bytes": 8232,
+      "sha256": "c784133b24c84460988833572de6659d293b9afa420840843724723ecda76870"
+    }
+  ],
+  "public_admission": false
+}

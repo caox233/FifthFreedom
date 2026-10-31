@@ -1,0 +1,17 @@
+diff --git a/easytier/src/peers/secure_datagram.rs b/easytier/src/peers/secure_datagram.rs
+index f4722e4..2649f3d 100644
+--- a/easytier/src/peers/secure_datagram.rs
++++ b/easytier/src/peers/secure_datagram.rs
+@@ -727,6 +727,12 @@ impl SecureDatagramSession {
+         if !self.is_valid() {
+             return Err(anyhow!("session invalidated"));
+         }
++        if !ciphertext_with_tail
++            .peer_manager_header()
++            .is_some_and(|header| header.is_encrypted())
++        {
++            return Err(anyhow!("secure datagram requires encrypted payload"));
++        }
+         let nonce_bytes =
+             Self::parse_tail(ciphertext_with_tail.payload()).ok_or_else(|| anyhow!("no tail"))?;
+         let epoch = u32::from_be_bytes(nonce_bytes[..4].try_into().unwrap());

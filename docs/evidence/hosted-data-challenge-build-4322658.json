@@ -1,0 +1,476 @@
+{
+  "artifact_verification": {
+    "exact_three_json_members": true,
+    "full_source_inventory_matches_reviewed_preparation": true,
+    "members": {
+      "easytier-data-challenge-build-only-run.json": {
+        "bytes": 359,
+        "sha256": "eaa137396b8eabdda0d6c87134a8cc57c75101985abe82f514ee24f1fb9a074c"
+      },
+      "easytier-data-challenge-build-only/receipt.json": {
+        "bytes": 3868,
+        "sha256": "db8b76039e3879101a72a16554445f4bab7dfc5940982d5e316ee2434a0f479b"
+      },
+      "easytier-data-challenge-build-only/source-receipt.json": {
+        "bytes": 140987,
+        "sha256": "8a71fd321f711a8761ca9968df67644706997baeacd78f6a3f02e1ae8519609d"
+      }
+    },
+    "source_files": 700,
+    "zip_matches_official_digest_and_size": true
+  },
+  "boundaries": {
+    "actual_hosted_contracts_passed": 59,
+    "actual_locked_release_compilation": true,
+    "core_cli_executed": false,
+    "current_runtime_recipe_changed": false,
+    "dependency_distribution_closure_verified": false,
+    "downloaded_or_independently_rehashed_executables": false,
+    "driver_tun_game_started": false,
+    "failed": 0,
+    "ignored": 0,
+    "new_peer_map_membership_wrapper_in_this_recipe": false,
+    "public_startup_allowed": false,
+    "remote_udp_application_owner_proven": false,
+    "runner_elf_checks_and_hashes_only": true,
+    "runtime_binary_uploaded": false,
+    "windows_source_recipe_changed": false
+  },
+  "compatibility_jobs": {
+    "authenticated_receive": {
+      "artifact_verification": {
+        "exact_three_json_members": true,
+        "full_source_inventory_matches_reviewed_preparation": true,
+        "members": {
+          "easytier-authenticated-receive-build-only-run.json": {
+            "bytes": 359,
+            "sha256": "625806082dc4f70995fde0af0a7c0f63931f94a26bbb65a1b2b8e8326623665a"
+          },
+          "easytier-authenticated-receive-build-only/receipt.json": {
+            "bytes": 3639,
+            "sha256": "a36611b202a023a2fdf73fc30f8d21cc341ab1c84c15c63cb35a6bbbbd54e005"
+          },
+          "easytier-authenticated-receive-build-only/source-receipt.json": {
+            "bytes": 140288,
+            "sha256": "87941f770a2a9b23a77234bceec2402b3d99bf02586eccd68636b86e68d67744"
+          }
+        },
+        "source_files": 699,
+        "zip_matches_official_digest_and_size": true
+      },
+      "job_conclusion": "success",
+      "job_id": 120379516015,
+      "official_artifact": {
+        "digest": "sha256:c8af47038feef7d5a46880d4de3a7a8a34f11138af7be666285d8aa093814996",
+        "id": 12498357324,
+        "name": "easytier-authenticated-receive-build-only-receipts-2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+        "size_in_bytes": 40077
+      },
+      "recipe": {
+        "path": "scripts/easytier-authenticated-receive-source.lock.json",
+        "sha256": "4ee0affd0efe9fd8f9da394ef616787506870bcbeeff65873b771390e1385a2d"
+      },
+      "verified_build_receipt": {
+        "admission": {
+          "readiness_adapter_version": null,
+          "runtime_admission_ready": false,
+          "runtime_publication_approved": false,
+          "security_profile_id": null
+        },
+        "build_inputs": {
+          "bins": [
+            "easytier-core",
+            "easytier-cli"
+          ],
+          "cargo_features": "default",
+          "cargo_incremental": false,
+          "crypto_backend": "ring; wireguard enabled; openssl-crypto/aes-gcm absent",
+          "official_musl_jemalloc_build_reproduction": false,
+          "profile": "release",
+          "rust_toolchain": "1.95.0",
+          "target": "x86_64-unknown-linux-gnu"
+        },
+        "built_executables": {
+          "easytier-cli": {
+            "bytes": 12261880,
+            "sha256": "9a961bba46810564d9aac00e36578373bff806ad7a96241ab2cd79d589720b88"
+          },
+          "easytier-core": {
+            "bytes": 28594152,
+            "sha256": "f42aed68756d23bfbead869e553ad27b1502f6122a0161d982488b7e70dba75d"
+          }
+        },
+        "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+        "checkout_commit": "2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+        "dependency_source_closure_verified": false,
+        "official_binary_reproduced": false,
+        "patch_manifest_sha256": "ef934c74ddadd714f681b1c5406b40272724b9940a070f7a6f1229111cfbafc1",
+        "public_startup_allowed": false,
+        "run_attempt": "1",
+        "run_id": "39943233069",
+        "runs": [
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "1a1e91759cc7c2425a1901f4b4c4d5126eb3a0f0016cb015a3b8e8df18a6caf0",
+            "passed": 15,
+            "stage": "fifth_freedom_receive_"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "b034720b58cfbeedb1ca50c7a862c596bfd217aa7061fa84178e1511f7397b97",
+            "passed": 4,
+            "stage": "fifth_freedom_secure_profile_contract"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "0dac81c2a0752f9ff204dbd5593a57595d7f8759689c442a8018507036c48a1f",
+            "passed": 10,
+            "stage": "fifth_freedom_ingress_contract"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "96574e49dab45548d8ece352138f5fb43d79c30e609ead939d372e09d9501ac5",
+            "passed": 9,
+            "stage": "peers::secure_datagram::tests"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "dad2901418044a90fa6b14438b032749d5330fb8a893c2bd5a6d47f641c5687e",
+            "passed": 2,
+            "stage": "peers::peer_session::tests"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "2b902f4c6f2754c73f074d9157eedc75f04cc4ddc2a982ab2c372bc3456e16bb",
+            "passed": 3,
+            "stage": "ff_explicit_pin_contract"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "979ccceaa19e6a6211ea8f105260bd4b2842d922e544c175c9a0e9873dded776",
+            "passed": 1,
+            "stage": "peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip"
+          },
+          {
+            "exit_code": 0,
+            "log_sha256": "11a327fb51444f05321d6889d52165a3c22734c1a7f9eae620b3d0301a48f35d",
+            "stage": "release-build"
+          }
+        ],
+        "runtime_binary_uploaded": false,
+        "runtime_executed": false,
+        "schema": 1,
+        "source_archive_sha256": "fe41b78a040f77f7fb9c87028b5dca79bf71c582036d1f84f355e6b79935ffd3",
+        "source_tree_sha256": "b0a7d3cf802d3de1f3741943ccd48db02cf883fe68899e9cd7f636627ec74e0f",
+        "status": "built_and_contracts_verified_not_admitted",
+        "upstream": {
+          "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+          "repository": "https://github.com/EasyTier/EasyTier",
+          "source_date_epoch": 1778588776,
+          "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+        }
+      }
+    },
+    "guard3": {
+      "artifact_verification": {
+        "exact_three_json_members": true,
+        "full_source_inventory_matches_reviewed_preparation": true,
+        "members": {
+          "easytier-build-only-run.json": {
+            "bytes": 359,
+            "sha256": "597242ef21a40055fd1448bb55dbc58bc4c4aaaa55a64a19800cf4adc412d9bd"
+          },
+          "easytier-build-only/receipt.json": {
+            "bytes": 3378,
+            "sha256": "0b4be9ddd7c0963e409e82341578bbe8697092af8a26794c69371d7679ca1d57"
+          },
+          "easytier-build-only/source-receipt.json": {
+            "bytes": 139758,
+            "sha256": "41d13b6b55557d21f3639ce8b602790debdc731f4edc08a2abec6d58d0d78add"
+          }
+        },
+        "source_files": 699,
+        "zip_matches_official_digest_and_size": true
+      },
+      "job_conclusion": "success",
+      "job_id": 120379515757,
+      "official_artifact": {
+        "digest": "sha256:edd42aa8462e26378963d35691f53c01b42bd2285d0027cef2185153f37a5b6a",
+        "id": 12496743899,
+        "name": "easytier-linux-build-only-receipts-2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+        "size_in_bytes": 39754
+      },
+      "recipe": {
+        "path": "scripts/easytier-source.lock.json",
+        "sha256": "c9135af75df006062141b9ecb209887d46a9b374ed0b3d52924c15220448ebeb"
+      },
+      "verified_build_receipt": {
+        "admission": {
+          "readiness_adapter_version": null,
+          "runtime_admission_ready": false,
+          "runtime_publication_approved": false,
+          "security_profile_id": null
+        },
+        "build_inputs": {
+          "bins": [
+            "easytier-core",
+            "easytier-cli"
+          ],
+          "cargo_features": "default",
+          "cargo_incremental": false,
+          "crypto_backend": "ring; wireguard enabled; openssl-crypto/aes-gcm absent",
+          "official_musl_jemalloc_build_reproduction": false,
+          "profile": "release",
+          "rust_toolchain": "1.95.0",
+          "target": "x86_64-unknown-linux-gnu"
+        },
+        "built_executables": {
+          "easytier-cli": {
+            "bytes": 12261752,
+            "sha256": "bcbbc6e68d7326b1820003194c1acc99547ade7f354f14ae42ce339a3fea70b0"
+          },
+          "easytier-core": {
+            "bytes": 28593032,
+            "sha256": "837ce111c096548f564e73de2f1d23fd6666109d6839e5f2612b5d67da4c7175"
+          }
+        },
+        "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+        "checkout_commit": "2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+        "dependency_source_closure_verified": false,
+        "official_binary_reproduced": false,
+        "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+        "public_startup_allowed": false,
+        "run_attempt": "1",
+        "run_id": "39943233069",
+        "runs": [
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "e6937d46725f75da6153d16260632d215a448ce3fe37e19faa8c061181daef0c",
+            "passed": 4,
+            "stage": "fifth_freedom_secure_profile_contract"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "0e47eacfe2ad737f5ca42f0a756de590e828c36a138fc8da05a3442456e5eada",
+            "passed": 10,
+            "stage": "fifth_freedom_ingress_contract"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "ae9c44af157aeb32f86591e09dee0548959e42256e6ccc3d5e13c3158f366e46",
+            "passed": 9,
+            "stage": "peers::secure_datagram::tests"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "4b862d9e1857a32c1863eed4e79afce29ce8ca3a26e482edb9a39f00c463b307",
+            "passed": 2,
+            "stage": "peers::peer_session::tests"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "856cfb09663d666f7efe5599a4e1ba0b18df02528eb2964d7d5010774c754658",
+            "passed": 7,
+            "stage": "peer_conn_secure_mode_"
+          },
+          {
+            "exit_code": 0,
+            "failed": 0,
+            "ignored": 0,
+            "log_sha256": "7cde238d2a2be3a21f22e6b819143290abbf5da27bdf02852fd4e14be1f52c13",
+            "passed": 3,
+            "stage": "ff_explicit_pin_contract"
+          },
+          {
+            "exit_code": 0,
+            "log_sha256": "9553cf268e588bc099321e5fcbefb86e59e9598928d68050dff534350846db7b",
+            "stage": "release-build"
+          }
+        ],
+        "runtime_binary_uploaded": false,
+        "runtime_executed": false,
+        "schema": 1,
+        "source_archive_sha256": "fe41b78a040f77f7fb9c87028b5dca79bf71c582036d1f84f355e6b79935ffd3",
+        "source_tree_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+        "status": "built_and_contracts_verified_not_admitted",
+        "upstream": {
+          "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+          "repository": "https://github.com/EasyTier/EasyTier",
+          "source_date_epoch": 1778588776,
+          "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+        }
+      }
+    }
+  },
+  "github": {
+    "branch_head": "4322658bd7f3c4489888f62311293da0e73899d9",
+    "job_conclusion": "success",
+    "job_id": 120379516061,
+    "run_id": 39943233069,
+    "tested_merge_commit": "2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+    "tested_merge_parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "4322658bd7f3c4489888f62311293da0e73899d9"
+    ],
+    "url": "https://github.com/caox233/FifthFreedom/actions/runs/39943233069",
+    "workflow_conclusion": "success"
+  },
+  "official_artifact": {
+    "digest": "sha256:40637f8e72d1e46f590a794246fcf085bb33f482079726108c3e9c154ef9831a",
+    "id": 12498401001,
+    "name": "easytier-data-challenge-build-only-receipts-2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+    "size_in_bytes": 40260
+  },
+  "recipe": {
+    "path": "scripts/easytier-data-challenge-source.lock.json",
+    "sha256": "745bbca0a70d6e934ef8eb4a23299ab1afa45a5e77beb2f9cad65fe2a687708f"
+  },
+  "schema": 1,
+  "scope": "independent authenticated Data challenge GNU source contracts and static Release build; retained guard3/auth44 preparer compatibility, no runtime admission",
+  "verified_build_receipt": {
+    "admission": {
+      "readiness_adapter_version": null,
+      "runtime_admission_ready": false,
+      "runtime_publication_approved": false,
+      "security_profile_id": null
+    },
+    "build_inputs": {
+      "bins": [
+        "easytier-core",
+        "easytier-cli"
+      ],
+      "cargo_features": "default",
+      "cargo_incremental": false,
+      "crypto_backend": "ring; wireguard enabled; openssl-crypto/aes-gcm absent",
+      "official_musl_jemalloc_build_reproduction": false,
+      "profile": "release",
+      "rust_toolchain": "1.95.0",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "built_executables": {
+      "easytier-cli": {
+        "bytes": 12261752,
+        "sha256": "a764d26daf2047e93481f9aa30b49474e5cc73dc6719d292f4cf6723076d6470"
+      },
+      "easytier-core": {
+        "bytes": 28596328,
+        "sha256": "402cabaf74839261c0246aba75d56fb234499cab1353ca40bf79fe4c05c8a107"
+      }
+    },
+    "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+    "checkout_commit": "2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+    "dependency_source_closure_verified": false,
+    "official_binary_reproduced": false,
+    "patch_manifest_sha256": "3fff171ca2d123fd70fea1a8a894d383f9ea477fdc72e8ceda14fa3c874032be",
+    "public_startup_allowed": false,
+    "run_attempt": "1",
+    "run_id": "39943233069",
+    "runs": [
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "dd73009279e8a4c9faa6d9445c8ae5a78949fcbbaf1f4579ecc6944878bfc386",
+        "passed": 15,
+        "stage": "fifth_freedom_data_challenge_"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "78263c0e7550fc2b9b5e2562049dedee122fddefcd50fac4e165a6655287ca21",
+        "passed": 15,
+        "stage": "fifth_freedom_receive_"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "f94f87fb566fb6cfa6b8ca36bedcca621079bf8bfd67a9ccca5bdd8524248696",
+        "passed": 4,
+        "stage": "fifth_freedom_secure_profile_contract"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "84ea1698c3ce35f552ed6f06f7f36064f2e7ae6dca87f1df137c862cd49c2331",
+        "passed": 10,
+        "stage": "fifth_freedom_ingress_contract"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "80715c6e9ab10777408c50e74249a99f0644e666400bc9cae82f7a89ee5d5f21",
+        "passed": 9,
+        "stage": "peers::secure_datagram::tests"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "43a707f046ae397fd16770b67b97583915796add8e70a166be268b4293037d45",
+        "passed": 2,
+        "stage": "peers::peer_session::tests"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "d16c57d6eb9483cbee2fce36e2877686c98ab09b153c2ac2b7a1b31c8ac7cda7",
+        "passed": 3,
+        "stage": "ff_explicit_pin_contract"
+      },
+      {
+        "exit_code": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "940faac8e1b932a02d17a982870bc912a4f8a6d492dffc7d43d92350e0720386",
+        "passed": 1,
+        "stage": "peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip"
+      },
+      {
+        "exit_code": 0,
+        "log_sha256": "552e553ff74c1181c927e952c87438b707914fb72695b5510cd3f967de82083b",
+        "stage": "release-build"
+      }
+    ],
+    "runtime_binary_uploaded": false,
+    "runtime_executed": false,
+    "schema": 1,
+    "source_archive_sha256": "fe41b78a040f77f7fb9c87028b5dca79bf71c582036d1f84f355e6b79935ffd3",
+    "source_tree_sha256": "d4ce70591d7336fee73883bb865874c35d8b407300f0cd65e189f3f06110ba21",
+    "status": "built_and_contracts_verified_not_admitted",
+    "upstream": {
+      "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "repository": "https://github.com/EasyTier/EasyTier",
+      "source_date_epoch": 1778588776,
+      "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+    }
+  }
+}

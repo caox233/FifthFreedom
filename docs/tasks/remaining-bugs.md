@@ -8,6 +8,33 @@
 
 ## 当前优先缺陷
 
+### 2026-10-31 联测反馈续办
+
+优先按[本轮任务](playtest-feedback-20261031.md)处理摄影机投出同期多端闪退，
+同时保留另一例写入异常、超过 56 级匹配、EMF 性能及包/票据身份拒绝的独立边界。
+只保留脱敏汇总，不公开四端原始日志或玩家标识。
+
+| 项目 | 当前分类与证据边界 |
+| --- | --- |
+| 摄影机投出同期执行零地址异常 | `needs-triage`；初始化 trace 不是部署栈，音频回调生命周期防护不自动解释此次闪退。保留已通过单击/长按/双击行为。 |
+| 另一例房主写入异常 | `needs-triage`；`Access=1 / RVA=0x20c25b4` 与 `Access=8 / Instruction=0` 分开，暂无可信根因。 |
+| 55/56/57/高等级与空大厅匹配 | `needs-triage`；搜索有空/非空且未按真实等级标注；allocation-range 的可复现内存区域拒绝不等于匹配因果。见[原匹配任务](quick-match-same-session.md)。 |
+| EMF 性能与零尺寸绘制 | `needs-triage`、`needs-info`；缺同条件逐帧四组输入，尚无真实 p95/p99 改善结论。见[性能任务](emf-performance-feedback.md)。 |
+| DX11-only 定制地址表 | 可复现格式兼容缺陷；最小修正及真实 loader 回归独立记录，不恢复 DX9。见[兼容任务](package-compatibility-feedback.md)。 |
+| RELEASE_MISMATCH / 原生票据拒绝 | `needs-triage`；错误边界分别保留，799 条为不同请求，不能用重复日志解释。见[完整包核对步骤](../COMPLETE-PACKAGE-REPAIR.md)和[协议任务](protocol-feedback.md)。 |
+| 端口 0 / 10049 | `needs-triage`；元数据解析回归不能解释上游调用方，禁止猜端口或伪造发送成功。 |
+| WMP/音乐初始化 | 低优先级 `needs-triage`；可游戏不证明音乐正常，反馈标签未绑定当前播放器，不与其它症状合并。 |
+
+### `quick-match-same-session` — 快速匹配无法进入同一局
+
+- 标签：`needs-triage`；2026-10-27 新收到的原 1.1 多人现象，根因未确认。
+- 用户明确指“快速匹配”，不是快速适配或 Fast/Compatible 传输选项。
+- 下一步：沿实际队列、分组、通知和入房协议检查多个独立客户端同服同模式的流程，
+  对照保留 LAN 与 donor；不预设网络或版本原因，不以单客户端成功替代多人通过。
+- 详见 [调查任务](quick-match-same-session.md) 和
+  [下一统一候选包集中测试](../DEVELOPMENT-CANDIDATE-TESTING.md)。暂不要求重复采集，
+  不自动启动游戏、不公开私人日志；尚未真实多人复现或验证修复。
+
 ### `vss-scope-lifetime` — 间歇丢枪上附镜/ADS 镜模
 
 - 标签：`ready-for-agent`、`needs-info`。

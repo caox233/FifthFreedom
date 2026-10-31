@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "baseline": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+  "checks": [
+    {
+      "label": "analyzer-tests",
+      "exit_code": 0,
+      "log_sha256": "2ea12fc858f58dfe32c820d849b78bfb1040c20cd8734b4a4e357ba65c9426b0"
+    },
+    {
+      "label": "synthetic-cli",
+      "exit_code": 0,
+      "log_sha256": "538bdb6e0578af0fe3ab1c96b90dd4381eead0d2c5fdf120e5d6c4655dd8b02a"
+    },
+    {
+      "label": "unchanged-production-glass-policy",
+      "exit_code": 0,
+      "log_sha256": "80db108d32877f1ced2d048a99efca03e611769beea84b1f21506b4051fc1822",
+      "source_sha256": "3c818afbdfd16d84d69b3093a4d807f0a66d89b37d812e26ccce2797e78b1330"
+    }
+  ],
+  "real_frame_input_available": false,
+  "runtime_modified": false,
+  "game_started": false,
+  "capture_started": false,
+  "date_hong_kong": "2026-10-31",
+  "task": "docs/tasks/emf-performance-feedback.md",
+  "status": "needs-triage; real matched per-frame input needs-info",
+  "changed_runtime_files": [],
+  "analyzer_tests": {
+    "executed": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "command": "python -B -m unittest discover -s tests/ci -p test_frame_timing_review.py -v"
+  },
+  "preservation_tests": {
+    "source": "src/native/client/hooks/gameplay/src/vss_emf_glass_policy.rs",
+    "executed": 2,
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "scope": "actual unchanged source policy compiled with rustc 1.95.0; no native draw, graphics, or live acceptance"
+  },
+  "dependency_source_review": {
+    "package": "hudhook",
+    "version": "0.8.1",
+    "archive_sha256": "ca94e628a08bf54a0a6ddc6fb1da8e93df2ca7428655a8fbe4ff1432bdffd6d8",
+    "archive_matches_cargo_lock": true,
+    "reviewed_source_matches_archive_members": true,
+    "files": [
+      {
+        "path": "src/renderer/pipeline.rs",
+        "sha256": "8bb7111348938a34e26eb6842ba7f54bd8492eb6f29c57041077971aa6d871e8"
+      },
+      {
+        "path": "src/hooks/dx11.rs",
+        "sha256": "01048632962a5af6327d253c4897c5263687675cd0101a90529d052b85c2e35f"
+      }
+    ],
+    "error_route": "non-positive display size rejected before application render; DX11 Present still forwarded",
+    "live_record_binding_confirmed": false,
+    "initial_receipt_attempt": "unpacked checksum manifest absent; corrected to exact tar-member comparison, no source or runtime failure"
+  },
+  "analyzer_files": [
+    {
+      "path": "scripts/frame_timing_review.py",
+      "sha256": "2c00a1e698df27f7333414132df787c92c95cc5ecfb4a32e7e4cf69740e4c1e5"
+    },
+    {
+      "path": "tests/ci/test_frame_timing_review.py",
+      "sha256": "0d5d969498b5096f1bf11fa3b56c0ddb52a1abc353cd3db123b78213f061dc65"
+    }
+  ],
+  "synthetic_cli": {
+    "input_sha256": "fe13c70206f4f05339adf837c187961b34b104544b09be639502cedc49c0445f",
+    "report_sha256": "3cdc5e8c09277fa631972a95663371f9bd5b2a70f3c28b2347527d218f62d503",
+    "evidence": "synthetic_fixture",
+    "performance_fix_verified": false
+  },
+  "boundaries": [
+    "4,039 user-reported errors are not per-frame timing or a confirmed EMF cause",
+    "No real p95/p99 before/after values available",
+    "No changes to EMF reuse activation, scope/material policy, offsets or accepted gameplay",
+    "No raw logs or player identity uploaded",
+    "WMP label not uniquely attributed to current launcher or version; low-priority separate symptom"
+  ]
+}

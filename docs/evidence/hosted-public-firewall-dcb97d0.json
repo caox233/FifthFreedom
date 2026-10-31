@@ -1,0 +1,228 @@
+{
+  "schema": 1,
+  "source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+  "pr_merge": "b14d145c590cfbe2338283adc78d2b869d19f4f9",
+  "run_id": 40816467338,
+  "run_conclusion": "failure",
+  "artifact_id": 12872129387,
+  "artifact_sha256": "fa4aa91eefccfb7140588187279f40374abd6d863db936ae7ae65a4b81c2e68d",
+  "downloaded_digest_verified": true,
+  "actual_prerequisite": {
+    "armed": false,
+    "complete_package_ready": false,
+    "core_executed": false,
+    "driver_loaded": false,
+    "error_code": "FIREWALL_POLICY_UNAVAILABLE",
+    "exact_job_drain_exercised": false,
+    "firewall_checks": [
+      {
+        "application_package_kind": null,
+        "application_path_case_insensitive_match": null,
+        "enforcement": {
+          "count": 2,
+          "item_type": "NONE",
+          "items": [
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            },
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            }
+          ],
+          "shape": "ARRAY",
+          "status": "MULTIPLE"
+        },
+        "enforcement_cim": {
+          "cim_type": "UInt16Array",
+          "query": "FOUND",
+          "value": {
+            "count": 2,
+            "item_type": "NONE",
+            "items": [
+              {
+                "item_type": "UINT16",
+                "status": "InactiveProfile"
+              },
+              {
+                "item_type": "UINT16",
+                "status": "Full"
+              }
+            ],
+            "shape": "ARRAY",
+            "status": "MULTIPLE"
+          }
+        },
+        "enforcement_trace": {
+          "count": 2,
+          "item_type": "NONE",
+          "items": [
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            },
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            }
+          ],
+          "shape": "ARRAY",
+          "status": "MULTIPLE"
+        },
+        "enforcement_trace_query": "SINGLE_MATCH",
+        "mode": "Prepare",
+        "rule_check": "ENFORCEMENT_STATUS",
+        "rule_direction": "Inbound",
+        "rule_store": "ActiveStore"
+      },
+      {
+        "application_package_kind": null,
+        "application_path_case_insensitive_match": null,
+        "enforcement": null,
+        "enforcement_cim": null,
+        "enforcement_trace": null,
+        "enforcement_trace_query": "NOT_RUN",
+        "mode": "Restore",
+        "rule_check": "ABSENT",
+        "rule_direction": "Outbound",
+        "rule_store": "ActiveStore"
+      }
+    ],
+    "full_runtime_verified": false,
+    "game_executed": false,
+    "image_executed": false,
+    "kind": "firewall-prepare-unarmed-restore-prerequisite",
+    "packet_behavior_verified": false,
+    "passed": false,
+    "pid_isolation": false,
+    "raw_policy_published": false,
+    "restore": {
+      "active_rules_verified": false,
+      "application_path_rules": true,
+      "armed": false,
+      "exact_drain_verified": false,
+      "mode": "Restore",
+      "original_policy_unchanged": true,
+      "owned_rules_removed": true,
+      "packet_behavior_verified": false,
+      "pid_isolation": false,
+      "policy_enabled_or_changed": false
+    },
+    "schema": 1,
+    "synthetic_image_input": true,
+    "wfp_diagnostic": {
+      "admission_changed": false,
+      "arbitration_verified": false,
+      "core_executed": false,
+      "coverage": "UNKNOWN",
+      "driver_loaded": false,
+      "error_code": null,
+      "kind": "wfp-exact-app-filter-diagnostic",
+      "layers": [
+        {
+          "app_only": 0,
+          "block": 0,
+          "callout": 0,
+          "clear_action_right": 0,
+          "complete": true,
+          "disabled": 0,
+          "enumerated": 21,
+          "exact_app": 0,
+          "interface_conditions": 0,
+          "name": "CONNECT_V4",
+          "other_action": 0,
+          "other_conditions": 0,
+          "permit": 0,
+          "profile_conditions": 0,
+          "provider_context": 0,
+          "unsupported": 0,
+          "weight_empty": 0,
+          "weight_other": 0,
+          "weight_uint64": 0,
+          "weight_uint8": 0
+        },
+        {
+          "app_only": 0,
+          "block": 0,
+          "callout": 0,
+          "clear_action_right": 0,
+          "complete": true,
+          "disabled": 0,
+          "enumerated": 36,
+          "exact_app": 0,
+          "interface_conditions": 0,
+          "name": "CONNECT_V6",
+          "other_action": 0,
+          "other_conditions": 0,
+          "permit": 0,
+          "profile_conditions": 0,
+          "provider_context": 0,
+          "unsupported": 0,
+          "weight_empty": 0,
+          "weight_other": 0,
+          "weight_uint64": 0,
+          "weight_uint8": 0
+        },
+        {
+          "app_only": 1,
+          "block": 1,
+          "callout": 0,
+          "clear_action_right": 0,
+          "complete": true,
+          "disabled": 0,
+          "enumerated": 32,
+          "exact_app": 1,
+          "interface_conditions": 0,
+          "name": "RECV_V4",
+          "other_action": 0,
+          "other_conditions": 0,
+          "permit": 0,
+          "profile_conditions": 0,
+          "provider_context": 1,
+          "unsupported": 0,
+          "weight_empty": 0,
+          "weight_other": 0,
+          "weight_uint64": 0,
+          "weight_uint8": 1
+        },
+        {
+          "app_only": 1,
+          "block": 1,
+          "callout": 0,
+          "clear_action_right": 0,
+          "complete": true,
+          "disabled": 0,
+          "enumerated": 65,
+          "exact_app": 1,
+          "interface_conditions": 0,
+          "name": "RECV_V6",
+          "other_action": 0,
+          "other_conditions": 0,
+          "permit": 0,
+          "profile_conditions": 0,
+          "provider_context": 1,
+          "unsupported": 0,
+          "weight_empty": 0,
+          "weight_other": 0,
+          "weight_uint64": 0,
+          "weight_uint8": 1
+        }
+      ],
+      "observer_executed": true,
+      "passed": true,
+      "policy_changed": false,
+      "raw_policy_published": false,
+      "read_only_transaction": true,
+      "schema": 1,
+      "staging_image_executed": false,
+      "transaction_closed": true
+    }
+  },
+  "contract_counts": {
+    "package": 15,
+    "enforcement": 22,
+    "filter": 20
+  },
+  "scope": "Pure contracts and diagnostic reads do not grant runtime readiness; exact prerequisite failed before core/game/driver execution. Owned temporary rules were removed and original policy remained unchanged."
+}

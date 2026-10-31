@@ -1,0 +1,43 @@
+{
+  "verified_utc": "2026-10-26T17:59:41.312639+00:00",
+  "run_id": 40373151715,
+  "job_id": 121748959278,
+  "source_head": "6ecfdb474238614a9df5e22abbe91581b99f40e6",
+  "checkout_merge": "b7e833df2a50240f340428635999e700a54c7e40",
+  "source_merge_parent_and_tree_verified": true,
+  "job_conclusion": "success",
+  "artifact_id": 12673806238,
+  "artifact_sha256": "ee2623a0c87e1ad0da9cb79a49142ad9fdd3a355d71a6d05b61daf9e794b348b",
+  "official_digest_verified": true,
+  "public_native_return_checks": 28,
+  "public_native_return_skipped": 0,
+  "final_launch_checks": 9,
+  "final_launch_skipped": 0,
+  "pipe_boundary_queries": [
+    "FACTORY:SUCCESS:LOCAL_BYTE:SERVER",
+    "LEGACY:SUCCESS:BYTE:SERVER",
+    "PRODUCTION:SUCCESS:LOCAL_BYTE:CLIENT"
+  ],
+  "actual_production_pipe_local_only_observed": true,
+  "negative_control_managed_current_user_only_not_local_only_observed": true,
+  "native_query": "NtQueryInformationFile FilePipeLocalInformation (24), NT pipe type includes FILE_PIPE_REJECT_REMOTE_CLIENTS=2",
+  "production_handle": "Client handle connected to actual PublicReturnPipe server; same kernel pipe creation mode",
+  "factory_acl_and_noninheritance_checked": true,
+  "first_instance_collision_and_same_user_roundtrip_checked": true,
+  "production_admission_not_opened": true,
+  "iis_default_site_restored": true,
+  "unknown_services_changed": false,
+  "port_rules_changed": false,
+  "game_executed": false,
+  "native_interop_exercised": false,
+  "complete_package_verified": false,
+  "smb_attack_demonstrated": false,
+  "source_file_sha256": {
+    "src/launcher/src/Services/PublicNativeReturn.cs": "868d58a389ff61688e019dbd8244664464dbb076b160b62ad0e67b5fe7bed8fe",
+    "src/launcher/src/Services/LocalOnlyPipeServer.cs": "9f6e890c6c5a882907bd2005ce0dfc9a28bf44f65ed2846a8043ef20c001a74f",
+    "tests/PublicNativeReturn/LocalPipeBoundary.cs": "a7728a3dcdaaa55832544f7c1f97f6e9fc5a29c5d4518a6f5033abe5c11ca2e1",
+    "scripts/ci_windows_loopback.py": "fcd9d692c383f594df21ac959eae3accb67565634edeb8be0c0c1b0c98e5fea7",
+    "scripts/ci_diagnostics.py": "487ea1cb59ecbc8b7244c8c658575cfe35fd5623c7513b6c4c52640813f3f8e8"
+  },
+  "scope": "Actual Windows x86 managed suite and production pipe handle mode, not a remote SMB exploit demonstration or complete Public admission."
+}

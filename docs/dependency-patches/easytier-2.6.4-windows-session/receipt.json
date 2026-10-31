@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "scope": "Windows backend source prerequisite; no driver or Public admission",
+  "groups": [
+    {
+      "name": "tun",
+      "commit": "12378839e7985283df0e4fb536b7137230356db5",
+      "patch": "tun-session-observer.patch",
+      "patch_sha256": "c61e570db8dd04d9c7dc182620a1ab5b586dd7c4e344aeac81e75f11331c3691",
+      "files": [
+        {
+          "path": "Cargo.toml",
+          "original_sha256": "cbef09db54d85e671064dbdc97140f021bbd81522dfdbb62d0139a10df4254ea",
+          "patched_sha256": "8e61c42921f6156f28262c2397e092e689a54a8ef8efe2e5b295def353729a5e"
+        },
+        {
+          "path": "src/lib.rs",
+          "original_sha256": "c3c2223a667b9d7c06bec63cb803eb019da320a8fae3c817ee7f711355daa3e3",
+          "patched_sha256": "929edf17155c58b53ba51e2743ef4694f573f0205bb6d7cbd581fa489acc8cf4"
+        },
+        {
+          "path": "src/session_lifetime.rs",
+          "original_sha256": null,
+          "patched_sha256": "b1b3f7621f78782b11f23259e3c578e2439b25a32ad0dd61e7ab98cdcb72d9a0"
+        },
+        {
+          "path": "src/platform/windows/mod.rs",
+          "original_sha256": "1e1ac6ab7a89444be8854ba2fbd230b200801b9cfa64ec31b0108f7e99f535ba",
+          "patched_sha256": "e7098a94d79a501e516405fce1fa14831b353a187615acc79978cdde73ca3c78"
+        },
+        {
+          "path": "src/platform/windows/device.rs",
+          "original_sha256": "0865e0064c8fe1abc81e0805e5904aa96939b9ba6ecb875a35fdc08d782f66e2",
+          "patched_sha256": "e6465b118e0379f517ebf2ac0e2ccb33cb417cd6e5bc0007beeea5fa677becb6"
+        },
+        {
+          "path": "src/platform/windows/session_identity.rs",
+          "original_sha256": null,
+          "patched_sha256": "8f740c432720a3755d721990afd9798530586f6fed474e573710f0c342e15464"
+        },
+        {
+          "path": "src/async/win_device.rs",
+          "original_sha256": "e2bb7492155cbcd3521bca06b01009d7f4d1795325a0c91fada017711e3b2b85",
+          "patched_sha256": "0eb00b3730083bb495c7f97e6a187a75efd0785b12b70a961ec02647639d17bc"
+        }
+      ]
+    },
+    {
+      "name": "easytier",
+      "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "patch": "easytier-session-observer.patch",
+      "patch_sha256": "4dcff819c3c5f730898a8873147ec7ff37fdee32bf143694b4f3b78e1483fec6",
+      "files": [
+        {
+          "path": "easytier/Cargo.toml",
+          "original_sha256": "beb23906597ecb85955555e94276b10519ccb051801e05665816d4eb675b1577",
+          "patched_sha256": "74d3b13a26ff09aa6cb3ddb6cdf46b1b5214539bdeb9db5e277333f24385b6b1"
+        },
+        {
+          "path": "easytier/src/instance/virtual_nic.rs",
+          "original_sha256": "c238d1d81d23e9ba92c301a0267e6564178b2434148ba8e03685926bfee8f776",
+          "patched_sha256": "148faebbcab8842ff7fa2fbde51140c0b831112226cf7f730579e7adfe50c5b5"
+        }
+      ]
+    }
+  ],
+  "feature": "ff-windows-session-observer",
+  "verification": {
+    "lifetime_tests": {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    "tun_backend_i686_msvc_check": true,
+    "full_easytier_windows_feature_compiled": false,
+    "easytier_caller_parse_only": true,
+    "windows_execution": false,
+    "driver_execution": false,
+    "secure_peer_proof": false,
+    "public_admission": false,
+    "patch_forward_and_reverse_sha256": true,
+    "modified_input_rejected": true,
+    "existing_work_directory_preserved": true
+  },
+  "limitations": [
+    "Official Wintun Create may rename a colliding adapter and install/update its driver.",
+    "Official Wintun Close queues global orphaned-device cleanup.",
+    "Weak Session observation is local snapshot/lifetime evidence, not exclusive ownership or a secure-peer proof.",
+    "Other EasyTier configuration/DNS/route paths still require review before any development runtime."
+  ],
+  "logs": [
+    {
+      "path": ".local/evidence/cloud/ui09-session/backend-typecheck.log",
+      "sha256": "dbff5a5c3ca2b9e1789d6b2b85b80477b594d84d65a0574878521c1d75401141"
+    },
+    {
+      "path": ".local/evidence/cloud/ui09-session/lifetime-tests.log",
+      "sha256": "97c5d01b6791b8bf59dd88b829fb98298f7722144ecb3ecadf01b1a05ea4a9a1"
+    },
+    {
+      "path": ".local/evidence/cloud/ui09-session/caller-parse.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "lock": {
+    "backend_generated_cargo_lock_sha256": "3d53ba87b31bfed366bf989141f5d090b7670a5b9a571a4db860b67cf01383c2",
+    "upstream_easytier_cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+    "backend_lock_is_separate": true
+  },
+  "upstream_wintun_source_review": {
+    "tag": "0.14.1",
+    "commit": "bfef136abfa1665c2592be09a7e383d646cdbe6e",
+    "binary_source_correspondence_verified": false,
+    "files": [
+      {
+        "path": "api/adapter.c",
+        "sha256": "38d885f5019b83c3f2a0aceda2c874e41abf6332960a2205f9d752b30f43883c"
+      },
+      {
+        "path": "api/adapter.h",
+        "sha256": "24ae94e001419e0f591e7a825666fbe195c6bdaf893d5dabb4d56369b3e0df89"
+      },
+      {
+        "path": "api/namespace.c",
+        "sha256": "d16f0266b5f65cea20329ff845aec3288e8586c1a9c419f4cf853c7aa575274c"
+      },
+      {
+        "path": "api/wintun.h",
+        "sha256": "1c484d46851582c6800b1c3e608cee231ad4690df3e45d6959d4fb8468b8cf69"
+      }
+    ]
+  },
+  "verification_entry_sha256": "036a905fdcbabd7b334c2fa7ffb07b91f90aa8f61f524643599fd7842c29d38d",
+  "toolchain": {
+    "rustc": "rustc 1.92.0-nightly (844264add 2025-10-14)",
+    "cargo": "cargo 1.92.0-nightly (81c3f77a4 2025-10-10)",
+    "target": "i686-pc-windows-msvc",
+    "backend_features": [
+      "default",
+      "async"
+    ],
+    "commands": [
+      "rustc --edition 2021 --test src/session_lifetime.rs -o lifetime-tests",
+      "lifetime-tests --test-threads=1",
+      "cargo check --offline --locked --features async --target i686-pc-windows-msvc",
+      "rustc --edition 2024 -Zunpretty=ast-tree easytier/src/instance/virtual_nic.rs (parse only)"
+    ]
+  }
+}

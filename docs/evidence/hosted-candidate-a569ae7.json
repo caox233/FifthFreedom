@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T06:17:21.599380+00:00",
+  "source_head_sha": "a569ae72267c53ad1e5e95a7c2e584a92756f5d5",
+  "run_id": 39909129801,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39909129801",
+  "status": "completed",
+  "conclusion": "failure",
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no archive download",
+  "jobs": [
+    {
+      "id": 120267789087,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120267789307,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120267789317,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120267789374,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120267789393,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120267789984,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120267855478,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120269959023,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12482386141,
+      "name": "linux-native-socket-isolation-93e12973af1f7a1250a6b250174a574e6e7d750d",
+      "size_in_bytes": 3680032,
+      "digest": "sha256:7f1a56afbf1a53cddc14649d3a7b8a281bbe21bdfb2ce30498ae6d78b1cf7402",
+      "expired": false
+    },
+    {
+      "id": 12481968316,
+      "name": "windows-compile-only-components-93e12973af1f7a1250a6b250174a574e6e7d750d",
+      "size_in_bytes": 24845,
+      "digest": "sha256:4b840cf1543974f5178c4e9eeac3f200621662f3633e05c0663c3d55691b679f",
+      "expired": false
+    },
+    {
+      "id": 12481964145,
+      "name": "linux-lan-baseline-93e12973af1f7a1250a6b250174a574e6e7d750d",
+      "size_in_bytes": 9878873,
+      "digest": "sha256:7ffe49154fd19cea53aa1b2cddfdb6fcca7ae522bc3a221112b5538b9619401f",
+      "expired": false
+    },
+    {
+      "id": 12481862174,
+      "name": "complete-package-input-gate-93e12973af1f7a1250a6b250174a574e6e7d750d",
+      "size_in_bytes": 1656,
+      "digest": "sha256:07e27b2f21c8de4be414d72eb9a4dc890ecab40fc94381ad6b0ab86dc8b11755",
+      "expired": false
+    },
+    {
+      "id": 12481713236,
+      "name": "linux-public-donor-reference-93e12973af1f7a1250a6b250174a574e6e7d750d",
+      "size_in_bytes": 4005476,
+      "digest": "sha256:08edd656b7cbaa970e7bbd33bc6c3c75da3e090d6814a282820981852ad52af9",
+      "expired": false
+    },
+    {
+      "id": 12481574730,
+      "name": "linux-public-control-93e12973af1f7a1250a6b250174a574e6e7d750d",
+      "size_in_bytes": 57587,
+      "digest": "sha256:8a7d97423de0f3691ea00f963ee64e50b9415a9c2e6f4844e80530aaed6b2fcb",
+      "expired": false
+    }
+  ],
+  "windows_bounded_failure": "step=ci-test-PublicSessionControl; exception=RuntimeError; managed_cases=PublicSessionControl:05:PublicControlException; tls_cases=PublicSessionControl:05:TRANSPORT_FAILED:TLS:AuthenticationException:NO_CREDENTIALS; full diagnostics remain in the run artifacts",
+  "observed_tls_classification": {
+    "case": "05",
+    "client": "TRANSPORT_FAILED",
+    "server_stage": "TLS",
+    "server_exception": "AuthenticationException",
+    "native": "NO_CREDENTIALS"
+  },
+  "windows_source_checks_passed": true,
+  "windows_native_build_and_branding_reached": false,
+  "source_run": {
+    "id": 39909129706,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "a569ae72267c53ad1e5e95a7c2e584a92756f5d5"
+  },
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false,
+  "later_synthetic_credential_fix_commit": "4668f962f04f99412c623ee0db7887c22acef724",
+  "fix_has_not_been_hosted_verified_by_this_run": true,
+  "complete_package": false,
+  "public_startup_allowed": false
+}

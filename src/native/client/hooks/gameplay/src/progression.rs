@@ -100,6 +100,49 @@ fn extended(rows: &[Rank]) -> Result<Option<Vec<Rank>>, &'static str> {
     }
     Ok(Some(result))
 }
+// This cold allocation/reload path handles at most 999 Rank rows. A single
+// native allocation can contain more than one VirtualQuery protection region;
+// rejecting it solely for crossing a region boundary keeps the retail curve.
+// Validate the entire span before forming a slice/copy. Adjacent but unrelated
+// allocations are not a replacement allocation, even when both are writable.
+// Keep the shared render-side memory predicates unchanged.
+unsafe fn rank_span(data: usize, rows: usize, write: bool) -> bool {
+    #[repr(C)]
+    #[derive(Default)]
+    struct MemoryInfo {
+        base: usize,
+        allocation: usize,
+        allocation_protect: u32,
+        size: usize,
+        state: u32,
+        protect: u32,
+        kind: u32,
+    }
+    #[link(name = "kernel32")]
+    extern "system" {
+        fn VirtualQuery(p: *const std::ffi::c_void, m: *mut MemoryInfo, n: usize) -> usize;
+    }
+    if data < 0x10000 || data % std::mem::align_of::<Rank>() != 0
+        || rows == 0 || rows > MAX_LEVEL { return false; }
+    let Some(bytes) = rows.checked_mul(std::mem::size_of::<Rank>()) else { return false; };
+    let Some(end) = data.checked_add(bytes) else { return false; };
+    let mut cursor = data;
+    let mut allocation = None;
+    while cursor < end {
+        let mut m = MemoryInfo::default();
+        if VirtualQuery(cursor as _, &mut m, std::mem::size_of::<MemoryInfo>())
+            != std::mem::size_of::<MemoryInfo>()
+            || m.state != 0x1000 || m.protect & 0x101 != 0
+            || m.protect & 0xee == 0 || (write && m.protect & 0xcc == 0)
+            || m.allocation == 0 || m.base > cursor { return false; }
+        if allocation.is_some_and(|base| base != m.allocation) { return false; }
+        allocation = Some(m.allocation);
+        let Some(limit) = m.base.checked_add(m.size) else { return false; };
+        if limit <= cursor { return false; }
+        cursor = end.min(limit);
+    }
+    true
+}
 unsafe fn project_with(
     object: usize,
     resize: impl FnOnce(*mut Array, usize),
@@ -119,7 +162,7 @@ unsafe fn project_with(
         || cap > 4096
         || data as usize % 4 != 0
         || !matches!(len as usize, RETAIL_LEVELS | MAX_LEVEL)
-        || !readable(data as usize, len as usize * std::mem::size_of::<Rank>())
+        || !rank_span(data as usize, len as usize, false)
     {
         return Err("array");
     }
@@ -138,10 +181,8 @@ unsafe fn project_with(
     if replacement.data.is_null() {
         return Err("allocation");
     }
-    if !writable(
-        replacement.data as usize,
-        rows.len() * std::mem::size_of::<Rank>(),
-    ) {
+    if replacement.cap < MAX_LEVEL as i32 || replacement.cap > 4096
+        || !rank_span(replacement.data as usize, rows.len(), true) {
         free(&mut replacement);
         return Err("allocation-range");
     }
@@ -503,3 +544,7 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "progression_region_tests.rs"]
+mod region_tests;

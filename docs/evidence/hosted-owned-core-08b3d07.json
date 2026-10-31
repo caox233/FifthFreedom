@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "scope": "actual hosted Windows x86 owned synthetic process lifecycle; no EasyTier, driver, game or Public admission",
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39939697022",
+  "run_id": 39939697022,
+  "head_sha": "08b3d07bdbbb3b80add1ec4f63cd4a6e2b145b78",
+  "checkout_merge_sha": "b61842d85e6a967caaa4aa7443f9843ca4991a05",
+  "job_id": 120367800235,
+  "job_conclusion": "success",
+  "started_at": "2026-10-23T10:31:23Z",
+  "completed_at": "2026-10-23T10:32:31Z",
+  "artifact": {
+    "id": 12495985834,
+    "zip_bytes": 605,
+    "official_digest": "sha256:a587b7102370bcfed7e3a63f4c230962fb50550aad0e62ff423168bcf41578b1",
+    "downloaded_zip_sha256": "a587b7102370bcfed7e3a63f4c230962fb50550aad0e62ff423168bcf41578b1",
+    "member": "owned-core-process.json",
+    "member_bytes": 1108,
+    "member_sha256": "732586b3e5f507a3fee7f5f07d1b5245f26df705d34d25fb018cba42b08df84b"
+  },
+  "official_job_log_sha256": "179d7612c48722e15a388219a7aa6132ee513832f9c1334b2d50f2fd79197a32",
+  "tested_source_inputs": [
+    {
+      "path": "src/launcher/src/Services/OwnedCoreProcess.cs",
+      "bytes": 12153,
+      "sha256": "06dcb8bc76f5da319c0941b74aad5291f2b49af798f74bad9270def67baaf87c"
+    },
+    {
+      "path": "src/launcher/src/Services/OwnedCoreLaunchInputs.cs",
+      "bytes": 6060,
+      "sha256": "34acac02b7e2e2784f0b6e642c6622bd79163213865bd1736e63f565d19799c1"
+    },
+    {
+      "path": "src/launcher/src/Services/PublicReturnProcess.cs",
+      "bytes": 3687,
+      "sha256": "8b54082e41428c5b78f3ca92a37b1c4897ff4de25d074d789115e98a151f0479"
+    },
+    {
+      "path": "tests/OwnedCoreProcess/Program.cs",
+      "bytes": 16213,
+      "sha256": "4b15a151dc4d60ff0c3eecabca405be80c5b09d18f22dcbe1f63ebad68d4cbc8"
+    },
+    {
+      "path": "tests/OwnedCoreProcess/OwnedCoreProcess.csproj",
+      "bytes": 627,
+      "sha256": "31711593141d778e18746605c903f229ef424cc006137d41a8a3fa1274875ab3"
+    },
+    {
+      "path": "tests/PublicNativeReturn/OwnedDirectoryCleanup.cs",
+      "bytes": 1821,
+      "sha256": "9dea85c87267939eacd0f17a7b02e7b5893389e474bfae4b1fc5ac6d0acfdf19"
+    },
+    {
+      "path": "scripts/ci_windows_loopback.py",
+      "bytes": 5394,
+      "sha256": "ee809a1f2afd1d7e07d9d96a8af1396baf566f9876e459a418b9617f862c0d13"
+    },
+    {
+      "path": ".github/workflows/windows-loopback-prerequisite.yml",
+      "bytes": 6121,
+      "sha256": "d2baab8b47d014ef2096242d1b50d89a2344f76f938db2949c91cb45817bb4e6"
+    }
+  ],
+  "runner_receipt": {
+    "schema": 1,
+    "suite": "OwnedCoreProcess",
+    "passed": true,
+    "required_checks": 17,
+    "passed_checks": 17,
+    "skipped_checks": 0,
+    "game_executed": false,
+    "native_interop_exercised": false,
+    "full_diagnostic_zip_exercised": false,
+    "services_changed": false,
+    "raw_output_retained": false,
+    "required_runtime": "win-x86",
+    "self_contained_test_apphost": true,
+    "test_apphost_sha256": "fdc29039240a562d50dd28a0e3d611fb94c6610289f06161db1e4063f8d2f9f2",
+    "test_apphost_bytes": 131584,
+    "easytier_executed": false,
+    "driver_exercised": false,
+    "test_apphost_unchanged": true,
+    "process_succeeded": true,
+    "diagnostics": {
+      "compiler_codes": [],
+      "ui_checks": [],
+      "categories": [],
+      "exception_types": [],
+      "preflight_codes": [],
+      "owned_process_codes": [],
+      "managed_cases": [],
+      "tls_cases": [],
+      "return_phases": [],
+      "return_child_failures": [],
+      "return_directory_failures": [],
+      "owned_core_failures": [],
+      "native_interop_codes": [],
+      "native_failed_tests": [],
+      "final_preparation_codes": []
+    }
+  },
+  "interpretation": {
+    "actual_synthetic_child_execution": true,
+    "x86_checked_by_actual_case_06": true,
+    "atomic_job_membership_and_resume": true,
+    "actual_parent_death_child_and_descendant_exit": true,
+    "foreign_same_image_child_preserved": true,
+    "apphost_hash_is_runner_measurement_not_downloaded_binary_rehash": true,
+    "post_create_kernel_validation_failure_fault_injected": false,
+    "actual_easytier_executed": false,
+    "driver_executed": false,
+    "public_admission": false,
+    "no_packet_runtime_closure": false
+  },
+  "raw_evidence": "ignored .local/evidence/cloud/owned-core-process/hosted-08b3d07; original official API JSON, ZIP, exact member bytes and job log retained"
+}

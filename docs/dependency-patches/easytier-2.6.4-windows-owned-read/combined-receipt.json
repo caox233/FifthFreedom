@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "scope": "independent twelve-patch no-Packet plus actual Instance owner-read source preparation; full combined Windows compile pending",
+  "base_success_evidence": "docs/evidence/hosted-windows-no-packet-82dbda3.json",
+  "synthetic_pipe_success_evidence": "docs/evidence/hosted-owned-read-4b49da7.json",
+  "base_recipe": {
+    "path": "scripts/easytier-windows-no-packet.lock.json",
+    "bytes": 4985,
+    "sha256": "62b7f94326abd38aa3447534c6a1b89269e5b048d33e9236a490e0c169414ae5"
+  },
+  "read_recipe": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-owned-read/receipt.json",
+    "bytes": 3011,
+    "sha256": "2f23207d3f580e4e1efd64034c07ab92f19ae46aa9746bca1916b63c41801aaf"
+  },
+  "expected_prepared": {
+    "source_tree_sha256": "980bb96687a83f7da040d8aa4c4f7134c1c07183637510f2f39a805eaa08a294",
+    "patch_manifest_sha256": "319a05bc889df82bf4d374304cbbb6bd0c163ac9996d0e55ecee058dfd647810",
+    "cargo_lock_patched_sha256": "37c7e066bef9d801b7b67942a18bd7365485e613c18d14f366aed178bb38a696"
+  },
+  "source_counts": {
+    "easytier": 703,
+    "tun": 49
+  },
+  "ordered_patches": [
+    {
+      "bytes": 3140,
+      "path": "docs/dependency-patches/easytier-2.6.4-secure-session/contract-tests.patch",
+      "role": "contract-tests",
+      "sha256": "5673d6b3f24dd44a263b7863a491ec0c482b61feadd77cfc2534973d3d8d31c4"
+    },
+    {
+      "bytes": 792,
+      "path": "docs/dependency-patches/easytier-2.6.4-secure-session/require-encrypted-flag.patch",
+      "role": "production-guard",
+      "sha256": "06a16ca43e035eb1380c99ace8f19a8495bbd09b6413f0fe800752896aa3d2b3"
+    },
+    {
+      "bytes": 5365,
+      "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/ingress-contract-tests.patch",
+      "role": "contract-tests",
+      "sha256": "13a8719f4ff0679c3a0dcc56d1f61717f8659fcbf2337032656fd66889e072d9"
+    },
+    {
+      "bytes": 637,
+      "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/require-encrypted-data-ingress.patch",
+      "role": "production-guard",
+      "sha256": "676e9b9dbeaad45cab7e7b85f245091c5e0d2a683f1436e4a1955f2b6e4245a3"
+    },
+    {
+      "bytes": 4765,
+      "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/explicit-pin-contract-tests.patch",
+      "role": "contract-tests",
+      "sha256": "9a3d13a08259acbe11352ccb084a565e04df465f42dc6d16f4a805429705b7cb"
+    },
+    {
+      "bytes": 1744,
+      "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/require-explicit-peer-pin.patch",
+      "role": "production-guard",
+      "sha256": "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328"
+    },
+    {
+      "bytes": 20743,
+      "path": "docs/dependency-patches/easytier-2.6.4-windows-session/tun-session-observer.patch",
+      "role": "windows-session",
+      "sha256": "c61e570db8dd04d9c7dc182620a1ab5b586dd7c4e344aeac81e75f11331c3691"
+    },
+    {
+      "bytes": 6980,
+      "path": "docs/dependency-patches/easytier-2.6.4-windows-session/easytier-session-observer.patch",
+      "role": "windows-session",
+      "sha256": "4dcff819c3c5f730898a8873147ec7ff37fdee32bf143694b4f3b78e1483fec6"
+    },
+    {
+      "bytes": 723,
+      "path": "docs/dependency-patches/easytier-2.6.4-windows-session/modern-windows-build.patch",
+      "sha256": "f46dd1b4b4cec5347cf61be817486625843848072ce3f362fcd010b4bec28c43"
+    },
+    {
+      "bytes": 3817,
+      "path": "docs/dependency-patches/easytier-2.6.4-windows-session-read/session-read.patch",
+      "role": "windows-session-read",
+      "sha256": "018e17c1d5274d917699264c1930552ef47afcb21aa7277529bfc18a337ce40f"
+    },
+    {
+      "bytes": 7771,
+      "path": "docs/dependency-patches/easytier-2.6.4-windows-no-packet/no-packet.patch",
+      "sha256": "28c87a392917b01202ebba4b4a74004787ec6d98b1591b83c8502868d9d71469"
+    },
+    {
+      "bytes": 17456,
+      "path": "docs/dependency-patches/easytier-2.6.4-windows-owned-read/owned-read.patch",
+      "sha256": "425fadf393f2449300b59f84451c990d37ff90f967c72ac7921e979d6819a617"
+    }
+  ],
+  "new_patch_changed_paths": [
+    "easytier/src/launcher.rs",
+    "easytier/src/lib.rs",
+    "easytier/src/owned_read.rs",
+    "easytier/src/owned_read_windows.rs"
+  ],
+  "reverse_restored_exact_no_packet_750_files": true,
+  "forward_restored_exact_combined_752_files": true,
+  "original_source_and_recipes_unchanged": true,
+  "inputs": [
+    {
+      "path": "scripts/ci_easytier_windows_owned_read.py",
+      "bytes": 16333,
+      "sha256": "94b1c29e854578233d1fb17fe6dbf7bbdc77f21c128cf556c59a4d78538d3cef"
+    },
+    {
+      "path": "scripts/easytier-windows-owned-read.lock.json",
+      "bytes": 1769,
+      "sha256": "aee691f8baab6923aa5b1ee9c338e67401ea4b0634d468fb3739302ea4fc76f9"
+    },
+    {
+      "path": "tests/ci/test_ci_easytier_windows_owned_read.py",
+      "bytes": 16726,
+      "sha256": "46ca85794955c5d2af8da8d611d73592c126e53ec9de3b3725d4b84f058ac6fc"
+    },
+    {
+      "path": ".github/workflows/easytier-windows-build-only.yml",
+      "bytes": 7012,
+      "sha256": "e23bd6861175f87e2c6788e2b808e2e2822de9957cd75e6927b5a48b67ea464b"
+    }
+  ],
+  "local_checks": [
+    {
+      "check": "builder-tests",
+      "exit_code": 0,
+      "log_sha256": "654ca6b70cd705eca1b96a53e0b2867b679b5f6908143447adb03a46cb61e482"
+    },
+    {
+      "check": "actionlint",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "local_wrapper_tests_passed": 14,
+  "compiler_orchestration_unit_tests_mock_compile": true,
+  "full_combined_windows_compile_executed": false,
+  "actual_core_executed": false,
+  "driver_executed": false,
+  "public_admission": false,
+  "raw_evidence": "ignored .local/evidence/cloud/owned-core-read/combined-no-packet; exact prepared inventory and check logs retained"
+}

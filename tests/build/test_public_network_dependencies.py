@@ -1,0 +1,174 @@
+"""Offline identity checks for public-network references; no runtime is installed."""
+import hashlib
+import io
+import json
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+import zipfile
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+import public_network_dependencies as audit
+
+
+def fixture(name="package/core"):
+    stream = io.BytesIO()
+    content = b"synthetic non-executable input"
+    with zipfile.ZipFile(stream, "w") as archive:
+        archive.writestr(name, content)
+    data = stream.getvalue()
+    row = {"id": "synthetic", "filename": "synthetic.zip", "bytes": len(data),
+           "sha256": hashlib.sha256(data).hexdigest(), "required_members": [
+               {"name": name, "bytes": len(content), "sha256": hashlib.sha256(content).hexdigest()}]}
+    return data, {"schema": 1, "artifacts": [row], "closure_holds": ["synthetic license hold"]}
+
+
+class PublicNetworkDependenciesTests(unittest.TestCase):
+    def test_verified_bytes_do_not_approve_publication_or_runtime(self):
+        data, lock = fixture()
+        with tempfile.TemporaryDirectory() as folder:
+            (Path(folder) / "synthetic.zip").write_bytes(data)
+            result, code = audit.verify(lock, Path(folder))
+        self.assertEqual(code, 0)
+        self.assertTrue(result["all_locked_bytes_verified"])
+        for field in ("closure_complete", "publication_approved", "runtime_executed", "installed"):
+            self.assertFalse(result[field])
+        self.assertEqual(result["closure_holds"], ["synthetic license hold"])
+
+    def test_missing_and_tampered_archive_are_distinct(self):
+        data, lock = fixture()
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self.assertEqual(audit.verify(lock, root)[1], 2)
+            (root / "synthetic.zip").write_bytes(data[:-1] + bytes([data[-1] ^ 1]))
+            result, code = audit.verify(lock, root)
+        self.assertEqual(code, 1)
+        self.assertEqual(result["artifacts"][0]["status"], "invalid")
+
+    def test_member_pin_cannot_be_bypassed_by_valid_archive_pin(self):
+        data, lock = fixture()
+        lock["artifacts"][0]["required_members"][0]["sha256"] = "0" * 64
+        with tempfile.TemporaryDirectory() as folder:
+            (Path(folder) / "synthetic.zip").write_bytes(data)
+            self.assertEqual(audit.verify(lock, Path(folder))[1], 1)
+
+    def test_member_checks_use_the_hashed_snapshot_if_disk_contents_change(self):
+        data, lock = fixture()
+        original_matches = audit.matches
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "synthetic.zip"
+            path.write_bytes(data)
+            def change_after_hash(content, row):
+                valid = original_matches(content, row)
+                if row.get("filename") == "synthetic.zip":
+                    path.write_bytes(b"replaced after the checksum read")
+                return valid
+            with patch.object(audit, "matches", side_effect=change_after_hash):
+                self.assertEqual(audit.verify(lock, Path(folder))[1], 0)
+            self.assertEqual(path.read_bytes(), b"replaced after the checksum read")
+
+    def test_directory_is_rejected_before_opening_archive(self):
+        _, lock = fixture()
+        with tempfile.TemporaryDirectory() as folder:
+            (Path(folder) / "synthetic.zip").mkdir()
+            self.assertEqual(audit.verify(lock, Path(folder))[1], 1)
+
+    def test_unsafe_archive_member_is_rejected_without_extraction(self):
+        data, lock = fixture("../outside")
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "synthetic.zip").write_bytes(data)
+            self.assertEqual(audit.verify(lock, root)[1], 1)
+            self.assertEqual(sorted(p.name for p in root.iterdir()), ["synthetic.zip"])
+
+    def test_locked_download_identity_has_no_latest_url_or_silent_digest_upgrade(self):
+        lock = json.loads(audit.LOCK.read_text())
+        for row in lock["artifacts"]:
+            if row["id"] == "wintun-official-0.14.1":
+                self.assertEqual(row["source_url"], "https://www.wintun.net/builds/wintun-0.14.1.zip")
+                self.assertEqual(row["version"], "0.14.1")
+                self.assertIsNone(row["official_api_digest"])
+                self.assertIn("no_api_digest", row["verification_basis"])
+            else:
+                self.assertIn("/releases/download/v" + row["version"] + "/", row["source_url"])
+            self.assertNotIn("latest", row["source_url"])
+            self.assertFalse(row["runtime_executed"])
+            self.assertFalse(row["redistribution_approved"])
+            if row["repository"] == "basil00/WinDivert":
+                self.assertIsNone(row["official_api_digest"])
+                self.assertIn("no_api_digest", row["verification_basis"])
+        self.assertTrue(any("Npcap" in hold for hold in lock["closure_holds"]))
+        self.assertTrue(any("Wintun" in hold for hold in lock["closure_holds"]))
+
+    def test_clean_checkout_has_valid_lock_and_notices_but_missing_binary_cache(self):
+        with tempfile.TemporaryDirectory() as folder:
+            result, code = audit.verify(json.loads(audit.LOCK.read_text()), Path(folder))
+        self.assertEqual(code, 2)
+        self.assertEqual(len(result["artifacts"]), 5)
+        self.assertTrue(all(row["status"] == "missing" for row in result["artifacts"]))
+        self.assertTrue(all(row["verified"] for row in result["retained_notices"]))
+
+    def test_official_wintun_members_preserve_preexisting_dll_pins_and_holds(self):
+        lock = json.loads(audit.LOCK.read_text())
+        official = next(row for row in lock["artifacts"] if row["id"] == "wintun-official-0.14.1")
+        self.assertEqual(official["sha256"], "07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51")
+        self.assertEqual(official["bytes"], 750540)
+        for old_id, arch in (("easytier-windows-x86_64", "amd64"), ("easytier-windows-i686", "x86")):
+            old = next(row for row in lock["artifacts"] if row["id"] == old_id)
+            old_member = next(row for row in old["required_members"] if row["name"].endswith("/wintun.dll"))
+            member = next(row for row in official["required_members"] if row["name"] == f"wintun/bin/{arch}/wintun.dll")
+            self.assertEqual((member["bytes"], member["sha256"]), (old_member["bytes"], old_member["sha256"]))
+        for field in ("publication_approved", "installed", "runtime_executed"):
+            self.assertFalse(lock[field])
+        self.assertTrue(any("Npcap" in row for row in lock["closure_holds"]))
+        self.assertTrue(any("Wintun" in row and "package review" in row for row in lock["closure_holds"]))
+
+    def test_independent_driver_receipt_does_not_change_read_only_audit_gates(self):
+        lock = json.loads(audit.LOCK.read_text())
+        reference, = lock['independent_development_runtime_evidence']
+        data = (audit.ROOT / reference['path']).read_bytes()
+        self.assertEqual(hashlib.sha256(data).hexdigest(), reference['sha256'])
+        receipt = json.loads(data)
+        self.assertEqual(reference['source_head_sha'], receipt['source_head_sha'])
+        self.assertEqual(reference['run_url'], receipt['run_url'])
+        self.assertEqual(reference['real_session_cases_passed'], receipt['sanitized_receipt']['probe']['passed'])
+        self.assertTrue(reference['driver_runtime_executed'])
+        self.assertTrue(receipt['sanitized_receipt']['runtime_executed'])
+        self.assertFalse(reference['complete_overlay_verified'])
+        self.assertFalse(reference['public_admission'])
+        self.assertFalse(reference['publication_approved'])
+        official = next(row for row in lock['artifacts'] if row['id'] == 'wintun-official-0.14.1')
+        dll = next(row for row in official['required_members'] if row['name'] == 'wintun/bin/amd64/wintun.dll')
+        self.assertEqual(dll['sha256'], receipt['sanitized_receipt']['dll_sha256'])
+        with tempfile.TemporaryDirectory() as folder:
+            result, code = audit.verify(lock, Path(folder))
+        self.assertEqual(code, 2)
+        for field in ('closure_complete', 'publication_approved', 'runtime_executed', 'installed'):
+            self.assertFalse(result[field])
+        self.assertTrue(any('Npcap' in hold for hold in result['closure_holds']))
+
+    def test_original_wintun_notice_is_checked_as_bytes_and_normalization_is_rejected(self):
+        real_lock = json.loads(audit.LOCK.read_text())
+        notice = next(row for row in real_lock["license_references"] if row["id"] == "wintun-prebuilt-0.14.1")
+        original = (audit.ROOT / notice["retained_notice"]).read_bytes()
+        self.assertIn(b"\r\n", original)
+        data, lock = fixture()
+        lock["license_references"] = [notice]
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "synthetic.zip").write_bytes(data)
+            path = root / notice["retained_notice"]
+            path.parent.mkdir(parents=True)
+            path.write_bytes(original)
+            self.assertEqual(audit.verify(lock, root, root)[1], 0)
+            path.write_bytes(original.replace(b"\r\n", b"\n"))
+            result, code = audit.verify(lock, root, root)
+            self.assertEqual(code, 1)
+            self.assertFalse(result["retained_notices"][0]["verified"])
+            self.assertFalse(result["publication_approved"])
+
+
+if __name__ == "__main__":
+    unittest.main()

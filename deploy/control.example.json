@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "listen_ip": "127.0.0.1",
+  "listen_port": 19443,
+  "database": "/var/lib/fifth-freedom/native/5th-echelon.db",
+  "issuer_key_file": "/run/credentials/fifth-freedom-control.service/issuer.key",
+  "tls_certificate_file": "/run/credentials/fifth-freedom-control.service/certificate.pem",
+  "tls_private_key_file": "/run/credentials/fifth-freedom-control.service/tls.key",
+  "approved_release": {
+    "release_id": "REPLACE_FROM_VERIFIED_NATIVE_PACKAGE",
+    "compat_id": "REPLACE_FROM_VERIFIED_NATIVE_PACKAGE",
+    "manifest_sha256": "REPLACE_FROM_VERIFIED_NATIVE_PACKAGE"
+  },
+  "client_network": "127.0.0.0/8",
+  "observer_allowed": false,
+  "official_only": true
+}

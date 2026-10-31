@@ -1,0 +1,61 @@
+{
+  "source_commit": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
+  "archive": "fifth-freedom-1.1.0-migration1-program.zip",
+  "archive_bytes": 73276517,
+  "archive_sha256": "b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4",
+  "zip_crc_checked": true,
+  "exact_payload_files": 65,
+  "manifest_files": 63,
+  "checksum_rows": 64,
+  "four_embedded_identities_rebuilt_and_equal": true,
+  "components": [
+    {
+      "bytes": 146206639,
+      "compat_id": "scbl-lan-1.1.0",
+      "path": "FifthFreedom.exe",
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "role": "launcher",
+      "sha256": "530917c11f80d072b439aa14086da8cd449d14aaad9f7bad65077a8e89fd2cbf",
+      "machine": "0x14c"
+    },
+    {
+      "bytes": 7746048,
+      "compat_id": "scbl-lan-1.1.0",
+      "path": "runtime/uplay_r1_loader.dll",
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "role": "main",
+      "sha256": "34183282c059a23d3da551e6652b170c33070543b514de835fa04f65da59e97d",
+      "machine": "0x14c"
+    },
+    {
+      "bytes": 2430976,
+      "compat_id": "scbl-lan-1.1.0",
+      "path": "runtime/scbl_gameplay.dll",
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "role": "gameplay",
+      "sha256": "50ce67c22069544f45f3453e67b388207621385e8009e69a758fafc597699d7e",
+      "machine": "0x14c"
+    },
+    {
+      "bytes": 10890752,
+      "compat_id": "scbl-lan-1.1.0",
+      "path": "runtime/FifthFreedom.Server.exe",
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "role": "server",
+      "sha256": "165997832d286f8a8508aca6314c3802f8c0e85cd854217890fad622a82b8be6",
+      "machine": "0x8664"
+    }
+  ],
+  "fusionfix_notice_source_entries_verified": 50,
+  "readme_matches_exact_source": true,
+  "production_readonly_package_verification": true,
+  "downloaded_binaries_executed": false,
+  "game_executed": false,
+  "artifact_id": 12777311164,
+  "run_id": 40594742870,
+  "job_id": 122508092763,
+  "official_outer_zip_sha256": "12da5a82e4f3580b9a530a047cb3fb140eb5474bc178ddcc4d418b401dcaf358",
+  "actual_hosted_evidence": "docs/evidence/hosted-complete-package-da1805e.json",
+  "local_receipt_sha256": "bb923c7df3ce3110c56a04e83b4bcdcc293dbc03003b014b43082c815642dd27",
+  "complete_project_or_live_acceptance": false
+}

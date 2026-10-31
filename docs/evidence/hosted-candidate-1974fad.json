@@ -1,0 +1,179 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official final run/job metadata with separately digest-verified component and assembly artifacts",
+  "run_id": 39922764910,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39922764910",
+  "source_head": "1974fad83ecf76f138fe5d42e7db2f2e02328b8d",
+  "checkout_commit": "0e8485983c23a33b451a0fa52ca9aec421704b4d",
+  "checkout_tree": "bc6bc610d081a5752423f22fa488a4a25dabb516",
+  "checkout_parents": [
+    "fc8ef510b51be83c31f9f8233997f758b0477acc",
+    "1974fad83ecf76f138fe5d42e7db2f2e02328b8d"
+  ],
+  "checkout_binding_source": "official GitHub git/commits API; merge parents include handed-off main and this exact branch head",
+  "status": "completed",
+  "conclusion": "failure",
+  "jobs": [
+    {
+      "id": 120311712092,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120311712358,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120311712390,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120311712409,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120311712468,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120311712503,
+      "name": "Strict retained native replay input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120311712547,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120311783256,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120320810694,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120321031695,
+      "name": "Same-run native owned lifecycle in synthetic namespaces",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120321031710,
+      "name": "Same-run owned overlay and native development composition",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "windows_component_evidence": "hosted-windows-components-1974fad.json",
+  "assembly_artifact": {
+    "id": 12488769022,
+    "archive_bytes": 84585194,
+    "archive_sha256": "1057967c4fa22ecd979eceeb269c88d1901323aeb52fd5731c2e7cfc81ff34f7",
+    "official_digest_matches": true,
+    "selected_native_files_byte_verified": true,
+    "files_executed_locally": false,
+    "status": "native_dual_identity_and_static_preflight_verified",
+    "native_verification": {
+      "admitted_client": {
+        "storage_key": "1|fifth-freedom-1.1.0-migration1|scbl-lan-1.1.0|aa6e7213b5066ac4ba1f4b39b67f882ad226ae703f38fa7183315c2189fb98d4"
+      },
+      "platform": "linux-x86_64",
+      "result": "verified",
+      "schema": 1,
+      "service": {
+        "compat_id": "scbl-lan-1.1.0",
+        "executable_sha256": "fe22df503c612177100cc425e1b4815951567979609a1cca7148bd0597230cc2",
+        "manifest_sha256": "adf0d035bd3f1ab82faa0e80aad5bf526dab265b1cba8ad20cf644f6c50f3565",
+        "release_id": "fifth-freedom-1.1.0-migration1"
+      }
+    },
+    "static_public_preflight": {
+      "schema": 1,
+      "status": "static_preflight_and_closed_gate_verified",
+      "static_preflight": {
+        "schema": 1,
+        "status": "static_preflight_verified",
+        "startup_allowed": false,
+        "service_manifest_sha256": "adf0d035bd3f1ab82faa0e80aad5bf526dab265b1cba8ad20cf644f6c50f3565",
+        "admitted_client_storage_key": "1|fifth-freedom-1.1.0-migration1|scbl-lan-1.1.0|aa6e7213b5066ac4ba1f4b39b67f882ad226ae703f38fa7183315c2189fb98d4",
+        "shared_auth_key_validated": true,
+        "data_directory_private": true,
+        "data_lock_acquired": false,
+        "observer_enabled": false,
+        "native_listener_plan": {
+          "count": 5,
+          "bind_scope": "declared_overlay_ipv4",
+          "config_tcp": 80,
+          "content_tcp": 8000,
+          "auth_udp": 21126,
+          "secure_udp": 21127,
+          "api_tcp": 50051
+        },
+        "blockers": [
+          "OWNED_ENCRYPTED_OVERLAY_UNVERIFIED",
+          "OVERLAY_LIFETIME_SUPERVISION_UNVERIFIED",
+          "PUBLIC_SOCKET_CONFINEMENT_NOT_ACTIVATED",
+          "PUBLIC_SOURCE_POLICY_NOT_ACTIVATED"
+        ]
+      },
+      "ordinary_public_startup_rejected": true,
+      "ephemeral_inputs_removed": true,
+      "candidate_unchanged": true,
+      "native_public_profile_enabled": false,
+      "game_executed": false,
+      "deployed": false,
+      "published": false
+    }
+  },
+  "runtime_failures": {
+    "native_lifecycle": {
+      "job_id": 120321031695,
+      "fixed_annotation": "UNCLASSIFIED_PROBE_FAILURE",
+      "cause_confirmed_by_original_trace": false,
+      "complete_lifecycle_verified": false
+    },
+    "owned_stack": {
+      "job_id": 120321031710,
+      "failed_step": "Require actual containment and prerequisites before compiling runtime sources",
+      "fixed_annotation": "UNCLASSIFIED_PROBE_FAILURE",
+      "runtime_build_or_composition_reached": false,
+      "local_isolated_command_reproduction": {
+        "command": "python3 -B -I scripts/ci_easytier_probe.py --help",
+        "exit_code": 1,
+        "fixed_exception": "ModuleNotFoundError",
+        "known_missing_module": "ci_socket_isolation",
+        "original_hosted_stderr_not_uploaded": true
+      }
+    }
+  },
+  "scope": {
+    "complete_package": false,
+    "native_replay_checks_held": 13,
+    "game_executed": false,
+    "production_admission": false,
+    "published": false,
+    "deployed": false
+  },
+  "limitations": [
+    "All component checks and same-run identity/static checks passed, but the overall run failed both explicit input gates and two runtime jobs.",
+    "A local deterministic isolated-entry failure is not represented as a recovered original hosted traceback.",
+    "Do not infer the native lifecycle failure was necessarily caused by Git ownership; the next reviewed command-scoped trust fix and expanded fixed diagnostics have their own run."
+  ]
+}

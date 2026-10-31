@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "date_hong_kong": "2026-10-31",
+  "run_id": 41191825904,
+  "job_id": 124509994374,
+  "conclusion": "failure",
+  "source_commit": "72e92af58c09bb04e00a6a7466b9f45890c098b3",
+  "checkout_merge_commit": "86543655351f616d3302e2e079ce43f0bcf55ec5",
+  "source_and_merge_tree": "ccfac5db8044872ae989d3180fe347867311d4f1",
+  "baseline": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+  "artifact": {
+    "artifact_id": 13038958740,
+    "artifact_name": "actual-wpf-layout-86543655351f616d3302e2e079ce43f0bcf55ec5",
+    "outer_bytes": 374636412,
+    "outer_sha256": "0b25d503130ee3aa325ec672a4566fac937d93f35b142b4ea9deaa1280aae4af",
+    "outer_matches_official_digest": true,
+    "outer_crc_passed": true
+  },
+  "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41191825904/artifacts/13038958740",
+  "png_count": 672,
+  "all_png_hashes_and_dimensions_verified": true,
+  "verification_receipt_sha256": "e0ad7cfc1c48b28e0b7370ed201c2d690242eb29dc43d5cde7c8003643c39148",
+  "phases": [
+    {
+      "phase": "baseline",
+      "frames": 128,
+      "pngs": 176,
+      "checks": {
+        "dpi": 128,
+        "resource-scope": 480,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 736,
+        "geometry": 848,
+        "overlap": 544,
+        "hit-area": 432,
+        "visual-hit-test": 400,
+        "text-clipping": 5024,
+        "input-hit-test": 384,
+        "scroll-restoration": 48,
+        "keyboard": 784,
+        "scroll-accessibility": 64
+      },
+      "check_count": 10256,
+      "failures": 96,
+      "frame_errors": 0,
+      "report_passed": false,
+      "exit_code": 1,
+      "report_sha256": "2938db687383c0fce043b2eac4d2dff6c4691e42a8e4e611124cde522b9d5866",
+      "executable_sha256": "901a0c173ff856fd6a9d11a3ade31cef91dde3ea8c62e5f6caafdbe4b399f576"
+    },
+    {
+      "phase": "modified",
+      "frames": 128,
+      "pngs": 160,
+      "checks": {
+        "dpi": 128,
+        "resource-scope": 464,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 784,
+        "geometry": 1152,
+        "overlap": 1712,
+        "hit-area": 656,
+        "visual-hit-test": 624,
+        "text-clipping": 5088,
+        "input-hit-test": 608,
+        "scroll-restoration": 32,
+        "keyboard": 752,
+        "scroll-accessibility": 32
+      },
+      "check_count": 12416,
+      "failures": 144,
+      "frame_errors": 0,
+      "report_passed": false,
+      "exit_code": 1,
+      "report_sha256": "031e47e04bd1095a5fed2331607e7a2f6984e4e871d65b662589ee37da2e4fc4",
+      "executable_sha256": "3cfe4edc282b16133a9420b5667c8d528b271f11af98cdfe36414e4524f20c9e"
+    },
+    {
+      "phase": "rollback",
+      "frames": 128,
+      "pngs": 176,
+      "checks": {
+        "dpi": 128,
+        "resource-scope": 480,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 736,
+        "geometry": 848,
+        "overlap": 544,
+        "hit-area": 432,
+        "visual-hit-test": 400,
+        "text-clipping": 5024,
+        "input-hit-test": 384,
+        "scroll-restoration": 48,
+        "keyboard": 784,
+        "scroll-accessibility": 64
+      },
+      "check_count": 10256,
+      "failures": 96,
+      "frame_errors": 0,
+      "report_passed": false,
+      "exit_code": 1,
+      "report_sha256": "d3df6eafe089b03a06d383ca9676ea11294639dd2a06330f3a915475aa54d409",
+      "executable_sha256": "901a0c173ff856fd6a9d11a3ade31cef91dde3ea8c62e5f6caafdbe4b399f576"
+    },
+    {
+      "phase": "reapplied",
+      "frames": 128,
+      "pngs": 160,
+      "checks": {
+        "dpi": 128,
+        "resource-scope": 464,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 784,
+        "geometry": 1152,
+        "overlap": 1712,
+        "hit-area": 656,
+        "visual-hit-test": 624,
+        "text-clipping": 5088,
+        "input-hit-test": 608,
+        "scroll-restoration": 32,
+        "keyboard": 752,
+        "scroll-accessibility": 32
+      },
+      "check_count": 12416,
+      "failures": 144,
+      "frame_errors": 0,
+      "report_passed": false,
+      "exit_code": 1,
+      "report_sha256": "583b530321ef44f1a493992ebb33d46036bb1a43da1551c30139cc5ad53cbaea",
+      "executable_sha256": "3cfe4edc282b16133a9420b5667c8d528b271f11af98cdfe36414e4524f20c9e"
+    }
+  ],
+  "failure_analysis": {
+    "baseline_rollback": "Each128frames; two requested state requirements fail48times each;96statefailures, zero layout failures. Not an old layout failure used as a substitute.",
+    "modified_reapplied": "Each128frames,12416checks,144failures:96overlap(shared-edge),32txtServerStatus metric reports,16direct keyboard round-trip assertions. Zero frame exceptions.",
+    "shared_edges": {
+      "actual_wpf_bounds_recomputed": true,
+      "count_per_modified_phase": 96,
+      "maximum_intersection_height_DIP": 5.684341886080802e-14,
+      "positive_area_over_1e_minus6_DIP": false,
+      "review_sha256": "5d35d06565a3bc85cf8c332b3413e992076d2f470127a86a46558a4c586cec13",
+      "diagnosis": "Rect.IntersectsWith includes touching edges; the reported two grid-row pairs do not cover positive area."
+    },
+    "status_text": "Short auto-width status text such as Server failed is visibly rendered on one line; FormattedText wrapped against rounded83DIP actual width and reported two lines. Keep the existing status column at350DIP with wrapping; hosted follow-up pending. No clipping threshold is removed.",
+    "keyboard": "Old aggregate required Focus then Next then Previous to return to each same control. Exact per-control path was not recorded, so the unique failing transition is not established. Follow-up records real bounded Tab and ShiftTab trajectories and requires each direct editor/action to be reached in both directions.",
+    "capture_observation": "Inspected96DPI gameplay-edit PNGs omit some chrome/footer glyphs although bounds are present; inspected192DPI rendering includes them. Follow-up drains WPF render work before capture; no PNG editing. Actual subsequent images must be inspected before calling capture complete."
+  },
+  "representative_images_inspected": [
+    {
+      "path": "modified/main-zh-CN-96-1120x680.png",
+      "sha256": "db63ecfad0a5bd9f1c4eddac4fd4e16725e2bcefa4adc7fbfea0c1e2187e65ab"
+    },
+    {
+      "path": "modified/main-en-US-96-1120x680.png",
+      "sha256": "382a9d0658591d2de1bfc64c43bb29a47eb60813101a397f03b0b1fb117e3f91"
+    },
+    {
+      "path": "modified/settings-gameplay-en-US-96-1120x680.png",
+      "sha256": "8779d7fffbf1f693c5fad03232e249c5fa0ff348b00586961870315497b7b9f1"
+    },
+    {
+      "path": "modified/settings-gameplay-zh-CN-96-1120x680.png",
+      "sha256": "5df2044669205c1c57f41c2db812890fa3dc0cdcfda8586c0e54e0986527f99c"
+    },
+    {
+      "path": "reapplied/settings-gameplay-en-US-192-900x580.png",
+      "sha256": "4828bb1daf50da648af751b981a992a448cb9cadb763ba67ddf0c494f01afd66"
+    },
+    {
+      "path": "modified/cancel-zh-CN-120-900x580.png",
+      "sha256": "5d1a6807018d744dd95b9e33b8bc723136a2781cde5ba119838cf0b200abde9e"
+    },
+    {
+      "path": "modified/settings-public-en-US-144-900x580.png",
+      "sha256": "c2afb1b843d980d9239e6d75e4d0f61356e3ddd89eb6685dba27bf44036d2f60"
+    },
+    {
+      "path": "modified/settings-zh-CN-120-1120x680.png",
+      "sha256": "90ab6047a54d8d39e31a9bb2243f8b92629c01a020f577c4674525b143e0288c"
+    },
+    {
+      "path": "modified/join-en-US-192-900x580.png",
+      "sha256": "dd7c57e92971172a48aeb97e60f104d666bbea83ac1a9fd24b4c4c1f936c6690"
+    },
+    {
+      "path": "modified/discovery-zh-CN-144-900x580.png",
+      "sha256": "f21718bdb0cf153e2fa852c1bbacd0154e125892c4341f62fc752b2f3d6454d6"
+    },
+    {
+      "path": "modified/create-en-US-120-900x580.png",
+      "sha256": "16e7b3405b489bf001646c8011cae378c399e7e15ecfc69fc93a040cddd4385a"
+    },
+    {
+      "path": "baseline/main-zh-CN-96-1120x680.png",
+      "sha256": "aa8a5f27ede02c730949ce981c057f697907d2f60f4b5b01e08650d3beeb2aea"
+    }
+  ],
+  "followup": {
+    "status": "implemented_crosscompiled_new_hosted_result_required",
+    "production_changes": "Only fixed existing txtServerStatus width350; no other layout movement.",
+    "observer_changes": [
+      "Use strictly positive-area overlap, with shared-edge and tiny-positive-area controls, retain all pairwise/input-hit checks.",
+      "Record programmatic focus plus bounded forward/backward actual keyboard reachability for MOD/Official, FOV, Reset, Save and Cancel, preserving failure if any target cannot be reached.",
+      "Flush WPF Dispatcher Render before bitmap capture; no image postprocessing."
+    ],
+    "files_sha256": {
+      "src/launcher/src/MainWindow.xaml": "019345d1fca672d50a0c13c324b7a224aa5d5d292e80fca8f90d7c87f8a895fb",
+      "src/launcher/src/MainWindow.VisualProbe.cs": "1b86440ae6f2fa49ea4b6a83bbc725482647dc7ad094bf5136f1ba9d9920f030"
+    },
+    "crossbuild_exit_code": 0,
+    "crossbuild_warnings": 0,
+    "crossbuild_errors": 0,
+    "crossbuild_log_sha256": "be9ee725dc593847bfcb517edef0b61d5e496ef0677c47e90a36ee844efa27d5",
+    "portable_ui_tests_passed": 16,
+    "portable_ui_tests_failed": 0,
+    "portable_ui_tests_log_sha256": "606bf0bd2620769d7bad5a87bb6870493b114295e5650405bf23f6775382cb02",
+    "keyboard_targets": [
+      "cmbGameplayMode",
+      "fovSlider",
+      "btnFovReset",
+      "btnGameplaySave",
+      "btnGameplayCancel"
+    ],
+    "pre_reset_crossbuild_log_sha256": "7a78e77852b4658c769d9d23f005351a6731f751d6d3deb6747b10e94deca59e",
+    "reset_only_crossbuild_log_sha256": "1b89d052923f136e751c6c9f54896525c3291b3acbc067e6e51543624d22ee31",
+    "keyboard_entry_focus_assertions_added": true
+  },
+  "physical_monitor_IME_game_acceptance": false,
+  "game_or_network_started": false,
+  "raw_private_logs_or_user_screenshots_published": false,
+  "followup_completion": {
+    "date_hong_kong": "2026-10-31",
+    "source_commit": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+    "run_id": 41193432884,
+    "conclusion": "success",
+    "receipt": "docs/evidence/hosted-ui-direct-d40bfc3.json",
+    "baseline_and_rollback_failures_each": 96,
+    "modified_and_reapplied_failures_each": 0,
+    "original_144_failures_unchanged": true,
+    "capture_observation_correction": {
+      "previous_impression": "A preview of Chinese 96-DPI gameplay-edit images appeared to omit title, top-right and footer text. This was initially interpreted as possible capture/glyph invalidation trouble.",
+      "status": "withdrawn_display_preview_anomaly_not_confirmed_product_or_png_defect",
+      "proof": "Official-ZIP member verification and byte comparisons show all 160 modified/reapplied PNG pairs identical. Reopening the same original bytes shows complete title/top-right/footer text. The cited Chinese 96-DPI image is also byte-identical to its old 72e run image, so the Render flush cannot be credited with repairing missing glyphs.",
+      "example_path": "settings-gameplay-zh-CN-96-1120x680.png",
+      "same_image_sha256_in_old72e_and_both_d40_phases": "5df2044669205c1c57f41c2db812890fa3dc0cdcfda8586c0e54e0986527f99c",
+      "images_edited": false,
+      "further_product_or_observer_code_change_made_for_impression": false,
+      "historical_144_check_failures_retained_in": "docs/evidence/hosted-ui-direct-failure-72e92af.json"
+    }
+  }
+}

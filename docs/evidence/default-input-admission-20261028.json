@@ -1,0 +1,175 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "timezone": "Asia/Hong_Kong",
+  "handoff_commit": "865a25ac8e8978be194418453fff8c403992c682",
+  "integrated_commit": "4e29616f9063424b4fe1710f579afb6a0ea243e4",
+  "basis": "The owner confirmed these are public default templates and explicitly permits public distribution.",
+  "review_limits": {
+    "meta": "All 12 bytes reviewed: ASCII sc6_save.sav, no newline or NUL. Four identical required copies.",
+    "sav": "Original template provenance confirmed by owner; exact pinned size/hash verified. Offline ASCII/UTF16 pattern review found no email, IPv4 address, user-directory path or credential label. This is bounded inspection, not a claim that every binary field was decoded.",
+    "other_content_excluded": [
+      "personal saves",
+      "private string inventories",
+      "raw logs",
+      "credentials",
+      "local paths",
+      "donor-only SAV inputs"
+    ]
+  },
+  "meta_exact_hex": "7363365f736176652e736176",
+  "git_blobs_and_checkout_match_original_pins": [
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/Official/00000001.meta",
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/Official/00000001.sav",
+      "bytes": 337743,
+      "sha256": "5bda2ee98904f2705621f40b5ebc5d480ef4fc59f8b4955fea38004ac8443d44"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/Official/00000002.meta",
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/Official/00000002.sav",
+      "bytes": 337743,
+      "sha256": "5bda2ee98904f2705621f40b5ebc5d480ef4fc59f8b4955fea38004ac8443d44"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000001.meta",
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000001.sav",
+      "bytes": 297865,
+      "sha256": "ee506410bc0046ac23a5e15624270810826ffca0e72b28f03961c0aa052f2cf8"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000002.meta",
+      "bytes": 12,
+      "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16"
+    },
+    {
+      "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000002.sav",
+      "bytes": 297865,
+      "sha256": "ee506410bc0046ac23a5e15624270810826ffca0e72b28f03961c0aa052f2cf8"
+    }
+  ],
+  "receipts": {
+    "before-admission": {
+      "sha256": "054067acd41cf490be86d5a1f2d2ee05a301644313146005f2c6c6075800b06d",
+      "log_sha256": "173709222aad072ad072895551e4a01e516ac1041a80df7b499af7ab74a95381",
+      "result": {
+        "schema": 1,
+        "mode": "package-inputs",
+        "inputs": {
+          "status": "invalid",
+          "required_input_count": 20,
+          "verified_input_count": 20,
+          "held_input_count_all_sources": 12,
+          "missing_held_package_inputs": [],
+          "errors": [
+            {
+              "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000001.meta",
+              "reason": "privacy_held_input_present_in_public_checkout"
+            },
+            {
+              "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000001.sav",
+              "reason": "privacy_held_input_present_in_public_checkout"
+            },
+            {
+              "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000002.meta",
+              "reason": "privacy_held_input_present_in_public_checkout"
+            },
+            {
+              "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000002.sav",
+              "reason": "privacy_held_input_present_in_public_checkout"
+            },
+            {
+              "path": "src/launcher/src/Assets/DefaultSaves/Official/00000001.meta",
+              "reason": "privacy_held_input_present_in_public_checkout"
+            },
+            {
+              "path": "src/launcher/src/Assets/DefaultSaves/Official/00000001.sav",
+              "reason": "privacy_held_input_present_in_public_checkout"
+            },
+            {
+              "path": "src/launcher/src/Assets/DefaultSaves/Official/00000002.meta",
+              "reason": "privacy_held_input_present_in_public_checkout"
+            },
+            {
+              "path": "src/launcher/src/Assets/DefaultSaves/Official/00000002.sav",
+              "reason": "privacy_held_input_present_in_public_checkout"
+            }
+          ],
+          "complete_package_ready": false
+        },
+        "suites": [
+          {
+            "suite": "strict-package-inputs",
+            "executed": 2,
+            "passed": 2,
+            "failed_test_cases": 0,
+            "failed_method_ids": [],
+            "failures": 0,
+            "errors": 0,
+            "skipped": [],
+            "expected_failures": 0,
+            "unexpected_successes": 0,
+            "successful": true
+          }
+        ],
+        "game_executed": false,
+        "published": false,
+        "exit_code": 1
+      }
+    },
+    "after-admission": {
+      "sha256": "371ffb783a36cd746ffc10ba155b15e810feb45c1b9af4d9952606835de581e4",
+      "log_sha256": "f1766ab8c7731b9a55b52ee88c1600f7f2cd76493b7fe0c87694e5ab9b875d0c",
+      "result": {
+        "schema": 1,
+        "mode": "package-inputs",
+        "inputs": {
+          "status": "ready",
+          "required_input_count": 20,
+          "verified_input_count": 20,
+          "held_input_count_all_sources": 4,
+          "missing_held_package_inputs": [],
+          "errors": [],
+          "complete_package_ready": true
+        },
+        "suites": [
+          {
+            "suite": "strict-package-inputs",
+            "executed": 2,
+            "passed": 2,
+            "failed_test_cases": 0,
+            "failed_method_ids": [],
+            "failures": 0,
+            "errors": 0,
+            "skipped": [],
+            "expected_failures": 0,
+            "unexpected_successes": 0,
+            "successful": true
+          }
+        ],
+        "game_executed": false,
+        "published": false,
+        "exit_code": 0
+      }
+    }
+  },
+  "input_validation_code_changed": false,
+  "manifest_pins_changed": false,
+  "default_restoration_removed": false,
+  "full_windows_package_built": false,
+  "game_executed": false,
+  "donor_only_holds_retained": 4,
+  "c71_input_gate_separate": true
+}

@@ -283,6 +283,8 @@ fn deinit(hmodule: Option<HMODULE>) {
     if retail_passthrough() {
         return;
     }
+    // Memory-only cancellation; never wait for pipe I/O under the loader lock.
+    api::stop_public_return();
 
     // disable tracing as TLS is already destroyed at this point.
     // No tracing calls/instruments are allowed before this point!!

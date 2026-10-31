@@ -1,0 +1,252 @@
+--- a/easytier/src/peers/peer_conn.rs
++++ b/easytier/src/peers/peer_conn.rs
+@@ -5,7 +5,7 @@
+     fmt::Debug,
+     pin::Pin,
+     sync::{
+-        Arc,
++        Arc, Weak,
+         atomic::{AtomicU32, Ordering},
+     },
+ };
+@@ -94,12 +94,62 @@
+     remote_encrypt_algo: String,
+ }
+ 
++// Local observations only: deliberately no serde/protobuf constructor.
++// A snapshot does not keep a connection/session alive and must be revalidated
++// when used. Caller policy still owns peer authorization and maximum age.
++#[derive(Clone, Copy)]
++struct AuthenticatedDataReceived {
++    at: std::time::Instant,
++    generation: u32,
++    revision: u64,
++}
++struct SessionFilterState {
++    session: Option<Arc<PeerSession>>,
++    installation: Option<u64>,
++    received: Option<AuthenticatedDataReceived>,
++}
++impl Default for SessionFilterState {
++    fn default() -> Self {
++        Self { session: None, installation: Some(0), received: None }
++    }
++}
++
++pub struct AuthenticatedDataObservation {
++    filter: Weak<std::sync::Mutex<SessionFilterState>>,
++    session: Weak<PeerSession>,
++    close: Weak<PeerConnCloseNotify>,
++    conn_id: PeerConnId,
++    installation: u64,
++    received: AuthenticatedDataReceived,
++}
++impl AuthenticatedDataObservation {
++    pub fn connection_id(&self) -> PeerConnId { self.conn_id }
++
++    /// Age of accepted authenticated Data, never a remote-clock timestamp.
++    /// None after owner/session/connection loss or rehandshake. A successful
++    /// read is a local observation, not future liveness or active peer proof.
++    pub fn received_ago(&self) -> Option<std::time::Duration> {
++        let close = self.close.upgrade()?;
++        if close.is_closed() || close.get_conn_id() != self.conn_id { return None; }
++        let filter = self.filter.upgrade()?;
++        let state = filter.lock().ok()?;
++        let session = self.session.upgrade()?;
++        if state.installation != Some(self.installation)
++            || !state.session.as_ref().is_some_and(|current| Arc::ptr_eq(current, &session))
++            || !session.is_valid() || session.session_generation() != self.received.generation
++            || session.receive_observation_revision() != Some(self.received.revision)
++            || close.is_closed()
++        { return None; }
++        Some(self.received.at.elapsed())
++    }
++}
++
+ #[derive(Clone)]
+ struct PeerSessionTunnelFilter {
+     enabled: bool,
+     my_peer_id: Arc<AtomicCell<PeerId>>,
+     peer_id: Arc<AtomicCell<Option<PeerId>>>,
+-    session: Arc<std::sync::Mutex<Option<Arc<PeerSession>>>>,
++    session: Arc<std::sync::Mutex<SessionFilterState>>,
+ }
+ 
+ impl PeerSessionTunnelFilter {
+@@ -108,7 +158,7 @@
+             enabled,
+             my_peer_id: Arc::new(AtomicCell::new(PeerId::default())),
+             peer_id: Arc::new(AtomicCell::new(None)),
+-            session: Arc::new(std::sync::Mutex::new(None)),
++            session: Arc::new(std::sync::Mutex::new(SessionFilterState::default())),
+         }
+     }
+ 
+@@ -117,7 +167,7 @@
+             enabled,
+             my_peer_id: Arc::new(AtomicCell::new(my_peer_id)),
+             peer_id: Arc::new(AtomicCell::new(None)),
+-            session: Arc::new(std::sync::Mutex::new(None)),
++            session: Arc::new(std::sync::Mutex::new(SessionFilterState::default())),
+         }
+     }
+ 
+@@ -130,7 +180,28 @@
+     }
+ 
+     fn set_session(&self, session: Arc<PeerSession>) {
+-        *self.session.lock().unwrap() = Some(session);
++        let mut state = self.session.lock().unwrap();
++        state.installation = state.installation.and_then(|value| value.checked_add(1));
++        state.received = None;
++        state.session = Some(session);
++    }
++
++    fn authenticated_data_observation(&self, close: &Arc<PeerConnCloseNotify>,
++        expected_session: &Arc<PeerSession>) -> Option<AuthenticatedDataObservation>
++    {
++        if !self.enabled || close.is_closed() { return None; }
++        let state = self.session.lock().ok()?;
++        let session = state.session.as_ref()?;
++        let received = state.received?;
++        if !Arc::ptr_eq(session, expected_session) || !session.is_valid()
++            || session.session_generation() != received.generation
++            || session.receive_observation_revision() != Some(received.revision) || close.is_closed()
++        { return None; }
++        Some(AuthenticatedDataObservation {
++            filter: Arc::downgrade(&self.session), session: Arc::downgrade(session),
++            close: Arc::downgrade(close), conn_id: close.get_conn_id(),
++            installation: state.installation?, received,
++        })
+     }
+ 
+     fn should_skip_encrypt(&self, hdr: &crate::tunnel::packet_def::PeerManagerHeader) -> bool {
+@@ -164,8 +235,8 @@
+             return Some(data);
+         };
+ 
+-        let mut guard = self.session.lock().unwrap();
+-        let Some(session) = guard.as_mut() else {
++        let guard = self.session.lock().unwrap();
++        let Some(session) = guard.session.as_ref() else {
+             return Some(data);
+         };
+ 
+@@ -225,7 +296,7 @@
+         }
+ 
+         let mut guard = self.session.lock().unwrap();
+-        let Some(session) = guard.as_mut() else {
++        let Some(session) = guard.session.as_ref() else {
+             return Some(Ok(data));
+         };
+ 
+@@ -234,6 +305,9 @@
+             return Some(Ok(data));
+         }
+ 
++        let generation = session.session_generation();
++        let revision = session.receive_observation_revision();
++        let is_local_data = hdr.packet_type == PacketType::Data as u8 && hdr.is_encrypted();
+         if let Err(e) = session.decrypt_payload(from_peer_id, my_peer_id, &mut data) {
+             if !session.is_valid() {
+                 // Session auto-invalidated after too many consecutive failures.
+@@ -247,6 +321,20 @@
+             return None;
+         }
+ 
++        // This observation is not a lease or an active challenge. Record only
++        // a locally addressed Data frame that actually passed this session's
++        // AEAD and replay checks. Control/relay/legacy early returns never enter.
++        if is_local_data && session.is_valid() && session.session_generation() == generation
++            && guard.installation.is_some()
++        {
++            if let Some(revision) = revision.filter(|value|
++                session.receive_observation_revision() == Some(*value))
++            {
++                guard.received = Some(AuthenticatedDataReceived {
++                    at: std::time::Instant::now(), generation, revision,
++                });
++            }
++        }
+         Some(Ok(data))
+     }
+ 
+@@ -1648,6 +1736,13 @@
+         !Self::network_secret_digest_is_empty(&my_identity)
+             && !Self::network_secret_digest_is_empty(&peer_identity)
+             && my_identity.network_secret_digest == peer_identity.network_secret_digest
++    }
++
++    /// Actual receive-path observation tied to this Noise session and connection.
++    /// Handshake metadata, plaintext Ping/Pong and RPC polling are not substitutes.
++    pub fn authenticated_data_observation(&self) -> Option<AuthenticatedDataObservation> {
++        let noise = self.noise_handshake_result.as_ref()?;
++        self.session_filter.authenticated_data_observation(&self.close_event_notifier, &noise.session)
+     }
+ 
+     pub fn get_close_notifier(&self) -> Arc<PeerConnCloseNotify> {
+--- a/easytier/src/peers/peer_session.rs
++++ b/easytier/src/peers/peer_session.rs
+@@ -1,6 +1,6 @@
+ use std::sync::{
+-    Arc, RwLock,
+-    atomic::{AtomicBool, Ordering},
++    Arc, Mutex, RwLock,
++    atomic::{AtomicBool, AtomicU64, Ordering},
+ };
+ 
+ use anyhow::anyhow;
+@@ -217,6 +217,10 @@
+     peer_static_pubkey: RwLock<Option<[u8; 32]>>,
+     datagram: SecureDatagramSession,
+     invalidated: AtomicBool,
++    // Nonsecret local revision for receive observations. Odd means a key sync
++    // is in progress or observation IDs are exhausted. Never sent on the wire.
++    observation_revision: AtomicU64,
++    observation_sync: Mutex<()>,
+ }
+ 
+ impl std::fmt::Debug for PeerSession {
+@@ -252,6 +256,8 @@
+                 recv_cipher_algorithm,
+             ),
+             invalidated: AtomicBool::new(false),
++            observation_revision: AtomicU64::new(0),
++            observation_sync: Mutex::new(()),
+         }
+     }
+ 
+@@ -266,6 +272,11 @@
+ 
+     pub fn is_valid(&self) -> bool {
+         !self.invalidated.load(Ordering::Relaxed) && self.datagram.is_valid()
++    }
++
++    pub(crate) fn receive_observation_revision(&self) -> Option<u64> {
++        let revision = self.observation_revision.load(Ordering::SeqCst);
++        (revision % 2 == 0 && self.is_valid()).then_some(revision)
+     }
+ 
+     pub fn session_generation(&self) -> u32 {
+@@ -318,12 +329,20 @@
+         initial_epoch: u32,
+         preserve_rx_grace: bool,
+     ) {
++        // Other connections may share this Arc and synchronize even with the
++        // same u32 generation. Invalidate observations before changing keys and
++        // serialize sync revisions, without changing the datagram/wire policy.
++        let _sync = self.observation_sync.lock().unwrap();
++        let revision = self.observation_revision.load(Ordering::SeqCst);
++        let next = if revision % 2 == 0 { revision.checked_add(2) } else { None };
++        self.observation_revision.store(next.map_or(u64::MAX, |value| value - 1), Ordering::SeqCst);
+         self.datagram.sync_root_key(
+             root_key,
+             session_generation,
+             initial_epoch,
+             preserve_rx_grace,
+         );
++        if let Some(next) = next { self.observation_revision.store(next, Ordering::SeqCst); }
+     }
+ 
+     pub fn dir_for_sender(

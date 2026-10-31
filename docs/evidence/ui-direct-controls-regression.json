@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "date_hong_kong": "2026-10-31",
+  "baseline": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+  "status": "local_source_and_crossbuild_passed_hosted_WPF_and_package_pending",
+  "scope": "Restore direct main-screen MOD/Official and FOV controls in the retained SCBL shell; no network backend rollback, no real game or capture.",
+  "source_sha256": {
+    "src/launcher/src/MainWindow.xaml": "2a7ea03b111d9e24b8865ade33ff4db3032df41bb1dbec20e872a4ce0a3e8ac5",
+    "src/launcher/src/MainWindow.xaml.cs": "6aff65840abe6a3074045a6fa2b082796fdfa4a20ebc5e36c2068670e5630f36",
+    "src/launcher/src/MainWindow.GameplayDraft.cs": "201a6388d5751257581a7c2d7c1202d93970b0ade46383373c7d5e639a075806",
+    "src/launcher/src/MainWindow.UnifiedSettings.cs": "9494a8caf84ead85f2170296387095548c678c2c3ed8e169486b9654b75cebcb",
+    "src/launcher/src/MainWindow.LanTools.cs": "a48c173cfcc6911228c8551fdfca4b81de3319f08eb5fc02d5245d50d38073dc",
+    "src/launcher/src/MainWindow.LocalDiscovery.cs": "8805103f46d53275a184d47702ae40fe4eaa924d5453dc4ae8333e3410781555",
+    "src/launcher/src/MainWindow.Diagnostics.cs": "c9d0f7e9f9cbc63cd55a1c82558661460221d63164fb32c189df4a630d63bb49",
+    "src/launcher/src/MainWindow.VisualProbe.cs": "6a392ae35517a528ebe05e97ceaa7746149afb4cc98eaa1cbc6ff83fb39b5b54",
+    "tests/ui/test_shell_contract.py": "f053b387554072be71e5d4b4b56fb8b7133adc13dd62e07e63deba47c8270943"
+  },
+  "portable_four_roles": {
+    "command": "python -B -m unittest discover -s tests/ui -v",
+    "tests_per_role": 16,
+    "baseline": {
+      "passed": 14,
+      "failed": 2,
+      "errors": 0,
+      "exit_code": 1
+    },
+    "modified": {
+      "passed": 16,
+      "failed": 0,
+      "errors": 0,
+      "exit_code": 0
+    },
+    "rollback": {
+      "passed": 14,
+      "failed": 2,
+      "errors": 0,
+      "exit_code": 1
+    },
+    "reapplied": {
+      "passed": 16,
+      "failed": 0,
+      "errors": 0,
+      "exit_code": 0
+    },
+    "new_failing_contracts": [
+      "test_mod_and_fov_are_direct_main_screen_controls",
+      "test_main_mode_strip_retains_mod_and_official_beside_network_mode"
+    ],
+    "patch_sha256": "96518e3004ef62ac740c1bc735a46829579af92b87ebbaa18795e594a6a8b234",
+    "receipt_sha256": "7af0f61f415718965b49fbb9ad7cf2be03d0cd1a53dc1516871b18fe97dd93c9",
+    "log_sha256": {
+      "baseline": "02013e17332390c2d3eb9d837edd5e953843c0b9828705ec48c6f00636182903",
+      "modified": "82bbe9c8ff1c5b8389860728ad65112b345bb910b93ae1df670812959f9ed2c6",
+      "rollback": "6cfde338ed70c65f1fceef15199b7f222a0afab23edea1b70cd8d121ed8e0166",
+      "reapplied": "3db815c79449424890d10c9110e2f5ce2b19048cbc7a9cf318ed31c37eee492d"
+    },
+    "exact_reverse_and_reapply": true,
+    "scope": "Portable XAML/source wiring checks over exact retained MainWindow sources; fixed new contract tests and unchanged normal-checkout CRLF donor bytes in each role. Not WPF rendering or game acceptance.",
+    "original_private_four_roles_changed": false
+  },
+  "draft_service": {
+    "command": "dotnet run --project tests/GameplaySettingsDraft/GameplaySettingsDraft.csproj -c Release",
+    "passed": 21,
+    "failed": 0,
+    "exit_code": 0,
+    "log_sha256": "77a5c0f8a30416523e6253420fca9fd6da2a4a53c80b0e2fbd27ea0fc358e852",
+    "scope": "Unchanged production draft and actual owned temporary settings filesystem; no WPF."
+  },
+  "cross_build": {
+    "command": "dotnet build src/launcher/src/SplinterCellCNLauncher.csproj -c Release -p:EnableWindowsTargeting=true --nologo",
+    "exit_code": 0,
+    "warnings": 0,
+    "errors": 0,
+    "log_sha256": "aa7227c91a78bb9d327ad633f1f6c35b3aea60410cfa939a24db393ddfc0621c",
+    "receipt_sha256": "039200ece98599e14e945643a1123ee3fb2e780dc3cd1f34aa0396ac88d7a2c2",
+    "source_inputs_unchanged_during_build": true,
+    "scope": "Linux WPF cross compilation only; no WPF or game execution"
+  },
+  "retained_initial_failures": [
+    {
+      "kind": "crossbuild",
+      "exit_code": 1,
+      "cause": "CS0136 probe-local source name shadowing; corrected to directSource without product behavior change.",
+      "log_sha256": "2ac88290197e2836d6a85872232d13348991488fd86603e885895288d232b308"
+    },
+    {
+      "kind": "isolated_portable_role_fixture",
+      "cause": "Harness materialized canonical LF donor bytes while the retained donor contract pins declared normal-checkout CRLF bytes. Corrected fixture copies the unchanged checkout after confirming its Git object identity; donor and expected hash unchanged.",
+      "baseline_rollback_failures": 3,
+      "modified_reapplied_failures": 1,
+      "log_sha256": {
+        "baseline": "a5ec07f74ddac10365f93d8ed39c6e965a108912d804f964da76c7a9ad21dbc7",
+        "modified": "bcd2ca89992dffd1e0cabee6bf66f3cb550dc470c6c4e640805061821067baa1",
+        "rollback": "289bf60308fbeb577df6c1708485d6b4537d7bafec5c9f0b6e28d41bf7ee61bb",
+        "reapplied": "2b1954efd362183dd66327975248a696f74d7d3ef03ffd9e0d097c389e8ee16a"
+      }
+    }
+  ],
+  "hosted_followup": {
+    "required": true,
+    "new_visual_contract_ids": [
+      "main-direct-gameplay-controls",
+      "main-game-options-entry-absent"
+    ],
+    "legacy_scenario_token": "settings-gameplay",
+    "new_scenario_meaning": "Dirty direct main-screen draft; no gameplay settings overlay.",
+    "matrix": "Chinese/English;1120x680 and900x580DIP;96/120/144/192rootDPI; separate shown-HWND input/focus/Tab/ShiftTab/Escape.",
+    "actual_WPF_verified": false,
+    "complete_candidate_verified": false
+  },
+  "preserved_boundaries": [
+    "DX11-only actual launch and legacy setting migration",
+    "Single settings entry and retained tool routes",
+    "Default Public with explicit configuration and unavailable runtime guard",
+    "Bounded Local discovery and explicit join/create confirmation",
+    "Existing MOD/FOV range and atomic Save/Cancel semantics",
+    "Accepted F3/MAC11/Chinese/world-camera/VSS gameplay results"
+  ],
+  "private_raw_logs_or_player_ids_published": false
+}

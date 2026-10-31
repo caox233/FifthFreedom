@@ -1,0 +1,320 @@
+{
+  "schema": 1,
+  "run_id": 41193432884,
+  "artifact_id": 13039103788,
+  "artifact_name": "actual-wpf-layout-4778c5044738d34a43586587407f2ad93f315e1b",
+  "outer_bytes": 374665760,
+  "outer_sha256": "131d6e8e07a312849daff8695cd5c45533755a8bbffce9dfbe606bd716ef149d",
+  "outer_matches_official_digest": true,
+  "outer_crc_passed": true,
+  "source_commit": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+  "checkout_merge_commit": "4778c5044738d34a43586587407f2ad93f315e1b",
+  "source_and_merge_tree": "7b626b0caeeddceff9bce19efdbdbe90284a8194",
+  "baseline": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+  "comparison": {
+    "schema": 1,
+    "fixture_id": "fifth-freedom-visual-fixture-v1",
+    "source_commit": "4778c5044738d34a43586587407f2ad93f315e1b",
+    "baseline_commit": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+    "root_dpi_not_os_display_dpi": true,
+    "game_started": false,
+    "network_started": false,
+    "error": null,
+    "baseline_direct_control_failure_reproduced": true,
+    "baseline_layout_failure_reproduced": false,
+    "modified_and_reapplied_passed": true,
+    "rollback_executable_hashes_match": true
+  },
+  "comparison_sha256": "5b24e786ec6550c0aa6427bca1dcf2f1be7264e8e11bdc29c3d066140b2cf394",
+  "png_count": 672,
+  "all_png_hashes_and_dimensions_verified": true,
+  "game_started": false,
+  "network_started": false,
+  "physical_display_IME_or_game_acceptance": false,
+  "phases": [
+    {
+      "phase": "baseline",
+      "frames": 128,
+      "pngs": 176,
+      "checks": {
+        "dpi": 128,
+        "geometry-control": 256,
+        "resource-scope": 480,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 736,
+        "geometry": 848,
+        "overlap": 544,
+        "hit-area": 432,
+        "visual-hit-test": 400,
+        "text-clipping": 5024,
+        "input-hit-test": 384,
+        "scroll-restoration": 48,
+        "keyboard": 784,
+        "scroll-accessibility": 64
+      },
+      "check_count": 10512,
+      "failures": 96,
+      "frame_errors": 0,
+      "report_passed": false,
+      "exit_code": 1,
+      "report_sha256": "40786af50ace9ca909e5e9d37a0b1a369b2eee5c0d285abf59c836d311a233fe",
+      "executable_sha256": "d430d4906fd5ebb598f1d2f4457e119d8651b0f261f8019bddcb1ff893be0e3e"
+    },
+    {
+      "phase": "modified",
+      "frames": 128,
+      "pngs": 160,
+      "checks": {
+        "dpi": 128,
+        "geometry-control": 256,
+        "resource-scope": 464,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 784,
+        "geometry": 1152,
+        "overlap": 1712,
+        "hit-area": 656,
+        "visual-hit-test": 624,
+        "text-clipping": 5088,
+        "input-hit-test": 608,
+        "scroll-restoration": 32,
+        "keyboard": 1024,
+        "scroll-accessibility": 32
+      },
+      "check_count": 12944,
+      "failures": 0,
+      "frame_errors": 0,
+      "report_passed": true,
+      "exit_code": 0,
+      "report_sha256": "451876587f814ecb3ed3116f978740916f08e11f90330b964f506b23d09d03fa",
+      "executable_sha256": "bef2a554b552e240b133813aa662b31dcb601d041efa9e4e96af107aba95dc32"
+    },
+    {
+      "phase": "rollback",
+      "frames": 128,
+      "pngs": 176,
+      "checks": {
+        "dpi": 128,
+        "geometry-control": 256,
+        "resource-scope": 480,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 736,
+        "geometry": 848,
+        "overlap": 544,
+        "hit-area": 432,
+        "visual-hit-test": 400,
+        "text-clipping": 5024,
+        "input-hit-test": 384,
+        "scroll-restoration": 48,
+        "keyboard": 784,
+        "scroll-accessibility": 64
+      },
+      "check_count": 10512,
+      "failures": 96,
+      "frame_errors": 0,
+      "report_passed": false,
+      "exit_code": 1,
+      "report_sha256": "82ed3d252a0c3ccc9ca7670b20193df9d55bf9c19f088538dae6f5afc1404dc6",
+      "executable_sha256": "d430d4906fd5ebb598f1d2f4457e119d8651b0f261f8019bddcb1ff893be0e3e"
+    },
+    {
+      "phase": "reapplied",
+      "frames": 128,
+      "pngs": 160,
+      "checks": {
+        "dpi": 128,
+        "geometry-control": 256,
+        "resource-scope": 464,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 784,
+        "geometry": 1152,
+        "overlap": 1712,
+        "hit-area": 656,
+        "visual-hit-test": 624,
+        "text-clipping": 5088,
+        "input-hit-test": 608,
+        "scroll-restoration": 32,
+        "keyboard": 1024,
+        "scroll-accessibility": 32
+      },
+      "check_count": 12944,
+      "failures": 0,
+      "frame_errors": 0,
+      "report_passed": true,
+      "exit_code": 0,
+      "report_sha256": "f9ce7ba24db322b13637a372d7c9342392cf8eb50ff58d3a631dbeda0c2ce44e",
+      "executable_sha256": "bef2a554b552e240b133813aa662b31dcb601d041efa9e4e96af107aba95dc32"
+    }
+  ],
+  "date_hong_kong": "2026-10-31",
+  "job_id": 124514693858,
+  "conclusion": "success",
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/41193432884",
+  "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41193432884/artifacts/13039103788",
+  "matrix": {
+    "states": [
+      "main",
+      "settings",
+      "settings-public",
+      "settings-gameplay",
+      "discovery",
+      "join",
+      "create",
+      "cancel"
+    ],
+    "languages": [
+      "zh-CN",
+      "en-US"
+    ],
+    "root_dpi": [
+      96,
+      120,
+      144,
+      192
+    ],
+    "window_DIP": [
+      [
+        1120,
+        680
+      ],
+      [
+        900,
+        580
+      ]
+    ],
+    "scenarios_per_phase": 128,
+    "settings_gameplay_token": "Historical scenario name retained for comparison; modified/reapplied show the direct main-screen controls with an edited draft, not a separate page."
+  },
+  "baseline_scope": {
+    "product_source": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+    "baseline_app_entry_preserved": true,
+    "baseline_observer_replaced_only": true,
+    "new_requirement_failures_per_baseline_and_rollback": {
+      "main-direct-gameplay-controls": 48,
+      "main-game-options-entry-absent": 48
+    },
+    "other_baseline_and_rollback_failures": 0,
+    "not_an_old_layout_failure_substitute": true
+  },
+  "keyboard_review": {
+    "scenarios_per_modified_phase": 16,
+    "targets": [
+      "cmbGameplayMode",
+      "fovSlider",
+      "btnFovReset",
+      "btnGameplaySave",
+      "btnGameplayCancel"
+    ],
+    "actual_forward_and_reverse_routes": true,
+    "actual_entry_focus_asserted": true,
+    "all_targets_reached_both_directions_in_each_scenario": true,
+    "draft_save_cancel_escape_checks_passed": true,
+    "physical_monitor_or_IME_acceptance": false,
+    "note": "Actual shown HWND focus routing is at the runner display DPI, distinct from the root-DPI bitmap matrix; no keyboard/game simulation against a player process."
+  },
+  "pixel_file_review": {
+    "all_672_extracted_pngs_equal_original_official_zip_members": true,
+    "modified_reapplied_png_pairs": 160,
+    "byte_differences": 0,
+    "read_only_chrome_region_review_sha256": "e449ba0be3af22cd2e2d6f0d143406844b80c158e0da4f8c5e2f595d9f6ec94a",
+    "pixel_postprocessing_performed": false
+  },
+  "representative_original_images_inspected": [
+    {
+      "path": "modified/settings-gameplay-zh-CN-96-1120x680.png",
+      "sha256": "5df2044669205c1c57f41c2db812890fa3dc0cdcfda8586c0e54e0986527f99c"
+    },
+    {
+      "path": "reapplied/settings-gameplay-zh-CN-96-1120x680.png",
+      "sha256": "5df2044669205c1c57f41c2db812890fa3dc0cdcfda8586c0e54e0986527f99c"
+    },
+    {
+      "path": "modified/settings-gameplay-zh-CN-96-900x580.png",
+      "sha256": "c7846845bf24f98c0a3d4143e0b238d483d71bab9dea060c7059d780d891acd1"
+    },
+    {
+      "path": "modified/settings-gameplay-en-US-96-1120x680.png",
+      "sha256": "8779d7fffbf1f693c5fad03232e249c5fa0ff348b00586961870315497b7b9f1"
+    },
+    {
+      "path": "modified/main-zh-CN-120-900x580.png",
+      "sha256": "a8ce0ba3a730c6511ef728454036d2d2f914a262751610f6eda7195bf18a94b8"
+    },
+    {
+      "path": "modified/main-en-US-144-1120x680.png",
+      "sha256": "dac953bd9b7a14ec99255213de26d487492718a3103b4cce5b2df16fe4110ee7"
+    },
+    {
+      "path": "modified/settings-zh-CN-96-900x580.png",
+      "sha256": "ccaf4c2a798a75f9a457f5fa44d2ea73b486f8b0dd717554857e54dc4a7a19c9"
+    },
+    {
+      "path": "modified/settings-en-US-192-1120x680.png",
+      "sha256": "c28e160148cc1ee184c452758a051ce627a5a2f084ee0dd0ea18718c0b713ef1"
+    },
+    {
+      "path": "modified/settings-public-zh-CN-120-900x580.png",
+      "sha256": "aaa20c846012907384cf3e1546d50fc7f413ada7aeb063a53b71c78c0a080016"
+    },
+    {
+      "path": "modified/settings-public-en-US-144-900x580-scrolled-bottom.png",
+      "sha256": "04f081c1c3af7c52100c939ba3e158bc8d28515f6273a907b88a49e0c39f3c8b"
+    },
+    {
+      "path": "modified/discovery-zh-CN-96-900x580.png",
+      "sha256": "7a82aff1b3db495b0708c061d6140b88978e8ed5803ac8df1dc00a13d3b8a0e5"
+    },
+    {
+      "path": "modified/discovery-en-US-192-900x580.png",
+      "sha256": "66692707b25aa6a8a16e69d8d5ab66f50e195fd71811a5c178b873eb007ae737"
+    },
+    {
+      "path": "modified/join-zh-CN-144-900x580.png",
+      "sha256": "0e3b60ef5bb4ece41495f376fcfc14900f93429a7f421f29778d2f0a65f7bf08"
+    },
+    {
+      "path": "modified/join-en-US-96-1120x680.png",
+      "sha256": "8b909a111a560d92279db189d45cecd00bb4e528cb66c61cebebb086e8f57b21"
+    },
+    {
+      "path": "modified/create-zh-CN-192-900x580.png",
+      "sha256": "9acdddd46023fe8dd29906b836c9b10778e947002c911485f1651a849d192f7f"
+    },
+    {
+      "path": "modified/create-en-US-120-1120x680.png",
+      "sha256": "31ec690817338d22f776ccdd8ebdc6c2b6d9db3273fcd21c95070cc5d0253164"
+    },
+    {
+      "path": "modified/cancel-zh-CN-144-1120x680.png",
+      "sha256": "7ca75903fd81a49c43961a5d516de003ab2e325c6db95d5131eb4f3c0ec0635c"
+    },
+    {
+      "path": "modified/cancel-en-US-96-900x580.png",
+      "sha256": "b156c5eacfbdeb96d323c4f7f3cf3544f4640150065a37aa24e4f276b6381f70"
+    },
+    {
+      "path": "baseline/main-zh-CN-96-900x580.png",
+      "sha256": "1c73104468854a7e38f3eb02cd200c07023a4af3aaf2bddd70d439dad3889386"
+    }
+  ],
+  "manual_review_scope": "Representative actual original WPF images cover every scenario, both languages, both window sizes and all four root DPI values. Direct controls and actions remain visible; settings/discovery/join/create surfaces remain contained and readable; long address input is intentionally scrollable, not truncated data. Every PNG was hash/dimension checked, not every screenshot independently manually audited. Small-window 96-DPI text is visibly smaller due the retained Viewbox; physical-display readability remains a separate user check.",
+  "capture_observation_correction": {
+    "previous_impression": "A preview of Chinese 96-DPI gameplay-edit images appeared to omit title, top-right and footer text. This was initially interpreted as possible capture/glyph invalidation trouble.",
+    "status": "withdrawn_display_preview_anomaly_not_confirmed_product_or_png_defect",
+    "proof": "Official-ZIP member verification and byte comparisons show all 160 modified/reapplied PNG pairs identical. Reopening the same original bytes shows complete title/top-right/footer text. The cited Chinese 96-DPI image is also byte-identical to its old 72e run image, so the Render flush cannot be credited with repairing missing glyphs.",
+    "example_path": "settings-gameplay-zh-CN-96-1120x680.png",
+    "same_image_sha256_in_old72e_and_both_d40_phases": "5df2044669205c1c57f41c2db812890fa3dc0cdcfda8586c0e54e0986527f99c",
+    "images_edited": false,
+    "further_product_or_observer_code_change_made_for_impression": false,
+    "historical_144_check_failures_retained_in": "docs/evidence/hosted-ui-direct-failure-72e92af.json"
+  },
+  "limitations": [
+    "Actual WPF rendering and shown-window focus checks do not establish physical monitor/IME input, GPU/game or multiplayer acceptance.",
+    "No game, network, capture helper, production service or player process was started by this visual fixture.",
+    "The complete candidate package and its own receipts are separate evidence; this visual artifact is not a playable package.",
+    "Public launch prerequisites, C71, camera crash, multiplayer matching/chat, EMF performance and existing live acceptance boundaries are not closed by these UI checks."
+  ]
+}

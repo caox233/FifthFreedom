@@ -1,0 +1,278 @@
+{
+  "admission": {
+    "readiness_adapter_version": null,
+    "runtime_admission_ready": false,
+    "runtime_publication_approved": false,
+    "security_profile_id": null
+  },
+  "archive": {
+    "bytes": 13066240,
+    "format": "canonical git archive tar; not official release archive",
+    "sha256": "fe41b78a040f77f7fb9c87028b5dca79bf71c582036d1f84f355e6b79935ffd3"
+  },
+  "authenticated_receive_evidence": {
+    "path": "docs/dependency-patches/easytier-2.6.4-authenticated-receive/receipt.json",
+    "sha256": "e51f06a20b5324bc6b620c5c0505ed426eb01b0a8027cab772f3dee72c9e10c8"
+  },
+  "baseline_recipe": {
+    "path": "scripts/easytier-source.lock.json",
+    "sha256": "c9135af75df006062141b9ecb209887d46a9b374ed0b3d52924c15220448ebeb"
+  },
+  "build": {
+    "bins": [
+      "easytier-core",
+      "easytier-cli"
+    ],
+    "cargo_features": "default",
+    "cargo_incremental": false,
+    "crypto_backend": "ring; wireguard enabled; openssl-crypto/aes-gcm absent",
+    "official_musl_jemalloc_build_reproduction": false,
+    "profile": "release",
+    "rust_toolchain": "1.95.0",
+    "target": "x86_64-unknown-linux-gnu"
+  },
+  "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+  "contract_checks": [
+    {
+      "exact": false,
+      "filter": "fifth_freedom_receive_",
+      "passed": 15
+    },
+    {
+      "exact": false,
+      "filter": "fifth_freedom_secure_profile_contract",
+      "passed": 4
+    },
+    {
+      "exact": false,
+      "filter": "fifth_freedom_ingress_contract",
+      "passed": 10
+    },
+    {
+      "exact": false,
+      "filter": "peers::secure_datagram::tests",
+      "passed": 9
+    },
+    {
+      "exact": false,
+      "filter": "peers::peer_session::tests",
+      "passed": 2
+    },
+    {
+      "exact": false,
+      "filter": "ff_explicit_pin_contract",
+      "passed": 3
+    },
+    {
+      "exact": true,
+      "filter": "peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip",
+      "passed": 1
+    }
+  ],
+  "expected_source_tree_sha256": "b0a7d3cf802d3de1f3741943ccd48db02cf883fe68899e9cd7f636627ec74e0f",
+  "kind": "fifth-freedom-authenticated-receive-linux-source-inputs-v1",
+  "materialized_links": [
+    {
+      "path": "easytier-rpc-build/LICENSE",
+      "target": "../LICENSE"
+    },
+    {
+      "path": "easytier/LICENSE",
+      "target": "../LICENSE"
+    },
+    {
+      "path": "easytier/README.md",
+      "target": "../README.md"
+    },
+    {
+      "path": "easytier/README_CN.md",
+      "target": "../README_CN.md"
+    },
+    {
+      "path": "easytier/assets",
+      "target": "../assets"
+    }
+  ],
+  "modified_files": [
+    {
+      "original_sha256": "b511a31db4d712c270be0f9ff3920e23aa7dc2345554db7da0df24af2d82d2a3",
+      "patched_sha256": "c54ae663d61edbb2829d828c4d871966f0ec03e0000b0415f1faa7df035f0d41",
+      "path": "easytier/src/peers/peer_session.rs"
+    },
+    {
+      "original_sha256": "ff1e5685bdd830386b153a57cb0e8eeb322c665e681e12ec6de3c1c46cd9dba5",
+      "patched_sha256": "74e372bff9c0578b07f8e08da5b56b3b8de7939976beb6017dd90357c12e8324",
+      "path": "easytier/src/peers/secure_datagram.rs"
+    },
+    {
+      "original_sha256": "ac70462079f7f07edc6e024b5a0e833ec7411848c51d1d07dda5b4ce4616bc69",
+      "patched_sha256": "0b2d1cf719d7c61caecc967fa04326a86cd91cfb159059045d4d2c622f57b776",
+      "path": "easytier/src/peers/peer_conn.rs"
+    }
+  ],
+  "omitted_files": [
+    {
+      "bytes": 3478,
+      "path": "easytier-contrib/easytier-ohrs/ohpm_crypto.zip",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "05a2a8f2189375ca0a3b86dd4184bebb4ca0203a878298308eb4268b8983068e"
+    },
+    {
+      "bytes": 43764,
+      "path": "easytier-gui/src-tauri/gen/android/gradle/wrapper/gradle-wrapper.jar",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172"
+    },
+    {
+      "bytes": 203136,
+      "path": "easytier/third_party/arm64/Packet.dll",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "fe56bf638c1f05751a4f36377d71f48fb7f43446e92475eda32dc0f4f2ebd60c"
+    },
+    {
+      "bytes": 9708,
+      "path": "easytier/third_party/arm64/Packet.lib",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "0cf77885db5cbd8152dd23744843bf39220372c4e961a5df79875ccf54316387"
+    },
+    {
+      "bytes": 83,
+      "path": "easytier/third_party/arm64/WinDivert64.sys",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "19d4fc01593d6f9798c9e7de3d7dade906db97872ca1f281c96e40dd9ff85d50"
+    },
+    {
+      "bytes": 222488,
+      "path": "easytier/third_party/arm64/wintun.dll",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "f7ba89005544be9d85231a9e0d5f23b2d15b3311667e2dad0debd344918a3f80"
+    },
+    {
+      "bytes": 174456,
+      "path": "easytier/third_party/i686/Packet.dll",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "f0ab4f5457bd48958b72d6849148e1ece6dbc1059435dfe695051fc32b8cdc19"
+    },
+    {
+      "bytes": 10360,
+      "path": "easytier/third_party/i686/Packet.lib",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "ca4864813a4b2d4c21b6e4b33bcdcab55e307558528f71b3d4637e8a605375c6"
+    },
+    {
+      "bytes": 79792,
+      "path": "easytier/third_party/i686/WinDivert32.sys",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "2f43f4251be4d72dd56c91bf6cce475d379eb9ba6c4dda2be3022ea633d5e807"
+    },
+    {
+      "bytes": 550928,
+      "path": "easytier/third_party/i686/wintun.dll",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "d694fa46ab4cfebcb2632d094c7aa97278eef2f8052438621766d863ae98a931"
+    },
+    {
+      "bytes": 220032,
+      "path": "easytier/third_party/x86_64/Packet.dll",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "c7c03a87eac7243ccbe331554624b18803010b740e311fc8cfddb573096eacac"
+    },
+    {
+      "bytes": 8290,
+      "path": "easytier/third_party/x86_64/Packet.lib",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "5be8eb0ef57344cedc940fd81edbf7fc98680ba0c8337b577e7fdc448408130b"
+    },
+    {
+      "bytes": 94144,
+      "path": "easytier/third_party/x86_64/WinDivert64.sys",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "8da085332782708d8767bcace5327a6ec7283c17cfb85e40b03cd2323a90ddc2"
+    },
+    {
+      "bytes": 427552,
+      "path": "easytier/third_party/x86_64/wintun.dll",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "e5da8447dc2c320edc0fc52fa01885c103de8c118481f683643cacc3220dafce"
+    }
+  ],
+  "patches": [
+    {
+      "bytes": 3140,
+      "path": "docs/dependency-patches/easytier-2.6.4-secure-session/contract-tests.patch",
+      "role": "contract-tests",
+      "sha256": "5673d6b3f24dd44a263b7863a491ec0c482b61feadd77cfc2534973d3d8d31c4"
+    },
+    {
+      "bytes": 792,
+      "path": "docs/dependency-patches/easytier-2.6.4-secure-session/require-encrypted-flag.patch",
+      "role": "production-guard",
+      "sha256": "06a16ca43e035eb1380c99ace8f19a8495bbd09b6413f0fe800752896aa3d2b3"
+    },
+    {
+      "bytes": 5365,
+      "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/ingress-contract-tests.patch",
+      "role": "contract-tests",
+      "sha256": "13a8719f4ff0679c3a0dcc56d1f61717f8659fcbf2337032656fd66889e072d9"
+    },
+    {
+      "bytes": 637,
+      "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/require-encrypted-data-ingress.patch",
+      "role": "production-guard",
+      "sha256": "676e9b9dbeaad45cab7e7b85f245091c5e0d2a683f1436e4a1955f2b6e4245a3"
+    },
+    {
+      "bytes": 4765,
+      "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/explicit-pin-contract-tests.patch",
+      "role": "contract-tests",
+      "sha256": "9a3d13a08259acbe11352ccb084a565e04df465f42dc6d16f4a805429705b7cb"
+    },
+    {
+      "bytes": 1744,
+      "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/require-explicit-peer-pin.patch",
+      "role": "production-guard",
+      "sha256": "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328"
+    },
+    {
+      "bytes": 9663,
+      "path": "docs/dependency-patches/easytier-2.6.4-authenticated-receive/record-authenticated-data.patch",
+      "role": "production-observation",
+      "sha256": "b8a22853644bc3c1e0d38a4dfdaa31db0bfe7805daad2d4a9ba8a42dcb9d4dc6"
+    },
+    {
+      "bytes": 12359,
+      "path": "docs/dependency-patches/easytier-2.6.4-authenticated-receive/authenticated-receive-tests.patch",
+      "role": "contract-tests",
+      "sha256": "091c02ced9456a738bb6917f712a84e209828fc315166ad6bc5241fabd64ebb6"
+    }
+  ],
+  "required_notices": [
+    {
+      "bytes": 7652,
+      "path": "LICENSE",
+      "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+    },
+    {
+      "bytes": 12388,
+      "path": "easytier/src/common/tracing_rolling_appender/LICENSE",
+      "sha256": "56808e11a09029613aecf966a70c8192b77eb691de8ee5d813d079ab9b1e87af"
+    },
+    {
+      "bytes": 344,
+      "path": "easytier/src/tunnel/fake_tcp/LICENSE",
+      "sha256": "f2ff6db400a0cd6fbfd894ba618772abcedb92c301055ad0840d971883730d83"
+    },
+    {
+      "bytes": 1075,
+      "path": "easytier/src/gateway/fast_socks5/LICENSE",
+      "sha256": "f80f0b4d28db4b51d16ae8485bce49265738e59df5e647ebc09467693e66e731"
+    }
+  ],
+  "schema": 1,
+  "upstream": {
+    "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+    "repository": "https://github.com/EasyTier/EasyTier",
+    "source_date_epoch": 1778588776,
+    "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+  }
+}

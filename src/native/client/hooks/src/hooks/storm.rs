@@ -1445,6 +1445,26 @@ mod tests {
         assert!(read_sockaddr_ipv4(address, len - 1).is_none());
     }
 
+    #[test]
+    fn protocol_feedback_zero_destination_port_remains_zero_in_actual_sockaddr_reader() {
+        // Metadata is read from the caller, never repaired to a guessed game port.
+        // This is a parser regression, not a reproduction of the retail caller
+        // which supplied port zero or an assertion that its send should succeed.
+        let value = make_bind_addr(Ipv4Addr::LOCALHOST, 0u16.to_be_bytes());
+        let address = (&value as *const SockAddrInRaw).cast::<SOCKADDR>();
+        let len = std::mem::size_of::<SockAddrInRaw>() as c_int;
+        let before = (value.sin_family, value.sin_port, value.sin_addr);
+        let parsed = read_sockaddr_ipv4(address, len).expect("complete IPv4 metadata");
+        assert_eq!(u16::from_be_bytes(parsed.sin_port), 0);
+        assert_eq!(Ipv4Addr::from(parsed.sin_addr), Ipv4Addr::LOCALHOST);
+        assert_eq!((value.sin_family, value.sin_port, value.sin_addr), before);
+        assert!(read_sockaddr_ipv4(address, len - 1).is_none());
+        assert!(read_sockaddr_ipv4(std::ptr::null(), len).is_none());
+        // The regular destination control must remain unchanged too.
+        let regular = make_bind_addr(Ipv4Addr::LOCALHOST, 13000u16.to_be_bytes());
+        assert_eq!(sockaddr_port((&regular as *const SockAddrInRaw).cast(), len), Some(13000));
+    }
+
 
     #[test]
     fn test_storm_event_name() {

@@ -1,0 +1,242 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-31",
+  "date_timezone": "Asia/Hong_Kong",
+  "base_commit": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+  "tested_uncommitted_sources": [
+    {
+      "path": "src/native/server/dedicated-server/src/game_session_ex.rs",
+      "sha256": "a3e6ed294fb4efa562c00e1cd33ad9d7100e99983bceb07a1309c50a832bfb22"
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/storage/quick_match_protocol_tests.rs",
+      "sha256": "13d4d0c5dec8b3a7ce022f376ea5ef2608a1d88e43c1d656ac518829fb91045b"
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/storage/quick_match_filter_trace_tests.rs",
+      "sha256": "fb08b466d2562f48386375879fa40905f23a54ff74903cb96439a5ebdb8e1191"
+    },
+    {
+      "path": "src/native/client/hooks/gameplay/src/progression.rs",
+      "sha256": "d6d421a13f92fc488b1d40965b0f71a698444e7a70bfbbee4584dc126e4a025b"
+    },
+    {
+      "path": "src/native/client/hooks/gameplay/src/progression_region_tests.rs",
+      "sha256": "9e1060a7c28bdbee2aeccbeb26883da7a35b51cda75b76d5338986317e65755c"
+    }
+  ],
+  "user_report": {
+    "greater_than_56_matching": "needs-triage",
+    "search_calls": 25,
+    "empty_searches": 8,
+    "nonempty_searches": 17,
+    "expired_coordination_window": 6,
+    "per_search_level_labels_available": false,
+    "progression_curve_retained_56_runs": 4,
+    "progression_999_enabled_runs": 5,
+    "all_counts_from_private_review_summary": true,
+    "private_logs_or_player_ids_published": false
+  },
+  "causal_boundaries": {
+    "character_rank_attribute_mapping_verified": false,
+    "retail_query_order_verified": false,
+    "level_caused_room_split_proven": false,
+    "allocation_range_cause_in_real_runs_proven": false,
+    "retail_allocator_machine_code_available": false,
+    "game_started": false,
+    "saves_or_real_levels_changed": false,
+    "user_issue_reproduced": false,
+    "live_issue_fixed": false
+  },
+  "search_source_result": {
+    "wire_fields": [
+      "type_id",
+      "query_id",
+      "opaque Property list"
+    ],
+    "named_character_level_field_found": false,
+    "capacity_attributes_exempt_unchanged": [
+      105,
+      112
+    ],
+    "tested_opaque_property_ids": [
+      106,
+      107,
+      108,
+      109,
+      110
+    ],
+    "numeric_control_values": [
+      55,
+      56,
+      57,
+      999
+    ],
+    "numeric_controls_are_real_character_levels": false,
+    "actual_serialized_production_search_create_join": true,
+    "distinct_authenticated_tickets": true,
+    "initial_game_rooms": 0,
+    "two_member_party_plus_independent_solo": true,
+    "actual_final_stored_rosters_checked": true,
+    "mode_private_party_capacity_admission_preserved": true,
+    "debug_summary": {
+      "stage": "pre_mode",
+      "records_per_search": 1,
+      "maximum_mismatch_ids": 16,
+      "raw_attribute_values": false,
+      "player_session_identifiers": false,
+      "endpoint_credentials": false,
+      "routine_info_records_added": 0
+    },
+    "production_matching_admission_changed": false
+  },
+  "baseline_existing_suite": {
+    "command": "cargo test --offline --locked -p dedicated_server quick_match_protocol_ -- --nocapture",
+    "exit_code": 0,
+    "passed": 10,
+    "failed": 0,
+    "ignored": 0,
+    "log_sha256": "c209e5da6163ce588fd50be7ef206eb44916903a3a58ac0801a2c9c0c5ebd8b9"
+  },
+  "first_modified_attempt": {
+    "exit_code": 101,
+    "passed": 10,
+    "failed": 2,
+    "ignored": 0,
+    "log_sha256": "3988e3bcc26f404fda02183b2dee2406c1fdf9f96951f0e3dd7629a0fb01b427",
+    "cause": "New test omitted real social-lobby property103/113 rejections from its expected bounded summary; expectation corrected, production rules unchanged"
+  },
+  "corrected_modified_suite": {
+    "exit_code": 0,
+    "passed": 12,
+    "failed": 0,
+    "ignored": 0,
+    "log_sha256": "b2f560e84c5083fe615bbf8841e619af2b61107ec3c4726417f65935b71e961d"
+  },
+  "isolated_broad_baseline_attempt": {
+    "exit_code": 101,
+    "passed": 9,
+    "failed": 3,
+    "ignored": 0,
+    "log_sha256": "5f3a54887979c63205e9b8bddfabf721acdd2508a8ec507881d3ee709f849805",
+    "new_expected_missing_summary_failures": 2,
+    "other_failure": "old MOD concurrent test SQLite code5 database is locked during fixture Storage initialization before any matchmaking request",
+    "reclassified_as_expected": false,
+    "database_policy_or_timeout_changed": false
+  },
+  "focused_four_roles": {
+    "base": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+    "test_source_current_public_only": true,
+    "production_file": "src/native/server/dedicated-server/src/game_session_ex.rs",
+    "original_sha256": "b83b02108c7fc1547d331d277e8ffb74c572679dd53bc751046dcc3849cc3b5e",
+    "modified_sha256": "a3e6ed294fb4efa562c00e1cd33ad9d7100e99983bceb07a1309c50a832bfb22",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "-p",
+      "dedicated_server",
+      "numeric_filter_trace_mixed_party_and_solo",
+      "--",
+      "--nocapture"
+    ],
+    "roles": [
+      {
+        "role": "baseline",
+        "exit_code": 101,
+        "log_sha256": "aea33c650967b0808a965bb816f725378dbdd67daf0fefbba39b08349137d665",
+        "summary": [
+          "FAILED",
+          "0",
+          "2",
+          "0"
+        ],
+        "production_sha256": "b83b02108c7fc1547d331d277e8ffb74c572679dd53bc751046dcc3849cc3b5e",
+        "expected_missing_summary_markers": 2
+      },
+      {
+        "role": "modified",
+        "exit_code": 0,
+        "log_sha256": "6aa02a0501e0190b550a42f05c1d8cb52eb7720a25291686a54720e39ac747b8",
+        "summary": [
+          "ok",
+          "2",
+          "0",
+          "0"
+        ],
+        "production_sha256": "a3e6ed294fb4efa562c00e1cd33ad9d7100e99983bceb07a1309c50a832bfb22",
+        "expected_missing_summary_markers": 0
+      },
+      {
+        "role": "rollback",
+        "exit_code": 101,
+        "log_sha256": "9c0e2ee98c53f8dae05ed58bb2bfc85903a8fccee84ba137bc4a77aaa6b22e12",
+        "summary": [
+          "FAILED",
+          "0",
+          "2",
+          "0"
+        ],
+        "production_sha256": "b83b02108c7fc1547d331d277e8ffb74c572679dd53bc751046dcc3849cc3b5e",
+        "expected_missing_summary_markers": 2
+      },
+      {
+        "role": "reapplied",
+        "exit_code": 0,
+        "log_sha256": "974dd9a149fa73ed627f69f06958f68ef05b269bd8679901854fd2d184997907",
+        "summary": [
+          "ok",
+          "2",
+          "0",
+          "0"
+        ],
+        "production_sha256": "a3e6ed294fb4efa562c00e1cd33ad9d7100e99983bceb07a1309c50a832bfb22",
+        "expected_missing_summary_markers": 0
+      }
+    ],
+    "scope": "diagnostic availability + actual numeric property filter controls; not real character-level regression"
+  },
+  "focused_receipt_sha256": "43c2b667cba51de3b483dba1a8a0964347943f66a54c9f2c2df1c34a88711508",
+  "progression": {
+    "status": "source_correction_pending_actual_windows_execution",
+    "requested_rows": 999,
+    "native_element_size": 24,
+    "required_span_bytes": 23976,
+    "verified_pins_changed": false,
+    "native_allocator_entry": {
+      "address": "0x0042dab0",
+      "signature_unchanged": true,
+      "array_entry_length": 0,
+      "array_entry_capacity": 999,
+      "retail_allocator_executed_here": false,
+      "actual_real_run_allocation_size_verified": false
+    },
+    "region_check": {
+      "same_allocation_base_required": true,
+      "all_regions_must_be_committed": true,
+      "readability_required": true,
+      "writability_required_before_copy": true,
+      "returned_capacity_checked": true,
+      "unrelated_adjacent_allocations_rejected": true,
+      "shared_memory_predicates_changed": false,
+      "concurrent_lifetime_lock": false,
+      "individual_heap_block_size_proof_from_virtual_query": false
+    },
+    "windows_cases_written": 2,
+    "invalid_replacement_variants": 8,
+    "windows_cases_executed_locally": 0,
+    "live_matchmaking_fix_claimed": false
+  },
+  "expanded_matching_and_departure_selection": {
+    "command": "cargo test --offline --locked -p dedicated_server quick_match_ -- --nocapture",
+    "exit_code": 0,
+    "passed": 31,
+    "failed": 0,
+    "ignored": 0,
+    "default_parallelism": true,
+    "includes_real_existing_expired_coordination_window_and_party_restore_tests": true,
+    "log_sha256": "a6da4fd60a9d47dfb308f8f6d8a79aa3c59aa565bbebf0b3a598f2074034c27c",
+    "not_a_repeat_of_the_historical_initialization_failure": true
+  }
+}

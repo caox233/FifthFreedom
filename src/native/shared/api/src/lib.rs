@@ -19,6 +19,10 @@ pub mod gameplay_contract;
 pub mod observer_contract;
 pub mod release_contract;
 pub mod release_catalog;
+pub mod public_return_contract;
+pub mod source_binding_contract;
+#[cfg(target_os = "linux")]
+pub mod public_package;
 
 #[cfg(test)]
 mod wire_contract_tests;

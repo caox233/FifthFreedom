@@ -1,0 +1,160 @@
+{
+  "id": 39906263847,
+  "url": "https://github.com/caox233/FifthFreedom/actions/runs/39906263847",
+  "source_head_sha": "8389cb6193ea2bd6383f9f262304a14e50c96712",
+  "status": "completed",
+  "conclusion": "failure",
+  "run_attempt": 1,
+  "jobs": [
+    {
+      "id": 120258823811,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-23T05:31:52Z",
+      "completed_at": "2026-10-23T05:37:08Z"
+    },
+    {
+      "id": 120258823920,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-23T05:31:52Z",
+      "completed_at": "2026-10-23T05:32:09Z"
+    },
+    {
+      "id": 120258823958,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-23T05:31:52Z",
+      "completed_at": "2026-10-23T05:32:01Z"
+    },
+    {
+      "id": 120258823988,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-23T05:31:52Z",
+      "completed_at": "2026-10-23T05:32:41Z"
+    },
+    {
+      "id": 120258824038,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-23T05:31:52Z",
+      "completed_at": "2026-10-23T05:38:46Z"
+    },
+    {
+      "id": 120258824113,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-23T05:31:52Z",
+      "completed_at": "2026-10-23T05:34:57Z"
+    },
+    {
+      "id": 120258881530,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-23T05:32:02Z",
+      "completed_at": "2026-10-23T05:32:01Z"
+    },
+    {
+      "id": 120260839414,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-23T05:38:47Z",
+      "completed_at": "2026-10-23T05:38:46Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12481302050,
+      "name": "linux-lan-baseline-d057f54a38f110ede42e731ebd07e7529044cf94",
+      "size_in_bytes": 9795786,
+      "digest": "sha256:a0e882e444faed210fa523d9330e507f90a741b6bff5996648ccfc2f5f2acfef",
+      "expired": false
+    },
+    {
+      "id": 12481295805,
+      "name": "complete-package-input-gate-d057f54a38f110ede42e731ebd07e7529044cf94",
+      "size_in_bytes": 1656,
+      "digest": "sha256:7176fbd8f92c6b3e4e16a4da90ee92ca9afa8f2f73921f6f02f500d357fc8c31",
+      "expired": false
+    },
+    {
+      "id": 12481261884,
+      "name": "linux-public-donor-reference-d057f54a38f110ede42e731ebd07e7529044cf94",
+      "size_in_bytes": 4005461,
+      "digest": "sha256:f36d3846b9ad8fdbfdbaa15586259142c3cd6af6a0045d9cf41af1e5e44d9ce6",
+      "expired": false
+    },
+    {
+      "id": 12481241314,
+      "name": "linux-native-socket-isolation-d057f54a38f110ede42e731ebd07e7529044cf94",
+      "size_in_bytes": 3680035,
+      "digest": "sha256:198005b56b31553c90e978a23cb1c61607670da7f731f8f1eddcf3b14b44397d",
+      "expired": false
+    },
+    {
+      "id": 12481225982,
+      "name": "windows-compile-only-components-d057f54a38f110ede42e731ebd07e7529044cf94",
+      "size_in_bytes": 24876,
+      "digest": "sha256:394f092694662a923f8f9c1b053cacecbe7f3afa2dcf92553fb781ed15821340",
+      "expired": false
+    },
+    {
+      "id": 12480947411,
+      "name": "linux-public-control-d057f54a38f110ede42e731ebd07e7529044cf94",
+      "size_in_bytes": 57409,
+      "digest": "sha256:0f45ffd9fbfcff8553bc18329c9ddb5573aba1da233640b20a1391f7ddb969d6",
+      "expired": false
+    }
+  ],
+  "schema": 1,
+  "observed_utc": "2026-10-23T05:48:10.472867+00:00",
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; artifact archives not downloaded",
+  "windows_failure_annotation": "step=ci-test-PublicSessionControl; exception=RuntimeError; full diagnostics remain in the run artifacts",
+  "windows_source_checks_passed": true,
+  "windows_native_build_and_resource_checks_reached": false,
+  "exact_managed_case_unknown": true,
+  "public_startup_allowed": false,
+  "complete_package": false,
+  "portable_source_run": {
+    "id": 39906263839,
+    "url": "https://github.com/caox233/FifthFreedom/actions/runs/39906263839",
+    "source_head_sha": "8389cb6193ea2bd6383f9f262304a14e50c96712",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "jobs": [
+      {
+        "id": 120258823676,
+        "name": "portable",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-23T05:31:52Z",
+        "completed_at": "2026-10-23T05:32:10Z"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": 12481205719,
+        "name": "portable-source-evidence-d057f54a38f110ede42e731ebd07e7529044cf94",
+        "size_in_bytes": 10621,
+        "digest": "sha256:28d8e5d59e79b9f88d2d4b10fbae94e2bca37fa811533bd4ef09af04ace06c33",
+        "expired": false
+      }
+    ]
+  },
+  "artifact_metadata_scope": {
+    "archives_downloaded": false,
+    "artifact_contents_verified": false,
+    "artifact_names_retained_as_opaque_api_metadata": true,
+    "name_embedded_hash_not_verified_as_checkout_sha": true
+  }
+}

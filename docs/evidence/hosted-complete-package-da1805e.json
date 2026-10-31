@@ -1,0 +1,402 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-10-27T22:43:51.253375+00:00",
+  "tested_source_head": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
+  "checkout_merge": {
+    "sha": "4c6e345ca195dfaea1a37662d62e8338090f647a",
+    "parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "da1805e6764ac202bf6b8c1a9548fa2c44d4c085"
+    ],
+    "tree": "7a7cada5ba010fed62eb630f3538303d5fb70b64",
+    "tree_equals_source_head": true
+  },
+  "run_id": 40594742870,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/40594742870",
+  "complete_windows_job": {
+    "id": 122508092763,
+    "status": "completed",
+    "conclusion": "success",
+    "steps": [
+      {
+        "number": 7,
+        "name": "Run the unchanged full build, regression and package-verification entry",
+        "conclusion": "success"
+      },
+      {
+        "number": 8,
+        "name": "Verify isolated packaged UI and bundled-save checks without starting a game",
+        "conclusion": "success"
+      },
+      {
+        "number": 9,
+        "name": "Preserve candidate package or failure evidence",
+        "conclusion": "success"
+      }
+    ],
+    "official_job_log_bytes": 38733,
+    "official_job_log_sha256": "550e33701b9bd393b0121eb964585435a52cc3197baddf7eadbc5d25aee741ae"
+  },
+  "official_artifact": {
+    "id": 12777311164,
+    "name": "windows-complete-candidate-4c6e345ca195dfaea1a37662d62e8338090f647a",
+    "bytes": 73005938,
+    "sha256": "12da5a82e4f3580b9a530a047cb3fb140eb5474bc178ddcc4d418b401dcaf358",
+    "official_digest_verified": true,
+    "expired": false,
+    "created_at": "2026-10-27T22:41:49Z",
+    "expires_at": "2026-11-10T22:41:46Z",
+    "download_page": "https://github.com/caox233/FifthFreedom/actions/runs/40594742870/artifacts/12777311164",
+    "outer_files": 54,
+    "contains_nested_program_zip": true
+  },
+  "program_zip": {
+    "name": "fifth-freedom-1.1.0-migration1-program.zip",
+    "bytes": 73276517,
+    "sha256": "b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4",
+    "matches_build_result": true,
+    "matches_smoke_receipt": true,
+    "zip_crc_verified": true,
+    "unique_entries": true,
+    "file_count": 65,
+    "manifest_file_count": 63,
+    "checksum_entry_count": 64,
+    "all_declared_file_bytes_hashes_verified": true,
+    "checksum_utf8_update_note_present_matches_exact_source": true,
+    "components": {
+      "launcher": {
+        "path": "FifthFreedom.exe",
+        "bytes": 146206639,
+        "sha256": "530917c11f80d072b439aa14086da8cd449d14aaad9f7bad65077a8e89fd2cbf"
+      },
+      "main": {
+        "path": "runtime/uplay_r1_loader.dll",
+        "bytes": 7746048,
+        "sha256": "34183282c059a23d3da551e6652b170c33070543b514de835fa04f65da59e97d"
+      },
+      "gameplay": {
+        "path": "runtime/scbl_gameplay.dll",
+        "bytes": 2430976,
+        "sha256": "50ce67c22069544f45f3453e67b388207621385e8009e69a758fafc597699d7e"
+      },
+      "server": {
+        "path": "runtime/FifthFreedom.Server.exe",
+        "bytes": 10890752,
+        "sha256": "165997832d286f8a8508aca6314c3802f8c0e85cd854217890fad622a82b8be6"
+      }
+    },
+    "release": {
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "compat_id": "scbl-lan-1.1.0"
+    },
+    "release_catalog_roles": [
+      "launcher",
+      "main",
+      "gameplay",
+      "server"
+    ]
+  },
+  "build_result": {
+    "file_sha256": "86a9f3ef09ba2945af3686c50265f55651504daf13c4b0df81c9c2bcdfc52f8b",
+    "status": "built-and-package-verified",
+    "archive_sha256": "b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4",
+    "game_tested": false,
+    "release_published_by_build": false
+  },
+  "smoke": {
+    "receipt_sha256": "91ff125aed6ff55d5a8f1fa5b1bf6ea5c2acd9541e07265a4cfb3ae1461985d9",
+    "receipt": {
+      "schema": 1,
+      "lane": "windows-package-smoke",
+      "commit": "4c6e345ca195dfaea1a37662d62e8338090f647a",
+      "tracked_source_dirty": false,
+      "github_actions": true,
+      "run_id": "40594742870",
+      "run_attempt": "1",
+      "complete_package": true,
+      "game_executed": false,
+      "live_acceptance": false,
+      "deployed": false,
+      "published": false,
+      "launcher_probes": [
+        {
+          "flag": "--self-test",
+          "passed": 166,
+          "failed": 0,
+          "exit_code": 0,
+          "game_executed": false
+        },
+        {
+          "flag": "--lan-tools-self-test",
+          "passed": 26,
+          "failed": 0,
+          "exit_code": 0,
+          "game_executed": false
+        }
+      ],
+      "archive_sha256": "b33abbb35f76f387e42a53d2186024337de28e1ec6acf167d6e5ac2374f855f4",
+      "status": "package_no_game_checks_passed",
+      "exit_code": 0
+    },
+    "reports_independently_counted": {
+      "ui": {
+        "passed": 166,
+        "failed": 0,
+        "exit_code": 0,
+        "report_sha256": "8bfa9aaf5912180eb952f5e3ff17cf08351011f400bb0f883ab63753e1527bf9",
+        "result_line": "RESULT 166 isolated UI/protocol checks passed.",
+        "game_executed": false
+      },
+      "lan-tools": {
+        "passed": 26,
+        "failed": 0,
+        "exit_code": 0,
+        "report_sha256": "03d82baa80230c6a11127cae6352d2f095a5e1d30d2f729ae92024d86975cf34",
+        "result_line": "RESULT 26 passed; 0 failed; isolated UI and save fixtures only",
+        "game_executed": false
+      }
+    }
+  },
+  "input_gate": {
+    "job_id": 122508034775,
+    "artifact_id": 12775183891,
+    "zip_sha256": "726ada1b23f14952a681ffeabea1168212d3ebab577b3d6f5919b71eaf85f46b",
+    "official_digest_verified": true,
+    "receipt": {
+      "schema": 1,
+      "mode": "package-inputs",
+      "inputs": {
+        "status": "ready",
+        "required_input_count": 20,
+        "verified_input_count": 20,
+        "held_input_count_all_sources": 4,
+        "missing_held_package_inputs": [],
+        "errors": [],
+        "complete_package_ready": true
+      },
+      "suites": [
+        {
+          "suite": "strict-package-inputs",
+          "executed": 2,
+          "passed": 2,
+          "failed_test_cases": 0,
+          "failed_method_ids": [],
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "expected_failures": 0,
+          "unexpected_successes": 0,
+          "successful": true
+        }
+      ],
+      "game_executed": false,
+      "published": false,
+      "exit_code": 0
+    }
+  },
+  "source_checks": {
+    "run_id": 40594743055,
+    "artifacts": [
+      {
+        "id": 12774989371,
+        "name": "portable-source-evidence-ubuntu-24.04-4c6e345ca195dfaea1a37662d62e8338090f647a",
+        "zip_sha256": "20103845bc4573aee4e17e5c1e47eb78374c21dbbd6f4c49c3952ed62e72cd42",
+        "receipt_sha256": "6f23a107aada2ac3b74dba440ec63621372298886978a1df3455af9c8b8e70b8",
+        "official_digest_verified": true,
+        "executed": 674,
+        "passed": 672,
+        "skipped": 2,
+        "failure_events": 0,
+        "inputs": {
+          "status": "ready",
+          "required_input_count": 20,
+          "verified_input_count": 20,
+          "held_input_count_all_sources": 4,
+          "missing_held_package_inputs": [],
+          "errors": [],
+          "complete_package_ready": true
+        },
+        "exit_code": 0
+      },
+      {
+        "id": 12774364815,
+        "name": "portable-source-evidence-windows-2022-4c6e345ca195dfaea1a37662d62e8338090f647a",
+        "zip_sha256": "3813d4ffd3010a5d7d5fb01e115ab5b785b433af68833e5ce80d5f37afa0f43c",
+        "receipt_sha256": "ea084528480b3490fabd8a3be3aab8e1584861769d4e4d03af71e4b3836ed005",
+        "official_digest_verified": true,
+        "executed": 674,
+        "passed": 558,
+        "skipped": 116,
+        "failure_events": 0,
+        "inputs": {
+          "status": "ready",
+          "required_input_count": 20,
+          "verified_input_count": 20,
+          "held_input_count_all_sources": 4,
+          "missing_held_package_inputs": [],
+          "errors": [],
+          "complete_package_ready": true
+        },
+        "exit_code": 0
+      }
+    ]
+  },
+  "linux_lan": {
+    "job_id": 122508035045,
+    "artifact_id": 12775689021,
+    "zip_sha256": "3ff3fd9d8be053e4a6ae47fc6bf21b7db6f9a63e140087e486a97c0d9ae3b2af",
+    "official_digest_verified": true,
+    "groups": [
+      [
+        56,
+        0,
+        0
+      ],
+      [
+        380,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0
+      ],
+      [
+        69,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        6,
+        0,
+        0
+      ],
+      [
+        5,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "totals": [
+      523,
+      0,
+      0
+    ],
+    "matched_files": [
+      "logs/20261027T222713035303Z-ci-linux-lan-baseline-tests.stdout.txt"
+    ],
+    "quick_match_tests": [
+      "test storage::tests::accepted_normal_invite_suppresses_quick_match_lobby_restore_until_join_completes ... ok",
+      "test storage::tests::direct_quick_match_invite_reconciles_the_native_published_party ... ok",
+      "test storage::tests::direct_quick_match_invitee_joins_the_current_party_after_admission ... ok",
+      "test storage::tests::invalidated_normal_invite_releases_exactly_one_quick_match_lobby_restore ... ok",
+      "test storage::tests::leave_with_party_during_late_quick_match_join_restores_the_complete_party ... ok",
+      "test storage::tests::lobby_party_follows_leader_into_quick_match_hosted_by_another_user ... ok",
+      "test storage::tests::maintenance_mode_lifecycle_quick_match_split_before_leader_abandon_restores_the_complete_n_member_party ... ok",
+      "test storage::tests::quick_match_host_abandon_restores_only_the_departing_host_lobby ... ok",
+      "test storage::tests::quick_match_host_leaving_alone_transfers_only_their_own_party_leadership ... ok",
+      "test storage::tests::quick_match_leave_with_party_reverse_order_restores_the_authoritative_party ... ok",
+      "test storage::tests::quick_match_member_first_leave_waits_for_the_owner_party_transaction ... ok",
+      "test storage::tests::quick_match_owner_remove_then_member_leave_defers_then_restores_personal_lobby ... ok",
+      "test storage::tests::quick_match_original_leader_rejoins_successor_party_before_coordinated_return ... ok",
+      "test storage::tests::quick_match_party_return_does_not_merge_another_party_in_the_same_room ... ok",
+      "test storage::tests::quick_match_protocol::quick_match_protocol_mod_closed_ticket_cannot_join_replacement_can ... ok",
+      "test storage::tests::quick_match_protocol::quick_match_protocol_mod_empty_lobby_ordered_search_create_join ... ok",
+      "test storage::tests::quick_match_protocol::quick_match_protocol_mod_concurrent_existing_room_and_leave ... ok",
+      "test storage::tests::quick_match_protocol::quick_match_protocol_mod_empty_lobby_overlapping_search_then_create ... ok",
+      "test storage::tests::quick_match_protocol::quick_match_protocol_mod_two_clients_same_returned_session ... ok",
+      "test storage::tests::quick_match_protocol::quick_match_protocol_official_concurrent_existing_room_and_leave ... ok",
+      "test storage::tests::quick_match_protocol::quick_match_protocol_official_closed_ticket_cannot_join_replacement_can ... ok",
+      "test storage::tests::quick_match_protocol::quick_match_protocol_official_empty_lobby_ordered_search_create_join ... ok",
+      "test storage::tests::quick_match_protocol::quick_match_protocol_official_empty_lobby_overlapping_search_then_create ... ok",
+      "test storage::tests::quick_match_solo_member_leave_is_restored_after_the_coordination_window ... ok",
+      "test storage::tests::quick_match_restore_waits_for_leader_before_delivering_followers ... ok",
+      "test storage::tests::quick_match_protocol::quick_match_protocol_official_two_clients_same_returned_session ... ok",
+      "test storage::tests::quick_match_split_before_old_host_abandon_restores_the_departing_party ... ok",
+      "test storage::tests::quick_match_split_before_leader_abandon_restores_the_complete_n_member_party ... ok",
+      "test storage::tests::quick_match_successor_invites_a_new_member_without_reclaiming_the_original_leader ... ok"
+    ],
+    "real_game_match_proven": false
+  },
+  "separate_c71_gate": {
+    "job_id": 122508034920,
+    "artifact_id": 12774778996,
+    "zip_sha256": "09cb5a7ae89277b33b3b224bff4dabdfc8df8a5ca15d082c6c11257a07bf2de2",
+    "official_digest_verified": true,
+    "receipt": {
+      "schema": 1,
+      "status": "blocked_native_replay_inputs",
+      "required_feature": "native-replay-fixtures",
+      "retained_test_count": 13,
+      "retained_test_source_unchanged": true,
+      "fixture_source_supplied": false,
+      "reviewed_fixture_manifest_supplied": false,
+      "fixture_authenticated": false,
+      "missing_contract": "C71 fixture source, native bytes/generator and reviewed provenance manifest",
+      "executed_native_replay_tests": 0,
+      "full_native_replay_verified": false,
+      "game_executed": false,
+      "complete_package": false
+    },
+    "not_dependency_of_complete_windows_package": true
+  },
+  "scope": {
+    "full_windows_lan_development_package": true,
+    "default_save_restoration_included": true,
+    "reviewer_executed_downloaded_binary": false,
+    "game_executed": false,
+    "real_multiplayer_acceptance": false,
+    "ordinary_public_enabled": false,
+    "production_deployed": false,
+    "formal_github_release_created": false,
+    "all_six_goals_complete": false
+  },
+  "retained_history": "The first 6f720 full build failed at Unicode checksum-path verification and was retained. Its later workflow cancellation only superseded remaining runtime work. This exact new-SHA full build and smoke passed; C71 and Windows/Public/runtime/real-game gaps remain distinct.",
+  "package_instructions": "Download the official Actions artifact, extract its nested fifth-freedom-1.1.0-migration1-program.zip into a separate directory, verify the inner ZIP SHA-256, then follow README.txt for LAN and the centralized two-client quick-match test. No automatic game launch or request to repeat accepted gameplay checks."
+}

@@ -1,0 +1,30 @@
+{
+  "client": {
+    "local_addr": {
+      "url": "quic://[::]:38066"
+    },
+    "remote_addr": {
+      "url": "quic://127.0.0.1:40960"
+    },
+    "resolved_remote_addr": {
+      "url": "quic://[::ffff:7f00:1]:40960"
+    },
+    "tunnel_type": "quic"
+  },
+  "echo_verified": true,
+  "noise_or_overlay_verified": false,
+  "schema": "ff-quic-loopback-endpoints-v1",
+  "server": {
+    "local_addr": {
+      "url": "quic://127.0.0.1:40960"
+    },
+    "remote_addr": {
+      "url": "quic://127.0.0.1:38066"
+    },
+    "resolved_remote_addr": {
+      "url": "quic://127.0.0.1:38066"
+    },
+    "tunnel_type": "quic"
+  },
+  "synthetic_profile_mapped_url": "quic://[::ffff:a4d:2]:22002"
+}

@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T08:03:15.304403+00:00",
+  "source_head_sha": "9e1c7a1ff6e8a31c471a5d1c7bd7db8a8deb5110",
+  "run_id": 39921420637,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39921420637",
+  "status": "completed",
+  "conclusion": "failure",
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no archive download",
+  "jobs": [
+    {
+      "id": 120307305674,
+      "name": "loopback-prerequisite",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Read fixed port observations and bind only a fresh owned socket",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Prepare only the exact default IIS site if it occupies the fixed port",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run the unchanged real FinalLaunchPreparation on this same runner",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require all 25 real managed return and owned configuration-pipe checks",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Restore the recorded default IIS site state",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve only sanitized observations and suite result",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12487447403,
+      "name": "windows-loopback-prerequisite-bb9ec9d1a199649d9b5cceebd3c4214bfce3b7a6",
+      "size_in_bytes": 2181,
+      "digest": "sha256:f80b4b9be1361272cc5a15db8554ab8cfaa9250494b702d3f398e1c6a9e9524b",
+      "expired": false
+    }
+  ],
+  "bounded_failure": "suite=PublicNativeReturn; managed_cases=PublicNativeReturn:15:UnauthorizedAccessException; return_phases=PublicNativeReturn:15:OWNED_DIRECTORY_CLEANUP; return_directory_failures=PublicNativeReturn:15:UnauthorizedAccessException:YES:YES:YES:NO",
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false,
+  "complete_package": false,
+  "production_admission": false,
+  "game_executed": false,
+  "release_or_deployment": false,
+  "original_final_login_checks_passed": 9,
+  "return_suite_passed": false,
+  "failed_case": "15",
+  "first_failure_phase": "OWNED_DIRECTORY_CLEANUP",
+  "exception_class": "UnauthorizedAccessException",
+  "child_exited": true,
+  "process_disposed": true,
+  "config_disposed": true,
+  "top_level_readonly_files_observed": false,
+  "exact_cause_of_filesystem_denial_confirmed": false,
+  "default_iis_preparation_and_restoration_passed": true,
+  "native_ipc_or_interop_exercised": false,
+  "next_scope": "Bounded cleanup only for the exact owned test directory after child exit/disposal; no production ACL or pipe changes and no successful skip.",
+  "matching_full_candidate_windows": {
+    "run_id": 39921420622,
+    "job_id": 120307306021,
+    "status": "completed",
+    "conclusion": "failure",
+    "bounded_failure": "step=ci-test-PublicNativeReturn; exception=RuntimeError; managed_cases=PublicNativeReturn:15:UnauthorizedAccessException; return_phases=PublicNativeReturn:15:OWNED_DIRECTORY_CLEANUP; return_directory_failures=PublicNativeReturn:15:UnauthorizedAccessException:YES:YES:YES:NO; full diagnostics remain in the run artifacts",
+    "native_checks_reached": false,
+    "overall_run_conclusion_not_inferred_from_this_job": true
+  }
+}

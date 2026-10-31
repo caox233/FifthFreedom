@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T06:00:42.117993+00:00",
+  "source_head_sha": "c3bac153fbe45642fb86f6eaac4efc5b069fe4c5",
+  "run_id": 39908170962,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39908170962",
+  "status": "completed",
+  "conclusion": "failure",
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no artifact archive download",
+  "jobs": [
+    {
+      "id": 120264810325,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120264810485,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120264810512,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120264810609,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120264810619,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120264810672,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120264862750,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120266656760,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12482130373,
+      "name": "complete-package-input-gate-2dbab0fabd5b4c641544a569eed88a701c1ce47e",
+      "size_in_bytes": 1656,
+      "digest": "sha256:5c1445eb70d60598a878853d0ced155842ceada47182ca28bb508af7fc0f2968",
+      "expired": false
+    },
+    {
+      "id": 12482105790,
+      "name": "linux-lan-baseline-2dbab0fabd5b4c641544a569eed88a701c1ce47e",
+      "size_in_bytes": 9878835,
+      "digest": "sha256:67657d4e8644078812466e3fe70dc6c2273b070268c88f20b7a6dab973cadb0e",
+      "expired": false
+    },
+    {
+      "id": 12481796449,
+      "name": "windows-compile-only-components-2dbab0fabd5b4c641544a569eed88a701c1ce47e",
+      "size_in_bytes": 24744,
+      "digest": "sha256:5efa30d12257864489393f2c0b39e21d6f7d138a3e5e4d31319558bdaf5b7adb",
+      "expired": false
+    },
+    {
+      "id": 12481706920,
+      "name": "linux-native-socket-isolation-2dbab0fabd5b4c641544a569eed88a701c1ce47e",
+      "size_in_bytes": 3680032,
+      "digest": "sha256:cf0378c1eed7e95dbad822408c32191876b11bf42f5e4a0f7c930fd1fefed178",
+      "expired": false
+    },
+    {
+      "id": 12481686937,
+      "name": "linux-public-donor-reference-2dbab0fabd5b4c641544a569eed88a701c1ce47e",
+      "size_in_bytes": 4005475,
+      "digest": "sha256:3d0ec1dab133cfcec77c0214152471f554bb2e4934dc99ccd1bd1a049fecf157",
+      "expired": false
+    },
+    {
+      "id": 12481214856,
+      "name": "linux-public-control-2dbab0fabd5b4c641544a569eed88a701c1ce47e",
+      "size_in_bytes": 57580,
+      "digest": "sha256:56eaf08aa616472e6a873ad03854358405a00a05ac1f40e9eac0ef3c59c4246d",
+      "expired": false
+    }
+  ],
+  "windows_bounded_failure": "step=ci-test-PublicSessionControl; exception=RuntimeError; managed_cases=PublicSessionControl:05:PublicControlException; full diagnostics remain in the run artifacts",
+  "windows_source_checks_passed": true,
+  "managed_first_failing_case": "PublicSessionControl:05",
+  "managed_exception_type": "PublicControlException",
+  "underlying_tls_classification_known": false,
+  "windows_native_build_and_branding_reached": false,
+  "source_run": {
+    "id": 39908170884,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "c3bac153fbe45642fb86f6eaac4efc5b069fe4c5"
+  },
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false,
+  "complete_package": false,
+  "public_startup_allowed": false,
+  "redundant_guard2_build": {
+    "id": 39908170806,
+    "status": "completed",
+    "conclusion": "cancelled",
+    "head_sha": "c3bac153fbe45642fb86f6eaac4efc5b069fe4c5",
+    "reason": "Unchanged guard2 source/patch/compiler recipe already passed run39905205148; cancelled to reserve next build for distinct guard3.",
+    "counts_as_passing_evidence": false
+  }
+}

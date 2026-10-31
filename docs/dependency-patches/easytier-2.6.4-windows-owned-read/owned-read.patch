@@ -1,0 +1,311 @@
+--- a/easytier/src/lib.rs
++++ b/easytier/src/lib.rs
+@@ -16,6 +16,10 @@
+ pub mod core;
+ pub mod instance_manager;
+ pub mod launcher;
++#[cfg(all(windows, feature = "ff-windows-session-observer"))]
++mod owned_read;
++#[cfg(all(windows, feature = "ff-windows-session-observer"))]
++mod owned_read_windows;
+ pub mod peers;
+ pub mod proto;
+ pub mod rpc_service;
+--- a/easytier/src/launcher.rs
++++ b/easytier/src/launcher.rs
+@@ -131,6 +131,10 @@
+         api_service: ArcMutApiService,
+         data: Arc<EasyTierData>,
+     ) -> Result<(), anyhow::Error> {
++        // Explicit launch-only ownership. None preserves ordinary CLI behavior.
++        // The parent/pipe anchor is checked before constructing/running a NIC.
++        #[cfg(all(windows, feature = "ff-windows-session-observer"))]
++        let mut read_owner = crate::owned_read_windows::Owner::prepare(&cfg.get_id().to_string()).await?;
+         let mut instance = Instance::new(cfg);
+         let mut tasks = JoinSet::new();
+ 
+@@ -158,6 +162,20 @@
+         #[cfg(mobile)]
+         Self::run_routine_for_mobile(&instance, &data, &mut tasks).await;
+ 
++        #[cfg(all(windows, feature = "ff-windows-session-observer"))]
++        if let Some(owner) = read_owner.as_ref() {
++            let started = tokio::select! {
++                result = instance.run() => result.map_err(anyhow::Error::from),
++                _ = owner.initialization_lost() => Err(crate::owned_read::rejected().into()),
++                _ = stop_signal.notified() => Err(crate::owned_read::rejected().into()),
++            };
++            if let Err(error) = started {
++                tasks.abort_all(); drop(tasks);
++                instance.clear_resources().await;
++                return Err(error);
++            }
++        } else { instance.run().await?; }
++        #[cfg(not(all(windows, feature = "ff-windows-session-observer")))]
+         instance.run().await?;
+ 
+         api_service
+@@ -166,6 +184,19 @@
+             .replace(Arc::new(instance.get_api_rpc_service()));
+         drop(api_service);
+ 
++        #[cfg(all(windows, feature = "ff-windows-session-observer"))]
++        let read_result = if let Some(owner) = read_owner.as_mut() {
++            tokio::select! {
++                result = owner.serve(|source| { let instance = &instance; async move {
++                    let value = instance.observe_windows_session(source).await?;
++                    Ok(crate::owned_read_windows::Observation {
++                        name: value.name, guid: value.guid, luid: value.luid, index: value.index,
++                    })
++                }}) => result,
++                _ = stop_signal.notified() => Ok(()),
++            }
++        } else { stop_signal.notified().await; Ok(()) };
++        #[cfg(not(all(windows, feature = "ff-windows-session-observer")))]
+         stop_signal.notified().await;
+ 
+         tasks.abort_all();
+@@ -173,6 +204,8 @@
+ 
+         instance.clear_resources().await;
+         drop(instance);
++        #[cfg(all(windows, feature = "ff-windows-session-observer"))]
++        read_result?;
+ 
+         Ok(())
+     }
+--- /dev/null
++++ b/easytier/src/owned_read.rs
+@@ -0,0 +1,92 @@
++//! A bounded, single-attempt observation protocol. No admission or live lease.
++use serde::{Deserialize, Serialize};
++use std::{io, net::Ipv4Addr};
++use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
++
++pub const ENVIRONMENT: &str = "FF_OWNED_CORE_READ_V1";
++pub const MAX_FRAME: usize = 2048;
++pub fn rejected() -> io::Error { io::Error::other("OWNED_CORE_READ_REJECTED") }
++fn hex(value: &str, n: usize) -> bool {
++    value.len() == n && value.bytes().any(|x| x != b'0') && value.bytes().all(|x| x.is_ascii_digit() || (b'a'..=b'f').contains(&x))
++}
++fn instance(value: &str) -> bool {
++    uuid::Uuid::parse_str(value).is_ok_and(|x| !x.is_nil() && x.to_string() == value)
++}
++pub fn source(value: &str) -> io::Result<Ipv4Addr> {
++    let ip: Ipv4Addr = value.parse().map_err(|_| rejected())?;
++    let b = ip.octets();
++    if ip.to_string() != value || b[0] == 0 || b[0] == 127 || b[0] >= 224 || b[0] == 169 && b[1] == 254 { return Err(rejected()); }
++    Ok(ip)
++}
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub struct Descriptor {
++    pub schema: u8, pub pipe: String, pub attempt: String, pub instance: String,
++    pub parent_pid: u32, pub parent_birth: u64, pub parent_path: String, pub parent_sha256: String,
++}
++impl Descriptor {
++    pub fn parse(value: &str, expected_instance: &str) -> io::Result<Self> {
++        if value.len() > 4096 { return Err(rejected()); }
++        let d: Self = serde_json::from_str(value).map_err(|_| rejected())?;
++        if d.schema != 1 || !d.pipe.strip_prefix("ff-core-observe-").is_some_and(|x| hex(x,32)) || !hex(&d.attempt,32)
++            || !instance(&d.instance) || d.instance != expected_instance || d.parent_pid == 0 || d.parent_birth == 0
++            || d.parent_path.is_empty() || d.parent_path.len() > 2048 || d.parent_path.chars().any(char::is_control)
++            || !hex(&d.parent_sha256,64) { return Err(rejected()); }
++        Ok(d)
++    }
++}
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub struct Challenge { schema: u8, kind: String, attempt: String, nonce: String, instance: String }
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub struct Read { schema: u8, kind: String, attempt: String, pub nonce: String, instance: String, pub request: u64, pub source: String }
++impl Challenge {
++    pub fn validate(&self, d: &Descriptor) -> io::Result<()> {
++        if self.schema != 1 || self.kind != "challenge" || self.attempt != d.attempt || self.instance != d.instance || !hex(&self.nonce,64) { return Err(rejected()); }
++        Ok(())
++    }
++}
++impl Read {
++    pub fn validate(&self, d: &Descriptor, last: u64, previous_nonce: &str) -> io::Result<Ipv4Addr> {
++        if self.schema != 1 || self.kind != "read" || self.attempt != d.attempt || self.instance != d.instance || !hex(&self.nonce,64)
++            || self.nonce == previous_nonce || self.request == 0 || self.request != last.checked_add(1).ok_or_else(rejected)? { return Err(rejected()); }
++        source(&self.source)
++    }
++}
++#[derive(Serialize)]
++pub struct Hello<'a> { schema: u8, kind: &'static str, attempt: &'a str, nonce: &'a str, instance: &'a str }
++impl<'a> Hello<'a> { pub fn new(d: &'a Descriptor, c: &'a Challenge) -> Self { Self { schema: 1,kind:"hello",attempt:&d.attempt,nonce:&c.nonce,instance:&d.instance } } }
++#[derive(Serialize)]
++pub struct Observed<'a> {
++    schema: u8, kind: &'static str, attempt: &'a str, nonce: &'a str, instance: &'a str, request: u64, source: &'a str,
++    name: &'a str, guid: String, luid: String, index: u32,
++}
++impl<'a> Observed<'a> {
++    pub fn new(d: &'a Descriptor, r: &'a Read, name: &'a str, guid: u128, luid: u64, index: u32) -> io::Result<Self> {
++        if name.is_empty() || name.chars().count() > 128 || name.chars().any(char::is_control) || guid == 0 || luid == 0 || index == 0 { return Err(rejected()); }
++        Ok(Self { schema:1,kind:"observed",attempt:&d.attempt,nonce:&r.nonce,instance:&d.instance,request:r.request,source:&r.source,name,
++            guid:format!("{guid:032x}"),luid:format!("{luid:016x}"),index })
++    }
++}
++#[derive(Serialize)]
++pub struct Unavailable<'a> { schema:u8,kind:&'static str,attempt:&'a str,nonce:&'a str,instance:&'a str,request:u64,source:&'a str,code:&'static str }
++impl<'a> Unavailable<'a> {
++    pub fn new(d: &'a Descriptor,r: &'a Read) -> Self { Self { schema:1,kind:"unavailable",attempt:&d.attempt,nonce:&r.nonce,instance:&d.instance,request:r.request,source:&r.source,code:"NIC_UNAVAILABLE" } }
++}
++pub async fn read<T: for<'a> Deserialize<'a>>(stream: &mut (impl AsyncRead+Unpin)) -> io::Result<T> {
++    let first=stream.read_u8().await?;
++    read_after_first(stream,first).await
++}
++pub async fn read_after_first<T: for<'a> Deserialize<'a>>(stream: &mut (impl AsyncRead+Unpin),first:u8) -> io::Result<T> {
++    let mut prefix=[first,0,0,0];stream.read_exact(&mut prefix[1..]).await?;
++    let size=u32::from_le_bytes(prefix) as usize;
++    if !(1..=MAX_FRAME).contains(&size) { return Err(rejected()); }
++    let mut body = vec![0;size]; stream.read_exact(&mut body).await?;
++    serde_json::from_slice(&body).map_err(|_| rejected())
++}
++pub async fn write(stream: &mut (impl AsyncWrite+Unpin), value: &impl Serialize) -> io::Result<()> {
++    let body = serde_json::to_vec(value).map_err(|_| rejected())?;
++    if body.is_empty() || body.len() > MAX_FRAME { return Err(rejected()); }
++    stream.write_u32_le(body.len() as u32).await?; stream.write_all(&body).await?; stream.flush().await
++}
+--- /dev/null
++++ b/easytier/src/owned_read_windows.rs
+@@ -0,0 +1,137 @@
++//! Windows ownership/pipe endpoint for the Instance-owned read-only protocol.
++//! Tokio's overlapped pipe owns its I/O buffers/handle; cancelling a future drops
++//! no caller-owned OVERLAPPED storage. No detached read task outlives Instance.
++use super::owned_read::{self as wire, Descriptor};
++use sha2::{Digest, Sha256};
++use std::{ffi::c_void, fs::{File, OpenOptions}, future::Future, io::{self, Read}, net::Ipv4Addr,
++    os::windows::{fs::OpenOptionsExt, io::{AsRawHandle, FromRawHandle, OwnedHandle}}, sync::atomic::{AtomicBool,Ordering},time::Duration};
++use tokio::io::AsyncReadExt;
++use tokio::net::windows::named_pipe::{ClientOptions, NamedPipeClient};
++static CLAIMED: AtomicBool = AtomicBool::new(false);
++
++pub struct Observation { pub name: String, pub guid: u128, pub luid: u64, pub index: u32 }
++pub struct Owner { descriptor: Descriptor, parent: Parent, pipe: NamedPipeClient, challenge: wire::Challenge }
++impl Owner {
++    pub async fn prepare(instance: &str) -> io::Result<Option<Self>> {
++        let Some(raw) = std::env::var_os(wire::ENVIRONMENT) else { return Ok(None) };
++        if CLAIMED.swap(true,Ordering::AcqRel) { return Err(wire::rejected()); }
++        let raw = raw.into_string().map_err(|_| wire::rejected())?;
++        let descriptor = Descriptor::parse(&raw,instance)?;
++        let parent = Parent::capture(&descriptor)?;
++        // Identification SQOS prevents the pipe server impersonating this core.
++        let mut pipe = ClientOptions::new().security_qos_flags(0x00010000).open(format!(r"\\.\pipe\{}",descriptor.pipe))?;
++        parent.check_pipe(&pipe)?;
++        let challenge = tokio::time::timeout(Duration::from_secs(10),async {
++            let challenge: wire::Challenge = wire::read(&mut pipe).await?;
++            challenge.validate(&descriptor)?;
++            parent.check_pipe(&pipe)?;
++            Ok::<_,io::Error>(challenge)
++        }).await.map_err(|_| wire::rejected())??;
++        Ok(Some(Self { descriptor,parent,pipe,challenge }))
++    }
++    pub async fn initialization_lost(&self) {
++        // Before HELLO the owner must send no request. Readability therefore
++        // means EOF, unsolicited bytes, or a spurious notification to retry.
++        loop {
++            tokio::select! {
++                _ = wait_parent(&self.parent) => return,
++                ready = self.pipe.readable() => {
++                    if ready.is_err() { return; }
++                    match self.pipe.try_read(&mut [0u8;1]) {
++                        Err(error) if error.kind()==io::ErrorKind::WouldBlock => (),
++                        _ => return,
++                    }
++                }
++            }
++        }
++    }
++    pub async fn serve<F,Fut>(&mut self, mut observe: F) -> io::Result<()>
++    where F: FnMut(Ipv4Addr)->Fut, Fut: Future<Output=io::Result<Observation>> {
++        self.parent.check_pipe(&self.pipe)?;
++        tokio::time::timeout(Duration::from_secs(3),wire::write(&mut self.pipe,&wire::Hello::new(&self.descriptor,&self.challenge)))
++            .await.map_err(|_|wire::rejected())??;
++        let mut sequence = 0; let mut nonce = String::new();
++        loop {
++            // Idle has no observation authority. EOF is readable and immediately
++            // ends this attempt. Parent loss is checked without a detached task.
++            let first=tokio::select! {
++                byte = self.pipe.read_u8() => byte?,
++                _ = wait_parent(&self.parent) => return Err(wire::rejected()),
++            };
++            let deadline = tokio::time::Instant::now()+Duration::from_secs(3);
++            let operation = async {
++                self.parent.check_pipe(&self.pipe)?;
++                let request: wire::Read = wire::read_after_first(&mut self.pipe,first).await?;
++                let source = request.validate(&self.descriptor,sequence,&nonce)?;
++                // The caller is the real Instance's current typed NIC accessor.
++                let observation = observe(source).await;
++                self.parent.check_pipe(&self.pipe)?;
++                match observation {
++                    Ok(s) => wire::write(&mut self.pipe,&wire::Observed::new(&self.descriptor,&request,&s.name,s.guid,s.luid,s.index)?).await?,
++                    Err(_) => wire::write(&mut self.pipe,&wire::Unavailable::new(&self.descriptor,&request)).await?,
++                }
++                sequence=request.request; nonce=request.nonce;
++                Ok::<(),io::Error>(())
++            };
++            tokio::select! {
++                result=tokio::time::timeout_at(deadline,operation)=>result.map_err(|_|wire::rejected())??,
++                _=wait_parent(&self.parent)=>return Err(wire::rejected()),
++            }
++        }
++    }
++}
++async fn wait_parent(parent:&Parent) { while parent.alive() {tokio::time::sleep(Duration::from_millis(50)).await;} }
++struct Parent { handle: OwnedHandle, pid:u32, _image:File }
++impl Parent {
++    fn capture(d:&Descriptor)->io::Result<Self> {
++        unsafe {
++            let snapshot=CreateToolhelp32Snapshot(2,0);
++            if snapshot as isize == -1 {return Err(wire::rejected());}
++            let snapshot=OwnedHandle::from_raw_handle(snapshot);
++            let mut row: ProcessEntry=std::mem::zeroed(); row.size=std::mem::size_of::<ProcessEntry>() as u32;
++            let current=GetCurrentProcessId(); let mut found=None;
++            if Process32FirstW(snapshot.as_raw_handle(),&mut row)!=0 {loop {
++                if row.pid==current {found=Some(row.parent);break;}
++                if Process32NextW(snapshot.as_raw_handle(),&mut row)==0 {break;}
++            }}
++            if found != Some(d.parent_pid) {return Err(wire::rejected());}
++            let handle=OpenProcess(0x00100000|0x1000,0,d.parent_pid);
++            if handle.is_null(){return Err(wire::rejected());}
++            let handle=OwnedHandle::from_raw_handle(handle);
++            let (mut birth,mut exit,mut kernel,mut user)=(0u64,0u64,0u64,0u64);
++            if GetProcessTimes(handle.as_raw_handle(),&mut birth,&mut exit,&mut kernel,&mut user)==0 || birth!=d.parent_birth
++                || GetProcessId(handle.as_raw_handle())!=d.parent_pid || WaitForSingleObject(handle.as_raw_handle(),0)!=0x102 {return Err(wire::rejected());}
++            let mut path=vec![0u16;32768];let mut length=path.len() as u32;
++            if QueryFullProcessImageNameW(handle.as_raw_handle(),0,path.as_mut_ptr(),&mut length)==0 {return Err(wire::rejected());}
++            let path=String::from_utf16(&path[..length as usize]).map_err(|_|wire::rejected())?;
++            if !path.eq_ignore_ascii_case(&d.parent_path) {return Err(wire::rejected());}
++            // The independently observed process image must match the explicit
++            // launch anchor. This is not a publisher or server-signature proof.
++            let mut image=OpenOptions::new().read(true).share_mode(1).open(&path)?;
++            let length=image.metadata()?.len();
++            if !(1..=256*1024*1024).contains(&length) {return Err(wire::rejected());}
++            let mut digest=Sha256::new();let mut buffer=[0;65536];let mut total=0u64;
++            loop {let n=image.read(&mut buffer)?;if n==0 {break;}total+=n as u64;if total>length{return Err(wire::rejected());}digest.update(&buffer[..n]);}
++            if total!=length || format!("{:x}",digest.finalize())!=d.parent_sha256 {return Err(wire::rejected());}
++            Ok(Self {handle,pid:d.parent_pid,_image:image})
++        }
++    }
++    fn alive(&self)->bool {unsafe {WaitForSingleObject(self.handle.as_raw_handle(),0)==0x102}}
++    fn check_pipe(&self,pipe:&NamedPipeClient)->io::Result<()> {
++        let mut pid=0; if !self.alive() || unsafe {GetNamedPipeServerProcessId(pipe.as_raw_handle(),&mut pid)}==0 || pid!=self.pid {return Err(wire::rejected());} Ok(())
++    }
++}
++#[repr(C)] struct ProcessEntry {size:u32,usage:u32,pid:u32,heap:usize,module:u32,threads:u32,parent:u32,priority:i32,flags:u32,name:[u16;260]}
++#[link(name="kernel32")]
++unsafe extern "system" {
++    fn CreateToolhelp32Snapshot(flags:u32,pid:u32)->*mut c_void;
++    fn Process32FirstW(snapshot:*mut c_void,row:*mut ProcessEntry)->i32;
++    fn Process32NextW(snapshot:*mut c_void,row:*mut ProcessEntry)->i32;
++    fn GetCurrentProcessId()->u32;
++    fn OpenProcess(access:u32,inherit:i32,pid:u32)->*mut c_void;
++    fn GetProcessId(process:*mut c_void)->u32;
++    fn GetProcessTimes(process:*mut c_void,birth:*mut u64,exit:*mut u64,kernel:*mut u64,user:*mut u64)->i32;
++    fn QueryFullProcessImageNameW(process:*mut c_void,flags:u32,path:*mut u16,length:*mut u32)->i32;
++    fn WaitForSingleObject(handle:*mut c_void,timeout:u32)->u32;
++    fn GetNamedPipeServerProcessId(pipe:*mut c_void,pid:*mut u32)->i32;
++}

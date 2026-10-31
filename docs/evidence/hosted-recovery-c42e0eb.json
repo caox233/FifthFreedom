@@ -1,0 +1,308 @@
+{
+  "scope": "Read-only official API and digest-verified receipt inspection; no build/runtime/game/capture executed by reviewer; no tracked changes.",
+  "merge_binding": [
+    {
+      "merge": "3ef1b4585b56a3bb673a8eb0cdb69130c81c01de",
+      "head": "ebd008bfcd31d99e1412339125ea8fe86112fee8",
+      "parents_verified": true,
+      "tree_matches_local_head": true
+    },
+    {
+      "merge": "72f05c3750aadd43923bac59ff33b68f1ff2a745",
+      "head": "fe6e3cd5992888273bada9c7810a264cf8d54630",
+      "parents_verified": true,
+      "tree_matches_local_head": true
+    },
+    {
+      "merge": "64198de3d124a12152076754ec4cf88c6b6892f6",
+      "head": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+      "parents_verified": true,
+      "tree_matches_local_head": true
+    }
+  ],
+  "windows_owned_core": {
+    "run_id": 39947362637,
+    "job_id": 120393179926,
+    "head": "ebd008bfcd31d99e1412339125ea8fe86112fee8",
+    "merge": "3ef1b4585b56a3bb673a8eb0cdb69130c81c01de",
+    "status": "windows_owned_read_built_not_executed",
+    "patches": 12,
+    "source_files": 752,
+    "source_sha256": "980bb96687a83f7da040d8aa4c4f7134c1c07183637510f2f39a805eaa08a294",
+    "all_stages_exit_zero": true,
+    "core_cli_built": [
+      "easytier-cli.exe",
+      "easytier-core.exe"
+    ],
+    "normal_and_delay_imports_packet_absent": true,
+    "runtime_executed": false,
+    "driver_loaded": false,
+    "public_startup_allowed": false,
+    "independent_binary_rehash": false,
+    "binary_hash_scope": "Official runner receipt only; binary bytes not uploaded."
+  },
+  "linux_matrix": {
+    "run_id": 39947934755,
+    "job_id": 120395238119,
+    "head": "fe6e3cd5992888273bada9c7810a264cf8d54630",
+    "merge": "72f05c3750aadd43923bac59ff33b68f1ff2a745",
+    "status": "isolated_development_matrix_verified",
+    "phase_count": 9,
+    "transports": [
+      {
+        "transport": "quic",
+        "phases": [
+          "correct-pin-before",
+          "wrong-pin",
+          "correct-pin-after"
+        ],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        }
+      },
+      {
+        "transport": "wss",
+        "phases": [
+          "correct-pin-before",
+          "wrong-pin",
+          "correct-pin-after"
+        ],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        }
+      },
+      {
+        "transport": "tcp",
+        "phases": [
+          "correct-pin-before",
+          "wrong-pin",
+          "correct-pin-after"
+        ],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        }
+      }
+    ],
+    "private_stage_removed": true,
+    "production_admission": false,
+    "native_owner_lease_verified": false,
+    "stability_or_packet_capture_proof": false
+  },
+  "old_failed_candidate": {
+    "run_id": 39947934694,
+    "head": "fe6e3cd5992888273bada9c7810a264cf8d54630",
+    "merge": "72f05c3750aadd43923bac59ff33b68f1ff2a745",
+    "stack_job_id": 120404845426,
+    "stack_status": "failed",
+    "stack_error": "STACK_CASES_INCOMPLETE",
+    "cases": [
+      {
+        "case": "lease-revoke",
+        "status": "failed",
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "error": "WORKER_REPORTED_FAILURE",
+        "worker_failure": {
+          "event": "failed",
+          "schema": "ff-easytier-worker-failure-v1",
+          "phase": "observe",
+          "code": "QUERY_IMAGE_CHANGED",
+          "cleanup_reaped": true,
+          "cleanup_code": null
+        }
+      }
+    ],
+    "private_stage_removed": true,
+    "second_case_completed": false,
+    "successful_case_A_from_432_not_applicable": true,
+    "missing_sav_meta": 8,
+    "other_package_input_errors": [],
+    "strict_suite_failed_methods": 2,
+    "strict_suite_error_count": 16,
+    "c71_retained_count": 13,
+    "c71_executed": 0,
+    "full_package_job_skipped": true,
+    "latest_query_fix_not_in_this_run": true
+  },
+  "new_c42_source": {
+    "run_id": 40371709863,
+    "head": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+    "merge": "64198de3d124a12152076754ec4cf88c6b6892f6",
+    "matrices": [
+      {
+        "artifact": 12673291077,
+        "platform": "windows-2022",
+        "executed": 605,
+        "passed": 500,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 105,
+        "complete_package_ready": false
+      },
+      {
+        "artifact": 12672118122,
+        "platform": "ubuntu-24.04",
+        "executed": 605,
+        "passed": 603,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2,
+        "complete_package_ready": false
+      }
+    ]
+  },
+  "new_c42_windows": {
+    "run_id": 40371709757,
+    "head": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+    "merge": "64198de3d124a12152076754ec4cf88c6b6892f6",
+    "dependency_passed": 13,
+    "dependency_skipped": 0,
+    "read_managed_passed": 22,
+    "read_native_passed": 8,
+    "read_interop_passed": 4,
+    "read_skipped": 0,
+    "easytier_executed": false,
+    "driver_exercised": false
+  },
+  "all_official_zips_verified": 13,
+  "full_package_verified": false,
+  "ordinary_public_ready": false,
+  "official_artifacts": [
+    {
+      "run_id": 39947362637,
+      "head_sha": "ebd008bfcd31d99e1412339125ea8fe86112fee8",
+      "id": 12499837012,
+      "name": "easytier-windows-no-packet-receipts-3ef1b4585b56a3bb673a8eb0cdb69130c81c01de",
+      "size_in_bytes": 49979,
+      "digest": "sha256:4492a2b9076d82624330b1c8c7a5fad44a5fff8fbc9a3a2ae7e45b8b03f2ae5c",
+      "digest_verified": true
+    },
+    {
+      "run_id": 39947362637,
+      "head_sha": "ebd008bfcd31d99e1412339125ea8fe86112fee8",
+      "id": 12499701734,
+      "name": "easytier-windows-owned-read-receipts-3ef1b4585b56a3bb673a8eb0cdb69130c81c01de",
+      "size_in_bytes": 50363,
+      "digest": "sha256:30e33a1c7dd28af5099151bc08d4dabdb0b79031eb21c5595be0eb802b8c80cc",
+      "digest_verified": true
+    },
+    {
+      "run_id": 39947362637,
+      "head_sha": "ebd008bfcd31d99e1412339125ea8fe86112fee8",
+      "id": 12499164471,
+      "name": "easytier-windows-build-only-receipts-3ef1b4585b56a3bb673a8eb0cdb69130c81c01de",
+      "size_in_bytes": 41264,
+      "digest": "sha256:57c1a27eb5bb2888f906e30e529e6335a96935e66cb6ebf8a832434b2f05fc35",
+      "digest_verified": true
+    },
+    {
+      "run_id": 39947934755,
+      "head_sha": "fe6e3cd5992888273bada9c7810a264cf8d54630",
+      "id": 12499174403,
+      "name": "owned-easytier-development-receipt-72f05c3750aadd43923bac59ff33b68f1ff2a745",
+      "size_in_bytes": 1775,
+      "digest": "sha256:e4c667501415b2b90ddb58ef5588fe66c67e54f0c9361884fe37dd91ac84f5f6",
+      "digest_verified": true
+    },
+    {
+      "run_id": 39947934755,
+      "head_sha": "fe6e3cd5992888273bada9c7810a264cf8d54630",
+      "id": 12498074384,
+      "name": "easytier-containment-receipt-72f05c3750aadd43923bac59ff33b68f1ff2a745",
+      "size_in_bytes": 460,
+      "digest": "sha256:01da94b4a9b2755e9694ba537a25b3a9ae54658ee99e01e2a72369368b71c416",
+      "digest_verified": true
+    },
+    {
+      "run_id": 39947934694,
+      "head_sha": "fe6e3cd5992888273bada9c7810a264cf8d54630",
+      "id": 12500832142,
+      "name": "owned-overlay-native-development-receipt-72f05c3750aadd43923bac59ff33b68f1ff2a745",
+      "size_in_bytes": 1577,
+      "digest": "sha256:1149304ff7a7d3d74ae5370657063e9ed2d3c8e3fa7fe926bfbb2f17a42dc291",
+      "digest_verified": true
+    },
+    {
+      "run_id": 39947934694,
+      "head_sha": "fe6e3cd5992888273bada9c7810a264cf8d54630",
+      "id": 12500228118,
+      "name": "native-owned-lifecycle-receipt-72f05c3750aadd43923bac59ff33b68f1ff2a745",
+      "size_in_bytes": 660,
+      "digest": "sha256:252af6b6104496db311cc17e18288b6e75782fb08cae2d72b2d4f72a9abed663",
+      "digest_verified": true
+    },
+    {
+      "run_id": 39947934694,
+      "head_sha": "fe6e3cd5992888273bada9c7810a264cf8d54630",
+      "id": 12499256343,
+      "name": "complete-package-input-gate-72f05c3750aadd43923bac59ff33b68f1ff2a745",
+      "size_in_bytes": 1656,
+      "digest": "sha256:d4ed76f4e59fda326a6a6e38e57537ea66637c625c9ea39d6f7933e31d319952",
+      "digest_verified": true
+    },
+    {
+      "run_id": 39947934694,
+      "head_sha": "fe6e3cd5992888273bada9c7810a264cf8d54630",
+      "id": 12498778275,
+      "name": "native-replay-input-gate-72f05c3750aadd43923bac59ff33b68f1ff2a745",
+      "size_in_bytes": 396,
+      "digest": "sha256:c4264b19037af8a967d3bb9329fe11442361f801911249f9bfd3a4077d3e378b",
+      "digest_verified": true
+    },
+    {
+      "run_id": 40371709863,
+      "head_sha": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+      "id": 12673291077,
+      "name": "portable-source-evidence-windows-2022-64198de3d124a12152076754ec4cf88c6b6892f6",
+      "size_in_bytes": 23546,
+      "digest": "sha256:8a0a6d5bc881197271d3fb2595b4f4f9a294e9f4c75f6bde019b78309f8733e2",
+      "digest_verified": true
+    },
+    {
+      "run_id": 40371709863,
+      "head_sha": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+      "id": 12672118122,
+      "name": "portable-source-evidence-ubuntu-24.04-64198de3d124a12152076754ec4cf88c6b6892f6",
+      "size_in_bytes": 19791,
+      "digest": "sha256:cca558661a3ac07a375e85cb71b5f7b483e31d22bfb06884988551c4d882e0b3",
+      "digest_verified": true
+    },
+    {
+      "run_id": 40371709757,
+      "head_sha": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+      "id": 12673655256,
+      "name": "windows-owned-core-read-64198de3d124a12152076754ec4cf88c6b6892f6",
+      "size_in_bytes": 756,
+      "digest": "sha256:058c462d84638cbcd5f9e39cd346e5a89c1d910e475471a8c8a5c234960e1a03",
+      "digest_verified": true
+    },
+    {
+      "run_id": 40371709757,
+      "head_sha": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+      "id": 12673057373,
+      "name": "windows-owned-core-dependencies-64198de3d124a12152076754ec4cf88c6b6892f6",
+      "size_in_bytes": 801,
+      "digest": "sha256:e10fb00026808d59b45f30e17f65f2f7a34bce2b1d8ecbd247b44242248b5291",
+      "digest_verified": true
+    }
+  ]
+}

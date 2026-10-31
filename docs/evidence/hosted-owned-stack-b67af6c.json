@@ -1,0 +1,223 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official complete candidate job metadata and digest-verified full sanitized composition/containment receipts; runtime binaries and raw runtime output were not downloaded",
+  "run_id": 39938418762,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39938418762",
+  "source_head": "b67af6ca1014510dfb16469a416f3e049be9b06b",
+  "checkout_commit": "61323a20c02f1081988e30dac0d0fdcd89c48162",
+  "run_status": "completed",
+  "run_conclusion": "failure",
+  "jobs": [
+    {
+      "id": 120366735112,
+      "name": "Strict retained native replay input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120366735197,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120366735246,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120366735251,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120366735273,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120366735288,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120366735385,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120366802349,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120375225510,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120375464937,
+      "name": "Same-run owned overlay and native development composition",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120375464994,
+      "name": "Same-run native owned lifecycle in synthetic namespaces",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifact": {
+    "id": 12496542834,
+    "name": "owned-overlay-native-development-receipt-61323a20c02f1081988e30dac0d0fdcd89c48162",
+    "size_in_bytes": 1750,
+    "digest": "sha256:286942669852b5cf029ae801a0f201ff96f5829333c98ccd5c6500efc022b037"
+  },
+  "official_zip_digest_verified": true,
+  "sanitized_receipt": {
+    "schema": "ff-owned-overlay-native-stack-development-v1",
+    "status": "owned_stack_development_verified",
+    "scope": {
+      "transport": "tcp",
+      "purpose": "owned-isolated-development",
+      "production_admission": false,
+      "ordinary_public_enabled": false,
+      "game_executed": false,
+      "complete_client_package": false,
+      "runtime_binary_uploaded": false,
+      "raw_runtime_output_retained": false
+    },
+    "cases": [
+      {
+        "case": "lease-revoke",
+        "status": "owned_stack_case_verified",
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "actual_native_ready": true,
+        "owned_listeners": 5,
+        "runtime_profile_sha256": "c8c0d07df23f9a42e84776c7cdcfad11f8dc4af53d7fed66b46a748ee18db3da",
+        "established_tcp": true,
+        "native_watchdog_exit": 92,
+        "ports_rebound": 5,
+        "held_tcp_eof_or_reset": true,
+        "overlay_alive_during_close": true,
+        "containment_after": [
+          {
+            "input": 0,
+            "output": 23,
+            "forward": 0
+          },
+          {
+            "input": 0,
+            "output": 24,
+            "forward": 0
+          }
+        ]
+      },
+      {
+        "case": "peer-loss",
+        "status": "owned_stack_case_verified",
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "actual_native_ready": true,
+        "owned_listeners": 5,
+        "runtime_profile_sha256": "32c6ceba326b2ca8e4054c71b06a5032135b72515f6ff7197a26a45fbb66eed9",
+        "established_tcp": true,
+        "exact_peer_reaped": true,
+        "monitor_permanently_revoked": true,
+        "native_reaped": true,
+        "native_listeners_remaining": 0,
+        "remote_tcp_eof_claimed": false,
+        "containment_after": [
+          {
+            "input": 0,
+            "output": 23,
+            "forward": 0
+          },
+          {
+            "input": 0,
+            "output": 24,
+            "forward": 0
+          }
+        ]
+      }
+    ],
+    "precondition_failures": [],
+    "copied_package_native_verified": true,
+    "source_package_unchanged": true,
+    "private_stage_removed": true,
+    "source_commit": "61323a20c02f1081988e30dac0d0fdcd89c48162",
+    "run_id": "39938418762",
+    "run_attempt": "1",
+    "runtime_candidate": {
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+      "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+      "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+      "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+      "executable_sha256": "3b8fcd18303cd47a792ad2db6012b04e39c0a578960b14c0c1df057e3b24e120",
+      "executable_size": 28593032,
+      "role": "easytier-core",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "cli_identity": {
+      "bytes": 12261752,
+      "sha256": "cf3d10f062474f9833ad73cdd8d65320f423a271360aa218dc534d2ba2fdc292"
+    }
+  },
+  "sanitized_containment_receipt": {
+    "checkout_commit": "61323a20c02f1081988e30dac0d0fdcd89c48162",
+    "input_identity": "synthetic_profile_only_no_executable",
+    "precondition_failures": [],
+    "production_admission": false,
+    "raw_runtime_output_retained": false,
+    "runtime_binary_uploaded": false,
+    "runtime_executed": false,
+    "schema": "ff-easytier-containment-preflight-v1",
+    "status": "containment_preflight_verified",
+    "transports": [
+      {
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "status": "containment_pair_verified",
+        "transport": "quic"
+      },
+      {
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "status": "containment_pair_verified",
+        "transport": "wss"
+      },
+      {
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "status": "containment_pair_verified",
+        "transport": "tcp"
+      }
+    ]
+  },
+  "strict_receipt_consumer_exit_code": 0,
+  "scope_notes": [
+    "Both owned TCP development composition cases passed using this run's verified native package and this job's guard3 core/CLI. The receipt records five actual native listeners and an established TCP connection in both cases.",
+    "Lease-revoke records watchdog exit92, five rebound ports, EOF/reset and a live overlay during close. Peer-loss records exact peer reap, permanent monitor revocation, native reap and zero remaining native listeners; it explicitly does not claim remote TCP EOF.",
+    "Each case used an independent two-namespace pair; all four namespaces and the private stage were removed, the original candidate remained unchanged and copied native identity verification passed.",
+    "This source predates the later explicit OPEN check immediately before revocation/peer loss. A connection previously established and subsequently observed closed is not alone causal evidence; the newer strengthened candidate must run separately.",
+    "All eight component/isolation/preflight/runtime jobs completed successfully. Overall run remains failure because the strict retained13 native replay input and strict complete-package input jobs failed; the complete Windows package job was skipped.",
+    "The source includes the LISTEN-only ownership correction. This passing run does not identify the unique historical cause of the earlier528 native or peer-loss failures.",
+    "This is guard3 TCP development composition, separate from the earlier finite QUIC/WSS/TCP matrix. New authenticated-receive/data-challenge source candidates were not used; no current-session active nonce, packet-capture, production/Public-provider, complete-client, game, deployment or publication claim is made.",
+    "Runtime identity hashes are the runner's report, not locally rehashed ELF bytes. The independently verified artifact contains only two sanitized JSON files."
+  ]
+}

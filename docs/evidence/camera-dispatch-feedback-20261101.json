@@ -1,0 +1,162 @@
+{
+  "schema": 1,
+  "source": "User's November 1 local offline verification, relayed to the original cloud task; no raw logs, game binary, dump or player identifiers uploaded",
+  "scope": "Reported evidence, not a cloud execution or independent retail disassembly",
+  "candidate_source": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+  "candidate_documentation": "0e691519b878a8fbbb0695392eb2a2ba9616e841",
+  "package": {
+    "two_local_archives_match_official": true,
+    "official_program_zip_sha256": "36228f99ec05938bb20addcb9891987d318991234251214da6c2b8cfda125d6e",
+    "four_installed_components_match_candidate_build": true,
+    "three_runs_loaded_main_sha256": "1d5f661db61ca10954d53a140031e4359e57e5044e811ca50ef56a4f359f9893",
+    "three_runs_loaded_gameplay_sha256": "60f6eee1d8c68bd4d1692510128ec4b347434917a4d54f47c587b532f6e7222e",
+    "old_installation_explanation_supported": false
+  },
+  "crash": {
+    "confirmed_at": "2026-10-31T22:28:31.693+08:00",
+    "two_existing_wer_dumps_compared_offline": true,
+    "architecture": "x86",
+    "exception_code": "0xc0000005",
+    "access": "execute",
+    "eip": "0x00000001",
+    "exception_address": "0x00000001",
+    "exception_parameters": [
+      8,
+      1
+    ],
+    "earlier_moduleless_zero_log_fields_do_not_establish_eip_zero": true,
+    "stack_scanned_values_not_proven_call_stack": [
+      {
+        "sp_offset": 8,
+        "game_rva": "0x1c9519"
+      },
+      {
+        "sp_offset": 56,
+        "game_rva": "0xada246"
+      },
+      {
+        "sp_offset": 116,
+        "game_rva": "0xaf1a32"
+      },
+      {
+        "sp_offset": 132,
+        "game_rva": "0x8e1d92"
+      }
+    ],
+    "esp_top_not_identified_module_return_address": true,
+    "new_ebp_maps_to_gameplay_rva": "0xd5a54",
+    "old_ebp_maps_to_gameplay_rva": "0x113a64",
+    "exception_handler_thunk_rva_not_confirmed_caller": "0x1b5690"
+  },
+  "reported_retail_dx11_instruction_facts": {
+    "camera_vtable_va": "0x02ab095c",
+    "slot_0x4d0_target_va": "0x00b52610",
+    "calls": [
+      "0x00ef1a2b push 1; 0x00ef1a2d call 0x00eda030",
+      "0x00eda216 selects slot +0x4d0 when [ebp+8] is nonzero",
+      "0x00eda243 push eax; 0x00eda244 call edx; return address 0x00eda246",
+      "0x00ce1d8d call 0x00ef1a00",
+      "0x005c9514 call 0x0042dab0"
+    ],
+    "disable_return": {
+      "va": "0x00b5271f",
+      "bytes_hex": "c20400",
+      "instruction": "ret 4"
+    },
+    "disable_receiver": "ECX",
+    "disable_stack_argument_bytes": 4,
+    "disable_argument_value_not_inferred_from_upper_push_one": true,
+    "cleanup_entry": "0x00b52570",
+    "cleanup_return": {
+      "va": "0x00b52608",
+      "bytes_hex": "c3",
+      "instruction": "ret"
+    },
+    "game_sha256": "c6b9f330fac1412f19f32a6fd86edb4c66291a6902611e9433b9b0ea659eb4bc",
+    "disable_return_paths": [
+      "0x00b52617 jne 0x00b5271e",
+      "0x00b526c9 jne 0x00b5271e",
+      "0x00b526d2 jl 0x00b5271e",
+      "Normal path also joins 0x00b5271e pop esi; 0x00b5271f ret 4"
+    ],
+    "no_other_function_tail_jump_observed_in_function_range": true,
+    "no_direct_read_of_incoming_four_byte_stack_argument_observed": true,
+    "outgoing_argument_write_not_incoming_argument_read": "0x00b526f3 movss [esp],xmm0",
+    "verified_caller_sequence": [
+      "0x00eda240 mov eax,[eax+esi*8]",
+      "0x00eda243 push eax",
+      "0x00eda244 call edx",
+      "0x00eda246 mov ecx,[ebp-0x1c]",
+      "0x00eda249 mov eax,[ebp-0x20]"
+    ],
+    "verified_caller_does_not_consume_return_eax": true,
+    "all_callers_return_type_proven": false
+  },
+  "other_new_observations": {
+    "three_client_traces_max_level": 999,
+    "allocation_range_dx9_and_zero_dimension_draw_flood_not_observed": true,
+    "multiplayer_quick_match_acceptance": false,
+    "valid_viewport_frame_times_available": false,
+    "existing_host_package_is_previous_version": true,
+    "new_local_launcher_release_mismatch_not_observed": true,
+    "new_player_admission_issue_proven_resolved": false,
+    "three_client_traces_zero_dimension_draw_and_render_errors_not_observed": true,
+    "four_local_quick_matches_within_ten_seconds": [
+      "SearchSessions",
+      "JoinSession",
+      "eGoal_Run"
+    ],
+    "quick_match_player_ranks_and_shared_room_unknown": true,
+    "existing_local_server_log_ends_before_these_four_searches": true,
+    "lan_capability_counts": {
+      "Unavailable": 6,
+      "Cancelled": 1
+    },
+    "lan_initial_no_host_cause": "needs-triage separately from release admission"
+  },
+  "bounds": {
+    "live_crash_fix_proven": false,
+    "game_started_by_cloud": false,
+    "private_inputs_published": false,
+    "ui_and_camera_gesture_behaviors_to_preserve": true
+  },
+  "reported_local_x86_abi_replay": {
+    "source": "Separate local thread executed i686 Rust thiscall entry and assembly virtual dispatch using the e4 Disable declaration/body; native leaf replaced by a recording stub",
+    "sentinels_hex": [
+      "12345678",
+      "76543210"
+    ],
+    "roles": [
+      {
+        "role": "baseline",
+        "exit_code": 1,
+        "receiver_correct": true,
+        "both_arguments_forwarded": false,
+        "esp_deltas": [
+          -4,
+          -4
+        ]
+      },
+      {
+        "role": "modified",
+        "exit_code": 0,
+        "receiver_correct": true,
+        "both_arguments_forwarded": true,
+        "esp_deltas": [
+          0,
+          0
+        ]
+      },
+      {
+        "role": "rollback",
+        "exit_code": 1
+      },
+      {
+        "role": "reapplied",
+        "exit_code": 0
+      }
+    ],
+    "cloud_independently_executed_this_local_replay": false,
+    "retail_gameplay_replayed": false
+  }
+}

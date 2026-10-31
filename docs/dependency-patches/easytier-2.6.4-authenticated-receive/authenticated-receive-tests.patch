@@ -1,0 +1,288 @@
+--- a/easytier/src/peers/peer_conn.rs
++++ b/easytier/src/peers/peer_conn.rs
+@@ -2186,6 +2186,57 @@
+ 
+         assert_eq!(c_peer.get_conn_info().network_name, "shared".to_string());
+         assert_eq!(s_peer.get_conn_info().network_name, "user".to_string());
++    }
++
++    #[tokio::test]
++    async fn fifth_freedom_receive_contract_noise_roundtrip_and_close() {
++        let (c, s) = create_ring_tunnel_pair();
++
++        let c_peer_id = new_peer_id();
++        let s_peer_id = new_peer_id();
++
++        let c_ctx = get_mock_global_ctx();
++        let s_ctx = get_mock_global_ctx();
++        set_secure_mode_cfg(&c_ctx, true);
++        set_secure_mode_cfg(&s_ctx, true);
++
++        let ps = Arc::new(PeerSessionStore::new());
++        let mut c_peer = PeerConn::new(c_peer_id, c_ctx, Box::new(c), ps.clone());
++        let mut s_peer = PeerConn::new(s_peer_id, s_ctx, Box::new(s), ps.clone());
++
++        let (c_ret, s_ret) = tokio::join!(
++            c_peer.do_handshake_as_client(),
++            s_peer.do_handshake_as_server()
++        );
++        c_ret.unwrap();
++        s_ret.unwrap();
++
++        assert!(s_peer.authenticated_data_observation().is_none());
++        let (packet_send, mut packet_recv) = create_packet_recv_chan();
++        s_peer.start_recv_loop(packet_send).await;
++
++        let payload = b"secure-data-123";
++        let mut pkt = ZCPacket::new_with_payload(payload);
++        pkt.fill_peer_manager_hdr(c_peer_id, s_peer_id, PacketType::Data as u8);
++        c_peer.send_msg(pkt).await.unwrap();
++
++        let got = timeout(Duration::from_secs(2), async move {
++            recv_packet_from_chan(&mut packet_recv).await
++        })
++        .await
++        .unwrap()
++        .unwrap();
++
++        assert_eq!(got.payload(), payload);
++        let observation = s_peer.authenticated_data_observation().unwrap();
++        assert_eq!(observation.connection_id(), s_peer.get_conn_id());
++        assert!(observation.received_ago().is_some());
++        drop(s_peer);
++        assert!(observation.received_ago().is_none());
++        assert_eq!(
++            got.peer_manager_header().unwrap().packet_type,
++            PacketType::Data as u8
++        );
+     }
+ 
+     #[tokio::test]
+@@ -2835,3 +2886,202 @@
+         async fn unpinned_psk_group_behavior_is_unchanged() { handshake(Pin::Absent).await; }
+     }
+ }
++
++#[cfg(test)]
++mod fifth_freedom_receive_contract {
++    use super::*;
++    use crate::tunnel::packet_def::StandardAeadTail;
++    const A: PeerId = 10;
++    const B: PeerId = 20;
++    const C: PeerId = 30;
++    const DATA: &[u8] = b"synthetic-authenticated-data-observation";
++
++    fn session(peer: PeerId, generation: u32) -> Arc<PeerSession> {
++        Arc::new(PeerSession::new(peer, [0x6b; 32], generation, 0,
++            "aes-256-gcm".into(), "aes-256-gcm".into(), Some([0x44; 32])))
++    }
++    struct Fixture {
++        filter: PeerSessionTunnelFilter,
++        receiver: Arc<PeerSession>,
++        sender: Arc<PeerSession>,
++        close: Arc<PeerConnCloseNotify>,
++    }
++    impl Fixture {
++        fn new() -> Self {
++            let filter = PeerSessionTunnelFilter::new_with_peer(B, true);
++            filter.set_peer_id(A);
++            let receiver = session(A, 1);
++            filter.set_session(receiver.clone());
++            Self { filter, receiver, sender: session(B, 1), close: Arc::new(PeerConnCloseNotify::new(PeerConnId::new_v4())) }
++        }
++        fn packet(&self, from: PeerId, to: PeerId, kind: PacketType, encrypted: bool) -> ZCPacket {
++            let mut packet = ZCPacket::new_with_payload(DATA);
++            packet.fill_peer_manager_hdr(from, to, kind as u8);
++            if encrypted { self.sender.encrypt_payload(from, to, &mut packet).unwrap(); }
++            packet
++        }
++        fn data(&self) -> ZCPacket { self.packet(A, B, PacketType::Data, true) }
++        fn observation(&self) -> Option<AuthenticatedDataObservation> {
++            self.filter.authenticated_data_observation(&self.close, &self.receiver)
++        }
++        fn accepted(&self, packet: ZCPacket) {
++            assert_eq!(self.filter.after_received(Ok(packet)).unwrap().unwrap().payload(), DATA);
++        }
++        fn received_at(&self) -> Option<std::time::Instant> {
++            self.filter.session.lock().unwrap().received.map(|value| value.at)
++        }
++    }
++    #[test]
++    fn valid_data_is_observed_only_after_real_authenticated_receive() {
++        let f = Fixture::new();
++        assert!(f.observation().is_none());
++        f.accepted(f.data());
++        let observation = f.observation().unwrap();
++        assert_eq!(observation.connection_id(), f.close.get_conn_id());
++        assert!(observation.received_ago().unwrap() < std::time::Duration::from_secs(2));
++    }
++    #[test]
++    fn tag_failure_does_not_refresh_last_receive() {
++        let f = Fixture::new();
++        let valid = f.data();
++        let mut changed = valid.clone();
++        let tag = changed.payload().len() - StandardAeadTail::SIZE;
++        changed.mut_payload()[tag] ^= 1;
++        assert!(f.filter.after_received(Ok(changed)).is_none());
++        assert!(f.observation().is_none());
++        f.accepted(valid);
++        assert!(f.observation().is_some());
++    }
++    #[test]
++    fn replay_does_not_refresh_last_receive() {
++        let f = Fixture::new();
++        let valid = f.data();
++        f.accepted(valid.clone());
++        let at = f.received_at().unwrap();
++        assert!(f.filter.after_received(Ok(valid)).is_none());
++        assert_eq!(f.received_at(), Some(at));
++    }
++    #[test]
++    fn plaintext_and_cleared_flag_do_not_refresh() {
++        let f = Fixture::new();
++        f.accepted(f.data());
++        let at = f.received_at().unwrap();
++        for from in [0, A, C] {
++            assert!(f.filter.after_received(Ok(f.packet(from, B, PacketType::Data, false))).is_none());
++            assert_eq!(f.received_at(), Some(at));
++        }
++        let mut cleared = f.data();
++        cleared.mut_peer_manager_header().unwrap().set_encrypted(false);
++        assert!(f.filter.after_received(Ok(cleared)).is_none());
++        assert_eq!(f.received_at(), Some(at));
++        f.accepted(f.data());
++    }
++    #[test]
++    fn control_rpc_and_relay_pass_through_cannot_supply_data_observation() {
++        let f = Fixture::new();
++        for kind in [PacketType::Ping, PacketType::Pong, PacketType::NoiseHandshakeMsg1] {
++            f.accepted(f.packet(A, B, kind, false));
++            assert!(f.observation().is_none());
++        }
++        f.accepted(f.packet(A, B, PacketType::RpcReq, true));
++        assert!(f.observation().is_none());
++        for (from,to) in [(C,B),(A,C)] {
++            let relay = f.packet(from,to,PacketType::Data,true);
++            let original = relay.clone().inner();
++            assert_eq!(f.filter.after_received(Ok(relay)).unwrap().unwrap().inner(), original);
++            assert!(f.observation().is_none());
++        }
++        f.accepted(f.data());
++        assert!(f.observation().is_some());
++    }
++    #[test]
++    fn disabled_filter_and_missing_peer_or_session_have_no_observation() {
++        let f = Fixture::new();
++        let legacy = PeerSessionTunnelFilter::new_with_peer(B, false);
++        legacy.set_peer_id(A); legacy.set_session(f.receiver.clone());
++        assert!(legacy.after_received(Ok(f.packet(A,B,PacketType::Data,false))).is_some());
++        assert!(legacy.authenticated_data_observation(&f.close,&f.receiver).is_none());
++        for with_peer in [false,true] {
++            let filter = PeerSessionTunnelFilter::new_with_peer(B,true);
++            if with_peer { filter.set_peer_id(A); }
++            assert!(filter.after_received(Ok(f.data())).is_some());
++            assert!(filter.authenticated_data_observation(&f.close,&f.receiver).is_none());
++        }
++    }
++    #[test]
++    fn expected_session_cannot_be_substituted() {
++        let f = Fixture::new(); f.accepted(f.data());
++        assert!(f.filter.authenticated_data_observation(&f.close,&session(A,1)).is_none());
++        assert!(f.observation().is_some());
++    }
++    #[test]
++    fn session_replacement_same_generation_invalidates_retained_observation() {
++        let f = Fixture::new(); f.accepted(f.data());
++        let old = f.observation().unwrap();
++        let replacement = session(A,1);
++        f.filter.set_session(replacement.clone());
++        assert!(old.received_ago().is_none());
++        assert!(f.filter.authenticated_data_observation(&f.close,&replacement).is_none());
++        f.accepted(f.data());
++        assert!(f.observation().is_none());
++        assert!(f.filter.authenticated_data_observation(&f.close,&replacement).unwrap().received_ago().is_some());
++    }
++    #[test]
++    fn sync_generation_and_invalidation_cannot_reuse_old_observation() {
++        let f = Fixture::new(); f.accepted(f.data());
++        let old = f.observation().unwrap();
++        f.receiver.sync_root_key([0x22;32],2,0,false);
++        assert!(old.received_ago().is_none()); assert!(f.observation().is_none());
++        f.sender.sync_root_key([0x22;32],2,0,false);
++        f.accepted(f.data());
++        let current = f.observation().unwrap();
++        f.receiver.invalidate();
++        assert!(current.received_ago().is_none()); assert!(f.observation().is_none());
++    }
++    #[test]
++    fn same_arc_same_generation_root_sync_invalidates_observation() {
++        let f = Fixture::new(); f.accepted(f.data());
++        let old = f.observation().unwrap();
++        f.receiver.sync_root_key([0x22;32],1,0,false);
++        assert!(old.received_ago().is_none());
++        assert!(f.observation().is_none());
++        f.sender.sync_root_key([0x22;32],1,0,false);
++        f.accepted(f.data());
++        assert!(f.observation().unwrap().received_ago().is_some());
++    }
++    #[test]
++    fn generation_roundtrip_cannot_restore_an_old_observation() {
++        let f = Fixture::new(); f.accepted(f.data());
++        let old = f.observation().unwrap();
++        f.receiver.sync_root_key([0x22;32],2,0,false);
++        f.receiver.sync_root_key([0x33;32],1,0,false);
++        assert!(old.received_ago().is_none());
++        assert!(f.observation().is_none());
++    }
++    #[test]
++    fn connection_close_and_owner_drop_are_terminal_for_observation() {
++        let f = Fixture::new(); f.accepted(f.data());
++        let old = f.observation().unwrap();
++        f.close.notify_close();
++        assert!(old.received_ago().is_none()); assert!(f.observation().is_none());
++        // Even a raced final valid packet cannot make a closed connection live.
++        f.accepted(f.data());
++        assert!(f.observation().is_none());
++        let f = Fixture::new(); f.accepted(f.data());
++        let old = f.observation().unwrap();
++        let receiver = Arc::downgrade(&f.receiver);
++        drop(f);
++        assert!(receiver.upgrade().is_none()); assert!(old.received_ago().is_none());
++    }
++    #[test]
++    fn exhausted_installation_counter_disables_observation_without_breaking_data() {
++        let f = Fixture::new();
++        f.filter.session.lock().unwrap().installation = Some(u64::MAX);
++        f.filter.set_session(f.receiver.clone());
++        f.accepted(f.data());
++        assert!(f.observation().is_none());
++        f.filter.set_session(f.receiver.clone());
++        f.accepted(f.data());
++        assert!(f.observation().is_none());
++    }
++}
+--- a/easytier/src/peers/peer_session.rs
++++ b/easytier/src/peers/peer_session.rs
+@@ -506,3 +506,22 @@
+         );
+     }
+ }
++
++#[cfg(test)]
++mod fifth_freedom_receive_revision_contract {
++    use super::*;
++    #[test]
++    fn same_generation_sync_advances_revision_and_overflow_never_wraps() {
++        let session = PeerSession::new(10, [1;32], 1, 0,
++            "aes-256-gcm".into(), "aes-256-gcm".into(), Some([2;32]));
++        assert_eq!(session.receive_observation_revision(), Some(0));
++        session.sync_root_key([3;32],1,0,false);
++        assert_eq!(session.receive_observation_revision(), Some(2));
++        session.observation_revision.store(u64::MAX-1, Ordering::SeqCst);
++        session.sync_root_key([4;32],1,0,false);
++        assert!(session.is_valid());
++        assert!(session.receive_observation_revision().is_none());
++        session.sync_root_key([5;32],2,0,false);
++        assert!(session.receive_observation_revision().is_none());
++    }
++}

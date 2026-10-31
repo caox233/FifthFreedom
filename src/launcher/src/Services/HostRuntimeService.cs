@@ -103,9 +103,10 @@ public sealed class HostRuntimeService : IDisposable
         }
     }
     private static void Append(string dir,string file,string line) {try{File.AppendAllText(Path.Combine(dir,file),line+Environment.NewLine);}catch{}}
-    public async Task<bool> WaitReadyAsync(string server,string bind,TimeSpan timeout)
+    public async Task<bool> WaitReadyAsync(string server,string bind,TimeSpan timeout,CancellationToken cancellationToken=default)
     {
-        using var stop=new CancellationTokenSource(timeout);
+        using var stop=CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        stop.CancelAfter(timeout);
         while(!stop.IsCancellationRequested && IsRunning)
         {
             try {using var c=await LanConnection.ConnectAsync(server,bind,stop.Token);return c.Capabilities.Ready && IsRunning;}

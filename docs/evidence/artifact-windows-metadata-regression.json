@@ -1,0 +1,163 @@
+{
+  "schema": 1,
+  "source_head": "2429db80264d4c2fd5b68260b23523308369e10f",
+  "source_run": 40419346353,
+  "source_run_conclusion": "failure",
+  "merge_binding": {
+    "sha": "4d889965085f3935896e9fc193ad5b7afd0dfad1",
+    "tree": "9b3c6a5eb9f0fe509137a639cca3daba871c6f3e",
+    "parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "2429db80264d4c2fd5b68260b23523308369e10f"
+    ]
+  },
+  "checkout_tree_equals_source_head": true,
+  "source_jobs": {
+    "linux": 121909578371,
+    "windows": 121909578697
+  },
+  "source_results": {
+    "source-linux": {
+      "executed": 667,
+      "passed": 665,
+      "failures": 0,
+      "errors": 0,
+      "failed_test_cases": 0,
+      "skipped": 2,
+      "failed_method_ids": [],
+      "receipt_sha256": "b06018fa707f336e2d284bd1e7ad031f9cb04830dc2401bea72e1be00b1e902f"
+    },
+    "source-windows": {
+      "executed": 667,
+      "passed": 546,
+      "failures": 2,
+      "errors": 5,
+      "failed_test_cases": 5,
+      "skipped": 116,
+      "failed_method_ids": [
+        "test_ci_artifact_publication.ArtifactPublicationTests.test_actual_cli_reports_success_and_fixed_malformed_receipt_failure_without_payload",
+        "test_ci_artifact_publication.ArtifactPublicationTests.test_candidate_extra_declared_private_path_and_changed_checksum_list_are_rejected",
+        "test_ci_artifact_publication.ArtifactPublicationTests.test_old_hidden_exclusion_loses_exact_five_declared_inputs_and_fails_production_validator",
+        "test_ci_artifact_publication.ArtifactPublicationTests.test_public_payload_archive_roundtrip_preserves_all_five_hidden_files_and_production_admission",
+        "test_ci_artifact_publication.ArtifactPublicationTests.test_wrong_run_existing_output_and_interrupted_copy_preserve_inputs"
+      ],
+      "receipt_sha256": "8fd0e709393eb77a632a931cca0530dab02fe5229e5bd133e8916595449233f8"
+    }
+  },
+  "official_source_artifacts": [
+    {
+      "id": 12697536441,
+      "name": "portable-source-evidence-ubuntu-24.04-4d889965085f3935896e9fc193ad5b7afd0dfad1",
+      "digest": "sha256:cc8e840e4946392ae358174bbd6678768710f3b1590edcd32bbce4e97e86b0a4",
+      "size_in_bytes": 21593,
+      "run_id": 40419346353,
+      "official_digest_verified": true
+    },
+    {
+      "id": 12697816115,
+      "name": "portable-source-evidence-windows-2022-4d889965085f3935896e9fc193ad5b7afd0dfad1",
+      "digest": "sha256:df3a60090f9f128a4641068fe0ca7e3a5d5066685f491ccfefaf10a102006497",
+      "size_in_bytes": 27184,
+      "run_id": 40419346353,
+      "official_digest_verified": true
+    }
+  ],
+  "failure": {
+    "stage": "inventory before publishing",
+    "path": "scripts/ci_artifact_publication.py",
+    "code": "PUBLICATION_FILE_INVALID",
+    "condition": "stat.S_ISREG(info.st_mode) and info.st_nlink == 1",
+    "provider": "DirEntry.stat(follow_symlinks=False)",
+    "windows_field_values_recorded": false,
+    "windows_ci_log_sha256": "c5fa9e4db0a3b0016f1e8e60c76f9dab8b14b39cad935d8f089f0f2815334477",
+    "windows_candidate_job": 121909579406,
+    "windows_candidate_failure_step": 5,
+    "windows_candidate_payload_published": false
+  },
+  "reviewed_correction": {
+    "commit": "c3ce3a68294d73957739a388815d95b50b14defc",
+    "production_change": "Read fresh Path.lstat metadata; retain all inventory/link/type/regular-file/nlink predicates",
+    "local": {
+      "schema": 1,
+      "prior_source_head": "2429db80264d4c2fd5b68260b23523308369e10f",
+      "observed_platform": "linux",
+      "focused_tests": {
+        "executed": 11,
+        "passed": 11,
+        "skipped": 0
+      },
+      "actual_owned_fixture_metadata": {
+        "direntry_nlink": 1,
+        "path_single_nlink": 1,
+        "path_hardlink_nlink": 2
+      },
+      "old_helper_portable_incomplete_direntry_negative": {
+        "errors": 1,
+        "code": "PUBLICATION_FILE_INVALID",
+        "log_sha256": "a44bdc8f6e687540fae9f9909bdf03678fd2e716ec24047da06f1118811eb0bd"
+      },
+      "simulated_direntry_fields": {
+        "st_ino": 0,
+        "st_dev": 0,
+        "st_nlink": 0
+      },
+      "fresh_path_reparse_rejection_verified": true,
+      "windows_runtime_executed_here": false,
+      "original_windows_raw_link_count_known": false,
+      "windows_runtime_required": true,
+      "allowlists_or_hashes_changed": false,
+      "files": {
+        "scripts/ci_artifact_publication.py": "044e97adf5e36142093258372393411eee69f6b7ede415339fed5f4ec59606f6",
+        "tests/ci/test_ci_artifact_publication.py": "c1582a442e94d37dd009281e9d9a46bcb8fad1aca5ab858f854b6db36c796615"
+      }
+    },
+    "independent_review_sha256": "4a3aff1ad4d3bfa80fbd9d8ef941c13711724e8d64adeac5c34f02c46401a50e",
+    "focused_passed": 11,
+    "focused_skipped": 0,
+    "hosted_windows_retest_verified": false
+  },
+  "clean_checkout": {
+    "source_commit": "c3ce3a68294d73957739a388815d95b50b14defc",
+    "initial_git_clean": true,
+    "tracked_source_unchanged": true,
+    "exit_code": 0,
+    "executed": 670,
+    "passed": 668,
+    "skipped": 2,
+    "complete_package_ready": false,
+    "source_report_sha256": "e1e75e842de383a11956f7236466712bed51aea0f5f3e0895921d30925069ee2",
+    "retained_log_sha256": "16010e23db52e16bc3410138afeffa1f03d1ed56320e373547cd9ce831976992"
+  },
+  "canonical_supplemental_patch": {
+    "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+    "target": "c3ce3a68294d73957739a388815d95b50b14defc",
+    "patch_sha256": "b36c812e8d47235ee1d9d87855e1f4de2db4203cc16e397a1154b933291917e5",
+    "patch_bytes": 4865815,
+    "changed_paths": 554,
+    "original_paths_verified": 1312,
+    "forward_exact_bytes_modes_paths": 1808,
+    "reverse_exact_bytes_modes_paths": 1312,
+    "reverse_git_clean": true,
+    "public_file_subprocess_umask": "022",
+    "private_original_four_roles_changed": false,
+    "baseline_materialization": "canonical Git blobs and modes; attribute-driven checkout CRLF conversion excluded",
+    "scope": "supplemental cloud source patch, not a replacement for original private four-role evidence"
+  },
+  "scope": "Retain the original failed Windows result. The missing/zero DirEntry fields are a documented portability constraint and a simulated negative control; the old Windows log did not record raw field values. Local checks are not hosted Windows success, complete artifact transfer or package admission.",
+  "candidate_run": {
+    "id": 40419346358,
+    "conclusion": "failure",
+    "successful_jobs": 4,
+    "failed_jobs": 3,
+    "skipped_jobs": 4,
+    "downstream_jobs": {
+      "assembly": 121912073727,
+      "owned_stack": 121912073986,
+      "native_lifecycle": 121912074526
+    },
+    "downstream_jobs_conclusion": "skipped",
+    "windows_payload_published": false,
+    "assembly_payload_published": false,
+    "final_status_review_sha256": "52776294ae167611cb52663a4fa868746b37556ad013ac53c282b7c209bfd702"
+  }
+}

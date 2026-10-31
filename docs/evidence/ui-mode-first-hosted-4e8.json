@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "scope": "First actual hosted validation of revised mode/settings UI; preserved failures, not a delivered candidate",
+  "source_commit": "4e8eb0b96481772d724022faa1453907b8681bda",
+  "checkout_commit": "2db77356b60b33c6e8b5477b61fee7125e21edcd",
+  "identical_tree": "351bfd5199626aa48a31709389a764335af66a65",
+  "source_run": 40811466852,
+  "source_linux": {
+    "executed": 684,
+    "passed": 682,
+    "skipped": 2,
+    "failures": 0,
+    "errors": 0
+  },
+  "source_windows": {
+    "executed": 684,
+    "passed": 568,
+    "skipped": 116,
+    "failures": 0,
+    "errors": 0
+  },
+  "candidate_run": 40811466776,
+  "input_gate": {
+    "verified": 20,
+    "required": 20,
+    "tests_passed": 2,
+    "donor_holds": 4
+  },
+  "complete_windows": {
+    "job": 123242755395,
+    "full_build": "success",
+    "packaged_ui": "failure",
+    "packaged_saves": "not_executed",
+    "failure": "InvalidOperationException: The specified Visual is not an ancestor of this Visual. Retained self-test measured controls moved to a collapsed settings page.",
+    "artifact_id": 12870838032,
+    "artifact_bytes": 73034291,
+    "artifact_sha256": "a5238a9d2f5f87f7fc85e3a097412a4a4aa4e3db6435b7bf9fea51c1d399a3e2",
+    "program_zip_bytes": 73310711,
+    "program_zip_sha256": "dd7ce609a037786879340929f2332e29fef3920406d5c5cd8623705aeb52f673",
+    "accepted_for_delivery": false
+  },
+  "windows_components": {
+    "artifact_id": 12870671631,
+    "artifact_sha256": "ec7995eff880e2e925c09fba7447a19f0037f352570af24a8d09dbf472abd241",
+    "ui_self_test": "same ancestor exception",
+    "new_dotnet_regressions_executed": false
+  },
+  "linux_public_control": {
+    "job": 123242521204,
+    "executed": 147,
+    "passed": 146,
+    "errors": 1,
+    "method": "test_stale_binding_revokes_without_renewal_and_never_enables_public",
+    "code": "RPC_LISTENER_NOT_OWNED_LOOPBACK",
+    "artifact_id": 12870626583,
+    "artifact_sha256": "3b42d85ebde98501351b67de2191f372fdd059f4b812974b1d6de7c5a76ab4ed",
+    "unique_cause_confirmed": false,
+    "correction_scope": "Test fixture listen-ready acknowledgement before original strict ownership check; production guard unchanged. Controlled fd/tcp observation race reproduced separately."
+  },
+  "visual": {
+    "run": 40811466898,
+    "primary_frames_per_phase": 128,
+    "phases": [
+      "baseline",
+      "modified",
+      "rollback",
+      "reapplied"
+    ],
+    "pngs_including_scroll_views": 608,
+    "all_png_sha256_verified": true,
+    "modified_failures": 400,
+    "reapplied_failures": 400,
+    "failure_scope": "Detached-surface InputHitTest used an invalid context. Detaching Content also lost inherited Window resources; black text in these images is not evidence of a product styling defect.",
+    "corrected_probe_pending_hosted": true,
+    "screenshots_user_data": false,
+    "physical_monitor_or_ime_acceptance": false
+  },
+  "c71": {
+    "missing_reviewed_inputs": 13,
+    "replays_executed": 0,
+    "separate_from_windows_package_gate": true
+  },
+  "game_started": false,
+  "capture_started": false,
+  "production_deployed": false,
+  "formal_release_created": false
+}

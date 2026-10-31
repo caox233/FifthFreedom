@@ -97,12 +97,18 @@ impl<T> Protocol<T> for ModeProtocol<T> {
         if self.id() == 123 && request.method_id == 1 {
             let mut response = extra::SearchSessionsResponse::from_bytes(&bytes)
                 .map_err(|_| Error::InternalError)?;
+            let candidate_count = response.search_results.0.len();
             let mut keep = Vec::new();
             for item in response.search_results.0 {
                 if matches(&item.game_session_search_result.session_key)? {
                     keep.push(item);
                 }
             }
+            // The inner search summary is pre-mode; a nonempty inner result
+            // is not necessarily what this authenticated caller receives.
+            // DEBUG only, one bounded aggregate, no IDs, endpoints or values.
+            debug!(logger, "QuickMatchResultSummary stage=post_mode candidates={} excluded={} returned={}",
+                candidate_count, candidate_count - keep.len(), keep.len());
             response.search_results.0 = keep;
             return Ok(response.try_to_bytes()?);
         }

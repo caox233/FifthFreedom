@@ -1,0 +1,95 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "-p",
+    "dedicated_server",
+    "quick_match_protocol_",
+    "--",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "exit_code": 0,
+  "log_sha256": "c73d052317d13cc6487390e65c3558ac5c7f675eaf8234e4a6038e53fd80dde6",
+  "production_changed": false,
+  "live_game": false,
+  "actual_udp_dispatch": false,
+  "test_file_sha256": "7af957b1a972816234500676eb178ec432ec8232db1d4e1668c2df761612adbb",
+  "commit": "790b1793085d6f940c107945e8c0e987598ba365",
+  "passed": 6,
+  "failed": 0,
+  "ignored": 0,
+  "filtered_out": 370,
+  "seconds_reported": 0.88,
+  "independent_review": "review_recovery independently reran 6/6 pass, 0 failed/ignored, 370 filtered, 0.95 seconds",
+  "user_report_reproduced": false,
+  "notification_delivery_verified": false,
+  "empty_lobby_convergence_verified": false,
+  "queue_cancellation_verified": false,
+  "prior_compile_failure": {
+    "exit_code": 101,
+    "cause": "Test helper inherited the storage Result<T> alias instead of explicit std::result::Result<_, quazal::rmc::Error>; corrected type only, assertions retained",
+    "log_sha256": "d3cf223451c971f6394aceac07442c79d96fac549b488217d4bf1eb9617d05d7"
+  },
+  "source_comparison": {
+    "handoff_commit": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+    "observed_current_commit": "d432382803db60ded02b47cc334dc624ec23b219",
+    "files": [
+      {
+        "path": "src/native/server/dedicated-server/src/game_session_ex.rs",
+        "handoff_sha256": "b83b02108c7fc1547d331d277e8ffb74c572679dd53bc751046dcc3849cc3b5e",
+        "current_sha256": "b83b02108c7fc1547d331d277e8ffb74c572679dd53bc751046dcc3849cc3b5e",
+        "unchanged_since_handoff": true,
+        "donor_sha256": "94162f4beae3a5b2033274e5191ee4d941bee2a3b9b731db4903ebfc5be22991"
+      },
+      {
+        "path": "src/native/server/dedicated-server/src/game_session.rs",
+        "handoff_sha256": "6757a01acafc8a212c7808ed536f8b10ed4e67dacf49a1808126749ee590e496",
+        "current_sha256": "6757a01acafc8a212c7808ed536f8b10ed4e67dacf49a1808126749ee590e496",
+        "unchanged_since_handoff": true,
+        "donor_sha256": "67f65db5214b62e81c6c73fa179c882f63a6b8e7bb4cf14fa8b0b475070ce095"
+      },
+      {
+        "path": "src/native/server/dedicated-server/src/gameplay_modes.rs",
+        "handoff_sha256": "e0f45593046c5c13146502b9b5c8b50c0075b839007e8a96967fa2fbee5157cd",
+        "current_sha256": "e0f45593046c5c13146502b9b5c8b50c0075b839007e8a96967fa2fbee5157cd",
+        "unchanged_since_handoff": true,
+        "donor_sha256": "52e0d74f90dd50960a138ee77ab8c37cb990310950e401f827e8121d6a17debd"
+      },
+      {
+        "path": "src/native/server/dedicated-server/src/storage/mod.rs",
+        "handoff_sha256": "528b3114c50a32323ae8697a8690b9714a8f642e4ef57869093f2da13c9b6894",
+        "current_sha256": "528b3114c50a32323ae8697a8690b9714a8f642e4ef57869093f2da13c9b6894",
+        "unchanged_since_handoff": true,
+        "donor_sha256": "9f659ff1672eeb5c7a8338dd2a05715623f2edb87440a3d1905283f0bdf179a2"
+      },
+      {
+        "path": "src/native/server/dedicated-server/src/storage/sessions.rs",
+        "handoff_sha256": "dd922718a96253a35a3fc3b91e8499e49c1ad6dd72ff57aeba062d558061fcb0",
+        "current_sha256": "dd922718a96253a35a3fc3b91e8499e49c1ad6dd72ff57aeba062d558061fcb0",
+        "unchanged_since_handoff": true,
+        "donor_sha256": "d10cb793cef4cd4035f78086535239f508d45b57ee4661951dc961c0407ec560"
+      },
+      {
+        "path": "src/native/server/dedicated-server/src/storage/parties.rs",
+        "handoff_sha256": "5b03653fe32140ca3a83d3112badc2e0f1bc868af2804b0597cf0eedc689c77a",
+        "current_sha256": "5b03653fe32140ca3a83d3112badc2e0f1bc868af2804b0597cf0eedc689c77a",
+        "unchanged_since_handoff": true,
+        "donor_sha256": "df60f8b0698e2b58c1eec4eaaea5296ff88d6a277031788e914606727a33e3fe"
+      },
+      {
+        "path": "src/native/server/dedicated-server/src/storage/invites.rs",
+        "handoff_sha256": "206892dde7963017993b7be8f9dcde730ce859d43fb3b6ee9a5af462276583f1",
+        "current_sha256": "206892dde7963017993b7be8f9dcde730ce859d43fb3b6ee9a5af462276583f1",
+        "unchanged_since_handoff": true,
+        "donor_sha256": "fa305e0278c420ed3d7492e6cb520e65761dc35aa64ebdf7beff9cef7467f3c4"
+      }
+    ],
+    "user_installed_1_1_binary_bound_to_handoff": false,
+    "reported_live_failure_reproduced": false,
+    "public_reference_scope": "13 historical replay reference source files concern VSS/entry/EMF/chat/crash/export; no matching two-client matchmaking request replay identified",
+    "game_or_capture_started": false
+  }
+}

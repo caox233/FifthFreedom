@@ -23,7 +23,10 @@ static_detour!{
     static Receive:unsafe extern "thiscall" fn(usize,usize)->u32;
     static Tick:unsafe extern "thiscall" fn(usize,f32,u32)->u32;
     static Cleanup:unsafe extern "thiscall" fn(usize);
-    static Disable:unsafe extern "thiscall" fn(usize);
+    // Native B52610 receives ECX plus one opaque DWORD and returns with ret 4.
+    // Preserve the existing void return declaration: the observed ret 4 proves
+    // stack cleanup, not a semantic EAX return type.
+    static Disable:unsafe extern "thiscall" fn(usize,usize);
 }
 /// The companion core refreshes this only from its foreground gameplay frame.
 /// Opening chat/rename or losing focus revokes it immediately. Unknown/missing
@@ -98,7 +101,9 @@ unsafe fn execute(owner:Owner,command:Command)->bool{
             if word(vt,0x7b0)!=Some(0x00ad3ea0)||word(vt,0x7b4)!=Some(0x00aa5280){return false;}
             let available:unsafe extern "thiscall" fn(usize)->u32=std::mem::transmute(0x00ad3ea0usize);
             if available(camera)==0{return false;}
+            if !READY.load(Ordering::Acquire)||device(camera)!=Some(owner){return false;}
             crate::sticky_camera_sound::cancel(camera);
+            if !READY.load(Ordering::Acquire)||device(camera)!=Some(owner){return false;}
             let trigger:unsafe extern "thiscall" fn(usize)=std::mem::transmute(0x00aa5280usize);
             trigger(camera); // native fuse + NetStickyCam trigger; no camera-view exit call
             true
@@ -168,9 +173,17 @@ pub(crate) unsafe fn input(controller:usize,delivered:u32)->bool{
 fn whistle(camera:usize){unsafe{
     // Remote native WhistleMessage reaches this exact function too. No packet
     // contents or player-input state are reinterpreted on the receiving machine.
-    let accepted=READY.load(Ordering::Acquire)&&device(camera).is_some()
-        &&crate::sticky_camera_sound::try_whistle(camera);
-    whistle_result(camera,accepted);
+    let owner=if READY.load(Ordering::Acquire){device(camera)}else{None};
+    use crate::sticky_camera_sound::WhistleEmission;
+    let emission=if owner.is_some(){crate::sticky_camera_sound::whistle_emission(camera)}else{WhistleEmission::Unavailable};
+    // The replacement calls native audio, which can reenter actor cleanup.
+    // Neither fallback Whistle nor ATS/network publication may target a
+    // destroyed/replaced actor merely because it was valid before that call.
+    if owner.is_some()&&(!READY.load(Ordering::Acquire)||device(camera)!=owner){return;}
+    // An inner Whistle already published the accepted replacement. The outer
+    // callback owns neither a fallback sound nor another ATS/network emission.
+    if emission==WhistleEmission::Superseded{return;}
+    whistle_result(camera,emission==WhistleEmission::Accepted);
 }}
 unsafe fn whistle_result(camera:usize,accepted:bool){
     if !accepted{Whistle.call(camera);return;}
@@ -226,7 +239,7 @@ unsafe fn forget(camera:usize){
     GESTURE.with(|s|{let mut g=s.borrow_mut();if g.owner().is_some_and(|o|o.camera[0]as usize==camera){g.cancel();}});
 }
 fn cleanup(camera:usize){unsafe{forget(camera);Cleanup.call(camera);}}
-fn disable(camera:usize){unsafe{forget(camera);Disable.call(camera);}}
+fn disable(camera:usize,argument:usize){unsafe{forget(camera);Disable.call(camera,argument);}}
 unsafe fn signature(address:usize,size:usize,hash:&str)->bool{
     readable(address,size)&&format!("{:x}",Sha256::digest(std::slice::from_raw_parts(address as*const u8,size)))==hash
 }
@@ -317,3 +330,11 @@ const PINS:&[(usize,usize,&str)]=&[
 #[cfg(test)]
 #[path="sticky_camera_world_tests.rs"]
 mod camera_world_regression;
+
+#[cfg(test)]
+#[path="sticky_camera_lifecycle_runtime_fixture.rs"]
+pub(crate) mod lifecycle_fixture;
+
+#[cfg(all(test, feature = "camera-abi-fixture"))]
+#[path = "sticky_camera_abi_tests.rs"]
+mod abi_replay;

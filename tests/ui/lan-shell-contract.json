@@ -1,0 +1,511 @@
+{
+  "baseline_commit": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+  "baseline_xaml_sha256": "a3a7b36ed84df96c31b869785f0388cd122c913f4184da9c8f4fc60b983a1780",
+  "donor_xaml_sha256": "56a381f5e3ad6d186b6cd8f9d7533201c2228423886dbb42a5d081e0a7d1c2b3",
+  "controls": {
+    "rootGrid": {
+      "type": "Grid",
+      "events": {
+        "PreviewGotKeyboardFocus": "DialogBoundary_PreviewGotKeyboardFocus",
+        "PreviewKeyDown": "DialogOverlay_PreviewKeyDown"
+      }
+    },
+    "backgroundImage": {
+      "type": "Image",
+      "events": {}
+    },
+    "txtAppTitle": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "spTitleButtons": {
+      "type": "StackPanel",
+      "events": {}
+    },
+    "btnSettings": {
+      "type": "Button",
+      "events": {
+        "Click": "SettingsButton_Click"
+      }
+    },
+    "btnLanguageToggle": {
+      "type": "Button",
+      "events": {
+        "Click": "LanguageToggleButton_Click"
+      }
+    },
+    "btnMusicToggle": {
+      "type": "Button",
+      "events": {
+        "Click": "MusicToggleButton_Click"
+      }
+    },
+    "btnGuide": {
+      "type": "Button",
+      "events": {
+        "Click": "GuideButton_Click"
+      }
+    },
+    "btnWindowMinimize": {
+      "type": "Button",
+      "events": {
+        "Click": "WindowMinimizeButton_Click"
+      }
+    },
+    "btnWindowClose": {
+      "type": "Button",
+      "events": {
+        "Click": "WindowCloseButton_Click"
+      }
+    },
+    "heroPanel": {
+      "type": "StackPanel",
+      "events": {}
+    },
+    "bdStatusPanel": {
+      "type": "Border",
+      "events": {}
+    },
+    "serverStatusLight": {
+      "type": "Ellipse",
+      "events": {}
+    },
+    "txtConnectionStatusCaption": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtServerStatus": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtConnectionModeLabel": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "cmbConnectionMode": {
+      "type": "ListBox",
+      "events": {
+        "SelectionChanged": "ConnectionMode_SelectionChanged"
+      }
+    },
+    "itemClientMode": {
+      "type": "ListBoxItem",
+      "events": {}
+    },
+    "itemHostMode": {
+      "type": "ListBoxItem",
+      "events": {}
+    },
+    "txtGameplayModeLabel": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "cmbGameplayMode": {
+      "type": "ListBox",
+      "events": {
+        "SelectionChanged": "GameplayMode_SelectionChanged"
+      }
+    },
+    "itemGameplayMod": {
+      "type": "ListBoxItem",
+      "events": {}
+    },
+    "itemGameplayOfficial": {
+      "type": "ListBoxItem",
+      "events": {}
+    },
+    "fovPanel": {
+      "type": "Grid",
+      "events": {}
+    },
+    "txtFovLabel": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtFovValue": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "btnFovReset": {
+      "type": "Button",
+      "events": {
+        "Click": "FovReset_Click"
+      }
+    },
+    "fovSlider": {
+      "type": "Slider",
+      "events": {
+        "ValueChanged": "FovSlider_ValueChanged"
+      }
+    },
+    "btnLaunch": {
+      "type": "Button",
+      "events": {
+        "Click": "LaunchButton_Click"
+      }
+    },
+    "authPanel": {
+      "type": "Border",
+      "events": {}
+    },
+    "txtSectionTitle": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtUsernameLabel": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtUsername": {
+      "type": "TextBox",
+      "events": {
+        "PreviewTextInput": "UsernameTextBox_PreviewTextInput",
+        "DataObject.Pasting": "UsernameTextBox_Pasting",
+        "TextChanged": "UsernameTextBox_TextChanged",
+        "LostKeyboardFocus": "RememberedIdentity_LostKeyboardFocus"
+      }
+    },
+    "txtPasswordLabel": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtPassword": {
+      "type": "PasswordBox",
+      "events": {
+        "PreviewTextInput": "PasswordBox_PreviewTextInput",
+        "DataObject.Pasting": "PasswordBox_Pasting",
+        "PasswordChanged": "PasswordBox_PasswordChanged"
+      }
+    },
+    "chkRememberPassword": {
+      "type": "CheckBox",
+      "events": {
+        "Checked": "RememberPassword_Changed",
+        "Unchecked": "RememberPassword_Changed"
+      }
+    },
+    "btnForgotPassword": {
+      "type": "Button",
+      "events": {
+        "Click": "ForgotPasswordButton_Click"
+      }
+    },
+    "txtServerLabel": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "bdDetectedHostName": {
+      "type": "Button",
+      "events": {
+        "Click": "DetectedHostName_Click"
+      }
+    },
+    "txtDetectedHostName": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtHostSwitchSuffix": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtServer": {
+      "type": "TextBox",
+      "events": {
+        "PreviewTextInput": "ServerTextBox_PreviewTextInput",
+        "DataObject.Pasting": "ServerTextBox_Pasting",
+        "TextChanged": "ServerTextBox_TextChanged",
+        "LostKeyboardFocus": "RememberedIdentity_LostKeyboardFocus"
+      }
+    },
+    "txtServerPlaceholder": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtBindAdapterLabel": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "cmbBindAdapter": {
+      "type": "ComboBox",
+      "events": {
+        "SelectionChanged": "BindAdapter_SelectionChanged",
+        "DropDownOpened": "BindAdapter_DropDownOpened"
+      }
+    },
+    "txtTopBadge": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "btnPlayersSummary": {
+      "type": "Button",
+      "events": {
+        "Click": "PlayersButton_Click"
+      }
+    },
+    "btnExportDiagnostics": {
+      "type": "Button",
+      "events": {
+        "Click": "ExportDiagnostics_Click"
+      }
+    },
+    "btnCheckNetwork": {
+      "type": "Button",
+      "events": {
+        "Click": "CheckNetworkButton_Click"
+      }
+    },
+    "toolsOverlay": {
+      "type": "Grid",
+      "events": {
+        "PreviewKeyDown": "ToolsOverlay_PreviewKeyDown"
+      }
+    },
+    "btnToolsClose": {
+      "type": "Button",
+      "events": {
+        "Click": "ToolsClose_Click"
+      }
+    },
+    "txtToolsTitle": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "btnRecoveryPage": {
+      "type": "Button",
+      "events": {
+        "Click": "ForgotPasswordButton_Click"
+      }
+    },
+    "btnSavesPage": {
+      "type": "Button",
+      "events": {
+        "Click": "RestoreSavesButton_Click"
+      }
+    },
+    "btnPlayersPage": {
+      "type": "Button",
+      "events": {
+        "Click": "PlayersButton_Click"
+      }
+    },
+    "btnAdvancedDiagnosticsPage": {
+      "type": "Button",
+      "events": {
+        "Click": "AdvancedDiagnosticsButton_Click"
+      }
+    },
+    "toolsHomePanel": {
+      "type": "StackPanel",
+      "events": {}
+    },
+    "chkObserverMode": {
+      "type": "CheckBox",
+      "events": {
+        "Checked": "ObserverMode_Changed",
+        "Unchecked": "ObserverMode_Changed"
+      }
+    },
+    "txtObserverModeHelp": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtToolsIntro": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "recoveryPanel": {
+      "type": "StackPanel",
+      "events": {}
+    },
+    "txtRecoveryScope": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtRecoveryHelp": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "lblRecoveryCode": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "recoveryCode": {
+      "type": "PasswordBox",
+      "events": {}
+    },
+    "lblNewPassword": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "recoveryPassword": {
+      "type": "PasswordBox",
+      "events": {}
+    },
+    "lblConfirmPassword": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "recoveryConfirm": {
+      "type": "PasswordBox",
+      "events": {}
+    },
+    "btnResetPassword": {
+      "type": "Button",
+      "events": {
+        "Click": "ResetPassword_Click"
+      }
+    },
+    "txtReplacementCode": {
+      "type": "TextBox",
+      "events": {}
+    },
+    "savesPanel": {
+      "type": "StackPanel",
+      "events": {}
+    },
+    "txtSavesInfo": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtSavePaths": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "btnRestoreOfficial": {
+      "type": "Button",
+      "events": {
+        "Click": "RestoreOfficial_Click"
+      }
+    },
+    "btnRestoreMod": {
+      "type": "Button",
+      "events": {
+        "Click": "RestoreMod_Click"
+      }
+    },
+    "playersPanel": {
+      "type": "StackPanel",
+      "events": {}
+    },
+    "txtPlayersHelp": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtQualityDetails": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "playersList": {
+      "type": "ItemsControl",
+      "events": {}
+    },
+    "btnRefreshPlayers": {
+      "type": "Button",
+      "events": {
+        "Click": "RefreshPlayers_Click"
+      }
+    },
+    "advancedDiagnosticsPanel": {
+      "type": "StackPanel",
+      "events": {}
+    },
+    "txtAdvancedDiagnosticsInfo": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "btnCaptureOnce": {
+      "type": "Button",
+      "events": {
+        "Click": "AdvancedCaptureOnce_Click"
+      }
+    },
+    "btnExportCapture": {
+      "type": "Button",
+      "events": {
+        "Click": "AdvancedExportCapture_Click"
+      }
+    },
+    "dialogOverlay": {
+      "type": "Grid",
+      "events": {}
+    },
+    "dialogCard": {
+      "type": "Border",
+      "events": {}
+    },
+    "txtDialogTitle": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "dialogMessageScroll": {
+      "type": "ScrollViewer",
+      "events": {}
+    },
+    "txtDialogMessage": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtDialogRecoveryCode": {
+      "type": "TextBox",
+      "events": {}
+    },
+    "btnDialogNo": {
+      "type": "Button",
+      "events": {
+        "Click": "DialogNoButton_Click"
+      }
+    },
+    "btnDialogYes": {
+      "type": "Button",
+      "events": {
+        "Click": "DialogYesButton_Click"
+      }
+    },
+    "guideOverlay": {
+      "type": "Canvas",
+      "events": {}
+    },
+    "guideHighlight": {
+      "type": "Border",
+      "events": {}
+    },
+    "guideArrow": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "guideCard": {
+      "type": "Border",
+      "events": {}
+    },
+    "txtGuideStep": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtGuideTitle": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "txtGuideMessage": {
+      "type": "TextBlock",
+      "events": {}
+    },
+    "btnGuideSkip": {
+      "type": "Button",
+      "events": {
+        "Click": "GuideSkipButton_Click"
+      }
+    },
+    "btnGuidePrev": {
+      "type": "Button",
+      "events": {
+        "Click": "GuidePrevButton_Click"
+      }
+    },
+    "btnGuideNext": {
+      "type": "Button",
+      "events": {
+        "Click": "GuideNextButton_Click"
+      }
+    }
+  }
+}

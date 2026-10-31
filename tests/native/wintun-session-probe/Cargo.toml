@@ -1,0 +1,13 @@
+[package]
+name = "ff-wintun-session-probe"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[target.'cfg(windows)'.dependencies]
+tun = { package = "tun-easytier", path = "../tun-source", default-features = false, features = ["async"] }
+tokio = { version = "=1.52.1", features = ["rt", "time", "io-util"] }
+sha2 = "=0.10.8"
+windows-sys = { version = "=0.59.0", features = ["Win32_Foundation", "Win32_NetworkManagement_IpHelper", "Win32_NetworkManagement_Ndis", "Win32_Storage_FileSystem"] }

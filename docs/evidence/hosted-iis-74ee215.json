@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T06:59:03.607497+00:00",
+  "run": {
+    "id": 39914336255,
+    "head_sha": "74ee2151230f5c4bf57ac94d79c063f6122c9b2b",
+    "html_url": "https://github.com/caox233/FifthFreedom/actions/runs/39914336255",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "evidence_source": "Official GitHub run/job/check metadata API; no raw logs or archive downloaded",
+  "jobs": [
+    {
+      "id": 120284340996,
+      "name": "loopback-prerequisite",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Read fixed port observations and bind only a fresh owned socket",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Prepare only the exact default IIS site if it occupies the fixed port",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Run the unchanged real FinalLaunchPreparation on this same runner",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Restore the recorded default IIS site state",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve only sanitized observations and suite result",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "fixed_prepare_observation": "mode=Prepare; succeeded=False; default_site_confirmed=False; default_site_stopped=False; default_site_restored=False; owned_bind_verified=False; unknown_services_changed=False; port_rules_changed=False",
+  "fixed_restore_observation": "mode=Restore; succeeded=True; default_site_confirmed=False; default_site_stopped=False; default_site_restored=False; owned_bind_verified=False; unknown_services_changed=False; port_rules_changed=False",
+  "exact_default_site_verification_passed": false,
+  "site_was_stopped": false,
+  "original_final_nine_suite_executed": false,
+  "restoration_noop_succeeded": true,
+  "precise_site_shape_failure_not_observed": true,
+  "port_rules_changed": false,
+  "production_ports_changed": false,
+  "artifact_contents_verified": false
+}

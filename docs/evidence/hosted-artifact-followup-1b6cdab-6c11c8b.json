@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "evidence_kind": "Later official API artifact download and exact digest verification; supplements earlier metadata-only receipts without rewriting history",
+  "download_date_utc": "2026-10-23",
+  "network_action": "Normal official API redirect chain only; no bypass and no credentials or signed URLs retained in public evidence",
+  "entries": [
+    {
+      "run_id": 39918375705,
+      "source_head": "1b6cdabcec13c3e1b313501ec4306c67ebcbf9f8",
+      "artifact_id": 12485764204,
+      "artifact_bytes": 81194,
+      "downloaded_archive_sha256": "d9ce4c429996cf1df787e2ab352545a568aff42e619fcd4aa9b6ae597766401c",
+      "official_artifact_digest_matches": true,
+      "archive_downloaded_via_official_api": true,
+      "receipt_checkout_commit": "35b6945ba7cd03dfeb78ddb9b3780be91713fee8",
+      "receipt_run_attempt": "1",
+      "receipt_status": "failed",
+      "native_public_return": {
+        "passed": 8,
+        "failed": 0,
+        "ignored": 0
+      },
+      "native_managed_interop": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "helper_sha256": "ce889c5173146968316072a9ff8c0f0d8594986dc53d68ba6a55ff2c612b63c2",
+        "helper_bytes": 14704640,
+        "helper_selected_from_same_invocation_cargo_json": true
+      },
+      "source_transport_failed_tests": [
+        "api::source_transport::tests::late_connect_completion_is_cancelled_before_registration",
+        "api::source_transport::tests::pending_read_is_woken_even_when_io_handle_is_retained",
+        "api::source_transport::tests::real_options_source_and_established_connection_are_revocable",
+        "api::source_transport::tests::tonic_clone_does_not_keep_connection_alive_after_revoke"
+      ],
+      "source_transport_fixed_reason": "PUBLIC_TRANSPORT_UNAVAILABLE",
+      "held_native_replay_checks": 13
+    },
+    {
+      "run_id": 39919260768,
+      "source_head": "6c11c8b85633ea5e2977ea0131c86ee01b316bbb",
+      "artifact_id": 12486127872,
+      "artifact_bytes": 31054,
+      "downloaded_archive_sha256": "92e69e989b94a6c3609999286f20219b25b39dfd861f4a41a42ed3cdadcaa167",
+      "official_artifact_digest_matches": true,
+      "archive_downloaded_via_official_api": true,
+      "receipt_checkout_commit": "539b860a31014ef157ab68505c456c41df680ac6",
+      "receipt_run_attempt": "1",
+      "receipt_status": "failed",
+      "managed_diagnostics": [
+        "PublicNativeReturn:15:UnauthorizedAccessException"
+      ],
+      "new_throw_location_available": false
+    },
+    {
+      "run_id": 39919260513,
+      "source_head": "6c11c8b85633ea5e2977ea0131c86ee01b316bbb",
+      "artifact_id": 12487256914,
+      "artifact_bytes": 1097,
+      "downloaded_archive_sha256": "b1c3b1c47f2b6a37df1ef6bc7581df22ae6c87b92f203dbe8ba96269cdce485a",
+      "official_artifact_digest_matches": true,
+      "archive_downloaded_via_official_api": true,
+      "receipt_status": "failed",
+      "transport": "quic",
+      "fixed_reason": "OVERLAY_READY_TIMEOUT",
+      "phases_completed": 0,
+      "namespaces_created": 2,
+      "namespaces_removed": 2,
+      "cleanup_errors": [],
+      "private_stage_removed": true,
+      "core_tun_peer_readiness_verified": false,
+      "all_children_reaped_not_inferred": true
+    }
+  ],
+  "raw_logs_and_archives_published": false,
+  "complete_package_verified": false,
+  "game_executed": false,
+  "production_admission": false,
+  "limitations": [
+    "Artifact names are labels; source heads come from official run binding, while receipt checkout commits are recorded separately.",
+    "Raw log contents remain in ignored private local evidence; only fixed source-known diagnostics and hashes are public.",
+    "The 9e job log request failed once and was not bypassed or treated as downloaded.",
+    "These historical archives do not verify the later fixes; cleanup has a separate passing quick result in hosted-windows-return-27-1974fad.json, while the Windows getter still awaits its actual hosted source-transport suite."
+  ],
+  "redundant_runs": {
+    "comparison": "git diff 6c11c8b..1974fad over both EasyTier workflows, build/preparation/probe/result scripts, source lock, requirements, src/public, native quazal/workspace/lock, and the three reviewed Linux patch directories was empty",
+    "reason": "No new runtime/build inputs; preserve completed guard3 build and failed actual 6c overlay evidence, and wait for reviewed readiness changes",
+    "runs": [
+      {
+        "id": 39921420591,
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 39921420557,
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 39922765038,
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 39922764952,
+        "status": "completed",
+        "conclusion": "cancelled"
+      }
+    ],
+    "candidate_39922764910_cancelled": false,
+    "cancelled_runs_claimed_successful": false
+  }
+}

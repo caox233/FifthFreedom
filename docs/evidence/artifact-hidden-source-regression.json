@@ -1,0 +1,175 @@
+{
+  "schema": 1,
+  "source_head": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
+  "artifact_id": 12687534390,
+  "artifact_zip_sha256": "d4171c8153355e453c1cbf59fa0be0817a829c83ef38217cb66edb90e523e311",
+  "artifact_digest_reverified": true,
+  "operation": "read-only validate_input on official artifact; fixed diagnostic projections",
+  "validation_original_function_sha256": "f562fcaf30ec84ada0b42665f6f787ca7249709265852666953e94e716daabad",
+  "changed_sources_sha256": {
+    "scripts/ci_native_lifecycle.py": "1d55d20e914132793137a0f200de676b44599c38231df720cd21f1bef9d21887",
+    "scripts/ci_owned_stack.py": "83b2a5d3975318a75af2bc163ffb0255313cdd9d47f7e346669ff132eebc4d8f"
+  },
+  "results": [
+    {
+      "version": "original-9139",
+      "error_type": "FileNotFoundError",
+      "native_diagnostic": "NATIVE_LIFECYCLE_PROBE_FAILED",
+      "stack_diagnostic": "DEVELOPMENT_PROBE_FAILED"
+    },
+    {
+      "version": "working-change-pending-independent-review",
+      "error_type": "ProbeError",
+      "native_diagnostic": "CANDIDATE_INPUT_MISSING",
+      "stack_diagnostic": "CANDIDATE_INPUT_MISSING"
+    }
+  ],
+  "binaries_executed": false,
+  "namespaces_created": false,
+  "private_runtime_stage_created": false,
+  "original_missing_files_repaired": false,
+  "hosted_runtime_retest_claimed": false,
+  "admission_body_ast_unchanged": true,
+  "focused_tests": {
+    "native_lifecycle": {
+      "run": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "owned_stack": {
+      "run": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "reviewed_diagnostic_commit": "5aa8a50319dbaf5322f496df53acc44238a24856",
+  "independent_review": {
+    "passed": 56,
+    "skipped": 0,
+    "receipt_sha256": "58acdd9a4e57be2b49a5cc79b1223339a4a2ad95d462570c40068ef2cdbb090d"
+  },
+  "upload_repair_roundtrip": {
+    "schema": 1,
+    "reconstructions_only_not_uploaded": true,
+    "results": [
+      {
+        "lane": "windows-components",
+        "official_artifact_id": 12689536321,
+        "official_zip_sha256": "b9f4f28bde8e0bdd5c299751ea2ba18ed2d30d2afa5dee3dc6d0d00951538202",
+        "commit": "b7ecde2db89ead4a709221814c2bac3817b8d714",
+        "run_id": "40397583631",
+        "run_attempt": "1",
+        "old_missing_paths": [
+          "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.gitattributes",
+          "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.gitignore",
+          "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.travis.yml",
+          "licenses/FusionFix/corresponding-source/MemoryModule/upstream/example/DllLoader/.gitignore",
+          "licenses/FusionFix/corresponding-source/MemoryModule/upstream/example/SampleDLL/.gitignore"
+        ],
+        "old_staging_error": "PUBLICATION_MISSING_FILE",
+        "old_native_input_error": null,
+        "reconstructed_producer_inputs_added_exact_pinned_source_files": 5,
+        "new_staged_files": 61,
+        "new_download_roundtrip_all_hashes_match": true,
+        "new_native_readonly_admitted_files": null,
+        "official_input_unchanged": true,
+        "binaries_executed": false,
+        "is_official_hosted_success": false,
+        "published": false
+      },
+      {
+        "lane": "linux-public-server-integrity",
+        "official_artifact_id": 12687534390,
+        "official_zip_sha256": "d4171c8153355e453c1cbf59fa0be0817a829c83ef38217cb66edb90e523e311",
+        "commit": "b7ecde2db89ead4a709221814c2bac3817b8d714",
+        "run_id": "40397583631",
+        "run_attempt": "1",
+        "old_missing_paths": [
+          "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.gitattributes",
+          "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.gitignore",
+          "licenses/FusionFix/corresponding-source/MemoryModule/upstream/.travis.yml",
+          "licenses/FusionFix/corresponding-source/MemoryModule/upstream/example/DllLoader/.gitignore",
+          "licenses/FusionFix/corresponding-source/MemoryModule/upstream/example/SampleDLL/.gitignore"
+        ],
+        "old_staging_error": "PUBLICATION_MISSING_FILE",
+        "old_native_input_error": "CANDIDATE_INPUT_MISSING",
+        "reconstructed_producer_inputs_added_exact_pinned_source_files": 5,
+        "new_staged_files": 65,
+        "new_download_roundtrip_all_hashes_match": true,
+        "new_native_readonly_admitted_files": 64,
+        "official_input_unchanged": true,
+        "binaries_executed": false,
+        "is_official_hosted_success": false,
+        "published": false
+      }
+    ]
+  },
+  "scope": "Missing uploaded source files remain rejected. Local reconstruction adds only five exact pinned public source files to a temporary copy to test publication/ZIP round trip. This is not a new official artifact or runtime success; original downloaded ZIPs are unchanged.",
+  "reviewed_publication_commit": "37ab1e1a8ea25372ea0e8db7419bb2cfe0d354e1",
+  "publication_independent_review": {
+    "focused_passed": 8,
+    "skipped": 0,
+    "source_changed_after_validation_rejected": true,
+    "staged_extra_file_rejected": true,
+    "only_owned_stage_removed_on_failure": true,
+    "receipt_sha256": "f3e03dcbabf943c24e377af1b8b9c05a41f5d135f3bbf43c337085a9033c6ce0"
+  },
+  "retained_first_integrated_clean_failure": {
+    "source_commit": "37ab1e1a8ea25372ea0e8db7419bb2cfe0d354e1",
+    "initial_git_clean": true,
+    "tracked_source_unchanged": true,
+    "exit_code": 1,
+    "executed": 667,
+    "passed": 664,
+    "skipped": 2,
+    "complete_package_ready": false,
+    "source_report_sha256": "e1c30e54b99183d69fbeca9b716e5903903b4eb7a0310710ca9815b96fb28d0d",
+    "retained_log_sha256": "0418ee900b15df42d02803d203c67e5a24a73fe90c86a1dbb465a890c2294a5a",
+    "failed_method": "test_probe_result.ProbeResultTests.test_native_entry_and_namespace_producer_codes_cannot_become_unclassified",
+    "failed_methods": 1,
+    "assertion_events": 2,
+    "unclassified_codes": [
+      "CANDIDATE_INPUT_MISSING",
+      "CANDIDATE_INPUT_UNREADABLE"
+    ]
+  },
+  "outer_fixed_code_allowlist_correction": {
+    "commit": "dc55a9337bf13b8bc53b22f734d0ba6151e7379f",
+    "production_change": "Add only the two exact producer codes to the existing outer annotation allowlist",
+    "contract_test_changed": false,
+    "focused_passed": 77,
+    "skipped": 0,
+    "independent_classifier_passed": 21,
+    "unknown_and_suffixed_codes_still_rejected": true,
+    "independent_receipt_sha256": "71eddd450432ce8144c0bd6ca0c48307bdbbbe5e87f18ba28980ddbb7df9b0ba"
+  },
+  "corrected_clean_checkout": {
+    "source_commit": "dc55a9337bf13b8bc53b22f734d0ba6151e7379f",
+    "initial_git_clean": true,
+    "tracked_source_unchanged": true,
+    "exit_code": 0,
+    "executed": 667,
+    "passed": 665,
+    "skipped": 2,
+    "complete_package_ready": false,
+    "source_report_sha256": "b06018fa707f336e2d284bd1e7ad031f9cb04830dc2401bea72e1be00b1e902f",
+    "retained_log_sha256": "42f9cc3a3cb94fccfaba66c1218e5c41a76ed2e7c56ae8320a945b9c9816b55d"
+  },
+  "canonical_supplemental_patch": {
+    "base": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+    "target": "dc55a9337bf13b8bc53b22f734d0ba6151e7379f",
+    "patch_sha256": "4399045bb00a4d75c317c0bea39230b7fa7cfc573466f1e19a5a32a7c5ff825a",
+    "patch_bytes": 4809647,
+    "changed_paths": 550,
+    "original_paths_verified": 1312,
+    "forward_exact_bytes_modes_paths": 1804,
+    "reverse_exact_bytes_modes_paths": 1312,
+    "reverse_git_clean": true,
+    "public_file_subprocess_umask": "022",
+    "private_original_four_roles_changed": false,
+    "baseline_materialization": "canonical Git blobs and modes; attribute-driven checkout CRLF conversion excluded",
+    "scope": "supplemental cloud source patch, not a replacement for original private four-role evidence"
+  }
+}

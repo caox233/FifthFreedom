@@ -1,0 +1,139 @@
+{
+  "scope": "read-only normal PE import-table audit; no PE execution/driver installation",
+  "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+  "files": [
+    {
+      "archive_id": "easytier-windows-x86_64",
+      "archive_sha256": "27af91e270e554709b048bd32327fefd2dfce5062ae1e8701af7550c6f525f84",
+      "member": "easytier-windows-x86_64/easytier-cli.exe",
+      "member_sha256": "d8783e851e944b44a9b71b39fd02f227ec0a2a82b3165c55ead5dd32dcde53a1",
+      "packet_symbols": [],
+      "read_only_command": [
+        "objdump",
+        "-p",
+        "easytier-windows-x86_64-easytier-cli.exe"
+      ],
+      "objdump_stdout_sha256": "ea3a35872a6633fbd9b310c2fce7e460930c6a9ff5f72ae29f99dbd22a3d2e10",
+      "runtime_executed": false,
+      "packet_dll_normal_import": false,
+      "delay_import_directory_zero": true
+    },
+    {
+      "archive_id": "easytier-windows-x86_64",
+      "archive_sha256": "27af91e270e554709b048bd32327fefd2dfce5062ae1e8701af7550c6f525f84",
+      "member": "easytier-windows-x86_64/easytier-core.exe",
+      "member_sha256": "da7eb2d24b5416f3d3407636949e964a0750e3f9dc53a828cb6799a57ead445d",
+      "packet_symbols": [
+        "PacketAllocatePacket",
+        "PacketCloseAdapter",
+        "PacketFreePacket",
+        "PacketGetAdapterNames",
+        "PacketInitPacket",
+        "PacketOpenAdapter",
+        "PacketReceivePacket",
+        "PacketSendPacket",
+        "PacketSetBuff",
+        "PacketSetHwFilter",
+        "PacketSetMinToCopy"
+      ],
+      "read_only_command": [
+        "objdump",
+        "-p",
+        "easytier-windows-x86_64-easytier-core.exe"
+      ],
+      "objdump_stdout_sha256": "b902ee5cfc2a8b3227613372c0b8c06f5b3f68ff9769664da0c4e6568a5f9660",
+      "runtime_executed": false,
+      "packet_dll_normal_import": true,
+      "delay_import_directory_zero": true
+    },
+    {
+      "archive_id": "easytier-windows-i686",
+      "archive_sha256": "bf557daeccc5525d95b8a230c339d75554fb52d82d1e050e9a5202c92c02e09e",
+      "member": "easytier-windows-i686/easytier-cli.exe",
+      "member_sha256": "e1d6a617e4cb3b9bf77c9d32616dace5d5715fabcbcb0f5f9969a98f3626d69a",
+      "packet_symbols": [],
+      "read_only_command": [
+        "objdump",
+        "-p",
+        "easytier-windows-i686-easytier-cli.exe"
+      ],
+      "objdump_stdout_sha256": "d6d01489bd49e852ff298f3cb71b05a9f52de336277b60bddf3c82f0f1285c4d",
+      "runtime_executed": false,
+      "packet_dll_normal_import": false,
+      "delay_import_directory_zero": true
+    },
+    {
+      "archive_id": "easytier-windows-i686",
+      "archive_sha256": "bf557daeccc5525d95b8a230c339d75554fb52d82d1e050e9a5202c92c02e09e",
+      "member": "easytier-windows-i686/easytier-core.exe",
+      "member_sha256": "657400c756aa4e2868b9505f669527733ba872dff3b8877cee24d7772616c76b",
+      "packet_symbols": [
+        "PacketAllocatePacket",
+        "PacketCloseAdapter",
+        "PacketFreePacket",
+        "PacketGetAdapterNames",
+        "PacketInitPacket",
+        "PacketOpenAdapter",
+        "PacketReceivePacket",
+        "PacketSendPacket",
+        "PacketSetBuff",
+        "PacketSetHwFilter",
+        "PacketSetMinToCopy"
+      ],
+      "read_only_command": [
+        "objdump",
+        "-p",
+        "easytier-windows-i686-easytier-core.exe"
+      ],
+      "objdump_stdout_sha256": "7fa2a107c28f14f9fa699f3e6849ff22d061b7c12c96cf2c9e467c77e29032d2",
+      "runtime_executed": false,
+      "packet_dll_normal_import": true,
+      "delay_import_directory_zero": true
+    }
+  ],
+  "method": "Verify locked archive SHA/size, read and verify member SHA/size, save executable as non-executable ignored file, inspect with objdump -p; no execution.",
+  "interpretation": "Both pinned official Windows core executables normally import packet.dll before program configuration can select a transport. CLI executables do not import it. Selecting TUN/secure-mode or disabling fake-TCP by configuration does not remove the existing core loader dependency.",
+  "upstream_sources": [
+    {
+      "path": "easytier/src/common/network.rs",
+      "sha256": "8e2761f11aab20da4923a6e59b77d2bf11358aeae15648e7fbddea6d052c1203"
+    },
+    {
+      "path": "easytier/src/tunnel/fake_tcp/netfilter/mod.rs",
+      "sha256": "664928c440fb7c77f87b76bc04307382aa4f21755c5cdbebd25ccda530ea465a"
+    },
+    {
+      "path": "easytier/Cargo.toml",
+      "sha256": "beb23906597ecb85955555e94276b10519ccb051801e05665816d4eb675b1577"
+    },
+    {
+      "path": "easytier/build.rs",
+      "sha256": "3cbf6ed70bf1aba93256b0d32caa3418806afb6c81fbc573c7ddd098a20edd35"
+    },
+    {
+      "path": ".github/workflows/core.yml",
+      "sha256": "5dcfa20c6bcb138d974a089aff39c0399f5d7b3cb3c0f867c1a721b32ab1b4e6"
+    }
+  ],
+  "pnet_datalink": {
+    "version": "0.35.0",
+    "crate_sha256": "e79e70ec0be163102a332e1d2d5586d362ad76b01cec86f830241f2b6452a7b7",
+    "lock_checksum_matched": true,
+    "windows_bindings_sha256": "4c88883c6c99b66218ff529d37713cff7cb01234629bdf6a89019937524acbc0",
+    "normal_link_attribute": "#[link(name = \"Packet\")]"
+  },
+  "tun_source": {
+    "repository": "https://github.com/EasyTier/rust-tun",
+    "locked_commit": "12378839e7985283df0e4fb536b7137230356db5",
+    "path": "src/platform/windows/device.rs",
+    "sha256": "0865e0064c8fe1abc81e0805e5904aa96939b9ba6ecb875a35fdc08d782f66e2",
+    "observed": "Device::new verifies Wintun embedded signature/signer, then dynamically loads Wintun and opens/creates the adapter."
+  },
+  "boundaries": {
+    "binary_executed": false,
+    "driver_installed": false,
+    "original_dependency_lock_modified": false,
+    "npcap_or_wintun_publication_authorized": false,
+    "windows_startup_without_packet_dll_tested": false
+  }
+}

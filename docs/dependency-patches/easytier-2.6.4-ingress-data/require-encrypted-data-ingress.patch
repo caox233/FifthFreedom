@@ -1,0 +1,16 @@
+diff --git a/easytier/src/peers/peer_conn.rs b/easytier/src/peers/peer_conn.rs
+--- a/easytier/src/peers/peer_conn.rs
++++ b/easytier/src/peers/peer_conn.rs
+@@ -200,6 +200,12 @@
+         let Some(hdr) = data.peer_manager_header() else {
+             return Some(Ok(data));
+         };
++
++        // Secure Data must enter a peer or relay session as ciphertext.
++        // Check before sender/session pass-through paths can skip decryption.
++        if hdr.packet_type == PacketType::Data as u8 && !hdr.is_encrypted() {
++            return None;
++        }
+ 
+         if self.should_skip_encrypt(hdr) {
+             return Some(Ok(data));

@@ -1,0 +1,565 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official source job metadata with both digest-verified source receipts",
+  "run_id": 39936896158,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39936896158",
+  "source_head": "05c127a544ca8ea70d25f07f3101244b55c43842",
+  "checkout_commit": null,
+  "checkout_identity_limit": "Artifact names remain opaque labels; source receipts do not independently attest a merge checkout hash",
+  "platforms": [
+    {
+      "platform": "ubuntu-24.04",
+      "job_id": 120358529144,
+      "status": "completed",
+      "conclusion": "success",
+      "artifact": {
+        "id": 12494531471,
+        "name": "portable-source-evidence-ubuntu-24.04-d7d819317a4e3ff72efa53400ce258c4154eb783",
+        "size_in_bytes": 16628,
+        "digest": "sha256:bb33b01c3a3b06ba239968e223e795737030c3635417441204ac7733db186e15"
+      },
+      "official_zip_digest_verified": true,
+      "executed": 486,
+      "passed": 484,
+      "skipped": 2,
+      "suites": [
+        {
+          "suite": "build-source-logic",
+          "executed": 60,
+          "passed": 58,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 2,
+          "skipped_method_ids_and_reasons": [
+            {
+              "test": "test_build.BuildEntryTests.test_cmd_help_works_from_another_directory",
+              "reason": "Windows batch entry"
+            },
+            {
+              "test": "test_build.BuildEntryTests.test_lock_rejects_concurrent_build_and_releases",
+              "reason": "Windows file locking"
+            }
+          ]
+        },
+        {
+          "suite": "ui",
+          "executed": 12,
+          "passed": 12,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 0,
+          "skipped_method_ids_and_reasons": []
+        },
+        {
+          "suite": "server",
+          "executed": 132,
+          "passed": 132,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 0,
+          "skipped_method_ids_and_reasons": []
+        },
+        {
+          "suite": "public_candidate",
+          "executed": 10,
+          "passed": 10,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 0,
+          "skipped_method_ids_and_reasons": []
+        },
+        {
+          "suite": "public_server_candidate",
+          "executed": 22,
+          "passed": 22,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 0,
+          "skipped_method_ids_and_reasons": []
+        },
+        {
+          "suite": "ci",
+          "executed": 250,
+          "passed": 250,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 0,
+          "skipped_method_ids_and_reasons": []
+        }
+      ],
+      "exit_code": 0,
+      "complete_package_ready": false,
+      "deferred_to_strict_package_gate": [
+        "test_build.BundledInputTests.test_all_bundled_assets_match_manifest",
+        "test_build.BundledInputTests.test_save_template_files_match_manifest"
+      ]
+    },
+    {
+      "platform": "windows-2022",
+      "job_id": 120358529227,
+      "status": "completed",
+      "conclusion": "success",
+      "artifact": {
+        "id": 12494576241,
+        "name": "portable-source-evidence-windows-2022-d7d819317a4e3ff72efa53400ce258c4154eb783",
+        "size_in_bytes": 19883,
+        "digest": "sha256:65f8e8a92b03a35e86d35b5d0ffa295c87209315ae527cd3acabc8ce056225f5"
+      },
+      "official_zip_digest_verified": true,
+      "executed": 486,
+      "passed": 397,
+      "skipped": 89,
+      "suites": [
+        {
+          "suite": "build-source-logic",
+          "executed": 60,
+          "passed": 60,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 0,
+          "skipped_method_ids_and_reasons": []
+        },
+        {
+          "suite": "ui",
+          "executed": 12,
+          "passed": 12,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 0,
+          "skipped_method_ids_and_reasons": []
+        },
+        {
+          "suite": "server",
+          "executed": 132,
+          "passed": 68,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 64,
+          "skipped_method_ids_and_reasons": [
+            {
+              "test": "test_easytier_profile.ProfileTests.test_private_output_is_new_owned_file_never_overwrites_or_follows_links",
+              "reason": "Linux owner/dirfd file policy"
+            },
+            {
+              "test": "test_native_lease.NativeLeaseTests.test_admission_without_listener_ready_does_not_publish_readiness",
+              "reason": "Linux pidfd and SCM credentials required"
+            },
+            {
+              "test": "test_native_lease.NativeLeaseTests.test_binding_change_and_different_owned_child_irreversibly_revoke",
+              "reason": "Linux pidfd and SCM credentials required"
+            },
+            {
+              "test": "test_native_lease.NativeLeaseTests.test_preflight_budget_is_distinct_from_native_post_hello_deadline",
+              "reason": "Linux pidfd and SCM credentials required"
+            },
+            {
+              "test": "test_native_lease.NativeLeaseTests.test_real_child_hello_ready_renewal_and_endpoint_close",
+              "reason": "Linux pidfd and SCM credentials required"
+            },
+            {
+              "test": "test_native_lease.NativeLeaseTests.test_received_rights_are_rejected_and_closed_without_fd_leak",
+              "reason": "Linux pidfd and SCM credentials required"
+            },
+            {
+              "test": "test_native_lease.NativeLeaseTests.test_stalled_observation_cannot_reanimate_expired_lease",
+              "reason": "Linux pidfd and SCM credentials required"
+            },
+            {
+              "test": "test_native_lease.NativeLeaseTests.test_supervisor_closes_lease_before_cleanup_and_overlay_loss_revokes",
+              "reason": "Linux pidfd and SCM credentials required"
+            },
+            {
+              "test": "test_native_lease.NativeLeaseTests.test_unconnected_or_wrong_socket_type_cannot_be_inherited",
+              "reason": "Linux pidfd and SCM credentials required"
+            },
+            {
+              "test": "test_native_lease.NativeLeaseTests.test_wrong_schema_binding_nonce_sequence_and_duplicate_frames_close",
+              "reason": "Linux pidfd and SCM credentials required"
+            },
+            {
+              "test": "test_overlay_supervisor.ExecutableIdentityTests.test_candidate_integrity_never_enables_public",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.ExecutableIdentityTests.test_fixed_digest_elf_permissions_symlink_and_file_capability_gate",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_bootstrap_exec_failure_and_start_cancellation_leave_no_child",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_changed_index_address_namespace_and_missing_observation_revoke",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_concurrent_start_reserves_one_runner_and_one_child_pair",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_exec_failure_is_reaped_and_clean_environment_pdeath_survives_exec",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_failed_native_stop_retains_handles_and_retry_preserves_order",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_initial_address_pending_never_swallows_other_failures_or_tun_ownership",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_initial_missing_ipv4_is_pending_but_never_owned_readiness",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_kernel_monitor_does_not_adopt_loopback_or_nonexistent_interface",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_kernel_monitor_real_missing_link_ioctl_reports_only_fixed_stage",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_kernel_monitor_syscall_stages_remain_fail_closed_and_close_fds",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_late_observations_cannot_publish_readiness_after_overlay_death",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_monitor_errors_are_sanitized_and_revocation_precedes_ordered_cleanup",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_observation_timeout_and_native_exit_fail_closed",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_overlay_exit_revokes_and_closes_established_native_tcp",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_parent_death_kills_exact_child_and_closes_live_connection",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_pidfd_failure_withholds_release_and_reaps_bootstrap",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_proc_open_failure_and_exited_signal_race_close_pidfd_and_reap",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_overlay_supervisor.OwnedLifecycleTests.test_startup_timeout_never_launches_native_and_cancellation_cleans_overlay",
+              "reason": "Linux pidfd/parent-death execution required"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_bootstrap_cleanup_failure_keeps_preawait_handle_for_retry",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_cancel_during_bootstrap_revokes_before_exact_cleanup_even_when_cancelled_twice",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_changed_cli_metadata_never_executes",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_close_during_observation_revokes_then_reaps_query_without_reviving",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_core_death_during_cli_read_cannot_publish_stale_success",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_exact_loopback_rpc_inode_rejects_another_same_uid_child",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_failed_query_stop_retains_handle_and_blocks_replacement_until_close",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_namespace_change_after_query_and_rpc_replacement_cannot_publish_success",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_nonzero_overflow_timeout_revoke_before_cleanup_without_raw_output",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_pending_peer_then_actual_cli_success_and_loss_is_permanent",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_profile_image_and_namespace_inputs_cannot_be_substituted",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_query_cancellation_reaps_exact_child_and_preserves_other_child",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_real_fast_query_and_default_long_lived_contract_remain_distinct",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_real_supervisor_cli_and_native_owner_lease_compose_and_revoke",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_repolling_unchanged_handshake_state_never_authorizes_production",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_stale_binding_revokes_without_renewal_and_never_enables_public",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_tun_change_across_real_cli_await_rejects_even_matching_peer_json",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_owned_overlay.OwnedOverlayTests.test_verified_header_cannot_turn_failed_fd_exec_into_fast_success",
+              "reason": "Linux pidfds, verified ELF execution and procfs"
+            },
+            {
+              "test": "test_protected_transport.ProtectedTransportTests.test_auth_revocation_is_rechecked_between_real_tls_requests",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.ProtectedTransportTests.test_body_timeout_releases_connection_without_disclosing_partial_request",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.ProtectedTransportTests.test_cli_config_check_and_sigterm_owned_process_lifecycle",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.ProtectedTransportTests.test_connection_bound_includes_slow_tls_handshakes_and_close_owns_cleanup",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.ProtectedTransportTests.test_forwarded_headers_cannot_override_kernel_peer_or_signed_identity",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.ProtectedTransportTests.test_malformed_smuggled_oversized_and_duplicate_json_requests_are_rejected",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.ProtectedTransportTests.test_plain_http_is_never_served_and_slow_handshake_does_not_block_accept",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.ProtectedTransportTests.test_real_tls_query_uses_signed_current_run_without_database_writes",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.ProtectedTransportTests.test_timed_out_query_keeps_worker_permit_until_actual_completion",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.SecureConfigTests.test_config_parser_requires_all_explicit_fields_and_rejects_duplicates",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.SecureConfigTests.test_keyfile_exact_bytes_and_rotation_are_loaded_only_on_reopen",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.SecureConfigTests.test_keyfile_in_place_change_during_read_is_detected",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.SecureConfigTests.test_keyfile_rejects_lengths_permissions_hardlinks_and_special_files",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.SecureConfigTests.test_keyfile_rejects_relative_traversal_symlink_file_and_parent",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.SecureConfigTests.test_missing_database_tls_and_key_fail_before_bind_without_creation",
+              "reason": "Linux private-file contract and openssl required"
+            },
+            {
+              "test": "test_protected_transport.SecureConfigTests.test_rate_limiter_bounds_sources_and_preserves_per_source_burst",
+              "reason": "Linux private-file contract and openssl required"
+            }
+          ]
+        },
+        {
+          "suite": "public_candidate",
+          "executed": 10,
+          "passed": 9,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 1,
+          "skipped_method_ids_and_reasons": [
+            {
+              "test": "test_public_candidate.PublicCandidateTests.test_input_symlink_rejected",
+              "reason": "symlink creation needs a separate Windows privilege"
+            }
+          ]
+        },
+        {
+          "suite": "public_server_candidate",
+          "executed": 22,
+          "passed": 21,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 1,
+          "skipped_method_ids_and_reasons": [
+            {
+              "test": "test_public_server_candidate.PublicServerCandidateTests.test_symlink_component_and_output_parent_are_rejected_without_writes",
+              "reason": "Creating symlinks requires a distinct Windows privilege"
+            }
+          ]
+        },
+        {
+          "suite": "ci",
+          "executed": 250,
+          "passed": 227,
+          "failed_test_cases": 0,
+          "failures": 0,
+          "errors": 0,
+          "successful": true,
+          "skipped": 23,
+          "skipped_method_ids_and_reasons": [
+            {
+              "test": "test_ci_easytier_probe.VerifiedPipeTests.test_actual_worker_failure_is_bounded_and_parent_reaps_without_second_ack",
+              "reason": "Linux ELF/pidfd ownership contract"
+            },
+            {
+              "test": "test_ci_easytier_probe.VerifiedPipeTests.test_bounded_fdexec_returns_exact_stdout_and_reaps",
+              "reason": "Linux ELF/pidfd ownership contract"
+            },
+            {
+              "test": "test_ci_easytier_probe.VerifiedPipeTests.test_host_tool_timeout_overflow_and_input_deadline",
+              "reason": "Linux ELF/pidfd ownership contract"
+            },
+            {
+              "test": "test_ci_easytier_probe.VerifiedPipeTests.test_overflow_and_timeout_kill_and_reap_exact_child",
+              "reason": "Linux ELF/pidfd ownership contract"
+            },
+            {
+              "test": "test_ci_easytier_probe.VerifiedPipeTests.test_parent_rejects_extra_fields_in_failure_frame",
+              "reason": "Linux ELF/pidfd ownership contract"
+            },
+            {
+              "test": "test_ci_easytier_probe.VerifiedPipeTests.test_pidfd_acquisition_failure_does_not_release_or_leak_bootstrap",
+              "reason": "Linux ELF/pidfd ownership contract"
+            },
+            {
+              "test": "test_ci_easytier_probe.VerifiedPipeTests.test_private_copy_refuses_wrong_hash_symlink_and_overwrite",
+              "reason": "Linux ELF/pidfd ownership contract"
+            },
+            {
+              "test": "test_ci_easytier_probe.VerifiedPipeTests.test_sanitized_receipt_readable_under_private_umask_without_changing_parent",
+              "reason": "Linux ELF/pidfd ownership contract"
+            },
+            {
+              "test": "test_native_lifecycle.NativeLifecycleCleanupTests.test_image_mismatch_retains_exact_handle_and_reaps_adopted_child",
+              "reason": "Linux pidfds, subreaper and signals"
+            },
+            {
+              "test": "test_native_lifecycle.NativeLifecycleCleanupTests.test_repeated_sigterm_cannot_interrupt_finally_or_write_success_report",
+              "reason": "Linux pidfds, subreaper and signals"
+            },
+            {
+              "test": "test_native_lifecycle.NativeLifecycleCleanupTests.test_unconfirmed_parent_never_signals_unrelated_child_or_leaks_pidfd",
+              "reason": "Linux pidfds, subreaper and signals"
+            },
+            {
+              "test": "test_owned_stack.FaultBarrierTests.test_command_pipe_preserves_two_commands_and_cancel_removes_reader",
+              "reason": "Linux selectable pipe"
+            },
+            {
+              "test": "test_owned_stack.InputTests.test_manifest_uses_actual_recipe_digest_and_private_inputs_outside_package",
+              "reason": "POSIX private file modes"
+            },
+            {
+              "test": "test_owned_stack.RealChildCompositionTests.test_barrier_holds_actual_supervisor_core_until_real_native_lease_eof",
+              "reason": "Linux verified ELF/pidfd lifecycle"
+            },
+            {
+              "test": "test_owned_stack.RealWorkerFailureTests.test_actual_argument_failure_retains_fixed_code_and_exact_reap",
+              "reason": "Linux exact worker pidfd"
+            },
+            {
+              "test": "test_owned_stack.RealWorkerFailureTests.test_actual_private_input_failure_is_sanitized_and_never_enters_namespace",
+              "reason": "Linux exact worker pidfd"
+            },
+            {
+              "test": "test_socket_isolation.NamespaceFixture.test_add_failure_cleans_only_prior_successes",
+              "reason": "Linux namespace handle identity/cleanup semantics"
+            },
+            {
+              "test": "test_socket_isolation.NamespaceFixture.test_cleanup_error_is_preserved_and_other_owned_names_are_cleaned",
+              "reason": "Linux namespace handle identity/cleanup semantics"
+            },
+            {
+              "test": "test_socket_isolation.NamespaceFixture.test_preexisting_namespace_is_never_owned_or_deleted",
+              "reason": "Linux namespace handle identity/cleanup semantics"
+            },
+            {
+              "test": "test_socket_isolation.NamespaceFixture.test_replaced_namespace_handle_is_never_used_or_removed",
+              "reason": "Linux namespace handle identity/cleanup semantics"
+            },
+            {
+              "test": "test_socket_isolation.NamespaceFixture.test_setup_link_failure_still_removes_all_three_owned_namespaces",
+              "reason": "Linux namespace handle identity/cleanup semantics"
+            },
+            {
+              "test": "test_socket_isolation.NamespaceFixture.test_topology_never_changes_host_links_routes_or_sysctls",
+              "reason": "Linux namespace handle identity/cleanup semantics"
+            },
+            {
+              "test": "test_socket_isolation.NamespaceFixture.test_unowned_name_cannot_execute_commands",
+              "reason": "Linux namespace handle identity/cleanup semantics"
+            }
+          ]
+        }
+      ],
+      "exit_code": 0,
+      "complete_package_ready": false,
+      "deferred_to_strict_package_gate": [
+        "test_build.BundledInputTests.test_all_bundled_assets_match_manifest",
+        "test_build.BundledInputTests.test_save_template_files_match_manifest"
+      ]
+    }
+  ],
+  "limits": [
+    "Platform-specific skips remain explicit and are not counted as passes",
+    "Both source jobs keep complete_package_ready false and defer two strict resource methods",
+    "These source contracts do not certify compiler outputs, Windows native IPC, driver execution, game acceptance or deployment"
+  ]
+}

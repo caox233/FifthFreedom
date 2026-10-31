@@ -1,0 +1,527 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-10-27T00:06:32.879878+00:00",
+  "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+  "merge_binding": {
+    "sha": "035d00c5f85426648479e4a80b774b763ffd541c",
+    "tree": "631053266b0ba4bfadf8513a6eac65cfc7fbb551",
+    "parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "329f18a40f9959cfb06939c26150cd50126c26ee"
+    ]
+  },
+  "checkout_tree_equals_source_head": true,
+  "official_artifacts": [
+    {
+      "id": 12698807187,
+      "name": "linux-public-server-component-candidate-035d00c5f85426648479e4a80b774b763ffd541c",
+      "digest": "sha256:7f0f3ee9f6385cdc1be39cbcfafe2c3b9e359f21cf6f903610622f146b9c7141",
+      "size_in_bytes": 84685249,
+      "run_id": 40420957576,
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12698006105,
+      "name": "linux-lan-baseline-035d00c5f85426648479e4a80b774b763ffd541c",
+      "digest": "sha256:c0f8cc6ae1352ef2b56fe3053d97a56efc75c06c852fb55bef36e0bc9ee9b3da",
+      "size_in_bytes": 9917515,
+      "run_id": 40420957576,
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12698656775,
+      "name": "owned-easytier-development-receipt-035d00c5f85426648479e4a80b774b763ffd541c",
+      "digest": "sha256:3dab73baed66b04875e0c5930f072bb584d2322a7166e3986b5b6d89e29d8691",
+      "size_in_bytes": 1779,
+      "run_id": 40420957466,
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12696843362,
+      "name": "native-replay-input-gate-035d00c5f85426648479e4a80b774b763ffd541c",
+      "digest": "sha256:84e97cf7096b71a5a51dde7cb766ade40a7d723e46ededbe6fcb7acf7eff8061",
+      "size_in_bytes": 396,
+      "run_id": 40420957576,
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12699132479,
+      "name": "native-owned-lifecycle-receipt-035d00c5f85426648479e4a80b774b763ffd541c",
+      "digest": "sha256:0b0279899c9bb6c2eff6bfe43c04891ddc53c3c9907a1ebcab4fd260d545ea7e",
+      "size_in_bytes": 662,
+      "run_id": 40420957576,
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12696933300,
+      "name": "complete-package-input-gate-035d00c5f85426648479e4a80b774b763ffd541c",
+      "digest": "sha256:15e62fd510af7b3a4edd97d1adad2a1b7500d446161b386492f4844e0035f8f0",
+      "size_in_bytes": 1657,
+      "run_id": 40420957576,
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "official_digest_verified": true
+    },
+    {
+      "id": 12699052446,
+      "name": "windows-compile-only-components-035d00c5f85426648479e4a80b774b763ffd541c",
+      "digest": "sha256:54b0297cf34434bc3e27f31c65195e56f3a2a3dc3f23ec524ee1822fd0540858",
+      "size_in_bytes": 74799919,
+      "run_id": 40420957576,
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "official_digest_verified": true
+    }
+  ],
+  "review_receipt_sha256": {
+    "windows-payload/downloaded-payload-verification.json": "f53742c992df990490f85450198a3def4e7d80ecb93bfb420815d2bfe339b5c3",
+    "windows-payload/source-closure-verification.json": "1f5ec9d7371497e6eeef393ed343df0e41cfe3085eac73ccd7450c914952a676",
+    "assembly-payload/downloaded-payload-verification.json": "5d0d61db5a59bbd974a3dbf5d43a9ff9072e896638dd60d6b8737c0d60901f95",
+    "assembly-payload/same-run-binding.json": "a894524a63fbb699b19f2df4445c4e10fab3fcd88228a91fbdc208cde3f65ef6",
+    "linux-lan/independent-component-identities.json": "4d7844b69343cc2d9fd914d61c7076c1edbca9af79a4196a2c577835a7cdf938"
+  },
+  "windows_publication": {
+    "run_id": 40420957576,
+    "job_id": 121914968792,
+    "stage_and_upload_steps_success": true,
+    "actual_downloaded_files": 61,
+    "notices_and_source_files": 50,
+    "hidden_source_files": 5,
+    "all_content_hashes_independently_checked": true,
+    "no_extra_files_or_logs": true,
+    "source_reference": {
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "artifact_id": 12699052446,
+      "source_files": 38,
+      "source_bytes": 126092,
+      "manifest_matches_exact_reviewed_head": true,
+      "all_git_blobs_match": true,
+      "upstream_commit": "5f83e41c3a3e7c6e8284a5c1afa5a38790809461",
+      "upstream_tree": "4cf1cf78190c2bd40fcd88584d3f0be36a1af947",
+      "permission_closure": false,
+      "upstream_scripts_executed": false,
+      "all_hidden_sources_present": true,
+      "complete_package": false
+    },
+    "permission_closure": false,
+    "complete_game_package": false
+  },
+  "assembly_publication": {
+    "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+    "checkout_merge": "035d00c5f85426648479e4a80b774b763ffd541c",
+    "run_id": "40420957576",
+    "run_attempt": "1",
+    "artifact_id": 12698807187,
+    "payload_files": 65,
+    "candidate_inventory_files": 64,
+    "declared_candidate_files": 62,
+    "same_run_component_identities": [
+      {
+        "candidate_path": "client/FifthFreedom.exe",
+        "same_run_component": "FifthFreedom.component-only.exe",
+        "bytes": 144932783,
+        "sha256": "6045b8afeb0ce53d32dcd1c185b154fa1e890ddd3c737ec9135db2d48c5db1c0"
+      },
+      {
+        "candidate_path": "client/runtime/FifthFreedom.Server.exe",
+        "same_run_component": "FifthFreedom.Server.exe",
+        "bytes": 10890752,
+        "sha256": "a9c8fdba76416c68617ef3fe7c830b1651c73f5bd0b91c0509445e26c9e19d1d"
+      },
+      {
+        "candidate_path": "client/runtime/uplay_r1_loader.dll",
+        "same_run_component": "uplay_r1_loader.dll",
+        "bytes": 7746048,
+        "sha256": "5187b64864e4537b94bcb00808380c5109a316b87707d854ce9bf86f91d59e40"
+      },
+      {
+        "candidate_path": "client/runtime/scbl_gameplay.dll",
+        "same_run_component": "scbl_gameplay.dll",
+        "bytes": 2430976,
+        "sha256": "aae965acf71d5dd2624a9b738cdf8b0e72d3ee013a17bbdb708a490ecd67d6f2"
+      },
+      {
+        "candidate_path": "bin/FifthFreedom.Server",
+        "same_run_component": "dedicated_server",
+        "bytes": 30320120,
+        "sha256": "c458deaba45a1cbcb607273654f3e110204699dbdfd9ea1e394912b33764263b"
+      },
+      {
+        "candidate_path": "tools/verify_public_package",
+        "same_run_component": "verify_public_package",
+        "bytes": 484360,
+        "sha256": "dcb1bf40c3d2aeefd58b504482a7662f2bbaee7023611dbe4ecae6a1e264ae33"
+      }
+    ],
+    "native_identity_receipts_match": true,
+    "static_preflight": {
+      "schema": 1,
+      "status": "static_preflight_and_closed_gate_verified",
+      "static_preflight": {
+        "schema": 1,
+        "status": "static_preflight_verified",
+        "startup_allowed": false,
+        "service_manifest_sha256": "411f2836d6317c1314be0cde827ae1741771ea7336483c7b66069ad814d6ffdc",
+        "admitted_client_storage_key": "1|fifth-freedom-1.1.0-migration1|scbl-lan-1.1.0|649911eaf04fd7cc75382d3ca09e43be0cba43d79305714634615fd0945f1414",
+        "shared_auth_key_validated": true,
+        "data_directory_private": true,
+        "data_lock_acquired": false,
+        "observer_enabled": false,
+        "native_listener_plan": {
+          "count": 5,
+          "bind_scope": "declared_overlay_ipv4",
+          "config_tcp": 80,
+          "content_tcp": 8000,
+          "auth_udp": 21126,
+          "secure_udp": 21127,
+          "api_tcp": 50051
+        },
+        "blockers": [
+          "OWNED_ENCRYPTED_OVERLAY_UNVERIFIED",
+          "OVERLAY_LIFETIME_SUPERVISION_UNVERIFIED",
+          "PUBLIC_SOCKET_CONFINEMENT_NOT_ACTIVATED",
+          "PUBLIC_SOURCE_POLICY_NOT_ACTIVATED"
+        ]
+      },
+      "ordinary_public_startup_rejected": true,
+      "ephemeral_inputs_removed": true,
+      "candidate_unchanged": true,
+      "native_public_profile_enabled": false,
+      "game_executed": false,
+      "deployed": false,
+      "published": false
+    },
+    "scope": {
+      "complete_game_package": false,
+      "complete_windows_client": false,
+      "deployed": false,
+      "game_executed": false,
+      "native_public_profile_enabled": false,
+      "published": false
+    },
+    "read_only_production_validator_passed": true,
+    "local_native_binaries_executed": false,
+    "full_game_package": false
+  },
+  "linux_lan": {
+    "job_id": 121914969297,
+    "passed": 519,
+    "failed": 0,
+    "ignored": 0,
+    "independent_component_identities": {
+      "source_head": "329f18a40f9959cfb06939c26150cd50126c26ee",
+      "checkout_merge": "035d00c5f85426648479e4a80b774b763ffd541c",
+      "run_id": "40420957576",
+      "artifact_id": 12698006105,
+      "components": [
+        {
+          "component": "dedicated_server",
+          "bytes": 30320120,
+          "sha256": "c458deaba45a1cbcb607273654f3e110204699dbdfd9ea1e394912b33764263b",
+          "independent_zip_rehash": true
+        },
+        {
+          "component": "verify_public_package",
+          "bytes": 484360,
+          "sha256": "dcb1bf40c3d2aeefd58b504482a7662f2bbaee7023611dbe4ecae6a1e264ae33",
+          "independent_zip_rehash": true
+        }
+      ],
+      "execution": false
+    }
+  },
+  "native_lifecycle": {
+    "job_id": 121924250746,
+    "official_receipt_sha256": "dee7d9a726b2553664813bd977a45aed7ed94fc90c4c32aa51e3cbce631a7810",
+    "receipt": {
+      "schema": 1,
+      "status": "native_owned_lifecycle_verified",
+      "source_commit": "035d00c5f85426648479e4a80b774b763ffd541c",
+      "run_id": "40420957576",
+      "run_attempt": "1",
+      "scope": {
+        "synthetic_runtime_bindings": true,
+        "controlled_native_startup_test": true,
+        "encrypted_overlay_verified": false,
+        "production_provider_open": false,
+        "game_executed": false,
+        "complete_windows_client": false,
+        "deployed": false,
+        "published": false
+      },
+      "cases": [
+        {
+          "case": "withheld",
+          "no_state_created": true,
+          "native_reaped": true
+        },
+        {
+          "case": "denied",
+          "no_state_created": true,
+          "native_reaped": true
+        },
+        {
+          "case": "eof",
+          "actual_listener_count": 5,
+          "protected_http_and_tcp_verified": true,
+          "wrong_interface_rejected": true,
+          "established_connection_closed": true,
+          "all_five_ports_released": true,
+          "native_exit": 92,
+          "native_reaped": true
+        },
+        {
+          "case": "expiry",
+          "actual_listener_count": 5,
+          "protected_http_and_tcp_verified": true,
+          "wrong_interface_rejected": true,
+          "established_connection_closed": true,
+          "all_five_ports_released": true,
+          "native_exit": 92,
+          "native_reaped": true
+        },
+        {
+          "case": "parent_death",
+          "actual_listener_count": 5,
+          "protected_http_and_tcp_verified": true,
+          "wrong_interface_rejected": true,
+          "established_connection_closed": true,
+          "all_five_ports_released": true,
+          "native_exit": 92,
+          "native_reaped": true
+        }
+      ],
+      "copied_package_native_verified": true,
+      "source_package_unchanged": true,
+      "private_tree_removed": true,
+      "owned_namespaces_removed": 3,
+      "all_owned_children_reaped": true,
+      "no_default_routes": true
+    }
+  },
+  "matrix": {
+    "run_id": 40420957466,
+    "job_id": 121915871945,
+    "official_receipt_sha256": "59846ad50521de9482fdc2978d74dbf83da9a26d5987501ce3afc7beeec87f9f",
+    "status": "isolated_development_matrix_verified",
+    "runtime_candidate": {
+      "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+      "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+      "executable_sha256": "6b263d71f93a3b5324421a2610a539705e857ab1523e398365147387c66d1f41",
+      "executable_size": 28593032,
+      "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+      "role": "easytier-core",
+      "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+      "target": "x86_64-unknown-linux-gnu",
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626"
+    },
+    "phases": 9,
+    "transports": [
+      {
+        "transport": "quic",
+        "status": "owned_overlay_probe_verified",
+        "phases": [
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-before",
+            "profile_sha256": "6ebedf6bf806f757de48a517bc6e5fb6cf539b9e8122d3bde0bb83272b4829c7"
+          },
+          {
+            "echo_rounds": [
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              }
+            ],
+            "minimum_observation_seconds": 8,
+            "peer_authenticated": false,
+            "phase": "wrong-pin",
+            "profile_sha256": "0ca2647e3609d466a5bf97c82d87246925545e0957b724cb72b3e4331aefc999",
+            "tun_owned": true
+          },
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-after",
+            "profile_sha256": "6ebe126be7af0771aad93234df8ed6acbbda4fafc0214f593ba3d09d5bb751bf"
+          }
+        ],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        }
+      },
+      {
+        "transport": "wss",
+        "status": "owned_overlay_probe_verified",
+        "phases": [
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-before",
+            "profile_sha256": "55e982f7dcd705f08085d7c45d263b31bd10f7f397d9113cfda49f87c43e8593"
+          },
+          {
+            "echo_rounds": [
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              }
+            ],
+            "minimum_observation_seconds": 8,
+            "peer_authenticated": false,
+            "phase": "wrong-pin",
+            "profile_sha256": "6e2e3d6cabcc7be9a99c2a0c46e0d8e6c6458393b88167d13cc2d195cff0ed03",
+            "tun_owned": true
+          },
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-after",
+            "profile_sha256": "3b5db3f7207ad5f036721d31789400ad8e65e73549e9e501d63936906d868487"
+          }
+        ],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        }
+      },
+      {
+        "transport": "tcp",
+        "status": "owned_overlay_probe_verified",
+        "phases": [
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-before",
+            "profile_sha256": "bb5c39eb70de3d4a2404f6d69e61aa8904740cb17a5471a55b76fb5ddd0d2efa"
+          },
+          {
+            "echo_rounds": [
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              },
+              {
+                "tcp_port": "timeout",
+                "udp_ephemeral_port": "timeout",
+                "udp_port": "timeout"
+              }
+            ],
+            "minimum_observation_seconds": 8,
+            "peer_authenticated": false,
+            "phase": "wrong-pin",
+            "profile_sha256": "afe4082ed6b7f9067e2a95888af040943e0486ffb8741d95423f821e319c1263",
+            "tun_owned": true
+          },
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-after",
+            "profile_sha256": "f72323445246911285e667eba254ae183b3c7c4f6cb5e3011317b0fb82c6cde8"
+          }
+        ],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "cleanup_errors": [],
+        "core_exit": {
+          "core_reaped": true,
+          "new_traffic_denied": true,
+          "production_native_lease_exercised": false,
+          "tun_absent": true
+        }
+      }
+    ],
+    "private_stage_removed": true,
+    "native_owner_lease_verified": false,
+    "production_admission": false
+  },
+  "composition": {
+    "run_id": 40420957576,
+    "job_id": 121924250674,
+    "observed_status": "in_progress",
+    "actual_step": 12,
+    "step_name": "Build this job exact guard3 core and CLI after 35 finite contracts",
+    "success_not_claimed": true,
+    "runtime_controls_verified": false,
+    "runtime_step_13_started_at_observation": false
+  },
+  "strict_gates": {
+    "missing_held_SAV_META_inputs": 8,
+    "other_package_input_errors": [],
+    "complete_package_ready": false,
+    "C71_retained_tests": 13,
+    "C71_executed": 0,
+    "C71_source_unchanged": true
+  },
+  "boundaries": {
+    "complete_unified_game_package_delivered": false,
+    "native_Public_enabled": false,
+    "reviewer_executed_downloaded_binary": false,
+    "reviewer_started_game_capture_driver_or_namespace": false,
+    "production_deployed": false,
+    "formal_Release_published": false,
+    "tracked_files_modified_by_reviewer": false
+  },
+  "review_summary_sha256": "6ca622b37b1a7e52f6df8bc54da35f3698ba3332249e6650036ece59e0b861bc"
+}

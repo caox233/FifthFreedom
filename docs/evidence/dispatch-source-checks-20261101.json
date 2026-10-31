@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "scope": "Linux working-tree source tests, before candidate commit; actual Windows ABI execution is pending",
+  "source_parent": "0e691519b878a8fbbb0695392eb2a2ba9616e841",
+  "executed": 731,
+  "passed": 729,
+  "skipped": 2,
+  "exit_code": 0,
+  "report_sha256": "1535f3a40ffbafc8c2eb55b6562ced9e21300e5cd5da5c362a0f953d06b145a0",
+  "package_inputs": {
+    "verified": 20,
+    "required": 20,
+    "tests_passed": 2,
+    "donor_only_holds": 4
+  },
+  "game_executed": false
+}

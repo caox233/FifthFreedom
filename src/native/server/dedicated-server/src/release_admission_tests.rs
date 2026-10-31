@@ -50,6 +50,39 @@ fn missing_wrong_and_mixed_release_reject_before_real_credential_and_registratio
 }
 
 #[test]
+fn complete_package_release_and_compatibility_mismatches_are_distinct_and_have_no_auth_side_effects() {
+    let (storage,pool)=crate::storage::release_test_support::fixture();
+    runtime().block_on(async {
+        seed(&pool).await;let users=service(storage);let before=snapshot(&pool).await;
+        for (release,compatibility,reason) in [
+            ("different-complete-release","fixture-compat-1","RELEASE_MISMATCH"),
+            ("fixture-release-2","different-protocol-compatibility","COMPAT_MISMATCH"),
+        ] {
+            let mut declared=test_package_identity();
+            declared.release_id=release.into();declared.compat_id=compatibility.into();
+            // All four roles are coherent. A mixed-role refusal would mask the
+            // whole-package release/compatibility admission that this checks.
+            for role in [&mut declared.launcher,&mut declared.main_dll,&mut declared.gameplay_dll,&mut declared.server] {
+                role.as_mut().unwrap().release_id=release.into();
+                role.as_mut().unwrap().compat_id=compatibility.into();
+            }
+            for product in [ACCOUNT_PRODUCT,GameplayMode::Official.product(),GameplayMode::Mod.product()] {
+                let error=users.login(login(product,Some(declared.clone()))).await.unwrap_err();
+                assert_eq!(error.code(),tonic::Code::FailedPrecondition);
+                assert!(error.message().starts_with(reason),"{}",error.message());
+                assert_eq!(snapshot(&pool).await,before,"no last_login/run/ticket/account mutation on {reason}");
+            }
+            let request=source(users::RegisterRequest{client_product:ACCOUNT_PRODUCT.into(),username:"never-created".into(),password:"fixture-only".into(),ubi_id:"never-created-id".into(),package_identity:Some(declared)});
+            let error=users.register(request).await.unwrap_err();
+            assert_eq!(error.code(),tonic::Code::FailedPrecondition);
+            assert!(error.message().starts_with(reason),"{}",error.message());
+            assert_eq!(snapshot(&pool).await,before);
+        }
+        println!("RELEASE_COMPATIBILITY coherent_wrong_release_and_compat_rejected=true account_official_mod_register_unchanged=true");
+    });
+}
+
+#[test]
 fn exact_release_account_and_game_are_separate_and_signed_identity_roundtrips() {
     let (storage,pool)=crate::storage::release_test_support::fixture();
     runtime().block_on(async {

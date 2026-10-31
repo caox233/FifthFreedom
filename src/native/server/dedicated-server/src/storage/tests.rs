@@ -4137,3 +4137,5 @@
 include!("coverage2_join_order_controls.rs");
 
     include!("coverage2_join_publication_tests.rs");
+
+    include!("quick_match_protocol_tests.rs");

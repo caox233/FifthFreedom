@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "timezone": "Asia/Hong_Kong",
+  "baseline_source": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+  "status": "source_guard_and_tests_implemented_windows_execution_pending_live_crash_cause_unconfirmed",
+  "reported_game_exception": {
+    "execute_fault": {
+      "access": 8,
+      "instruction": 0,
+      "hosts_or_clients_with_fault": 3,
+      "correlated_window_seconds_approximate": 29,
+      "fourth_peer_exit": true,
+      "credible_return_callsite": false
+    },
+    "separate_write_fault": {
+      "access": 1,
+      "rva": "0x20c25b4"
+    },
+    "causal_attribution_confirmed": false,
+    "raw_logs_or_player_identifiers_uploaded": false
+  },
+  "source_finding": "Synchronous native audio callbacks can invalidate a previously accepted actor or supersede an in-flight sound record before outer publication/cleanup continues.",
+  "modification_scope": [
+    "revalidate original actor/world/owner/assets after cancel before Start",
+    "remove only exact internal sound-record token; preserve nested accepted record",
+    "distinguish unavailable, own accepted and superseded emission to avoid fallback mixing or duplicate publication",
+    "suppress old Stop fallback after identity change or new owned pair",
+    "Whistle caller revalidates owner before fallback/ATS/Net publication",
+    "Detonate revalidates original Owner and READY after availability and cancellation before native trigger"
+  ],
+  "source_sha256": {
+    "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs": "80e2841654924909e017bc97d3b11d1606d39cc11bfcfb3ca63cbf5653e338ba",
+    "src/native/client/hooks/gameplay/src/sticky_camera_sound.rs": "a1de43396b6fa37e5f799302384541473f50bdf9523711ff672ba2126a556eaf",
+    "src/native/client/hooks/gameplay/src/sticky_camera_lifecycle_tests.rs": "e9ddb3ecedd0aca4335b6509181281f9b580afacf486c777d4dbcfe8e51e94d2",
+    "src/native/client/hooks/gameplay/src/sticky_camera_lifecycle_runtime_fixture.rs": "4a8e514b23b9519e41315a0009364e41f7355556cc95fffd4c083faa3b0db2f2",
+    "src/native/client/hooks/gameplay/src/sticky_camera_gesture.rs": "305c19dddcc0d2189a14308370bb9729fc37fd39d78a915a43cd9c1ded031529",
+    "scripts/ci_native_production_replay.py": "6921da2c12faa420c2e59af18d353030723c5030cfe75aa224daccde2b7b7d7b",
+    "tests/ci/test_native_production_replay.py": "c6c45d22709b2b6c5ea449332e936f777f16d57d0220a89e72168482ac91a555"
+  },
+  "pin_declarations_unchanged": {
+    "runtime": {
+      "equal": true,
+      "sha256": "01b13220e5234e06be04c21ab8dd70196fb4decd313daf4cfc2a2947594dc974",
+      "retail_pin_verification_executed": false
+    },
+    "sound": {
+      "equal": true,
+      "sha256": "c867060e6e6a8048fa80a4ce33a4c086a74accc0389a56843d2787afa56e26d3",
+      "retail_pin_verification_executed": false
+    }
+  },
+  "actual_checks": {
+    "gesture_policy": {
+      "host": "Linux",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0,
+      "stdout_sha256": "6c4b9a251046ad2872f76d4d75f6133a29f49df8c1b29d12e54d5d7249dccbcd",
+      "executable_sha256": "6fd31b33ed8d4fe56a05388df6fe49df2ed7f977ae2692b18c9a126916bc83a0",
+      "scope": "unchanged production gesture policy only"
+    },
+    "runner_refusal_controls": {
+      "passed": 10,
+      "failed": 0,
+      "exit_code": 0,
+      "stderr_sha256": "d4b965eaf2ecabcc2775004d954e2daf09d0eb56b8d3ffa3e03ea522ca79c9e0",
+      "scope": "Python parser/metadata negative controls; no Windows PE executed"
+    },
+    "cross_typecheck": {
+      "host": "Linux",
+      "target": "i686-pc-windows-msvc",
+      "command": "cargo check --offline --locked -p scbl-gameplay --lib --tests",
+      "links_or_executes_windows_binary": false,
+      "baseline": {
+        "exit_code": 0,
+        "stderr_sha256": "55c1c22cae98bb8764cb85aa731db3a3b8dac5b915de119c7bade9059a84761b",
+        "instrumentation": {
+          "src/native/client/hooks/gameplay/src/sticky_camera_sound.rs": "\n#[cfg(test)]\n#[path=\"sticky_camera_lifecycle_tests.rs\"]\nmod lifecycle_replay;\n",
+          "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs": "\n#[cfg(test)]\n#[path=\"sticky_camera_lifecycle_runtime_fixture.rs\"]\npub(crate) mod lifecycle_fixture;\n",
+          "src/native/client/hooks/gameplay/src/progression.rs": "\n#[cfg(test)]\n#[path = \"progression_region_tests.rs\"]\nmod region_tests;\n"
+        },
+        "fixed_tests_match_modified": true
+      },
+      "modified": {
+        "exit_code": 0,
+        "stderr_sha256": "e9965511fa83a7e7e9814da4228549e97e8fff03cb48f3064c278e0f05c56644"
+      }
+    }
+  },
+  "hosted_four_roles": {
+    "executed": false,
+    "status": "pending",
+    "runner": "scripts/ci_native_production_replay.py",
+    "expected_not_yet_observed": {
+      "camera_callback_checks_per_role": 87,
+      "baseline_rollback_callback_failures": 35,
+      "baseline_rollback_tests": {
+        "passed": 9,
+        "failed": 1,
+        "ignored": 0
+      },
+      "modified_reapplied_tests": {
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0
+      },
+      "progression_lane": {
+        "baseline_rollback": {
+          "passed": 0,
+          "failed": 2
+        },
+        "modified_reapplied": {
+          "passed": 2,
+          "failed": 0
+        }
+      }
+    }
+  },
+  "boundaries": [
+    "No real game, capture, external process attach, retail throw/replication/detonation body, or audio hardware executed.",
+    "Synthetic audio/original Whistle/sender/available/trigger leaves exercise actual source dispatch and native thiscall ABI only when run on Windows.",
+    "ATS native visual/audible result is not dynamically measured by the fixture.",
+    "Existing +0x20 object index is not a proven allocation generation; same-address/same-index ABA and concurrent cross-thread release remain unproven.",
+    "Tick/Cleanup and other wider native lifecycle boundaries remain open; no unknown native return contract is guessed.",
+    "Previously accepted gesture actions and unrelated F3/MAC11/Chinese/world-camera/VSS EMF results remain retained.",
+    "C71 missing inputs are independent and are not replaced or loosened."
+  ],
+  "independent_reviews": {
+    "runner_review_sha256": "53c5bcdb7a0cf71d7a3aca0f0d8f6c5a7ec7be81e50d3d9d696a2015ed8f881c"
+  }
+}

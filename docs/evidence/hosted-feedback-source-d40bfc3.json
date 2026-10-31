@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "recorded_date_hong_kong": "2026-10-31",
+  "source_commit": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+  "source_workflow": 41193432885,
+  "conclusion": "success",
+  "pr_source_binding": {
+    "head": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+    "merge": "4778c5044738d34a43586587407f2ad93f315e1b",
+    "source_tree": "7b626b0caeeddceff9bce19efdbdbe90284a8194",
+    "merge_tree": "7b626b0caeeddceff9bce19efdbdbe90284a8194",
+    "trees_identical": true,
+    "source_run": 41193432885,
+    "candidate_run": 41193432848,
+    "visual_run": 41193432884
+  },
+  "downloaded_source_artifacts": [
+    {
+      "artifact": 13039787614,
+      "name": "portable-source-evidence-ubuntu-24.04-4778c5044738d34a43586587407f2ad93f315e1b",
+      "sha256": "1303981308ec8b0195848702c9ebd922177c25f071f69821631fde22083cbaa2",
+      "executed": 713,
+      "passed": 711,
+      "skipped": 2,
+      "exit_code": 0
+    },
+    {
+      "artifact": 13039578399,
+      "name": "portable-source-evidence-windows-2022-4778c5044738d34a43586587407f2ad93f315e1b",
+      "sha256": "528f03a5c5a3ed38c2dc1e315359f24ab26cfdd4eea2a995a9105bf443abfe32",
+      "executed": 713,
+      "passed": 594,
+      "skipped": 119,
+      "exit_code": 0
+    }
+  ],
+  "all_official_zip_digests_and_crc_verified": true,
+  "package_input_gate": {
+    "run": 41193432848,
+    "artifact": 13040086373,
+    "sha256": "3b1647a43f85302dd3cb35420b1bd820b8e3a8aea9d83a39124daa5e73c8e0cb",
+    "receipt": {
+      "schema": 1,
+      "mode": "package-inputs",
+      "inputs": {
+        "status": "ready",
+        "required_input_count": 20,
+        "verified_input_count": 20,
+        "held_input_count_all_sources": 4,
+        "missing_held_package_inputs": [],
+        "errors": [],
+        "complete_package_ready": true
+      },
+      "suites": [
+        {
+          "suite": "strict-package-inputs",
+          "executed": 2,
+          "passed": 2,
+          "failed_test_cases": 0,
+          "failed_method_ids": [],
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "expected_failures": 0,
+          "unexpected_successes": 0,
+          "successful": true
+        }
+      ],
+      "game_executed": false,
+      "published": false,
+      "exit_code": 0
+    }
+  },
+  "independent_c71_gate": {
+    "run": 41193432848,
+    "artifact": 13039277929,
+    "sha256": "f027aef93e7d1487f6afbff6be79a884f20b2403d404dfe21008eb30ae4a84d4",
+    "receipt": {
+      "schema": 1,
+      "status": "blocked_native_replay_inputs",
+      "required_feature": "native-replay-fixtures",
+      "retained_test_count": 13,
+      "retained_test_source_unchanged": true,
+      "fixture_source_supplied": false,
+      "reviewed_fixture_manifest_supplied": false,
+      "fixture_authenticated": false,
+      "missing_contract": "C71 fixture source, native bytes/generator and reviewed provenance manifest",
+      "executed_native_replay_tests": 0,
+      "full_native_replay_verified": false,
+      "game_executed": false,
+      "complete_package": false
+    }
+  },
+  "retained_previous_failure": "hosted-feedback-runner-path-72e92af.json",
+  "native_production_replay_separate": true,
+  "complete_package_verified_by_this_receipt": false,
+  "game_executed": false
+}

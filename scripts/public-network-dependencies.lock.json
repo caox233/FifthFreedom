@@ -1,0 +1,404 @@
+{
+  "schema": 1,
+  "purpose": "Read-only fixed-version dependency identity audit; not an installer or publication authorization",
+  "observed_utc": "2026-10-23T03:48:37.037443+00:00",
+  "donor_reference_commit": "fc8ef510b51be83c31f9f8233997f758b0477acc",
+  "upstream_source_revisions": {
+    "EasyTier/EasyTier:v2.6.4": "8428a89d2dabc94c97d370ec607c6ca142473626",
+    "basil00/WinDivert:v2.2.2": "1789526ecfb9ff5397c94f9f54c1a3dc2fb60440"
+  },
+  "artifacts": [
+    {
+      "id": "easytier-windows-x86_64",
+      "filename": "easytier-windows-x86_64-v2.6.4.zip",
+      "platform": "windows-x86_64",
+      "version": "2.6.4",
+      "source_url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-windows-x86_64-v2.6.4.zip",
+      "repository": "EasyTier/EasyTier",
+      "release_id": 321174268,
+      "asset_id": 418406680,
+      "bytes": 32657720,
+      "sha256": "27af91e270e554709b048bd32327fefd2dfce5062ae1e8701af7550c6f525f84",
+      "official_api_digest": "sha256:27af91e270e554709b048bd32327fefd2dfce5062ae1e8701af7550c6f525f84",
+      "verification_basis": "official_asset_sha256_and_size_matched_download",
+      "download_verified": true,
+      "required_members": [
+        {
+          "name": "easytier-windows-x86_64/easytier-cli.exe",
+          "bytes": 9973248,
+          "sha256": "d8783e851e944b44a9b71b39fd02f227ec0a2a82b3165c55ead5dd32dcde53a1"
+        },
+        {
+          "name": "easytier-windows-x86_64/easytier-core.exe",
+          "bytes": 24395776,
+          "sha256": "da7eb2d24b5416f3d3407636949e964a0750e3f9dc53a828cb6799a57ead445d"
+        },
+        {
+          "name": "easytier-windows-x86_64/WinDivert64.sys",
+          "bytes": 94144,
+          "sha256": "8da085332782708d8767bcace5327a6ec7283c17cfb85e40b03cd2323a90ddc2"
+        },
+        {
+          "name": "easytier-windows-x86_64/wintun.dll",
+          "bytes": 427552,
+          "sha256": "e5da8447dc2c320edc0fc52fa01885c103de8c118481f683643cacc3220dafce"
+        },
+        {
+          "name": "easytier-windows-x86_64/Packet.dll",
+          "bytes": 220032,
+          "sha256": "c7c03a87eac7243ccbe331554624b18803010b740e311fc8cfddb573096eacac"
+        }
+      ],
+      "runtime_executed": false,
+      "redistribution_approved": false
+    },
+    {
+      "id": "easytier-windows-i686",
+      "filename": "easytier-windows-i686-v2.6.4.zip",
+      "platform": "windows-i686",
+      "version": "2.6.4",
+      "source_url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-windows-i686-v2.6.4.zip",
+      "repository": "EasyTier/EasyTier",
+      "release_id": 321174268,
+      "asset_id": 418406679,
+      "bytes": 30881261,
+      "sha256": "bf557daeccc5525d95b8a230c339d75554fb52d82d1e050e9a5202c92c02e09e",
+      "official_api_digest": "sha256:bf557daeccc5525d95b8a230c339d75554fb52d82d1e050e9a5202c92c02e09e",
+      "verification_basis": "official_asset_sha256_and_size_matched_download",
+      "download_verified": true,
+      "required_members": [
+        {
+          "name": "easytier-windows-i686/easytier-cli.exe",
+          "bytes": 9124352,
+          "sha256": "e1d6a617e4cb3b9bf77c9d32616dace5d5715fabcbcb0f5f9969a98f3626d69a"
+        },
+        {
+          "name": "easytier-windows-i686/easytier-core.exe",
+          "bytes": 22184448,
+          "sha256": "657400c756aa4e2868b9505f669527733ba872dff3b8877cee24d7772616c76b"
+        },
+        {
+          "name": "easytier-windows-i686/wintun.dll",
+          "bytes": 550928,
+          "sha256": "d694fa46ab4cfebcb2632d094c7aa97278eef2f8052438621766d863ae98a931"
+        },
+        {
+          "name": "easytier-windows-i686/WinDivert32.sys",
+          "bytes": 79792,
+          "sha256": "2f43f4251be4d72dd56c91bf6cce475d379eb9ba6c4dda2be3022ea633d5e807"
+        },
+        {
+          "name": "easytier-windows-i686/Packet.dll",
+          "bytes": 174456,
+          "sha256": "f0ab4f5457bd48958b72d6849148e1ece6dbc1059435dfe695051fc32b8cdc19"
+        }
+      ],
+      "runtime_executed": false,
+      "redistribution_approved": false
+    },
+    {
+      "id": "easytier-linux-x86_64",
+      "filename": "easytier-linux-x86_64-v2.6.4.zip",
+      "platform": "linux-x86_64",
+      "version": "2.6.4",
+      "source_url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-linux-x86_64-v2.6.4.zip",
+      "repository": "EasyTier/EasyTier",
+      "release_id": 321174268,
+      "asset_id": 418406688,
+      "bytes": 25506523,
+      "sha256": "61b659eaedba658fa66fe47d17e1426cdd77e5d02fa15fed447bb4357c09dfd6",
+      "official_api_digest": "sha256:61b659eaedba658fa66fe47d17e1426cdd77e5d02fa15fed447bb4357c09dfd6",
+      "verification_basis": "official_asset_sha256_and_size_matched_download",
+      "download_verified": true,
+      "required_members": [
+        {
+          "name": "easytier-linux-x86_64/easytier-core",
+          "bytes": 7558408,
+          "sha256": "35b854e0c5853c02733870488c977200f6aa06d09c08d5dc7f9f9e150e7be8d5"
+        },
+        {
+          "name": "easytier-linux-x86_64/easytier-cli",
+          "bytes": 3095200,
+          "sha256": "8da66644ec50dcf618fccf76780991f52dfbe2939797abc0efe0ef4d4c4d3383"
+        }
+      ],
+      "runtime_executed": false,
+      "redistribution_approved": false
+    },
+    {
+      "id": "windivert-2.2.2",
+      "filename": "WinDivert-2.2.2-A.zip",
+      "platform": "windows-x86_64",
+      "version": "2.2.2",
+      "source_url": "https://github.com/basil00/WinDivert/releases/download/v2.2.2/WinDivert-2.2.2-A.zip",
+      "repository": "basil00/WinDivert",
+      "release_id": 77710403,
+      "asset_id": 78510020,
+      "bytes": 405137,
+      "sha256": "63cb41763bb4b20f600b6de04e991a9c2be73279e317d4d82f237b150c5f3f15",
+      "official_api_digest": null,
+      "verification_basis": "official_asset_size_and_first_observed_download_sha256_no_api_digest",
+      "download_verified": true,
+      "required_members": [
+        {
+          "name": "WinDivert-2.2.2-A/x86/WinDivert32.sys",
+          "bytes": 79792,
+          "sha256": "2f43f4251be4d72dd56c91bf6cce475d379eb9ba6c4dda2be3022ea633d5e807"
+        },
+        {
+          "name": "WinDivert-2.2.2-A/LICENSE",
+          "bytes": 61349,
+          "sha256": "14a0cb5214d536e4fdae6aa3f5696f981eeda106cd026e9794bba489ee79d628"
+        },
+        {
+          "name": "WinDivert-2.2.2-A/x64/WinDivert64.sys",
+          "bytes": 94144,
+          "sha256": "8da085332782708d8767bcace5327a6ec7283c17cfb85e40b03cd2323a90ddc2"
+        },
+        {
+          "name": "WinDivert-2.2.2-A/x64/WinDivert.dll",
+          "bytes": 47616,
+          "sha256": "c1e060ee19444a259b2162f8af0f3fe8c4428a1c6f694dce20de194ac8d7d9a2"
+        }
+      ],
+      "runtime_executed": false,
+      "redistribution_approved": false
+    },
+    {
+      "id": "wintun-official-0.14.1",
+      "filename": "wintun-0.14.1.zip",
+      "platform": "windows-multiarch",
+      "version": "0.14.1",
+      "source_url": "https://www.wintun.net/builds/wintun-0.14.1.zip",
+      "repository": "WireGuard/wintun",
+      "bytes": 750540,
+      "sha256": "07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51",
+      "official_api_digest": null,
+      "verification_basis": "official_https_download_and_existing_member_pin_match_no_api_digest",
+      "download_verified": true,
+      "required_members": [
+        {
+          "name": "wintun/LICENSE.txt",
+          "bytes": 5431,
+          "sha256": "183adac21e7d96c508c8fd34d394b7b6708bc81564ad1bad61ab66143a008cd2"
+        },
+        {
+          "name": "wintun/README.md",
+          "bytes": 13916,
+          "sha256": "558d828fe4b2d64cc33ab79deaeea883516852af85facbb4e5af5f7672504163"
+        },
+        {
+          "name": "wintun/bin/amd64/wintun.dll",
+          "bytes": 427552,
+          "sha256": "e5da8447dc2c320edc0fc52fa01885c103de8c118481f683643cacc3220dafce"
+        },
+        {
+          "name": "wintun/bin/arm/wintun.dll",
+          "bytes": 364552,
+          "sha256": "daad267411ecdc70a0535e274d2c3e9da3d0084bdac7662cb8424dd4a031b4d9"
+        },
+        {
+          "name": "wintun/bin/arm64/wintun.dll",
+          "bytes": 222488,
+          "sha256": "f7ba89005544be9d85231a9e0d5f23b2d15b3311667e2dad0debd344918a3f80"
+        },
+        {
+          "name": "wintun/bin/x86/wintun.dll",
+          "bytes": 550928,
+          "sha256": "d694fa46ab4cfebcb2632d094c7aa97278eef2f8052438621766d863ae98a931"
+        },
+        {
+          "name": "wintun/include/wintun.h",
+          "bytes": 10362,
+          "sha256": "510a5984fbf73efd21a61ada60edfe05e1a38a77c8c47f6d62e0ab1cdbdd460f"
+        }
+      ],
+      "runtime_executed": false,
+      "redistribution_approved": false
+    }
+  ],
+  "license_references": [
+    {
+      "id": "easytier",
+      "repository": "EasyTier/EasyTier",
+      "revision": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/EasyTier/EasyTier/8428a89d2dabc94c97d370ec607c6ca142473626/LICENSE",
+      "bytes": 7652,
+      "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118",
+      "license_or_scope": "LGPL-3.0",
+      "read_in_audit": true,
+      "retained_notice": "integration/scbl3/THIRD_PARTY_LICENSES/EasyTier-LGPL-3.0.txt"
+    },
+    {
+      "id": "windivert",
+      "repository": "basil00/WinDivert",
+      "revision": "1789526ecfb9ff5397c94f9f54c1a3dc2fb60440",
+      "path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/basil00/WinDivert/1789526ecfb9ff5397c94f9f54c1a3dc2fb60440/LICENSE",
+      "bytes": 61349,
+      "sha256": "14a0cb5214d536e4fdae6aa3f5696f981eeda106cd026e9794bba489ee79d628",
+      "license_or_scope": "LGPL-3.0-or-GPL-2.0",
+      "read_in_audit": true,
+      "retained_notice": "docs/third-party/WinDivert-2.2.2-LICENSE.txt"
+    },
+    {
+      "id": "wintun-source",
+      "repository": "WireGuard/wintun",
+      "revision": "bfef136abfa1665c2592be09a7e383d646cdbe6e",
+      "path": "COPYING",
+      "source_url": "https://raw.githubusercontent.com/WireGuard/wintun/bfef136abfa1665c2592be09a7e383d646cdbe6e/COPYING",
+      "bytes": 18161,
+      "sha256": "624fe2613ad475b6f312635bc712b82100c49d9f2f8280e1e732fefbffaa9ec6",
+      "license_or_scope": "GPL-2.0-source-only",
+      "read_in_audit": true
+    },
+    {
+      "id": "wintun-binary-license-location",
+      "repository": "WireGuard/wintun",
+      "revision": "bfef136abfa1665c2592be09a7e383d646cdbe6e",
+      "path": "README.md",
+      "source_url": "https://raw.githubusercontent.com/WireGuard/wintun/bfef136abfa1665c2592be09a7e383d646cdbe6e/README.md",
+      "bytes": 13577,
+      "sha256": "139e762683c64cea2b4f80108fc54dfc47c98d4190e07d0436d2d5a114fbcbbc",
+      "license_or_scope": "prebuilt-license-is-in-official-zip-not-this-source-license",
+      "read_in_audit": true
+    },
+    {
+      "id": "npcap-1.79",
+      "repository": "nmap/npcap",
+      "revision": "a3d510b8f18c465ce6719df2546c71c083cd7149",
+      "path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/nmap/npcap/a3d510b8f18c465ce6719df2546c71c083cd7149/LICENSE",
+      "bytes": 11547,
+      "sha256": "d4f6c8a71e67487c8c3ce2d82aebd63d9f727dff151c179de7eba6599f64ad2a",
+      "license_or_scope": "Npcap-proprietary-additional-redistribution-rights-required",
+      "read_in_audit": true
+    },
+    {
+      "id": "npcap-1.81",
+      "repository": "nmap/npcap",
+      "revision": "2e7fa35aa7fdfebcad5795bbca4b35853779d0c5",
+      "path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/nmap/npcap/2e7fa35aa7fdfebcad5795bbca4b35853779d0c5/LICENSE",
+      "bytes": 11547,
+      "sha256": "0543f4f93939013f80852d33469b1b5a2623676b387994ffb7a01e34e443ac83",
+      "license_or_scope": "Npcap-proprietary-additional-redistribution-rights-required",
+      "read_in_audit": true
+    },
+    {
+      "id": "wintun-prebuilt-0.14.1",
+      "version": "0.14.1",
+      "archive_id": "wintun-official-0.14.1",
+      "path": "wintun/LICENSE.txt",
+      "source_url": "https://www.wintun.net/builds/wintun-0.14.1.zip",
+      "bytes": 5431,
+      "sha256": "183adac21e7d96c508c8fd34d394b7b6708bc81564ad1bad61ab66143a008cd2",
+      "license_or_scope": "Wintun Prebuilt Binaries License; obtained terms do not automatically establish final package compliance",
+      "read_in_audit": true,
+      "retained_notice": "docs/third-party/Wintun-0.14.1-Prebuilt-LICENSE.txt"
+    }
+  ],
+  "dll_source_blob_matches": [
+    {
+      "archive": "easytier-windows-x86_64-v2.6.4.zip",
+      "member": "easytier-windows-x86_64/Packet.dll",
+      "source_path": "easytier/third_party/x86_64/Packet.dll",
+      "source_blob_sha1": "7e1bf1206a781cf6db41cc41bf59854e63dd8f6a",
+      "member_git_blob_matches": true
+    },
+    {
+      "archive": "easytier-windows-x86_64-v2.6.4.zip",
+      "member": "easytier-windows-x86_64/wintun.dll",
+      "source_path": "easytier/third_party/x86_64/wintun.dll",
+      "source_blob_sha1": "aee04e77bfbd6601adbcd5a46435f059e31cf6e4",
+      "member_git_blob_matches": true
+    },
+    {
+      "archive": "easytier-windows-i686-v2.6.4.zip",
+      "member": "easytier-windows-i686/Packet.dll",
+      "source_path": "easytier/third_party/i686/Packet.dll",
+      "source_blob_sha1": "aef7f0597d4e9509b0b06744fef342617b6c42e4",
+      "member_git_blob_matches": true
+    },
+    {
+      "archive": "easytier-windows-i686-v2.6.4.zip",
+      "member": "easytier-windows-i686/wintun.dll",
+      "source_path": "easytier/third_party/i686/wintun.dll",
+      "source_blob_sha1": "2ab97dba062208bcb6ffc32bef8347d586751038",
+      "member_git_blob_matches": true
+    }
+  ],
+  "embedded_component_versions": {
+    "easytier-windows-x86_64": {
+      "Packet.dll": "Npcap 1.79",
+      "wintun.dll": "0.14.1",
+      "WinDivert64.sys": "byte-identical to official WinDivert 2.2.2-A x64 member"
+    },
+    "easytier-windows-i686": {
+      "Packet.dll": "Npcap 1.81",
+      "wintun.dll": "0.14.1",
+      "WinDivert32.sys": "byte-identical to official WinDivert 2.2.2-A x86 member"
+    }
+  },
+  "unavailable_official_downloads": [
+    {
+      "url": "https://npcap.com/oem/redist.html",
+      "reason": "proxy_CONNECT_403",
+      "exact_version_source_license_read_separately": true
+    }
+  ],
+  "closure_holds": [
+    "Npcap Packet.dll extra redistribution authorization not established for newly inspected dependencies",
+    "Wintun official binary terms obtained; final Permitted API use, unchanged DLL and accompanying redistribution conditions still require package review",
+    "Review corresponding-source and notices for final redistributed artifacts",
+    "Donor Linux installer follows latest while Windows default is 2.6.4; future integration must consume reviewed fixed lock",
+    "The read-only dependency audit does not execute runtimes; separately verified finite Wintun session lifetimes do not establish Windows owned overlay, secure peer/source-route admission, complete packaging or production deployment"
+  ],
+  "source_binary_rebuild_verified": false,
+  "publication_approved": false,
+  "installed": false,
+  "runtime_executed": false,
+  "historical_unavailable_official_downloads": [
+    {
+      "url": "https://www.wintun.net/builds/wintun-0.14.1.zip",
+      "reason": "proxy_CONNECT_403",
+      "binary_license_read": false,
+      "resolved_by_artifact": "wintun-official-0.14.1",
+      "current_binary_license_read": true
+    }
+  ],
+  "official_wintun_binary_matches": [
+    {
+      "official_member": "wintun/bin/amd64/wintun.dll",
+      "locked_artifact": "easytier-windows-x86_64",
+      "locked_member": "easytier-windows-x86_64/wintun.dll",
+      "bytes": 427552,
+      "sha256": "e5da8447dc2c320edc0fc52fa01885c103de8c118481f683643cacc3220dafce",
+      "byte_identity_by_sha256_and_size": true
+    },
+    {
+      "official_member": "wintun/bin/x86/wintun.dll",
+      "locked_artifact": "easytier-windows-i686",
+      "locked_member": "easytier-windows-i686/wintun.dll",
+      "bytes": 550928,
+      "sha256": "d694fa46ab4cfebcb2632d094c7aa97278eef2f8052438621766d863ae98a931",
+      "byte_identity_by_sha256_and_size": true
+    }
+  ],
+  "audit_runtime_fields_scope": "Top-level and artifact installed/runtime_executed fields describe this read-only audit; independent development executions are referenced separately and grant no publication or Public admission.",
+  "independent_development_runtime_evidence": [
+    {
+      "kind": "wintun_retained_session_lifecycle",
+      "path": "docs/evidence/hosted-wintun-319bf44.json",
+      "sha256": "e84c1e44ed0d5e2b9d35e3c9a1276a07042ecfb9eb472aa09500ed589faabd39",
+      "source_head_sha": "319bf445073b362acf8129a80ff0bf68f19e53a5",
+      "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39930667783",
+      "real_session_cases_passed": 2,
+      "driver_runtime_executed": true,
+      "public_admission": false,
+      "publication_approved": false,
+      "complete_overlay_verified": false
+    }
+  ]
+}

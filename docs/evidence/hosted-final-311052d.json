@@ -1,0 +1,682 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-10-27T22:02:01.311400+00:00",
+  "tested_source_head": "311052da801ee95b085ffbcd95498d5dde5f45ef",
+  "merge_binding": {
+    "sha": "5ee8acfdca63d0d474a1e046b5521590184e4660",
+    "tree": "d69eb7834eef5bd459e12e100c81383c6b0f039f",
+    "parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "311052da801ee95b085ffbcd95498d5dde5f45ef"
+    ],
+    "checkout_tree_equals_source_head": true
+  },
+  "historical_scope": "This exact 311052d cohort predates the later authorized default-input handoff/admission. Its failures are retained, not reassigned to later source commits.",
+  "candidate": {
+    "run_id": 40426824165,
+    "url": "https://github.com/caox233/FifthFreedom/actions/runs/40426824165",
+    "conclusion": "failure",
+    "job_counts": {
+      "success": 8,
+      "failure": 2,
+      "skipped": 1
+    },
+    "jobs": [
+      {
+        "id": 121934546460,
+        "name": "Linux protected public control service",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 121934546629,
+        "name": "Strict retained native replay input gate",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Require reviewed C71 native fixture source and provenance"
+        ]
+      },
+      {
+        "id": 121934546745,
+        "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 121934546793,
+        "name": "Strict complete-package input gate",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Verify all pinned package inputs without substituting private saves"
+        ]
+      },
+      {
+        "id": 121934546822,
+        "name": "Linux linux-lan-baseline",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 121934546845,
+        "name": "Linux linux-public-donor-reference",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 121934546979,
+        "name": "Linux native socket ingress isolation (synthetic namespaces)",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 121934611668,
+        "name": "Complete Windows candidate (requires admitted inputs)",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 121940933498,
+        "name": "Linux service/client identities and static deployment preflight",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 121941149146,
+        "name": "Same-run owned overlay and native development composition",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 121941149301,
+        "name": "Same-run native owned lifecycle in synthetic namespaces",
+        "conclusion": "success",
+        "failed_steps": []
+      }
+    ],
+    "full_package_job_needs": [
+      "package-inputs"
+    ],
+    "full_package_not_dependent_on_c71": true,
+    "full_package_generated": false
+  },
+  "complete_package_input_gate": {
+    "job_id": 121934546793,
+    "artifact": {
+      "id": 12700191680,
+      "name": "complete-package-input-gate-5ee8acfdca63d0d474a1e046b5521590184e4660",
+      "bytes": 1657,
+      "sha256": "bcfad17691bc2f7a3dee7d10971f3bb848033609d05fcd48bd6b70781c598dd4",
+      "official_digest_match": true,
+      "files": [
+        {
+          "path": "package-inputs-receipt.json",
+          "bytes": 1388,
+          "sha256": "b458237b45fe3f80eacbc08a07352a4d6143fc2110394cc469ff6f09e14e613a"
+        },
+        {
+          "path": "test-logs/strict-package-inputs.txt",
+          "bytes": 22384,
+          "sha256": "ba05f3e00ade6a9298d554e08d59359145d1883d52ed7c473039d787364a2b54"
+        }
+      ]
+    },
+    "receipt": {
+      "schema": 1,
+      "mode": "package-inputs",
+      "inputs": {
+        "status": "blocked_privacy_inputs",
+        "required_input_count": 20,
+        "verified_input_count": 12,
+        "held_input_count_all_sources": 12,
+        "missing_held_package_inputs": [
+          "src/launcher/src/Assets/DefaultSaves/MOD/00000001.meta",
+          "src/launcher/src/Assets/DefaultSaves/MOD/00000001.sav",
+          "src/launcher/src/Assets/DefaultSaves/MOD/00000002.meta",
+          "src/launcher/src/Assets/DefaultSaves/MOD/00000002.sav",
+          "src/launcher/src/Assets/DefaultSaves/Official/00000001.meta",
+          "src/launcher/src/Assets/DefaultSaves/Official/00000001.sav",
+          "src/launcher/src/Assets/DefaultSaves/Official/00000002.meta",
+          "src/launcher/src/Assets/DefaultSaves/Official/00000002.sav"
+        ],
+        "errors": [],
+        "complete_package_ready": false
+      },
+      "suites": [
+        {
+          "suite": "strict-package-inputs",
+          "executed": 2,
+          "passed": 0,
+          "failed_test_cases": 2,
+          "failed_method_ids": [
+            "test_build.BundledInputTests.test_all_bundled_assets_match_manifest",
+            "test_build.BundledInputTests.test_save_template_files_match_manifest"
+          ],
+          "failures": 0,
+          "errors": 16,
+          "skipped": [],
+          "expected_failures": 0,
+          "unexpected_successes": 0,
+          "successful": false
+        }
+      ],
+      "game_executed": false,
+      "published": false,
+      "exit_code": 1
+    }
+  },
+  "separate_c71_gate": {
+    "job_id": 121934546629,
+    "artifact": {
+      "id": 12699867456,
+      "name": "native-replay-input-gate-5ee8acfdca63d0d474a1e046b5521590184e4660",
+      "bytes": 396,
+      "sha256": "162458707f4080499086ef670c7bb12227878676f954b7c5e738a73a058c1252",
+      "official_digest_match": true,
+      "files": [
+        {
+          "path": "receipt.json",
+          "bytes": 531,
+          "sha256": "05090879365719d1ad09cb74dd42ca5e91b439b9dcb693ae077202995e56b4ea"
+        }
+      ]
+    },
+    "receipt": {
+      "schema": 1,
+      "status": "blocked_native_replay_inputs",
+      "required_feature": "native-replay-fixtures",
+      "retained_test_count": 13,
+      "retained_test_source_unchanged": true,
+      "fixture_source_supplied": false,
+      "reviewed_fixture_manifest_supplied": false,
+      "fixture_authenticated": false,
+      "missing_contract": "C71 fixture source, native bytes/generator and reviewed provenance manifest",
+      "executed_native_replay_tests": 0,
+      "full_native_replay_verified": false,
+      "game_executed": false,
+      "complete_package": false
+    }
+  },
+  "source": {
+    "run_id": 40426824220,
+    "conclusion": "success",
+    "linux": {
+      "job_id": 121934545794,
+      "artifact": {
+        "id": 12700880264,
+        "name": "portable-source-evidence-ubuntu-24.04-5ee8acfdca63d0d474a1e046b5521590184e4660",
+        "bytes": 21687,
+        "sha256": "8055c23159218709f065476428c881609571ca7cc56bf7357d7148246dca6c07",
+        "official_digest_match": true,
+        "files": [
+          {
+            "path": "source-receipt.json",
+            "bytes": 3236,
+            "sha256": "e1e75e842de383a11956f7236466712bed51aea0f5f3e0895921d30925069ee2"
+          },
+          {
+            "path": "test-logs/ci.txt",
+            "bytes": 75172,
+            "sha256": "463f87a46f8a0ed2b3b79b428ba7ea1ffbf5768718d836c39aa26daa4c510f76"
+          },
+          {
+            "path": "test-logs/build-source-logic.txt",
+            "bytes": 10210,
+            "sha256": "2024fea1a7e92b784d94ba60b592d9caa4f7109440d1b1d9edfe78aa63ecf1d1"
+          },
+          {
+            "path": "test-logs/public_candidate.txt",
+            "bytes": 1491,
+            "sha256": "43c5c2f99d46a3f926f786ca84ebbd1827d6b19eee851e06c8aa4a2b5c7eb625"
+          },
+          {
+            "path": "test-logs/public_server_candidate.txt",
+            "bytes": 4325,
+            "sha256": "9987ecb9386dee5f8f2feefabddcee9e147abb7fa96658638e16b37f3a396010"
+          },
+          {
+            "path": "test-logs/server.txt",
+            "bytes": 27123,
+            "sha256": "bae79bc23a9b464b725b047ddc313d14e80e564b69e2e069ff14d842d2e80362"
+          },
+          {
+            "path": "test-logs/ui.txt",
+            "bytes": 2069,
+            "sha256": "c68d6b94097992368024077eb8b295643e7d9ad942fb3f21d2ce3da98016dc09"
+          }
+        ]
+      },
+      "executed": 670,
+      "passed": 668,
+      "skipped": 2,
+      "failures": 0,
+      "errors": 0,
+      "exit_code": 0
+    },
+    "windows": {
+      "job_id": 121934546142,
+      "artifact": {
+        "id": 12700142146,
+        "name": "portable-source-evidence-windows-2022-5ee8acfdca63d0d474a1e046b5521590184e4660",
+        "bytes": 25961,
+        "sha256": "3d711aa62999937c162ddf3edb20b6a820e5df7936bfc52fb7cae07c95df5ebf",
+        "official_digest_match": true,
+        "files": [
+          {
+            "path": "source-receipt.json",
+            "bytes": 28496,
+            "sha256": "d13a4ec1db021c0cbdf0c705ca515f34ab56c360a0168ba17311f6eefdb50d87"
+          },
+          {
+            "path": "test-logs/build-source-logic.txt",
+            "bytes": 10402,
+            "sha256": "41c035f6be165d8cc0266e2a1ceec2c0ef1bbb9e1df04cb712e1b692c4275779"
+          },
+          {
+            "path": "test-logs/ci.txt",
+            "bytes": 77059,
+            "sha256": "1081f2a09b9b1818fe1be114e289709ff595ad3ff4b9b5ceac577d786fed23b7"
+          },
+          {
+            "path": "test-logs/public_candidate.txt",
+            "bytes": 1577,
+            "sha256": "97a79f26f4ce529f377255c4fb270ec9144e87d755aa69f79e9768d8e26b8ee5"
+          },
+          {
+            "path": "test-logs/public_server_candidate.txt",
+            "bytes": 4427,
+            "sha256": "d08c26b8203842ea5078219620e9226e5b443c02f5349d2d5bc14a1931b3abca"
+          },
+          {
+            "path": "test-logs/server.txt",
+            "bytes": 31405,
+            "sha256": "6c808585a2f256004f37f3459088333aca51ee90c6fc037189a7af7fc579ee90"
+          },
+          {
+            "path": "test-logs/ui.txt",
+            "bytes": 2086,
+            "sha256": "55fa1f4dc2705982de98d946abf295457b0367a858db8f571f162e725daee8c2"
+          }
+        ]
+      },
+      "executed": 670,
+      "passed": 554,
+      "skipped": 116,
+      "failures": 0,
+      "errors": 0,
+      "exit_code": 0
+    }
+  },
+  "native_lifecycle": {
+    "job_id": 121941149301,
+    "artifact": {
+      "id": 12701515449,
+      "name": "native-owned-lifecycle-receipt-5ee8acfdca63d0d474a1e046b5521590184e4660",
+      "bytes": 659,
+      "sha256": "5c73439d081565beb71d3e49a86a549880ad21aeb159a58d97d7f230c538d71f",
+      "official_digest_match": true,
+      "files": [
+        {
+          "path": "receipt.json",
+          "bytes": 1781,
+          "sha256": "7790989c0fd90c10de21fe50b9c144180c4efc8ebaf0acd6878f1508eae44a79"
+        }
+      ]
+    },
+    "receipt": {
+      "schema": 1,
+      "status": "native_owned_lifecycle_verified",
+      "source_commit": "5ee8acfdca63d0d474a1e046b5521590184e4660",
+      "run_id": "40426824165",
+      "run_attempt": "1",
+      "scope": {
+        "synthetic_runtime_bindings": true,
+        "controlled_native_startup_test": true,
+        "encrypted_overlay_verified": false,
+        "production_provider_open": false,
+        "game_executed": false,
+        "complete_windows_client": false,
+        "deployed": false,
+        "published": false
+      },
+      "cases": [
+        {
+          "case": "withheld",
+          "no_state_created": true,
+          "native_reaped": true
+        },
+        {
+          "case": "denied",
+          "no_state_created": true,
+          "native_reaped": true
+        },
+        {
+          "case": "eof",
+          "actual_listener_count": 5,
+          "protected_http_and_tcp_verified": true,
+          "wrong_interface_rejected": true,
+          "established_connection_closed": true,
+          "all_five_ports_released": true,
+          "native_exit": 92,
+          "native_reaped": true
+        },
+        {
+          "case": "expiry",
+          "actual_listener_count": 5,
+          "protected_http_and_tcp_verified": true,
+          "wrong_interface_rejected": true,
+          "established_connection_closed": true,
+          "all_five_ports_released": true,
+          "native_exit": 92,
+          "native_reaped": true
+        },
+        {
+          "case": "parent_death",
+          "actual_listener_count": 5,
+          "protected_http_and_tcp_verified": true,
+          "wrong_interface_rejected": true,
+          "established_connection_closed": true,
+          "all_five_ports_released": true,
+          "native_exit": 92,
+          "native_reaped": true
+        }
+      ],
+      "copied_package_native_verified": true,
+      "source_package_unchanged": true,
+      "private_tree_removed": true,
+      "owned_namespaces_removed": 3,
+      "all_owned_children_reaped": true,
+      "no_default_routes": true
+    }
+  },
+  "owned_composition": {
+    "job_id": 121941149146,
+    "artifact": {
+      "id": 12701237305,
+      "name": "owned-overlay-native-development-receipt-5ee8acfdca63d0d474a1e046b5521590184e4660",
+      "bytes": 1753,
+      "sha256": "2e168d51a563dd19434f8a5abf2b05615e75a5794df78b93cabc4a838f7761f7",
+      "official_digest_match": true,
+      "files": [
+        {
+          "path": "containment.json",
+          "bytes": 937,
+          "sha256": "1613987def06b4706236003f4ce4ed7f791bf97dfa7748a5a63f76fc0166d5f9"
+        },
+        {
+          "path": "receipt.json",
+          "bytes": 2988,
+          "sha256": "95e662b3d7c84fc5751f53eef36c34d7874296fdee4681ebd90eb0859ceec5f4"
+        }
+      ]
+    },
+    "receipt": {
+      "schema": "ff-owned-overlay-native-stack-development-v1",
+      "status": "owned_stack_development_verified",
+      "scope": {
+        "transport": "tcp",
+        "purpose": "owned-isolated-development",
+        "production_admission": false,
+        "ordinary_public_enabled": false,
+        "game_executed": false,
+        "complete_client_package": false,
+        "runtime_binary_uploaded": false,
+        "raw_runtime_output_retained": false
+      },
+      "cases": [
+        {
+          "case": "lease-revoke",
+          "status": "owned_stack_case_verified",
+          "cleanup_errors": [],
+          "namespaces_created": 2,
+          "namespaces_removed": 2,
+          "actual_native_ready": true,
+          "owned_listeners": 5,
+          "runtime_profile_sha256": "d84b09c56f5cc234acd85370651f831dd817359a66b072f8823553d33d6bbba0",
+          "established_tcp": true,
+          "native_watchdog_exit": 92,
+          "ports_rebound": 5,
+          "held_tcp_eof_or_reset": true,
+          "overlay_alive_during_close": true,
+          "containment_after": [
+            {
+              "input": 0,
+              "output": 23,
+              "forward": 0
+            },
+            {
+              "input": 0,
+              "output": 23,
+              "forward": 0
+            }
+          ]
+        },
+        {
+          "case": "peer-loss",
+          "status": "owned_stack_case_verified",
+          "cleanup_errors": [],
+          "namespaces_created": 2,
+          "namespaces_removed": 2,
+          "actual_native_ready": true,
+          "owned_listeners": 5,
+          "runtime_profile_sha256": "bd4fddbb34bb754d698f4a0158b8adf8b64a3c5460b68bd6f0baa08f9c18af20",
+          "established_tcp": true,
+          "exact_peer_reaped": true,
+          "monitor_permanently_revoked": true,
+          "native_reaped": true,
+          "native_listeners_remaining": 0,
+          "remote_tcp_eof_claimed": false,
+          "containment_after": [
+            {
+              "input": 0,
+              "output": 23,
+              "forward": 0
+            },
+            {
+              "input": 0,
+              "output": 24,
+              "forward": 0
+            }
+          ]
+        }
+      ],
+      "precondition_failures": [],
+      "copied_package_native_verified": true,
+      "source_package_unchanged": true,
+      "private_stage_removed": true,
+      "source_commit": "5ee8acfdca63d0d474a1e046b5521590184e4660",
+      "run_id": "40426824165",
+      "run_attempt": "1",
+      "runtime_candidate": {
+        "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+        "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+        "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+        "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+        "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+        "executable_sha256": "08472553b2f5a46b1623409e7bbf7834c7f9812a1887a22c079cf2375163e650",
+        "executable_size": 28593032,
+        "role": "easytier-core",
+        "target": "x86_64-unknown-linux-gnu"
+      },
+      "cli_identity": {
+        "bytes": 12261752,
+        "sha256": "fd14646d2c9991499672863b956ce88503f06a4be3490ee4722cb9f990c41250"
+      }
+    },
+    "containment": {
+      "checkout_commit": "5ee8acfdca63d0d474a1e046b5521590184e4660",
+      "input_identity": "synthetic_profile_only_no_executable",
+      "precondition_failures": [],
+      "production_admission": false,
+      "raw_runtime_output_retained": false,
+      "runtime_binary_uploaded": false,
+      "runtime_executed": false,
+      "schema": "ff-easytier-containment-preflight-v1",
+      "status": "containment_preflight_verified",
+      "transports": [
+        {
+          "cleanup_errors": [],
+          "namespaces_created": 2,
+          "namespaces_removed": 2,
+          "status": "containment_pair_verified",
+          "transport": "quic"
+        },
+        {
+          "cleanup_errors": [],
+          "namespaces_created": 2,
+          "namespaces_removed": 2,
+          "status": "containment_pair_verified",
+          "transport": "wss"
+        },
+        {
+          "cleanup_errors": [],
+          "namespaces_created": 2,
+          "namespaces_removed": 2,
+          "status": "containment_pair_verified",
+          "transport": "tcp"
+        }
+      ]
+    },
+    "runtime_binaries_uploaded_or_rehashed_by_reviewer": false,
+    "runtime_hashes_scope": "Runner-reported core/CLI identity; those bytes were not uploaded. This review authenticates the official receipt artifact and actual job outcome, not a new binary-level provenance audit."
+  },
+  "windows_firewall": {
+    "run_id": 40426824097,
+    "job_id": 121934546290,
+    "artifact": {
+      "id": 12700421319,
+      "name": "windows-firewall-prerequisite-5ee8acfdca63d0d474a1e046b5521590184e4660",
+      "bytes": 2453,
+      "sha256": "316ce728b38f31d7c3e3bcf2469a870df4e2cdd99dbfed481919d07fc0369cbb",
+      "official_digest_match": true,
+      "files": [
+        {
+          "path": "windows-firewall-prerequisite.json",
+          "bytes": 5461,
+          "sha256": "7149249879311f5ea0a5fd77bdda67a2af25372ab1aedb8358febb4d676c916a"
+        },
+        {
+          "path": "windows-firewall-package-contracts.json",
+          "bytes": 219,
+          "sha256": "c12b71ccdb3f8761ab5cc5a18e24a409b6eb42923223284c7332ca7e07aa686d"
+        },
+        {
+          "path": "windows-firewall-enforcement-contracts.json",
+          "bytes": 253,
+          "sha256": "33147a30665e463ee1bdd4f345f4220c8251ca09117a4bad4ef6daeb7e2080b4"
+        },
+        {
+          "path": "windows-firewall-filter-build.json",
+          "bytes": 780,
+          "sha256": "756782618fa8c51eb4fdfe8513e8ed298a50d4bb38a6fdfc299a5ad86e7c5a21"
+        }
+      ]
+    },
+    "error_code": "FIREWALL_POLICY_UNAVAILABLE",
+    "phase": "Prepare",
+    "failed_check": "ENFORCEMENT_STATUS",
+    "direction": "Inbound",
+    "raw_cim_type": "UInt16Array",
+    "raw_cim_statuses": [
+      "InactiveProfile",
+      "Full"
+    ],
+    "unarmed_restore": {
+      "armed": false,
+      "owned_rules_removed": true,
+      "original_policy_unchanged": true,
+      "policy_enabled_or_changed": false,
+      "packet_behavior_verified": false,
+      "exact_drain_verified": false
+    },
+    "core_executed": false,
+    "image_executed": false,
+    "driver_loaded": false,
+    "read_only_wfp": {
+      "passed": true,
+      "coverage": "UNKNOWN",
+      "arbitration_verified": false,
+      "read_only_transaction": true,
+      "transaction_closed": true,
+      "policy_changed": false,
+      "admission_changed": false
+    },
+    "pure_package_contracts": 15,
+    "pure_enforcement_contracts": 22
+  },
+  "windows_inert": {
+    "run_id": 40426824206,
+    "job_id": 121934545889,
+    "artifact": {
+      "id": 12701193092,
+      "name": "windows-owned-core-runtime-receipts-5ee8acfdca63d0d474a1e046b5521590184e4660",
+      "bytes": 53018,
+      "sha256": "da8d1560785179db754967d63468ae155f29cd5607d72f48170f96565fe3bf9e",
+      "official_digest_match": true,
+      "files": [
+        {
+          "path": "easytier-windows-inert-run.json",
+          "bytes": 428,
+          "sha256": "8ea861095a9b8a5c146dca0239c68799a5638dc97f17476557e9c97f52c09be2"
+        },
+        {
+          "path": "easytier-windows-inert/receipt.json",
+          "bytes": 89374,
+          "sha256": "a7b8bb3dc884d4b4db5f6cbf1720547fc454a4b5b4f7ca7a336a8ed62aa439f8"
+        },
+        {
+          "path": "easytier-windows-inert/source-receipt.json",
+          "bytes": 134646,
+          "sha256": "3a8a30143126d47448695ed6ddf776f6eff7798ea19e98c5dc3a2ba7eb002a05"
+        },
+        {
+          "path": "owned-core-runtime.json",
+          "bytes": 4135,
+          "sha256": "7a7401e9324c0192430e91e408fae1d8070aea216423eb47894ab22cce32bad6"
+        },
+        {
+          "path": "windows-firewall-package-contracts.json",
+          "bytes": 219,
+          "sha256": "c12b71ccdb3f8761ab5cc5a18e24a409b6eb42923223284c7332ca7e07aa686d"
+        },
+        {
+          "path": "windows-firewall-enforcement-contracts.json",
+          "bytes": 253,
+          "sha256": "33147a30665e463ee1bdd4f345f4220c8251ca09117a4bad4ef6daeb7e2080b4"
+        }
+      ]
+    },
+    "error_code": "FIREWALL_POLICY_UNAVAILABLE",
+    "phase": "Prepare",
+    "failed_check": "ENFORCEMENT_STATUS",
+    "direction": "Inbound",
+    "raw_cim_type": "UInt16Array",
+    "raw_cim_statuses": [
+      "InactiveProfile",
+      "Full"
+    ],
+    "unarmed_restore": {
+      "armed": false,
+      "owned_rules_removed": true,
+      "original_policy_unchanged": true,
+      "policy_enabled_or_changed": false,
+      "packet_behavior_verified": false,
+      "exact_drain_verified": false
+    },
+    "managed_contracts_passed": 22,
+    "dispatch_reached": false,
+    "dispatch_boundary": "Production Prepare raises before Arm and runtime helper --manifest invocation; this is not an executed core/NIC runtime pass. The helper --contracts runs 22 bounded managed checks.",
+    "public_admission": false,
+    "driver_before_clean": true,
+    "driver_after_clean": true,
+    "unrelated_driver_inventory_equal": true,
+    "finalize_exit_1_preserves_existing_failed_receipt": true,
+    "restore_error_code_present": false
+  },
+  "review_boundaries": [
+    "All eight selected official ZIPs were downloaded and SHA-256 matched to GitHub artifact metadata; included receipt file digests are independently recomputed.",
+    "Windows complete package was skipped for eight missing held inputs; the C71 gate is a separate 13-test, zero-execution gap.",
+    "No newly observed candidate code/runtime failure requires a speculative product repair from this cohort.",
+    "Both Windows firewall paths still reject unproven policy; ordinary Public remains closed. Do not weaken strict enforcement or treat component, synthetic namespace, source or build success as game/multiplayer acceptance.",
+    "Earlier 329f successes and all prior failures remain retained. No workflow rerun, game, capture, production deployment or Release was initiated for this review."
+  ]
+}

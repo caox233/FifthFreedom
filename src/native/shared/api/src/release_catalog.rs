@@ -116,6 +116,13 @@ fn verify_package_expected(root: &Path, release: &str, compat: &str) -> io::Resu
     }
     ReleaseIdentity::new(1,&catalog.release_id,&catalog.compat_id,&hex(&Sha256::digest(&raw))).map_err(|e|invalid(e.to_string()))
 }
+// One retention site shared by both server entrypoints. Repeating black_box on
+// the const in separate codegen units can emit two complete role markers.
+// Keep the exact-one binary admission rule rather than accepting those copies.
+#[inline(never)]
+pub(crate) fn retain_server_marker() {
+    std::hint::black_box(SERVER_MARKER);
+}
 /// Standalone servers must remain in the complete matched portable package.
 /// A copied server alone or a catalog found by searching arbitrary ancestors is not accepted.
 pub fn verify_server_package(executable: &Path) -> io::Result<ReleaseIdentity> {
@@ -124,7 +131,7 @@ pub fn verify_server_package(executable: &Path) -> io::Result<ReleaseIdentity> {
     regular_path(executable)?;
     if fs::canonicalize(executable)?!=fs::canonicalize(declared)? {return Err(invalid("server executable is not catalog server role"));}
     // Keep this role's exact prebuild marker reachable in the real server binary.
-    std::hint::black_box(SERVER_MARKER);
+    retain_server_marker();
     verify_package(root)
 }
 #[cfg(test)]

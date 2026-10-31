@@ -1,0 +1,303 @@
+{
+  "schema": 1,
+  "source_commit": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+  "executed_commit": "abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+  "identical_source_tree": "541d6fc70a7ee093a1446bde7b87657618dd6aca",
+  "source_merge_tree_equality_independently_checked": true,
+  "run_id": 41195418269,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269",
+  "review": "Independent read-only official job/artifact inspection; ZIP CRC, SHA256, all component candidate manifest bytes and catalog identities rechecked. Reviewer did not execute downloaded binaries or rerun tests.",
+  "whole_workflow_success_claimed": false,
+  "lanes": [
+    {
+      "lane": "linux-public-server-integrity",
+      "job": {
+        "id": 124524269701,
+        "name": "Linux service/client identities and static deployment preflight",
+        "url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/job/124524269701",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at_utc": "2026-10-31T11:24:27Z",
+        "completed_at_utc": "2026-10-31T11:24:57Z",
+        "official_job_record_sha256": "b417dcf1ebf19e48181655d5b83d5066dea6dd7492ce56ca51171a92a95a738d"
+      },
+      "artifact": {
+        "id": 13040813339,
+        "name": "linux-public-server-build-evidence-abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+        "bytes": 2303,
+        "sha256": "93f83dac0bc97c3ba847abbe777d58f4bad3472c697ef016f52d0822a2a5a1ac",
+        "official_digest_and_size_independently_verified": true,
+        "zip_crc_checked": true,
+        "url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/artifacts/13040813339"
+      },
+      "receipt": {
+        "path": "ci/linux-public-server-integrity/receipt.json",
+        "bytes": 2507,
+        "sha256": "abeb0b9902d315c3e9bbb891e646d292b0093d4fb41afc43b9ebed2aea76ceaa"
+      },
+      "recorded_status": "native_dual_identity_and_static_preflight_verified",
+      "exit_code": 0,
+      "native_verification": {
+        "admitted_client": {
+          "storage_key": "1|fifth-freedom-1.1.0-migration1|scbl-lan-1.1.0|700c8e15210b05fb09f46c7a811a39c8b1ef7b942c9d83740eb712feb607ca63"
+        },
+        "platform": "linux-x86_64",
+        "result": "verified",
+        "schema": 1,
+        "service": {
+          "compat_id": "scbl-lan-1.1.0",
+          "executable_sha256": "acf10f464ee23ddb6f7b9e274340feb88f89841cb99bc7238dee28224028a50d",
+          "manifest_sha256": "ececafef4b800e30d812783cd697a84c02f5ba52b423d260a3112508d9b17c66",
+          "release_id": "fifth-freedom-1.1.0-migration1"
+        }
+      },
+      "static_public_preflight": {
+        "schema": 1,
+        "status": "static_preflight_and_closed_gate_verified",
+        "static_preflight": {
+          "schema": 1,
+          "status": "static_preflight_verified",
+          "startup_allowed": false,
+          "service_manifest_sha256": "ececafef4b800e30d812783cd697a84c02f5ba52b423d260a3112508d9b17c66",
+          "admitted_client_storage_key": "1|fifth-freedom-1.1.0-migration1|scbl-lan-1.1.0|700c8e15210b05fb09f46c7a811a39c8b1ef7b942c9d83740eb712feb607ca63",
+          "shared_auth_key_validated": true,
+          "data_directory_private": true,
+          "data_lock_acquired": false,
+          "observer_enabled": false,
+          "native_listener_plan": {
+            "count": 5,
+            "bind_scope": "declared_overlay_ipv4",
+            "config_tcp": 80,
+            "content_tcp": 8000,
+            "auth_udp": 21126,
+            "secure_udp": 21127,
+            "api_tcp": 50051
+          },
+          "blockers": [
+            "OWNED_ENCRYPTED_OVERLAY_UNVERIFIED",
+            "OVERLAY_LIFETIME_SUPERVISION_UNVERIFIED",
+            "PUBLIC_SOCKET_CONFINEMENT_NOT_ACTIVATED",
+            "PUBLIC_SOURCE_POLICY_NOT_ACTIVATED"
+          ]
+        },
+        "ordinary_public_startup_rejected": true,
+        "ephemeral_inputs_removed": true,
+        "candidate_unchanged": true,
+        "native_public_profile_enabled": false,
+        "game_executed": false,
+        "deployed": false,
+        "published": false
+      },
+      "job_log_sha256": "e23d3fca9d2f1286521ca400dc9c1c8720a0e7127136608ac99036856534f44a",
+      "complete_package": false,
+      "game_executed": false,
+      "live_acceptance": false,
+      "deployed": false,
+      "published": false,
+      "complete_windows_client": false,
+      "native_public_profile_enabled": false,
+      "component_candidate": {
+        "artifact": {
+          "id": 13040254224,
+          "name": "linux-public-server-component-candidate-abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+          "bytes": 84895904,
+          "sha256": "0e7b8b03dbaf93c2cc54493c96c9a416bcb2ac868b18f919f904ed6eeed917a3",
+          "official_digest_and_size_independently_verified": true,
+          "zip_crc_checked": true,
+          "url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/artifacts/13040254224"
+        },
+        "receipt": {
+          "path": "ci/linux-public-server-integrity/candidate/CANDIDATE-RECEIPT.json",
+          "bytes": 13615,
+          "sha256": "e35aa9274865f309e28153e9e8683ab6528e49228f642c7ce457eb2d5b455074"
+        },
+        "recorded_status": "native_dual_identity_verified",
+        "kind": "public-server-component-candidate",
+        "scope": {
+          "complete_game_package": false,
+          "complete_windows_client": false,
+          "deployed": false,
+          "game_executed": false,
+          "native_public_profile_enabled": false,
+          "published": false
+        },
+        "all_manifest_file_bytes_and_sha256_independently_verified": true,
+        "verified_file_count": 62,
+        "candidate_native_result_matches_preflight": true,
+        "client_catalog": {
+          "path": "ci/linux-public-server-integrity/candidate/client/package/RELEASE-CATALOG.json",
+          "bytes": 1239,
+          "sha256": "700c8e15210b05fb09f46c7a811a39c8b1ef7b942c9d83740eb712feb607ca63"
+        },
+        "public_server_catalog": {
+          "path": "ci/linux-public-server-integrity/candidate/package/PUBLIC-SERVER-CATALOG.json",
+          "bytes": 594,
+          "sha256": "ececafef4b800e30d812783cd697a84c02f5ba52b423d260a3112508d9b17c66"
+        },
+        "client_components": [
+          {
+            "bytes": 146374575,
+            "compat_id": "scbl-lan-1.1.0",
+            "path": "FifthFreedom.exe",
+            "release_id": "fifth-freedom-1.1.0-migration1",
+            "role": "launcher",
+            "sha256": "08969bce46fa54fe853a73d7367be47799df724a0574cdc56fc0b1d49c0f8679"
+          },
+          {
+            "bytes": 7746560,
+            "compat_id": "scbl-lan-1.1.0",
+            "path": "runtime/uplay_r1_loader.dll",
+            "release_id": "fifth-freedom-1.1.0-migration1",
+            "role": "main",
+            "sha256": "5635ac0d76c98a919678a7c481196b9563547f08f334a39406c6d001b2fa8e24"
+          },
+          {
+            "bytes": 2424832,
+            "compat_id": "scbl-lan-1.1.0",
+            "path": "runtime/scbl_gameplay.dll",
+            "release_id": "fifth-freedom-1.1.0-migration1",
+            "role": "gameplay",
+            "sha256": "49a7034f14e35782b796523f3d995dfc4abfd0911bf7f5401c892f8db6a4a500"
+          },
+          {
+            "bytes": 10867200,
+            "compat_id": "scbl-lan-1.1.0",
+            "path": "runtime/FifthFreedom.Server.exe",
+            "release_id": "fifth-freedom-1.1.0-migration1",
+            "role": "server",
+            "sha256": "6bc142fb8bec3789a4dff86ce2e7b90f02f3235bdad1ea4188b1a81e062f30f0"
+          }
+        ],
+        "linux_service": {
+          "bytes": 30336672,
+          "compat_id": "scbl-lan-1.1.0",
+          "path": "bin/FifthFreedom.Server",
+          "release_id": "fifth-freedom-1.1.0-migration1",
+          "role": "server",
+          "sha256": "acf10f464ee23ddb6f7b9e274340feb88f89841cb99bc7238dee28224028a50d"
+        },
+        "complete_windows_candidate_claimed": false
+      }
+    },
+    {
+      "lane": "native-owned-lifecycle",
+      "job": {
+        "id": 124524375660,
+        "name": "Same-run native owned lifecycle in synthetic namespaces",
+        "url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/job/124524375660",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at_utc": "2026-10-31T11:24:59Z",
+        "completed_at_utc": "2026-10-31T11:25:40Z",
+        "official_job_record_sha256": "ee98e979be1327fc443b1e16c75dd1a107af97f1554b832fba7dce7389d304d4"
+      },
+      "artifact": {
+        "id": 13041272392,
+        "name": "native-owned-lifecycle-receipt-abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+        "bytes": 656,
+        "sha256": "67f1ce42ed3c3c15403c8e8b0e996875765f697aee4ffdef4f46952260564013",
+        "official_digest_and_size_independently_verified": true,
+        "zip_crc_checked": true,
+        "url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/artifacts/13041272392"
+      },
+      "receipt": {
+        "path": "receipt.json",
+        "bytes": 1781,
+        "sha256": "7a221f57e3a2ea0c77c10ec066f3537905feb300dd2763547610c1d5f5278a28"
+      },
+      "recorded_status": "native_owned_lifecycle_verified",
+      "scope": {
+        "synthetic_runtime_bindings": true,
+        "controlled_native_startup_test": true,
+        "encrypted_overlay_verified": false,
+        "production_provider_open": false,
+        "game_executed": false,
+        "complete_windows_client": false,
+        "deployed": false,
+        "published": false
+      },
+      "cases": [
+        {
+          "case": "withheld",
+          "no_state_created": true,
+          "native_reaped": true
+        },
+        {
+          "case": "denied",
+          "no_state_created": true,
+          "native_reaped": true
+        },
+        {
+          "case": "eof",
+          "actual_listener_count": 5,
+          "protected_http_and_tcp_verified": true,
+          "wrong_interface_rejected": true,
+          "established_connection_closed": true,
+          "all_five_ports_released": true,
+          "native_exit": 92,
+          "native_reaped": true
+        },
+        {
+          "case": "expiry",
+          "actual_listener_count": 5,
+          "protected_http_and_tcp_verified": true,
+          "wrong_interface_rejected": true,
+          "established_connection_closed": true,
+          "all_five_ports_released": true,
+          "native_exit": 92,
+          "native_reaped": true
+        },
+        {
+          "case": "parent_death",
+          "actual_listener_count": 5,
+          "protected_http_and_tcp_verified": true,
+          "wrong_interface_rejected": true,
+          "established_connection_closed": true,
+          "all_five_ports_released": true,
+          "native_exit": 92,
+          "native_reaped": true
+        }
+      ],
+      "case_count": 5,
+      "job_log_sha256": "132fccee0e8025fb43381bd8a7eca1b557343c470051f94f2ca130b7b21f1774",
+      "copied_package_native_verified": true,
+      "source_package_unchanged": true,
+      "private_tree_removed": true,
+      "owned_namespaces_removed": 3,
+      "all_owned_children_reaped": true,
+      "no_default_routes": true
+    },
+    {
+      "lane": "owned-overlay-native-composition",
+      "job": {
+        "id": 124524375647,
+        "name": "Same-run owned overlay and native development composition",
+        "url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/job/124524375647",
+        "status": "in_progress",
+        "conclusion": null,
+        "started_at_utc": "2026-10-31T11:24:59Z",
+        "completed_at_utc": null,
+        "official_job_record_sha256": "8307213263fb1bc6ccd7c7ff73977b99bd76a82bab815d06b07ad78966b036d7"
+      },
+      "observed_at_utc": "2026-10-31T11:30:37.968774+00:00",
+      "active_steps": [
+        "Build this job's exact guard3 core and CLI after all 35 finite contracts"
+      ],
+      "composition_verification_step_status": "pending",
+      "composition_cases_executed_as_of_observation": 0,
+      "verified_pass_claimed": false,
+      "final_result": "pending_not_confirmed",
+      "composition_receipt_artifact_verified": false,
+      "finite_contract_pass_count_claimed": false,
+      "bounded_monitor_stopped": true,
+      "next_action": "Read official job 124524375647 terminal status, then independently download and validate its composition/containment receipt artifact, exact commit/run binding and cleanup outcomes. Do not infer the result from earlier lane success or the build step name."
+    }
+  ],
+  "limits": [
+    "These component identity, static preflight and synthetic native lifecycle results do not admit ordinary Public startup. The static preflight retains all four blockers and startup_allowed=false.",
+    "The native lifecycle case suite uses synthetic runtime bindings, not an admitted production encrypted overlay provider.",
+    "The separate full Windows candidate and Windows native production B/M/R/RP replay are covered by their own receipts; this component artifact is not a complete Windows package.",
+    "Composition was still compiling at the recorded observation. Its verification step had not started; neither a successful result nor a failure is inferred.",
+    "No game execution, live multiplayer acceptance, deployment or formal Release was performed by this review."
+  ]
+}

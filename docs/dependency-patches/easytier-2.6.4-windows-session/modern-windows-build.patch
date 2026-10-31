@@ -1,0 +1,14 @@
+--- a/easytier/build.rs
++++ b/easytier/build.rs
+@@ -146,7 +146,10 @@
+     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
+     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_default();
+     // enable thunk-rs when target os is windows and arch is x86_64 or i686
+-    if target_os == "windows" && (target_arch == "x86" || target_arch == "x86_64") {
++    // The explicit modern Windows development profile uses the installed MSVC
++    // CRT/SDK, not thunk-rs's unverified remote Win7 compatibility downloads.
++    if target_os == "windows" && (target_arch == "x86" || target_arch == "x86_64")
++        && !cfg!(feature = "ff-windows-session-observer") {
+         thunk::thunk();
+     }
+ 

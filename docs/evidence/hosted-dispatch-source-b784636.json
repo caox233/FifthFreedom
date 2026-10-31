@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "source_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+  "executed_commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+  "source_merge_tree": "b04a875a3005f91ee85c8f403d3080b54c02cb28",
+  "run_id": 41222450306,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450306",
+  "official_run_conclusion": "success",
+  "artifacts_digest_size_crc_independently_verified": true,
+  "lanes": [
+    {
+      "artifact": 13050403059,
+      "name": "portable-source-evidence-ubuntu-24.04-aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+      "sha256": "cde1f07e948fb4d2f410907b5a859c40d9e32296cd1bfdc942ed5b878b3718a4",
+      "bytes": 23456,
+      "executed": 731,
+      "passed": 729,
+      "skipped": 2,
+      "receipt_sha256": "1535f3a40ffbafc8c2eb55b6562ced9e21300e5cd5da5c362a0f953d06b145a0",
+      "source_tests_exit_code": 0
+    },
+    {
+      "artifact": 13050248614,
+      "name": "portable-source-evidence-windows-2022-aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+      "sha256": "7fa724a226e92949ca069edc96cbf674d3f7def2a8466874f13d35e5247056f4",
+      "bytes": 27826,
+      "executed": 731,
+      "passed": 612,
+      "skipped": 119,
+      "receipt_sha256": "a4fa7b4a3b9e0db7044ae7c48fb9e1cf04bdeaf8a289e489e09b76e9ef8535db",
+      "source_tests_exit_code": 0
+    }
+  ],
+  "limits": [
+    "Source tests and explicit skips only; not the Windows ABI replay, complete-package or retail gameplay result.",
+    "No downloaded executable was run in this artifact review."
+  ]
+}

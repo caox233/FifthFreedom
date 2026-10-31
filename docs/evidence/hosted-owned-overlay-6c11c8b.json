@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T08:03:17.146251+00:00",
+  "source_head_sha": "6c11c8b85633ea5e2977ea0131c86ee01b316bbb",
+  "run_id": 39919260513,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39919260513",
+  "status": "completed",
+  "conclusion": "failure",
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no archive download",
+  "jobs": [
+    {
+      "id": 120300259865,
+      "name": "Fresh reviewed build and isolated transport probes (no runtime publication)",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install signed compiler and namespace tools without loading drivers",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install pinned profile key-validation provider",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify strict namespace containment before compiling runtime sources",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve only the sanitized containment receipt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install both explicit reviewed Rust toolchains",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install checksum-pinned protoc",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require probe input and cleanup regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Prepare the same-job six-patch source and verify finite contracts and GNU build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Compile the exact native socket-policy probe from this checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Exercise owned QUIC WSS and development TCP in isolated namespaces",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Preserve only the sanitized owned-probe receipt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12487256914,
+      "name": "owned-easytier-development-receipt-539b860a31014ef157ab68505c456c41df680ac6",
+      "size_in_bytes": 1097,
+      "digest": "sha256:b1c3b1c47f2b6a37df1ef6bc7581df22ae6c87b92f203dbe8ba96269cdce485a",
+      "expired": false
+    },
+    {
+      "id": 12485818705,
+      "name": "easytier-containment-receipt-539b860a31014ef157ab68505c456c41df680ac6",
+      "size_in_bytes": 461,
+      "digest": "sha256:def6da9426733ac29d20facfb1279b47e22369c5a75abc07069ab9b6937ed9ae",
+      "expired": false
+    }
+  ],
+  "bounded_failure": "probe=easytier; fixed_codes=OVERLAY_READY_TIMEOUT,TRANSPORT_MATRIX_INCOMPLETE; no raw probe output published",
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false,
+  "complete_package": false,
+  "production_admission": false,
+  "game_executed": false,
+  "release_or_deployment": false,
+  "strict_containment_preflight_passed": true,
+  "same_job_guard3_contract_and_gnu_build_passed": true,
+  "same_job_native_socket_probe_compiled": true,
+  "runtime_matrix_verified": false,
+  "readiness_failure_phase_or_cause_confirmed": false,
+  "core_tun_peer_readiness_verified": false,
+  "cleanup_success_certified_from_metadata": false,
+  "prior_failure_not_erased": "f85c515 reported WORKER_REPLY_EOF and OWNED_WORKER_CLEANUP_FAILED; the newer run reports OVERLAY_READY_TIMEOUT. No claim the previous root cause is proved.",
+  "runtime_binary_uploaded": false
+}

@@ -1,0 +1,486 @@
+{
+  "schema": 1,
+  "kind": "pinned-quic-resolved-address-and-isolated-entry-correction",
+  "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+  "cargo_lock": {
+    "bytes": 297226,
+    "sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9"
+  },
+  "original_producer_sources": [
+    {
+      "path": "easytier/src/tunnel/quic.rs",
+      "git_blob": "c4304daeff97aeb43b61901fc2af69010fec540c",
+      "bytes": 25328,
+      "sha256": "a1b281d099aecac57047de11dea5526119daecd34456a32a6d945b5338a7c03e"
+    },
+    {
+      "path": "easytier/src/tunnel/mod.rs",
+      "git_blob": "06629b6cb6ba564c85852b76cb1938cdb425a500",
+      "bytes": 11498,
+      "sha256": "dd6d946131eab80bfa32634a03613f444fbbad1217682666b384039680639797"
+    },
+    {
+      "path": "easytier/src/common/global_ctx.rs",
+      "git_blob": "91a4c457c1328b0c3854514d24068402ef617c7d",
+      "bytes": 35427,
+      "sha256": "1eeba045629324494f7bf6ab526251aaae9439abb399f2ee34a6e71106dbe2e6"
+    },
+    {
+      "path": "easytier/src/common/stun.rs",
+      "git_blob": "008a63f8f008d75d9b43f572b15a4587c6a67dbd",
+      "bytes": 51945,
+      "sha256": "365c91594f104fd01631ca97e42b47341b331d9dcccc6712211694f0c0e765da"
+    },
+    {
+      "path": "easytier/src/common/network.rs",
+      "git_blob": "9097ad69bbd9174e6ce27470644833738ad5f06c",
+      "bytes": 14558,
+      "sha256": "8e2761f11aab20da4923a6e59b77d2bf11358aeae15648e7fbddea6d052c1203"
+    }
+  ],
+  "reviewed_project_sources": [
+    {
+      "path": "src/public/fifth_freedom_control/easytier_profile.py",
+      "bytes": 19896,
+      "sha256": "7523785de161019f4e1b69d56dc92ff995a9710f14f11503bf8a384b55e4b063"
+    },
+    {
+      "path": "tests/server/test_easytier_profile.py",
+      "bytes": 18733,
+      "sha256": "db90f527cd9fde0936dd3622b0e984a86b3a54763ae883b95368ba9224e78e45"
+    },
+    {
+      "path": "scripts/ci_easytier_probe.py",
+      "bytes": 45862,
+      "sha256": "295d50c9a38682615529c1b9de7873dffdfca97619a14d123ccb1ad47db2f452"
+    },
+    {
+      "path": "tests/ci/test_ci_easytier_probe.py",
+      "bytes": 37982,
+      "sha256": "d15fdacdca49e416bb02750ac27f7cc8fc0e5b899e09f988878965befa7f1dcb"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-profile/quic-loopback-endpoints.rs",
+      "bytes": 2829,
+      "sha256": "480949cb41d57f22a24a1f0548262aed63738c675d96b54827ef3c43d41b1023"
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-profile/quic-loopback-endpoints.json",
+      "bytes": 679,
+      "sha256": "a466fc21869139fd3781487c97eea14c6bc937f5c4287f6824be54827753498f"
+    },
+    {
+      "path": "docs/tasks/server-12.md",
+      "bytes": 15667,
+      "sha256": "61b35871a7b7f754ba9422d1c447534ca8f0eac17acf48d1401060be798304a8"
+    },
+    {
+      "path": "docs/tasks/server-13.md",
+      "bytes": 20553,
+      "sha256": "4abf831e742dc22c20e3c03bcefbbb8ae3c454406e03ca206208601df06f75ec"
+    }
+  ],
+  "checks": [
+    {
+      "name": "entry-before",
+      "command": [
+        "python3",
+        "-B",
+        "-I",
+        "scripts/ci_easytier_probe.py",
+        "--help"
+      ],
+      "exit_code": 1,
+      "summary": "actual isolated CLI fails missing ci_socket_isolation",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/entry-before.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/entry-before.stderr",
+        "bytes": 259,
+        "sha256": "9f68d7e17fb05c8748fb49b4f6596d5a0c673cb65203e02c2a1b930acb3b96b7"
+      }
+    },
+    {
+      "name": "isolated-before",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/ci",
+        "-p",
+        "test_ci_easytier_probe.py",
+        "-k",
+        "IsolatedEntryTests",
+        "-v"
+      ],
+      "exit_code": 1,
+      "summary": "3 tests: 1 pass, 1 failure, 1 error",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/isolated-before.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/isolated-before.stderr",
+        "bytes": 2708,
+        "sha256": "8425f0faaecc33551514eb55615abdeda6f9fda7f29359da7a053670a54e0225"
+      }
+    },
+    {
+      "name": "profile-before",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/server",
+        "-p",
+        "test_easytier_profile.py",
+        "-k",
+        "mapped",
+        "-v"
+      ],
+      "exit_code": 1,
+      "summary": "2 tests: 1 pass, 1 error",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/profile-before.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/profile-before.stderr",
+        "bytes": 1396,
+        "sha256": "43421c17b037cdf3f428bd52180658360b038c6019441c0b15d5b09f5035be7e"
+      }
+    },
+    {
+      "name": "loopback",
+      "command": [
+        "/workspace/.toolchains/rust/cargo/bin/cargo",
+        "+1.95.0",
+        "run",
+        "--locked",
+        "--offline",
+        "-p",
+        "easytier",
+        "--example",
+        "ff_quic_loopback_endpoints",
+        "--manifest-path",
+        ".local/dependencies/easytier-8428a89/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "summary": "actual production outer QUIC loopback echo and endpoint serialization, no Noise",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/loopback.stdout",
+        "bytes": 679,
+        "sha256": "a466fc21869139fd3781487c97eea14c6bc937f5c4287f6824be54827753498f"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/loopback.stderr",
+        "bytes": 262,
+        "sha256": "578a97761bae1bdd8d9dc21ff1f994ba5bb1f8cd74c0be601375261746be6d28"
+      }
+    },
+    {
+      "name": "parser-replay-before",
+      "command": [
+        "python3",
+        ".local/evidence/cloud/server13-resolved-endpoint/verify-projection.py",
+        "before"
+      ],
+      "exit_code": 1,
+      "summary": "retained 45e879b parser rejects production-builder projection with PEER_RESOLVED_ENDPOINT_INVALID",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/parser-replay-before.stdout",
+        "bytes": 64,
+        "sha256": "02f1531b597e154744357a2bb67404ee9a553afee5b7ec7429c6fad0630c6950"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/parser-replay-before.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "parser-replay-after",
+      "command": [
+        "python3",
+        ".local/evidence/cloud/server13-resolved-endpoint/verify-projection.py",
+        "after"
+      ],
+      "exit_code": 0,
+      "summary": "corrected parser accepts same projection, local_bind_kind wildcard",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/parser-replay-after.stdout",
+        "bytes": 50,
+        "sha256": "bf5f323f19ac31db91cea9e674171d0e5cf97dbb6326b68ca16a2a586f31480d"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/parser-replay-after.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "entry-after",
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "scripts/ci_easytier_probe.py",
+        "--help"
+      ],
+      "exit_code": 0,
+      "summary": "actual isolated help succeeds",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/entry-after.stdout",
+        "bytes": 623,
+        "sha256": "9b71493d9f27f77104a50c551d3c1b0bf5920eadd24310b68ecbb185c9ff0d70"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/entry-after.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "profile-after",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/server",
+        "-p",
+        "test_easytier_profile.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "summary": "14 tests passed, zero skipped",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/profile-after.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/profile-after.stderr",
+        "bytes": 2455,
+        "sha256": "6f8e2b2441d73e7276e2c6150e58284ae6ca1f40723e4fe02aed8c69ec729ff7"
+      }
+    },
+    {
+      "name": "probe-after",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/ci",
+        "-p",
+        "test_ci_easytier_probe.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "summary": "30 tests passed, zero skipped",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/probe-after.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/probe-after.stderr",
+        "bytes": 5643,
+        "sha256": "d286f474936bd06784538c9d065a01434156ec89649343a997eb77bced275feb"
+      }
+    },
+    {
+      "name": "monitor",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/server",
+        "-p",
+        "test_owned_overlay.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "summary": "18 tests passed, zero skipped",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/monitor.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/monitor.stderr",
+        "bytes": 3308,
+        "sha256": "6be3c64d60db49cc5721259bde035fab9ee07945e5f1062106a5f49eaf7d9d2a"
+      }
+    },
+    {
+      "name": "stack",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/ci",
+        "-p",
+        "test_owned_stack.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "summary": "20 tests passed, zero skipped",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/stack.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/stack.stderr",
+        "bytes": 4212,
+        "sha256": "634c83a8f78040f9b5efb540906ac339894d4c669b675abcda0e8c87def27513"
+      }
+    },
+    {
+      "name": "isolated-refusal",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "scripts/ci_easytier_probe.py",
+        "--containment-only",
+        "--output",
+        "/workspace/FifthFreedom/.local/evidence/cloud/server13-resolved-endpoint/isolated-refusal.json"
+      ],
+      "exit_code": 1,
+      "removed_environment_names": [
+        "GITHUB_ACTIONS",
+        "RUNNER_ENVIRONMENT"
+      ],
+      "summary": "expected refusal before namespaces/core execution",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/isolated-refusal.stdout",
+        "bytes": 28,
+        "sha256": "566606b4f8a3a99097e180cff0c25b50808715d2ec1dac743b91c46bdf92854c"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/isolated-refusal.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "isolated-worker",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "scripts/easytier_probe_worker.py"
+      ],
+      "exit_code": 1,
+      "removed_environment_names": [
+        "GITHUB_ACTIONS",
+        "RUNNER_ENVIRONMENT"
+      ],
+      "summary": "expected refusal before namespaces/core execution",
+      "stdout": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/isolated-worker.stdout",
+        "bytes": 156,
+        "sha256": "2365823b026111809499f52a7de4a737a59678f4eafc3e9890eb3655471524f2"
+      },
+      "stderr": {
+        "path": ".local/evidence/cloud/server13-resolved-endpoint/isolated-worker.stderr",
+        "bytes": 35,
+        "sha256": "e0f2c962d72b198da605d02567d2642d14977ee0e195bae0d879e28544a7dd61"
+      }
+    }
+  ],
+  "replay_script": {
+    "path": ".local/evidence/cloud/server13-resolved-endpoint/verify-projection.py",
+    "bytes": 1449,
+    "sha256": "bd4b922a983c8aab4046a374eee81e73bf567a6a653aafa9917869133e5b7139"
+  },
+  "precondition_receipt": {
+    "path": ".local/evidence/cloud/server13-resolved-endpoint/isolated-refusal.json",
+    "bytes": 489,
+    "sha256": "90ee07b9d02868a0f0cd07ed05e82d1e15bb21294b9fffd6fb52c4aaea8eff17"
+  },
+  "toolchain": {
+    "rust": "1.95.0",
+    "target": "x86_64-unknown-linux-gnu",
+    "features": "default, ring; no openssl override",
+    "environment": {
+      "CARGO_HOME": "/workspace/.toolchains/rust/cargo",
+      "RUSTUP_HOME": "/workspace/.toolchains/rust/rustup",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_ENCODED_RUSTFLAGS": "",
+      "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include",
+      "PROTOC": "/workspace/.toolchains/protoc-35.1/bin/protoc"
+    }
+  },
+  "before_profile_source": {
+    "commit": "45e879be85814ac7b7a46596092d139398610f90",
+    "path": "src/public/fifth_freedom_control/easytier_profile.py",
+    "bytes": 19248,
+    "sha256": "54c39731789455daf19ee377202c66989ad968040524bc0ff276c390b21771e6"
+  },
+  "bootstrap_commit": "1f62862",
+  "previous_hosted_failure": {
+    "run_id": 39924391718,
+    "job_id": 120317103110,
+    "artifact_id": 12489470931,
+    "archive_sha256": "16b7e82176aef2d12e41a70f71a328abf2b86e2f0b8bf9fd952a541052e6a8e6",
+    "sanitized_receipt": {
+      "path": ".local/cloud-receipts/hosted-45e879b/receipt.json",
+      "bytes": 2314,
+      "sha256": "4c69fd5736ff259be07987de33fd6681cfee456ce88df568e55594196cc73fd6"
+    },
+    "last_observation": {
+      "expected_authenticated": true,
+      "last_observation": {
+        "core_image_matches": true,
+        "local_bind_kind": null,
+        "peer_authenticated": false,
+        "query_code": "PEER_RESOLVED_ENDPOINT_INVALID",
+        "query_state": "parse-rejected",
+        "schema": "ff-easytier-readiness-observation-v1",
+        "tun_owned": true
+      },
+      "observation_count": 123,
+      "role": "initiator",
+      "schema": "ff-easytier-readiness-timeout-v1"
+    },
+    "raw_endpoint_available": false
+  },
+  "scope": {
+    "actual_local_loopback_outer_quic_executed": true,
+    "production_url_builder_executed": true,
+    "core_started": false,
+    "tun_created": false,
+    "rpc_started": false,
+    "noise_peer_authentication_executed": false,
+    "stun_collector_started": false,
+    "public_network_traffic": false,
+    "runtime_binary_published": false,
+    "upstream_production_sources_modified": false,
+    "official_binary_pins_changed": false,
+    "guard3_candidate_inputs_changed": false,
+    "new_hosted_matrix_success_claimed": false,
+    "production_admission": false
+  },
+  "held_boundary": "Actual full QUIC/WSS/TCP correct-pin, wrong-pin, recovery and cleanup matrix remains required. Loopback is address/outer-transport evidence only."
+}

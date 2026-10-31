@@ -1,0 +1,75 @@
+{
+  "actual_core_executed": false,
+  "base_paired_source_tree_sha256": "efb765a226be8ad35826c71868b105f09d5d6971b9d58580754389efec058fcd",
+  "base_recipe": {
+    "path": "scripts/easytier-windows-source.lock.json",
+    "sha256": "dd193ffbdafe7c816545c88fb23e74e850e6ff5755e6c66168eea2d87e98c129"
+  },
+  "cargo_lock_sha256_unchanged": "93933b3d72622fb04692d11defdf1ebc5ed979c5feedefceb74114bd2db6b6fc",
+  "composition": "Independent addition to the successful ten-patch input; does not modify that recipe or the separate no-Packet/peer patches. Full combined build requires a separately pinned recipe and hosted validation.",
+  "contract_expected_passed": 8,
+  "contract_inputs": [
+    {
+      "bytes": 10304,
+      "path": "tests/native/windows-owned-read/Cargo.lock",
+      "sha256": "ba0ac03730c7e8f19ab13037a20f2b8c5c29a8da33ccfba4f2431306265fe1b4"
+    },
+    {
+      "bytes": 363,
+      "path": "tests/native/windows-owned-read/Cargo.toml",
+      "sha256": "2e412dd3465a278657b99980756c6a5bccff3c19ef54697854d56f9149d1d17c"
+    },
+    {
+      "bytes": 5152,
+      "path": "tests/native/windows-owned-read/src/lib.rs",
+      "sha256": "dde4194bd20eaadd4eeea59b7060b9ef36322bdd45b87a513f0371b79a55c229"
+    },
+    {
+      "bytes": 2065,
+      "path": "tests/native/windows-owned-read/src/main.rs",
+      "sha256": "c645234c813d7bdaaec7faa03fd0289e0728a787d33985c8d1e98501c5c77ec1"
+    }
+  ],
+  "driver_executed": false,
+  "feature": "ff-windows-session-observer",
+  "files": [
+    {
+      "original_sha256": "e4dc3916615be2ad95fd020cab1be3de99f4a8cc7090e244a9caea8d16972fe5",
+      "patched_bytes": 1606,
+      "patched_sha256": "27f8c4ebcb34ed1bb4ae883fd2b9eec51690d505dbc9d36c4a20187c680f6d82",
+      "path": "easytier/src/lib.rs"
+    },
+    {
+      "original_sha256": "67ad08c2704e8c7a5214cfb73b28a4c98031a64db817c0bc855a3c1a05d7dd0e",
+      "patched_bytes": 51354,
+      "patched_sha256": "171e029b44e920a48aac1a0aa4bef6f780a6720174e27366651125ab0cb75aed",
+      "path": "easytier/src/launcher.rs"
+    },
+    {
+      "original_sha256": null,
+      "patched_bytes": 5407,
+      "patched_sha256": "c0a6c3e4678ff4b7a4f5d8d0f2e96e4dbc96a1473b246baa4cfd8b04b98f893e",
+      "path": "easytier/src/owned_read.rs"
+    },
+    {
+      "original_sha256": null,
+      "patched_bytes": 8604,
+      "patched_sha256": "0e6de880591e6148c90cf7fe6250450fd3eea8abc06f0502b5ed766a11762e56",
+      "path": "easytier/src/owned_read_windows.rs"
+    }
+  ],
+  "full_paired_compile_executed": false,
+  "patch": {
+    "bytes": 17456,
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-owned-read/owned-read.patch",
+    "sha256": "425fadf393f2449300b59f84451c990d37ff90f967c72ac7921e979d6819a617"
+  },
+  "public_admission": false,
+  "schema": 1,
+  "scope": "additive actual Instance-owned historical NIC read channel; no admission or runtime activation",
+  "source_counts": {
+    "easytier": 703,
+    "tun": 49
+  },
+  "source_tree_sha256_after_addition": "b3002a78ac5d8f2561fb7364a9e77b1b655faaa607ba7824deffe0c6cef6ea74"
+}

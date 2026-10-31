@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T04:43:43.625104+00:00",
+  "implementation_commit": "7dcecd96d27d7aa6490bab1614a64092b79671ef",
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39899786790",
+  "status": "completed",
+  "overall_conclusion": "failure",
+  "jobs": [
+    {
+      "id": 120238462883,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120238463059,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120238463094,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120238463105,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120238463131,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120238501039,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120244277083,
+      "name": "Linux service and Windows client component identity",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12479206515,
+      "name": "linux-public-server-component-candidate-64430d4a56f47aa232bd135e4ba82946dc7f2778",
+      "size_in_bytes": 84205860,
+      "digest": "sha256:1736f5bed03f800b728cda7f8efaba28392425b68a8243077bcce229349fde32",
+      "expired": false
+    },
+    {
+      "id": 12479017855,
+      "name": "windows-compile-only-components-64430d4a56f47aa232bd135e4ba82946dc7f2778",
+      "size_in_bytes": 74641954,
+      "digest": "sha256:bc8ca07ff18a21ba01f69e1a6e1d38217b28a6810002b9f02d90e26ed2cb5626",
+      "expired": false
+    },
+    {
+      "id": 12478635826,
+      "name": "linux-public-control-64430d4a56f47aa232bd135e4ba82946dc7f2778",
+      "size_in_bytes": 37616,
+      "digest": "sha256:a4b9c77ad8b98342c14d9e223d8ce31400ca7673176efb7bb7d6c18fed6d42ea",
+      "expired": false
+    },
+    {
+      "id": 12478472423,
+      "name": "linux-public-donor-reference-64430d4a56f47aa232bd135e4ba82946dc7f2778",
+      "size_in_bytes": 4005452,
+      "digest": "sha256:1e8148c3f1e007578d1c97afd5b7cf9bca9d5f10b68a774b24d29f65e2ecafcf",
+      "expired": false
+    },
+    {
+      "id": 12477734140,
+      "name": "linux-lan-baseline-64430d4a56f47aa232bd135e4ba82946dc7f2778",
+      "size_in_bytes": 9635086,
+      "digest": "sha256:7857f4704a2e0755a1d104661e25b892e22461c6e1d4992a118662f876f9ce84",
+      "expired": false
+    },
+    {
+      "id": 12477294845,
+      "name": "complete-package-input-gate-64430d4a56f47aa232bd135e4ba82946dc7f2778",
+      "size_in_bytes": 1656,
+      "digest": "sha256:dc9a8f6c9029856663129b0052177db259904ef70880a62dfd6b585d85f1f2e6",
+      "expired": false
+    }
+  ],
+  "artifact_metadata_source": "Official GitHub Actions API; archive contents not downloaded here. Artifact name SHA is the PR merge checkout, distinct from branch head. Same-run component identity check executed in GitHub-hosted job120244277083.",
+  "complete_windows_package": false,
+  "full_public_game_runtime": false,
+  "game_executed": false,
+  "production_deployed": false
+}

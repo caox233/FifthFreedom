@@ -1,0 +1,169 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official completed Windows job plus exact downloaded artifact digest and component/notice byte verification",
+  "run_id": 39922764910,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39922764910",
+  "job_id": 120311712409,
+  "job_url": "https://github.com/caox233/FifthFreedom/actions/runs/39922764910/job/120311712409",
+  "source_head": "1974fad83ecf76f138fe5d42e7db2f2e02328b8d",
+  "receipt_checkout_commit": "0e8485983c23a33b451a0fa52ca9aec421704b4d",
+  "run_attempt": "1",
+  "job_status": "completed",
+  "job_conclusion": "success",
+  "artifact_id": 12489037759,
+  "artifact_bytes": 74830972,
+  "archive_sha256": "87d447a8cf3e7658ecaea0fe335b6fa41bc3e78246cc18e0dcc530e989af372c",
+  "official_artifact_digest_matches": true,
+  "component_bytes_and_checksums_verified": true,
+  "notice_bytes_and_checksums_verified": true,
+  "selected_managed_counts": {
+    "PublicSessionControl": {
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "stdout_sha256": "663869fbfaec1e2ba379e2c0299667c2d528c87eccf8eadb8b43fce3b204aa68"
+    },
+    "PublicNativeReturn": {
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0,
+      "stdout_sha256": "04a13b5334c8e46d141eba23feb18f9e558f889afe8282b9f25489e3fb968473"
+    },
+    "FinalLaunchPreparation": {
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "stdout_sha256": "f6abb80f8f164ffab07fd0542418f61b9f40c3afeeb883c82147a4dc495ecc4b"
+    }
+  },
+  "native_public_return_checks": {
+    "passed": 8,
+    "failed": 0,
+    "ignored": 0,
+    "game_executed": false,
+    "scope": "owned synthetic Windows processes and production named-pipe contracts"
+  },
+  "native_managed_interop": {
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "helper_relative_to_cargo_target": "i686-pc-windows-msvc/debug/deps/hooks-6ceb5aec3d25e2c0.exe",
+    "helper_sha256": "d176c0529600561063e43dc81f95285a7193bc49b2d5e711971cc8d6546c7956",
+    "helper_bytes": 14704640,
+    "helper_selected_from_same_invocation_cargo_json": true,
+    "game_executed": false,
+    "package_and_loaded_dll_admission_exercised": false
+  },
+  "native_public_source_transport_checks": {
+    "passed": 8,
+    "failed": 0,
+    "ignored": 0,
+    "game_executed": false,
+    "production_admission": false,
+    "scope": "owned Windows loopback sockets, interface/source binding and revocation of retained API transports"
+  },
+  "windows_version_resources": {
+    "schema": 1,
+    "inspected_without_execution": true,
+    "components": {
+      "launcher": {
+        "product_name": "Fifth Freedom",
+        "file_description": "FifthFreedom",
+        "original_filename": "FifthFreedom.dll",
+        "bytes": 144895919,
+        "sha256": "d5109bb1ba79f0a8a36901d3ea87a9926bd2a83bfadda7f40e91073047d6860b"
+      },
+      "main_hook": {
+        "product_name": "Fifth Freedom",
+        "file_description": "Fifth Freedom native client",
+        "original_filename": "uplay_r1_loader.dll",
+        "bytes": 7746048,
+        "sha256": "e9013cbf3f69d0f3a25dea00a13958713c2e7c36ddd43356cfef97558dd6e832"
+      },
+      "server": {
+        "product_name": "Fifth Freedom",
+        "file_description": "Fifth Freedom LAN server",
+        "original_filename": "FifthFreedom.Server.exe",
+        "bytes": 10890752,
+        "sha256": "c2d147858547fcd82a4cb1fd54708936f3127c596509b9d793f0a775933b2d9d"
+      }
+    }
+  },
+  "components": {
+    "FifthFreedom.Server.exe": {
+      "sha256": "c2d147858547fcd82a4cb1fd54708936f3127c596509b9d793f0a775933b2d9d",
+      "bytes": 10890752
+    },
+    "FifthFreedom.component-only.exe": {
+      "sha256": "d5109bb1ba79f0a8a36901d3ea87a9926bd2a83bfadda7f40e91073047d6860b",
+      "bytes": 144895919
+    },
+    "scbl_gameplay.dll": {
+      "sha256": "f9dd18e6407825d4f83272a2372ae240802f6e8eddcb5835f47cbe4820a327e6",
+      "bytes": 2430976
+    },
+    "uplay_r1_loader.dll": {
+      "sha256": "e9013cbf3f69d0f3a25dea00a13958713c2e7c36ddd43356cfef97558dd6e832",
+      "bytes": 7746048
+    }
+  },
+  "fusionfix_notices": {
+    "files": {
+      "licenses/FusionFix/PROVENANCE.json": {
+        "bytes": 13115,
+        "sha256": "0ddde020bbf021dcb9fcc043c83074a82077813042d549796a6fc0f1812dfc70"
+      },
+      "licenses/FusionFix/Ultimate-ASI-Loader-v9.7.0-MIT.txt": {
+        "bytes": 1067,
+        "sha256": "ceca73c504e39084b0b80d2a437aea9988313d1915418d3c629c3e4a8313f5a1"
+      },
+      "licenses/FusionFix/Ultimate-ASI-Loader-v9.7.0-MemoryModule-MPL-2.0.txt": {
+        "bytes": 16726,
+        "sha256": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85"
+      },
+      "licenses/FusionFix/Ultimate-ASI-Loader-v9.7.0-MinHook-BSD-2-Clause.txt": {
+        "bytes": 4365,
+        "sha256": "d5c2224982b0b95a16b098a561335fa93f3eaf4d0aa964b7843edb986df78dc8"
+      },
+      "licenses/FusionFix/Ultimate-ASI-Loader-v9.7.0-d3d8to9-BSD-2-Clause.txt": {
+        "bytes": 1293,
+        "sha256": "fa65d158beefa55f270ee0c69c42cf5e92cc607d14336e7d74b8524b59a08902"
+      },
+      "licenses/FusionFix/Ultimate-ASI-Loader-v9.7.0-injector-utility-MIT.txt": {
+        "bytes": 1064,
+        "sha256": "7124c298a1fe76b169db561ee640101f88f573f21d1f269b34817b9538321f5f"
+      },
+      "licenses/FusionFix/Ultimate-ASI-Loader-v9.7.0-injector-zlib.txt": {
+        "bytes": 891,
+        "sha256": "4c71e58a290b09e756291ed676b5931d42d8e30b49de6ec33244797297e67ae5"
+      },
+      "licenses/FusionFix/Ultimate-ASI-Loader-v9.7.0-miniz-MIT.txt": {
+        "bytes": 1162,
+        "sha256": "6f20fa7672b00e2e975c291df737cf227addf3ad32e36fef3fe0f416e4664d3d"
+      }
+    },
+    "permission_closure": false
+  },
+  "native_replay_admission": {
+    "required_feature": "native-replay-fixtures",
+    "held_checks": 13,
+    "executed_checks": 0,
+    "status": "held_missing_external_input",
+    "full_native_replay_verified": false,
+    "source_sha256": "a0942f34386a90b7dfbfa95d634e98b0211e4248fc4c18d87ca98dce8552e679",
+    "scope": "targeted IPC and socket tests do not certify all hooks/native instruction replays"
+  },
+  "scope": {
+    "complete_package": false,
+    "game_executed": false,
+    "live_acceptance": false,
+    "deployed": false,
+    "published": false
+  },
+  "limitations": [
+    "This is the Windows component job result, not an overall candidate-run conclusion.",
+    "Same-run Linux/Windows assembly, static preflight, native owned lifecycle and combined owned stack have separate downstream results.",
+    "The explicit SAV/META and 13 external native replay input gates remain blocked.",
+    "Downloaded original artifact and raw logs are retained privately; this receipt publishes fixed counts, public resource metadata and hashes only."
+  ]
+}

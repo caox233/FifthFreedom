@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T03:59:55.377587+00:00",
+  "implementation_commit": "f54c9358c0e8df6775c4f29ed91ea3a91e870a80",
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39895749771",
+  "status": "completed",
+  "overall_conclusion": "failure",
+  "jobs": [
+    {
+      "id": 120225693708,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120225693907,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120225693926,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120225694013,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120225694049,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120225739752,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12477860091,
+      "name": "windows-compile-only-components-395fd00e73ef32bc5850b874978bc31137f90391",
+      "size_in_bytes": 74630020,
+      "digest": "sha256:656cbb30e4d33093f035b821d55aed8fb5b4492b6bbc8fc142bd529ac2822c7b",
+      "expired": false
+    },
+    {
+      "id": 12477240918,
+      "name": "linux-public-donor-reference-395fd00e73ef32bc5850b874978bc31137f90391",
+      "size_in_bytes": 4005447,
+      "digest": "sha256:3a77f0c5ba0439f374513b8673bcc6f7022af2c96e304cbe639c5edbee9bc07a",
+      "expired": false
+    },
+    {
+      "id": 12476836128,
+      "name": "complete-package-input-gate-395fd00e73ef32bc5850b874978bc31137f90391",
+      "size_in_bytes": 1656,
+      "digest": "sha256:0993c736d2ccdeef30548ee2c6ba88632d7990478c3eeb13a583840662ba7789",
+      "expired": false
+    },
+    {
+      "id": 12476818223,
+      "name": "linux-lan-baseline-395fd00e73ef32bc5850b874978bc31137f90391",
+      "size_in_bytes": 9382346,
+      "digest": "sha256:84043ad8d9dff0e2c47d754677a08f338daad05be42728fb3a0f3c27433a8fcb",
+      "expired": false
+    },
+    {
+      "id": 12476417441,
+      "name": "linux-public-control-395fd00e73ef32bc5850b874978bc31137f90391",
+      "size_in_bytes": 37604,
+      "digest": "sha256:c2f7dd24bc90e90bca2601c8a32671e8761fa6d4f1acdef71cb1ebc1c343cc4f",
+      "expired": false
+    }
+  ],
+  "artifact_metadata_source": "Official GitHub Actions API; archives were not downloaded in this cloud session. Artifact name SHA is the pull-request merge checkout, distinct from the branch head SHA.",
+  "complete_windows_package": false,
+  "full_public_game_runtime": false,
+  "game_executed": false,
+  "production_deployed": false
+}

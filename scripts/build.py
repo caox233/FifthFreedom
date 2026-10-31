@@ -217,6 +217,8 @@ def package(components):
  shutil.copyfile(ROOT/'LICENSE',out/'licenses/LICENSE')
  shutil.copyfile(ROOT/'THIRD_PARTY_NOTICES.txt',out/'licenses/THIRD_PARTY_NOTICES.txt')
  for p in (ROOT/'src/launcher/src/ThirdPartyNotices').glob('*.txt'):shutil.copyfile(p,out/'licenses'/p.name)
+ from fusionfix_provenance import copy_notices
+ copy_notices(out/'licenses/FusionFix',ROOT)
  shutil.copyfile(ROOT/'docs/PACKAGE-README.txt',out/'README.txt')
  shutil.copyfile(ROOT/'docs/UPDATE-NOTES.txt',out/'更新公告.txt')
  (out/'package/RELEASE-CATALOG.json').write_bytes(build_release_catalog(program,ROOT/'release-identity.json'))

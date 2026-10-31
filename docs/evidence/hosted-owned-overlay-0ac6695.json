@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T06:35:58.852566+00:00",
+  "run": {
+    "id": 39910723452,
+    "head_sha": "0ac6695a112bf15cbb016c1c34a0c011b3f07137",
+    "html_url": "https://github.com/caox233/FifthFreedom/actions/runs/39910723452",
+    "status": "completed",
+    "conclusion": "failure",
+    "run_attempt": 1
+  },
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no artifact archive or raw probe logs downloaded",
+  "jobs": [
+    {
+      "id": 120272852256,
+      "name": "Fresh reviewed build and isolated transport probes (no runtime publication)",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install signed compiler and namespace tools without loading drivers",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install pinned profile key-validation provider",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install both explicit reviewed Rust toolchains",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install checksum-pinned protoc",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require probe input and cleanup regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Prepare the same-job six-patch source and verify finite contracts and GNU build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Compile the exact native socket-policy probe from this checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Exercise owned QUIC WSS and development TCP in isolated namespaces",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Preserve only the sanitized owned-probe receipt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12483620783,
+      "name": "owned-easytier-development-receipt-a3781907a30f7dd880ef21f6468faa1f5619c3ab",
+      "size_in_bytes": 1096,
+      "digest": "sha256:518a8dc0369e55c88eef6f06602d9fc2d5af299e3b47de98dfa078dd154d8551",
+      "expired": false
+    }
+  ],
+  "bounded_failure": "probe=easytier; fixed_codes=CONTAINMENT_CHANGED,TRANSPORT_MATRIX_INCOMPLETE; no raw probe output published",
+  "guard3_source_contracts_and_gnu_build_passed": true,
+  "same_job_native_socket_probe_compiled": true,
+  "owned_overlay_runtime_verified": false,
+  "precise_nft_readback_difference_not_observed": true,
+  "complete_windows_client": false,
+  "public_startup_allowed": false,
+  "runtime_binary_published": false,
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false,
+  "duplicate_overlay": {
+    "id": 39912156347,
+    "head_sha": "117a60d4a437d0cc71bc4aa0d94890ba122fbe24",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "exact_relevant_input_diff_empty": true,
+    "cancellation_requested": true,
+    "counts_as_passing_evidence": false
+  },
+  "duplicate_build_only": {
+    "id": 39912156349,
+    "head_sha": "117a60d4a437d0cc71bc4aa0d94890ba122fbe24",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "cancellation_requested": true,
+    "counts_as_passing_evidence": false
+  }
+}

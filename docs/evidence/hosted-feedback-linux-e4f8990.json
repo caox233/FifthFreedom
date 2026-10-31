@@ -1,0 +1,713 @@
+{
+  "schema": 1,
+  "source_commit": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+  "executed_commit": "abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+  "identical_source_tree": "541d6fc70a7ee093a1446bde7b87657618dd6aca",
+  "source_merge_tree_equality_independently_checked": true,
+  "run_id": 41195418269,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269",
+  "review": "Independent read-only inspection of downloaded Linux artifacts and completed command logs; no tests rerun or binary execution by reviewer",
+  "whole_workflow_success_claimed": false,
+  "lanes": [
+    {
+      "lane": "linux-public-donor-reference",
+      "workspace": "integration/scbl3",
+      "artifact_id": 13040396396,
+      "artifact_bytes": 4005865,
+      "artifact_sha256": "dcd5d763f8a02506784855688e35318a0b48513d4be9381daa0bf42a516f5e5f",
+      "archive_crc_checked": true,
+      "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/artifacts/13040396396",
+      "official_digest_verified_by_primary_agent": true,
+      "independent_digest_matches_saved_verified_record": true,
+      "receipt_sha256": "abe31c91045edefbcc4fb1ea40c677677f270c0822adb1547acab0a025823f00",
+      "recorded_status": "components_built_and_selected_tests_passed",
+      "exit_code": 0,
+      "cargo_tests": {
+        "command": {
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "dedicated_server",
+            "-p",
+            "dedicated_server_config",
+            "-p",
+            "quazal",
+            "-p",
+            "sc_bl_protocols",
+            "-p",
+            "api"
+          ],
+          "exit_code": 0,
+          "record_sha256": "9a5d0e801fe1a7bad8396f8c894e89c5e8d280b08951ae4afbec77187b7e8ccf"
+        },
+        "test_targets": [
+          {
+            "target": "api",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "cli",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "dedicated_server",
+            "passed": 152,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "dedicated_server_config",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "quazal",
+            "passed": 26,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "core_config_parser",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "gen_config",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "qpacket_decoder",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "rmc_decoder",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "sc_bl_protocols",
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "doctest:api",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "doctest:dedicated_server_config",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "doctest:quazal",
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "doctest:sc_bl_protocols",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          }
+        ],
+        "passed": 183,
+        "failed": 0,
+        "ignored": 0,
+        "stdout_sha256": "563dbd34cbf5be1b7a9bdaf58cc896ec3f8b8cd3fec09c41d2b841381fbf547a",
+        "stderr_sha256": "ab86ef6daf5a47322dbd087de8b6d637ba821f683f04f041c6b808e747f5db44"
+      },
+      "components": {
+        "dedicated_server": {
+          "sha256": "259c9c1f54de3047e7cfa88890e60fc5ed746bd2a6c16aaf2ba725e0f36fe47f",
+          "bytes": 8981024,
+          "independently_rehashed": true,
+          "executed_by_reviewer": false
+        }
+      },
+      "release_build": {
+        "command": [
+          "cargo",
+          "build",
+          "--release",
+          "--locked",
+          "-p",
+          "dedicated_server",
+          "--bin",
+          "dedicated_server"
+        ],
+        "exit_code": 0,
+        "record_sha256": "4697b994c9621f2d8e49f6a0fee0b132ba702946b543c1aa44498cae5ba8a103"
+      },
+      "manager_tests": {
+        "executed": 154,
+        "passed": 153,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 1,
+        "skip": "test_runtime_systemd_integration.RuntimeSystemdIntegrationTests.test_real_systemd_recovers_complete_and_forward_migration_stacks: requires Linux root",
+        "stderr_sha256": "f7d1edbcc86587ead717daa85ddba648dd4232cfd1a302bf5bb25ea3a663f640",
+        "exit_code": 0
+      },
+      "scope": "Pinned integration/scbl3 donor reference and manager; independently compiled reference only, not deployment or approval of an ordinary Public game server. Real systemd integration test skipped."
+    },
+    {
+      "lane": "linux-socket-isolation",
+      "workspace": "src/native",
+      "artifact_id": 13040531635,
+      "artifact_bytes": 3680039,
+      "artifact_sha256": "e558021890e70f9e0deb0c144f25a3161614ee9c31b582fa7391704a4d44ae95",
+      "archive_crc_checked": true,
+      "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/artifacts/13040531635",
+      "official_digest_verified_by_primary_agent": true,
+      "independent_digest_matches_saved_verified_record": true,
+      "receipt_sha256": "d78a9dc48f0c6b8f2783468fc26573750330bf615356102e4b1166717ed74d47",
+      "recorded_status": "interface_ingress_isolation_verified",
+      "exit_code": 0,
+      "suites": [
+        {
+          "suite": "socket-isolation-harness",
+          "executed": 26,
+          "passed": 26,
+          "failed_test_cases": 0,
+          "failed_method_ids": [],
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "expected_failures": 0,
+          "unexpected_successes": 0,
+          "successful": true
+        }
+      ],
+      "isolation": {
+        "interface_isolation_verified": true,
+        "encrypted_overlay_verified": false,
+        "owned_overlay_liveness_verified": false,
+        "public_enabled": false,
+        "namespaces_created": 3,
+        "namespaces_removed": 3,
+        "cleanup_errors": [],
+        "observations": [
+          {
+            "mode": "ip-only",
+            "phase": "before",
+            "path": "protected",
+            "socket": "tcp_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "ip-only",
+            "phase": "before",
+            "path": "protected",
+            "socket": "udp_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "ip-only",
+            "phase": "before",
+            "path": "protected",
+            "socket": "udp_ephemeral_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "ip-only",
+            "phase": "ingress",
+            "path": "wrong",
+            "socket": "tcp_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "ip-only",
+            "phase": "ingress",
+            "path": "wrong",
+            "socket": "udp_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "ip-only",
+            "phase": "ingress",
+            "path": "wrong",
+            "socket": "udp_ephemeral_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "ip-only",
+            "phase": "after",
+            "path": "protected",
+            "socket": "tcp_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "ip-only",
+            "phase": "after",
+            "path": "protected",
+            "socket": "udp_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "ip-only",
+            "phase": "after",
+            "path": "protected",
+            "socket": "udp_ephemeral_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "interface-bound",
+            "phase": "before",
+            "path": "protected",
+            "socket": "tcp_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "interface-bound",
+            "phase": "before",
+            "path": "protected",
+            "socket": "udp_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "interface-bound",
+            "phase": "before",
+            "path": "protected",
+            "socket": "udp_ephemeral_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "interface-bound",
+            "phase": "ingress",
+            "path": "wrong",
+            "socket": "tcp_port",
+            "observation": "refused"
+          },
+          {
+            "mode": "interface-bound",
+            "phase": "ingress",
+            "path": "wrong",
+            "socket": "udp_port",
+            "observation": "timeout"
+          },
+          {
+            "mode": "interface-bound",
+            "phase": "ingress",
+            "path": "wrong",
+            "socket": "udp_ephemeral_port",
+            "observation": "timeout"
+          },
+          {
+            "mode": "interface-bound",
+            "phase": "after",
+            "path": "protected",
+            "socket": "tcp_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "interface-bound",
+            "phase": "after",
+            "path": "protected",
+            "socket": "udp_port",
+            "observation": "echo"
+          },
+          {
+            "mode": "interface-bound",
+            "phase": "after",
+            "path": "protected",
+            "socket": "udp_ephemeral_port",
+            "observation": "echo"
+          }
+        ]
+      },
+      "probe": {
+        "bytes": 12833328,
+        "sha256": "291072184fb9f32b8285370df285ab87fb4a8270dc5a7233ddf00d3e8b791213",
+        "independently_rehashed": true,
+        "executed_by_reviewer": false
+      },
+      "scope": "Actual hosted Linux three-namespace interface ingress controls, 18 observations and clean namespace removal; no encrypted-overlay liveness, ordinary Public admission, Windows WFP or gameplay claim."
+    },
+    {
+      "lane": "linux-lan-baseline",
+      "workspace": "src/native",
+      "artifact_id": 13040712145,
+      "artifact_bytes": 9886001,
+      "artifact_sha256": "ec68e6a35afaf2750423f48f87861949f78b8c23bf40c198f63b67aa674a01dc",
+      "archive_crc_checked": true,
+      "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/artifacts/13040712145",
+      "official_digest_verified_by_primary_agent": true,
+      "independent_digest_matches_saved_verified_record": true,
+      "receipt_sha256": "dfe1440be367e4fa0256ba3c5aefe4a954d49d781937a938084b9d5870d94b37",
+      "recorded_status": "components_built_and_selected_tests_passed",
+      "exit_code": 0,
+      "cargo_tests": {
+        "command": {
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "dedicated_server",
+            "-p",
+            "dedicated_server_config",
+            "-p",
+            "quazal",
+            "-p",
+            "sc_bl_protocols",
+            "-p",
+            "api",
+            "-p",
+            "hooks-addresses"
+          ],
+          "exit_code": 0,
+          "record_sha256": "793d41abdc87198d1537b59356fc0b23a84ce3d84e7061d7b0938ae9d49bfcb6"
+        },
+        "test_targets": [
+          {
+            "target": "api",
+            "passed": 56,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "dedicated_server",
+            "passed": 386,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "dedicated_server_config",
+            "passed": 2,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "hooks_addresses",
+            "passed": 18,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "quazal",
+            "passed": 69,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "core_config_parser",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "gen_config",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "qpacket_decoder",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "rmc_decoder",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "crypto_key_boundaries",
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "packet_input_boundaries",
+            "passed": 5,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "sc_bl_protocols",
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "doctest:api",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "doctest:dedicated_server_config",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "doctest:hooks_addresses",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "doctest:quazal",
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          {
+            "target": "doctest:sc_bl_protocols",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          }
+        ],
+        "passed": 547,
+        "failed": 0,
+        "ignored": 0,
+        "stdout_sha256": "71faa8d6ddeb770bdbb84183843f025b35129419330ef9801213d78b7afa483a",
+        "stderr_sha256": "07c55f9019e17100b80e008aa0fffcf9d4d2196995c91346688719501b09964c"
+      },
+      "components": {
+        "dedicated_server": {
+          "sha256": "acf10f464ee23ddb6f7b9e274340feb88f89841cb99bc7238dee28224028a50d",
+          "bytes": 30336672,
+          "independently_rehashed": true,
+          "executed_by_reviewer": false
+        },
+        "verify_public_package": {
+          "sha256": "dcb1bf40c3d2aeefd58b504482a7662f2bbaee7023611dbe4ecae6a1e264ae33",
+          "bytes": 484360,
+          "independently_rehashed": true,
+          "executed_by_reviewer": false
+        }
+      },
+      "release_build": {
+        "command": [
+          "cargo",
+          "build",
+          "--release",
+          "--locked",
+          "-p",
+          "dedicated_server",
+          "--bin",
+          "dedicated_server"
+        ],
+        "exit_code": 0,
+        "record_sha256": "0af7c976147010bdd58bd63ae4e32d95ccd271c4cdf91942922549829585555c"
+      },
+      "feedback_tests_executed": {
+        "custom_address_tests": {
+          "passed": 8,
+          "failed": 0,
+          "names": [
+            "custom_address_tests::absent_or_wrong_typed_dx11_never_becomes_an_accepted_document",
+            "custom_address_tests::dx11_only_custom_file_loads_without_obsolete_dx9_section",
+            "custom_address_tests::builtin_pins_still_win_when_dx11_only_custom_file_collides",
+            "custom_address_tests::legacy_two_section_custom_file_remains_readable",
+            "custom_address_tests::present_but_malformed_dx9_is_not_silently_discarded",
+            "custom_address_tests::executable_digest_still_selects_the_exact_custom_row",
+            "custom_address_tests::required_dx11_addresses_are_not_defaulted_or_type_coerced",
+            "custom_address_tests::invalid_dx11_digest_rejects_the_whole_custom_table"
+          ]
+        },
+        "hooks_addresses_complete_crate_passed": 18,
+        "quick_match_protocol": {
+          "passed": 12,
+          "failed": 0,
+          "names": [
+            "storage::tests::quick_match_protocol::quick_match_protocol_mod_closed_ticket_cannot_join_replacement_can",
+            "storage::tests::quick_match_protocol::quick_match_protocol_mod_concurrent_existing_room_and_leave",
+            "storage::tests::quick_match_protocol::quick_match_protocol_mod_empty_lobby_ordered_search_create_join",
+            "storage::tests::quick_match_protocol::quick_match_protocol_mod_empty_lobby_overlapping_search_then_create",
+            "storage::tests::quick_match_protocol::quick_match_protocol_mod_two_clients_same_returned_session",
+            "storage::tests::quick_match_protocol::quick_match_protocol_official_closed_ticket_cannot_join_replacement_can",
+            "storage::tests::quick_match_protocol::quick_match_protocol_official_concurrent_existing_room_and_leave",
+            "storage::tests::quick_match_protocol::quick_match_protocol_official_empty_lobby_ordered_search_create_join",
+            "storage::tests::quick_match_protocol::quick_match_protocol_official_empty_lobby_overlapping_search_then_create",
+            "storage::tests::quick_match_protocol::quick_match_protocol_mod_numeric_filter_trace_mixed_party_and_solo",
+            "storage::tests::quick_match_protocol::quick_match_protocol_official_two_clients_same_returned_session",
+            "storage::tests::quick_match_protocol::quick_match_protocol_official_numeric_filter_trace_mixed_party_and_solo"
+          ],
+          "scope": "Actual production server protocols and SQLite fixtures; includes empty-lobby schedules and Official/MOD mixed-party/solo numeric query values 55,56,57,999. Numeric values are not a demonstrated retail rank mapping or live same-game acceptance."
+        },
+        "release_admission": {
+          "passed": 5,
+          "failed": 0,
+          "names": [
+            "api::release_admission_tests::complete_package_release_and_compatibility_mismatches_are_distinct_and_have_no_auth_side_effects",
+            "api::release_admission_tests::exact_release_account_and_game_are_separate_and_signed_identity_roundtrips",
+            "api::release_admission_tests::missing_wrong_and_mixed_release_reject_before_real_credential_and_registration_writes",
+            "api::release_admission_tests::same_nonce_different_or_null_identity_does_not_delete_tickets_or_update_source",
+            "api::release_admission_tests::signed_release_tamper_legacy_and_other_catalog_reject_before_heartbeat"
+          ],
+          "production_identity_checks_not_weakened": true
+        }
+      },
+      "public_package_verifier_build": {
+        "command": [
+          "cargo",
+          "build",
+          "--release",
+          "--locked",
+          "-p",
+          "api",
+          "--example",
+          "verify_public_package"
+        ],
+        "exit_code": 0,
+        "record_sha256": "8715607c4464af1d411772f374261d04d61614b644b6bbd1d2d4daa09159067f"
+      },
+      "scope": "Retained LAN server/API/protocol/address-loader source built and tested on Linux. Not the Windows gameplay DLL, production camera/progression memory replay or a full Windows package."
+    },
+    {
+      "lane": "linux-public-control",
+      "workspace": "src/public",
+      "artifact_id": 13041225201,
+      "artifact_bytes": 68059,
+      "artifact_sha256": "09a2c4830f7d49a852dd02d5d78437a51d96b15624b18f144931b522566015cc",
+      "archive_crc_checked": true,
+      "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/artifacts/13041225201",
+      "official_digest_verified_by_primary_agent": true,
+      "independent_digest_matches_saved_verified_record": true,
+      "receipt_sha256": "c75a7ed6724370b9503943be09fb1e1ebe34f4b0c8ad2e355a709def3e45ce6b",
+      "recorded_status": "control_service_candidate_verified",
+      "exit_code": 0,
+      "suites": [
+        {
+          "suite": "linux-public-control",
+          "executed": 150,
+          "passed": 150,
+          "failed_test_cases": 0,
+          "failed_method_ids": [],
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "expected_failures": 0,
+          "unexpected_successes": 0,
+          "successful": true,
+          "retained_test_log_sha256": "3849334f4f174538cf0bda8578f4b2da2b4682f340ccabfa72f413f0c60601b9"
+        },
+        {
+          "suite": "public-candidate-builder",
+          "executed": 10,
+          "passed": 10,
+          "failed_test_cases": 0,
+          "failed_method_ids": [],
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "expected_failures": 0,
+          "unexpected_successes": 0,
+          "successful": true,
+          "retained_test_log_sha256": "39483f19890c784feb332e4628a41ad5b7808ee203f22f8a59dad67f403a30b2"
+        }
+      ],
+      "candidate": {
+        "name": "FifthFreedom-Control.pyz",
+        "bytes": 56536,
+        "sha256": "7ca9074c84422ba9409698307529067deb49889667a6a1ab76ed6d290ce38bed",
+        "independently_rehashed": true
+      },
+      "native_public_game_server_enabled": false,
+      "test_transport": "synthetic_loopback_tls_only",
+      "scope": "read_only_control_service"
+    }
+  ],
+  "limits": [
+    "No reviewer rerun of these completed tests or execution of downloaded programs.",
+    "All four receipts are component/control/isolation evidence, not a complete unified Windows candidate.",
+    "Linux address-loader execution does not establish Windows x86 camera/progression source replay success.",
+    "Numeric-filter and room protocol fixtures do not prove the reported greater-than-56 retail matching failure is repaired.",
+    "Donor manager has one explicitly retained skipped systemd integration test.",
+    "Public runtime prerequisites, C71 reviewed replay inputs and live multiplayer acceptance remain independent gates."
+  ],
+  "comparison_with_prior": {
+    "record": "hosted-feedback-linux-d40bfc3.json",
+    "prior_source_commit": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+    "prior_run_id": 41193432848,
+    "same_lane_suite_counts_and_scope": true,
+    "all_artifacts_and_command_logs_inspected_again_from_new_run": true,
+    "previous_results_not_substituted_for_new_run": true
+  }
+}

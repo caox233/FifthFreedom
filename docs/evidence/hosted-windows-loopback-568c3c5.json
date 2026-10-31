@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T07:08:01.634688+00:00",
+  "run": {
+    "id": 39915438709,
+    "head_sha": "568c3c5c0de90749636d8ba5acff76e2b8e62f86",
+    "html_url": "https://github.com/caox233/FifthFreedom/actions/runs/39915438709",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no raw logs or archive downloaded",
+  "jobs": [
+    {
+      "id": 120287860155,
+      "name": "loopback-prerequisite",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Read fixed port observations and bind only a fresh owned socket",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Prepare only the exact default IIS site if it occupies the fixed port",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run the unchanged real FinalLaunchPreparation on this same runner",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Restore the recorded default IIS site state",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve only sanitized observations and suite result",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "fixed_prepare_observation": "mode=Prepare; succeeded=True; default_site_confirmed=True; default_site_stopped=True; default_site_restored=False; owned_bind_verified=True; unknown_services_changed=False; port_rules_changed=False",
+  "fixed_restore_observation": "mode=Restore; succeeded=True; default_site_confirmed=True; default_site_stopped=False; default_site_restored=True; owned_bind_verified=False; unknown_services_changed=False; port_rules_changed=False",
+  "original_final_nine_checks_passed": true,
+  "exact_default_site_id1_http80_verified": true,
+  "default_site_stopped_then_owned_bind_verified": true,
+  "default_site_restored_to_started": true,
+  "extra_default_wcf_bindings_observed": {
+    "net_tcp": true,
+    "net_pipe": true,
+    "net_msmq": true,
+    "msmq_formatname": true,
+    "unknown_binding_present": false
+  },
+  "port_rules_changed": false,
+  "production_ports_changed": false,
+  "game_executed": false,
+  "complete_package": false,
+  "full_component_build_not_certified_by_this_probe": true,
+  "artifacts": [
+    {
+      "id": 12485145480,
+      "name": "windows-loopback-prerequisite-5e5f726728ccd549dccd47e22cd9ce8401fdf1e4",
+      "size_in_bytes": 1629,
+      "digest": "sha256:d96606a1de571b25187a10eb5567df6de62c3446661b19dda10828a0ba6d156f",
+      "expired": false
+    }
+  ],
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false
+}

@@ -1,0 +1,88 @@
+name: Windows exact-path firewall prerequisite (no core)
+
+on:
+  push:
+    branches: ['codex/firewall-diagnostic']
+    paths:
+      - 'scripts/ci_windows_core_firewall.ps1'
+      - 'scripts/windows_firewall_package.ps1'
+      - 'scripts/windows_firewall_enforcement.ps1'
+      - 'scripts/ci_owned_core_runtime.py'
+      - 'scripts/ci_windows_firewall_prerequisite.py'
+      - 'scripts/ci_windows_firewall_filter_probe.py'
+      - 'scripts/windows_firewall_filter_probe.cpp'
+      - 'tests/ci/test_ci_owned_core_runtime.py'
+      - 'tests/ci/test_ci_windows_firewall_prerequisite.py'
+      - 'tests/ci/test_ci_windows_firewall_filter_probe.py'
+      - 'tests/ci/windows_firewall_package_contracts.ps1'
+      - 'tests/ci/windows_firewall_enforcement_contracts.ps1'
+      - '.github/workflows/windows-core-firewall-prerequisite.yml'
+  pull_request:
+    paths:
+      - 'scripts/ci_windows_core_firewall.ps1'
+      - 'scripts/windows_firewall_package.ps1'
+      - 'scripts/windows_firewall_enforcement.ps1'
+      - 'scripts/ci_owned_core_runtime.py'
+      - 'scripts/ci_windows_firewall_prerequisite.py'
+      - 'scripts/ci_windows_firewall_filter_probe.py'
+      - 'scripts/windows_firewall_filter_probe.cpp'
+      - 'tests/ci/test_ci_owned_core_runtime.py'
+      - 'tests/ci/test_ci_windows_firewall_prerequisite.py'
+      - 'tests/ci/test_ci_windows_firewall_filter_probe.py'
+      - 'tests/ci/windows_firewall_package_contracts.ps1'
+      - 'tests/ci/windows_firewall_enforcement_contracts.ps1'
+      - '.github/workflows/windows-core-firewall-prerequisite.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fifth-firewall-prerequisite-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  firewall-readback:
+    name: Actual Prepare and unarmed Restore with inert file input
+    runs-on: windows-2025
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Check strict diagnostics and failure/restore result contracts
+        run: |
+          python -B -m unittest discover -s tests/ci -p test_ci_owned_core_runtime.py -v
+          python -B -m unittest discover -s tests/ci -p test_ci_windows_firewall_prerequisite.py -v
+          python -B -m unittest discover -s tests/ci -p test_ci_windows_firewall_filter_probe.py -v
+      - name: Check bounded enforcement diagnostics without admission or firewall calls
+        run: pwsh -NoLogo -NoProfile -NonInteractive -File tests/ci/windows_firewall_enforcement_contracts.ps1
+      - name: Verify actual production package predicate and retained negative control
+        run: pwsh -NoLogo -NoProfile -NonInteractive -File tests/ci/windows_firewall_package_contracts.ps1
+      - name: Build private native read-only WFP probe and execute pure contracts
+        shell: cmd
+        run: |
+          @echo off
+          set "FF_WFP_VS="
+          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "FF_WFP_VS=%%i"
+          if not defined FF_WFP_VS exit /b 1
+          call "%FF_WFP_VS%\VC\Auxiliary\Build\vcvarsall.bat" x64 >nul
+          if errorlevel 1 exit /b %ERRORLEVEL%
+          python -B scripts/ci_windows_firewall_filter_probe.py --build
+      - name: Exercise production firewall readback without Arm or process startup
+        run: python -B scripts/ci_windows_firewall_prerequisite.py
+      - name: Preserve fixed labels and result only, never raw local policy
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-firewall-prerequisite-${{ github.sha }}
+          path: |
+            artifacts/ci/windows-firewall-prerequisite.json
+            artifacts/ci/windows-firewall-package-contracts.json
+            artifacts/ci/windows-firewall-enforcement-contracts.json
+            artifacts/ci/windows-firewall-filter-build.json
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T06:53:07.365769+00:00",
+  "run": {
+    "id": 39913526182,
+    "head_sha": "b6e0687a3998093a694ca04ba3dabbb9b05a61d4",
+    "html_url": "https://github.com/caox233/FifthFreedom/actions/runs/39913526182",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no raw logs or archive downloaded",
+  "jobs": [
+    {
+      "id": 120281733999,
+      "name": "loopback-prerequisite",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Read fixed port observations and bind only a fresh owned socket",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run the unchanged real FinalLaunchPreparation on this same runner",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Preserve only sanitized observations and suite result",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "fixed_observation": "query_complete=True; listener_80_present=True; listener_80_system=True; w3svc_running=True; msdepsvc_running=False; http_sys_msdeploy_agent_registered=False; tcp_exclusion_contains_80=True; bind_result=WSAEACCES; services_changed=False",
+  "fixed_test_failure": "suite=FinalLaunchPreparation; managed_cases=FinalLaunchPreparation:SETUP_LISTENER:SocketException; final_preparation_codes=FINAL_PREPARATION_LOOPBACK_PERMISSION_DENIED",
+  "observed": {
+    "query_complete": true,
+    "listener_80_present": true,
+    "listener_80_system": true,
+    "w3svc_running": true,
+    "msdepsvc_running": false,
+    "http_sys_msdeploy_agent_registered": false,
+    "tcp_exclusion_contains_80": true,
+    "bind_result": "WSAEACCES",
+    "services_changed": false
+  },
+  "same_runner_original_nine_case_suite_passed": false,
+  "exact_default_site_config_not_yet_verified": true,
+  "fix_not_verified_by_this_run": true,
+  "port_rules_changed": false,
+  "production_ports_changed": false,
+  "artifacts": [
+    {
+      "id": 12483663372,
+      "name": "windows-loopback-prerequisite-0987f963d72cbc3df20a44c4014394316f0b6ae8",
+      "size_in_bytes": 762,
+      "digest": "sha256:e6b73b2f8be62675f56eb736142b8732dc0b3047c52bd81a62e74b69cb964c8f",
+      "expired": false
+    }
+  ],
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false
+}

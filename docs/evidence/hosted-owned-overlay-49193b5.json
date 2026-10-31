@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official metadata and digest-verified sanitized runtime receipt",
+  "run_id": 39933668757,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39933668757",
+  "job_id": 120347846855,
+  "source_head": "49193b5350007e548b3bb74a3fd2e2d6bdab7f9d",
+  "checkout_commit": "ec89bb49101432a7ed75f807fa43fc4717db2b65",
+  "status": "completed",
+  "conclusion": "failure",
+  "artifact": {
+    "id": 12493411726,
+    "name": "owned-easytier-development-receipt-ec89bb49101432a7ed75f807fa43fc4717db2b65",
+    "size_in_bytes": 1306,
+    "digest": "sha256:f56b796189a3f7634ccc139378616a416e6103c16202dfebb6e0eb4356f61cae"
+  },
+  "zip_digest_matches_official": true,
+  "archive_members": 1,
+  "sanitized_receipt": {
+    "checkout_commit": "ec89bb49101432a7ed75f807fa43fc4717db2b65",
+    "cli_identity": {
+      "bytes": 12261752,
+      "sha256": "db82d0299f6342f559e99e2d6accbe4988c57f811d01330431d813d90f7fe16f"
+    },
+    "encryption_claim": "source contracts and bounded runtime observations are separate; no packet-capture proof",
+    "error": "TRANSPORT_MATRIX_INCOMPLETE",
+    "game_executed": false,
+    "native_owner_lease_verified": false,
+    "precondition_failures": [],
+    "private_stage_removed": true,
+    "production_admission": false,
+    "raw_runtime_output_retained": false,
+    "runtime_binary_uploaded": false,
+    "runtime_candidate": {
+      "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+      "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+      "executable_sha256": "693812b03b4a593fae738405442929377a30470d1de1c4564f937223c81356e0",
+      "executable_size": 28593032,
+      "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+      "role": "easytier-core",
+      "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+      "target": "x86_64-unknown-linux-gnu",
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626"
+    },
+    "schema": "ff-easytier-isolated-development-probe-v1",
+    "socket_probe_identity": {
+      "bytes": 12833328,
+      "sha256": "291072184fb9f32b8285370df285ab87fb4a8270dc5a7233ddf00d3e8b791213"
+    },
+    "status": "failed",
+    "transports": [
+      {
+        "cleanup_errors": [],
+        "error": "WORKER_REPORTED_FAILURE",
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "phases": [
+          {
+            "echo": {
+              "tcp_port": "echo",
+              "udp_ephemeral_port": "echo",
+              "udp_port": "echo"
+            },
+            "phase": "correct-pin-before",
+            "profile_sha256": "cf1c37d805b8f757788af7322971b72abb59b0df15232db595d9a071ab1a9c60"
+          }
+        ],
+        "purpose": "product-transport-development-probe",
+        "status": "failed",
+        "transport": "quic",
+        "worker_failure": {
+          "cleanup_code": null,
+          "cleanup_reaped": true,
+          "code": "OVERLAY_ADDRESS_QUERY_UNAVAILABLE",
+          "event": "failed",
+          "phase": "observe",
+          "schema": "ff-easytier-worker-failure-v1"
+        }
+      }
+    ]
+  },
+  "interpretation": [
+    "QUIC correct-pin-before completed with TCP, fixed-port UDP and ephemeral-port UDP echo",
+    "The subsequent observe failure is classified as OVERLAY_ADDRESS_QUERY_UNAVAILABLE; its errno and underlying lifecycle cause are not in this receipt",
+    "Wrong-pin and correct-pin-after did not complete; WSS/TCP transport rows were not reached",
+    "Worker cleanup reaped, two namespaces removed without errors and private stage removed",
+    "No full transport matrix, native owner lease, production admission, packet-capture proof, release or deployment is claimed"
+  ]
+}

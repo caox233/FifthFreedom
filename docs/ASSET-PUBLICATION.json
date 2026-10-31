@@ -31,69 +31,95 @@
       "bytes": 337628,
       "status": "local_preserved_not_published",
       "reason": "opaque default save privacy not proven; user redistribution authorization is separate"
-    },
+    }
+  ],
+  "full_public_clean_checkout_package_build": "Verified at source da1805e6764ac202bf6b8c1a9548fa2c44d4c085: hosted run40594742870 full Windows build, packaged UI/save smoke, official download and exact package checks pass. Default restoration retained. Four donor-only holds and the separate C71 gate remain; no live-game or complete Public claim.",
+  "binary_rebuild_gap": [
+    "Capture historical source received/hash-verified and independent Windows x86 reference build plus19 bounded checks passed; rebuilt bytes differ, behavioral equivalence and reproducibility unverified; original pinned binary retained"
+  ],
+  "third_party_notice_gap": [
+    "FusionFix provenance/license details to be supplemented"
+  ],
+  "admitted_default_inputs": [
     {
       "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000001.meta",
       "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16",
       "bytes": 12,
-      "status": "local_preserved_not_published",
-      "reason": "opaque default save privacy not proven; user redistribution authorization is separate"
+      "status": "admitted_owner_confirmed_public_default",
+      "reason": "Owner explicitly confirmed public default templates and permits publication; exact original pinned bytes verified. META reviewed byte-for-byte; SAV review bounded to reported plaintext scan, not full deserialization.",
+      "review": "docs/development-reference/default-save-inputs-20261028/receipt.json",
+      "handoff_commit": "865a25ac8e8978be194418453fff8c403992c682",
+      "admission_date": "2026-10-28"
     },
     {
       "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000001.sav",
       "sha256": "ee506410bc0046ac23a5e15624270810826ffca0e72b28f03961c0aa052f2cf8",
       "bytes": 297865,
-      "status": "local_preserved_not_published",
-      "reason": "opaque default save privacy not proven; user redistribution authorization is separate"
+      "status": "admitted_owner_confirmed_public_default",
+      "reason": "Owner explicitly confirmed public default templates and permits publication; exact original pinned bytes verified. META reviewed byte-for-byte; SAV review bounded to reported plaintext scan, not full deserialization.",
+      "review": "docs/development-reference/default-save-inputs-20261028/receipt.json",
+      "handoff_commit": "865a25ac8e8978be194418453fff8c403992c682",
+      "admission_date": "2026-10-28"
     },
     {
       "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000002.meta",
       "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16",
       "bytes": 12,
-      "status": "local_preserved_not_published",
-      "reason": "opaque default save privacy not proven; user redistribution authorization is separate"
+      "status": "admitted_owner_confirmed_public_default",
+      "reason": "Owner explicitly confirmed public default templates and permits publication; exact original pinned bytes verified. META reviewed byte-for-byte; SAV review bounded to reported plaintext scan, not full deserialization.",
+      "review": "docs/development-reference/default-save-inputs-20261028/receipt.json",
+      "handoff_commit": "865a25ac8e8978be194418453fff8c403992c682",
+      "admission_date": "2026-10-28"
     },
     {
       "path": "src/launcher/src/Assets/DefaultSaves/MOD/00000002.sav",
       "sha256": "ee506410bc0046ac23a5e15624270810826ffca0e72b28f03961c0aa052f2cf8",
       "bytes": 297865,
-      "status": "local_preserved_not_published",
-      "reason": "opaque default save privacy not proven; user redistribution authorization is separate"
+      "status": "admitted_owner_confirmed_public_default",
+      "reason": "Owner explicitly confirmed public default templates and permits publication; exact original pinned bytes verified. META reviewed byte-for-byte; SAV review bounded to reported plaintext scan, not full deserialization.",
+      "review": "docs/development-reference/default-save-inputs-20261028/receipt.json",
+      "handoff_commit": "865a25ac8e8978be194418453fff8c403992c682",
+      "admission_date": "2026-10-28"
     },
     {
       "path": "src/launcher/src/Assets/DefaultSaves/Official/00000001.meta",
       "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16",
       "bytes": 12,
-      "status": "local_preserved_not_published",
-      "reason": "opaque default save privacy not proven; user redistribution authorization is separate"
+      "status": "admitted_owner_confirmed_public_default",
+      "reason": "Owner explicitly confirmed public default templates and permits publication; exact original pinned bytes verified. META reviewed byte-for-byte; SAV review bounded to reported plaintext scan, not full deserialization.",
+      "review": "docs/development-reference/default-save-inputs-20261028/receipt.json",
+      "handoff_commit": "865a25ac8e8978be194418453fff8c403992c682",
+      "admission_date": "2026-10-28"
     },
     {
       "path": "src/launcher/src/Assets/DefaultSaves/Official/00000001.sav",
       "sha256": "5bda2ee98904f2705621f40b5ebc5d480ef4fc59f8b4955fea38004ac8443d44",
       "bytes": 337743,
-      "status": "local_preserved_not_published",
-      "reason": "opaque default save privacy not proven; user redistribution authorization is separate"
+      "status": "admitted_owner_confirmed_public_default",
+      "reason": "Owner explicitly confirmed public default templates and permits publication; exact original pinned bytes verified. META reviewed byte-for-byte; SAV review bounded to reported plaintext scan, not full deserialization.",
+      "review": "docs/development-reference/default-save-inputs-20261028/receipt.json",
+      "handoff_commit": "865a25ac8e8978be194418453fff8c403992c682",
+      "admission_date": "2026-10-28"
     },
     {
       "path": "src/launcher/src/Assets/DefaultSaves/Official/00000002.meta",
       "sha256": "375911d87397d8ec7d1d33fbf0dd7a0a6ca152b7c7e5b0d16adf572932bd5f16",
       "bytes": 12,
-      "status": "local_preserved_not_published",
-      "reason": "opaque default save privacy not proven; user redistribution authorization is separate"
+      "status": "admitted_owner_confirmed_public_default",
+      "reason": "Owner explicitly confirmed public default templates and permits publication; exact original pinned bytes verified. META reviewed byte-for-byte; SAV review bounded to reported plaintext scan, not full deserialization.",
+      "review": "docs/development-reference/default-save-inputs-20261028/receipt.json",
+      "handoff_commit": "865a25ac8e8978be194418453fff8c403992c682",
+      "admission_date": "2026-10-28"
     },
     {
       "path": "src/launcher/src/Assets/DefaultSaves/Official/00000002.sav",
       "sha256": "5bda2ee98904f2705621f40b5ebc5d480ef4fc59f8b4955fea38004ac8443d44",
       "bytes": 337743,
-      "status": "local_preserved_not_published",
-      "reason": "opaque default save privacy not proven; user redistribution authorization is separate"
+      "status": "admitted_owner_confirmed_public_default",
+      "reason": "Owner explicitly confirmed public default templates and permits publication; exact original pinned bytes verified. META reviewed byte-for-byte; SAV review bounded to reported plaintext scan, not full deserialization.",
+      "review": "docs/development-reference/default-save-inputs-20261028/receipt.json",
+      "handoff_commit": "865a25ac8e8978be194418453fff8c403992c682",
+      "admission_date": "2026-10-28"
     }
-  ],
-  "full_public_clean_checkout_package_build": "blocked until approved matching default saves or reviewed generated replacement are available; never fabricate a successful package",
-  "binary_rebuild_gap": [
-    "SCBL.LAN.Capture.exe source project not yet migrated; existing pinned binary retained"
-  ],
-  "third_party_notice_gap": [
-    "FusionFix provenance/license details to be supplemented"
   ]
 }

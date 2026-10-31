@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "kind": "independent-windows-inert-owned-read-build-only",
+  "base_recipe": {
+    "bytes": 1769,
+    "path": "scripts/easytier-windows-owned-read.lock.json",
+    "sha256": "aee691f8baab6923aa5b1ee9c338e67401ea4b0634d468fb3739302ea4fc76f9"
+  },
+  "inert_contract": {
+    "path": "docs/dependency-patches/easytier-2.6.4-inert-stun/receipt.json",
+    "bytes": 18331,
+    "sha256": "8c1e2a9a7a61de67cab21274dcea29cacae45c51b6ee85a8b6a6f01ad9aec876"
+  },
+  "base_prepared": {
+    "cargo_lock_patched_sha256": "37c7e066bef9d801b7b67942a18bd7365485e613c18d14f366aed178bb38a696",
+    "patch_manifest_sha256": "319a05bc889df82bf4d374304cbbb6bd0c163ac9996d0e55ecee058dfd647810",
+    "source_tree_sha256": "980bb96687a83f7da040d8aa4c4f7134c1c07183637510f2f39a805eaa08a294"
+  },
+  "patch": {
+    "bytes": 16317,
+    "path": "docs/dependency-patches/easytier-2.6.4-inert-stun/inert-profile-combined.patch",
+    "role": "production-plus-contracts",
+    "sha256": "fa6a9bbfa8e61c8d996337af0a0c2d6654a802c8c8928f92995cb784995f43fb"
+  },
+  "files": [
+    {
+      "original_bytes": 65259,
+      "original_sha256": "ca0ac8596a79e0dc8f5586deefb66d772779b515cbd26ef2861fd3d077b9e50f",
+      "patched_bytes": 70746,
+      "patched_sha256": "ed9d4b3171035ac5816175ca77fecbf130a9ed73af8d68ddf8c220c41f00f152",
+      "path": "easytier/src/common/config.rs",
+      "production_only_bytes": 66177,
+      "production_only_sha256": "c171f92e084df9a4dd8842b21f9f8edb3ab9493f33b139405c422c6845011931"
+    },
+    {
+      "original_bytes": 35427,
+      "original_sha256": "1eeba045629324494f7bf6ab526251aaae9439abb399f2ee34a6e71106dbe2e6",
+      "patched_bytes": 34854,
+      "patched_sha256": "2179b92a611a65979342a2e0e57cf7c30d902bfc03e8fec3d076a1251f1d56ab",
+      "path": "easytier/src/common/global_ctx.rs",
+      "production_only_bytes": 34854,
+      "production_only_sha256": "2179b92a611a65979342a2e0e57cf7c30d902bfc03e8fec3d076a1251f1d56ab"
+    },
+    {
+      "original_bytes": 51945,
+      "original_sha256": "365c91594f104fd01631ca97e42b47341b331d9dcccc6712211694f0c0e765da",
+      "patched_bytes": 56973,
+      "patched_sha256": "86b8742199830a150a2a66b9ca182270cb435045356685733b0ca2c181a39b55",
+      "path": "easytier/src/common/stun.rs",
+      "production_only_bytes": 52701,
+      "production_only_sha256": "739d728489e16e43b6f20f906ac3fc1b699534a0761ba78dc253c3dc5194d93a"
+    },
+    {
+      "original_bytes": 6882,
+      "original_sha256": "fa45e40d67601a0d368619dbef020182919202f218bdce20c84aeeee59c347da",
+      "patched_bytes": 7497,
+      "patched_sha256": "2001d731329e8a509063121277b6622f6a7609c354c2cb098caf9fb0941feb38",
+      "path": "easytier/src/rpc_service/api.rs",
+      "production_only_bytes": 6882,
+      "production_only_sha256": "fa45e40d67601a0d368619dbef020182919202f218bdce20c84aeeee59c347da"
+    },
+    {
+      "original_bytes": null,
+      "original_sha256": null,
+      "patched_bytes": 1282,
+      "patched_sha256": "f34f61110ee4e29bfa124a0a2b8804177d022afe7b8ad17520a1646f76593d08",
+      "path": "easytier/tests/fifth_freedom_inert_profile.toml",
+      "production_only_bytes": null,
+      "production_only_sha256": null
+    }
+  ],
+  "inert_profile": {
+    "bytes": 1282,
+    "conflict_scope": "10.254.253.0/24",
+    "ipv4": "10.254.253.1/24",
+    "path": "docs/dependency-patches/easytier-2.6.4-inert-stun/inert-profile.toml",
+    "rpc_arguments": [
+      "--rpc-portal",
+      "127.0.0.1:15998"
+    ],
+    "runtime_executed": false,
+    "runtime_insertions_only": [
+      "instance_id",
+      "flags.dev_name"
+    ],
+    "sha256": "f34f61110ee4e29bfa124a0a2b8804177d022afe7b8ad17520a1646f76593d08",
+    "source_path": "easytier/tests/fifth_freedom_inert_profile.toml"
+  },
+  "build": {
+    "rust_toolchain": "1.95.0",
+    "target": "x86_64-pc-windows-msvc",
+    "profile": "release",
+    "features": [
+      "ff-windows-session-observer",
+      "kcp",
+      "magic-dns",
+      "quic",
+      "smoltcp",
+      "socks5",
+      "tun",
+      "websocket",
+      "wireguard",
+      "zstd"
+    ],
+    "bins": [
+      "easytier-core.exe",
+      "easytier-cli.exe"
+    ],
+    "win7_compatibility": false,
+    "execute_binaries": false,
+    "upload_binaries": false,
+    "no_default_features": true
+  },
+  "contracts": {
+    "filter": "fifth_freedom_stun_",
+    "expected_passed": 13
+  },
+  "expected_prepared": {
+    "cargo_lock_patched_sha256": "37c7e066bef9d801b7b67942a18bd7365485e613c18d14f366aed178bb38a696",
+    "patch_manifest_sha256": "bbad0f9c745a018fb833ad0ced41a1e79c3253cf947a98288d5763d03f27f3eb",
+    "source_tree_sha256": "8cf92686e0cce91f6db26dccdb3ca36f4e776b21254da036939fc17e9992c584"
+  },
+  "admission": {
+    "public_startup_allowed": false,
+    "core_runtime_verified": false,
+    "dependency_license_closure_verified": false
+  }
+}

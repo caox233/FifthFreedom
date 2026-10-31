@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T05:25:55.025521+00:00",
+  "implementation_commit": "4a273bf9356ccd3036f67a3e8e7ee1cfce89baeb",
+  "evidence_source": "Official GitHub jobs/check annotations API; normal log download denied, no alternative transport used",
+  "jobs": [
+    {
+      "job_id": 120255467067,
+      "run_id": 39905205058,
+      "name": "portable",
+      "status": "completed",
+      "conclusion": "failure",
+      "failure_summaries": [
+        "suite=server; executed_methods=85; failed_methods=test_overlay_supervisor.OwnedLifecycleTests.test_bootstrap_exec_failure_and_start_cancellation_leave_no_child,test_overlay_supervisor.OwnedLifecycleTests.test_changed_index_address_namespace_and_missing_observation_revoke,test_overlay_supervisor.OwnedLifecycleTests.test_concurrent_start_reserves_one_runner_and_one_child_pair,test_overlay_supervisor.OwnedLifecycleTests.test_exec_failure_is_reaped_and_clean_environment_pdeath_survives_exec,test_overlay_supervisor.OwnedLifecycleTests.test_failed_native_stop_retains_handles_and_retry_preserves_order,test_overlay_supervisor.OwnedLifecycleTests.test_kernel_monitor_does_not_adopt_loopback_or_nonexistent_interface,test_overlay_supervisor.OwnedLifecycleTests.test_late_observations_cannot_publish_readiness_after_overlay_death,test_overlay_supervisor.OwnedLifecycleTests.test_monitor_errors_are_sanitized_and_revocation_precedes_ordered_cleanup; assertion_events=0; error_events=14; unexpected_successes=0; exception_types=unclassified; additional_failed_methods=6; full diagnostics remain in the run artifacts"
+      ]
+    },
+    {
+      "job_id": 120255469206,
+      "run_id": 39905205347,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "failure",
+      "failure_summaries": [
+        "suite=ci; executed_methods=87; failed_methods=test_ci_easytier_build.EasyTierBuildEvidenceTests.test_changed_prepared_source_prevents_any_compiler_execution,test_ci_easytier_build.EasyTierBuildEvidenceTests.test_compiler_failure_does_not_publish_raw_output_or_continue,test_ci_easytier_build.EasyTierBuildEvidenceTests.test_receipts_bind_source_and_exact_contracts_without_copying_or_running_binaries,test_ci_easytier_build.EasyTierBuildEvidenceTests.test_source_changed_during_compile_is_rejected_and_failure_receipt_preserved,test_ci_easytier_build.EasyTierBuildEvidenceTests.test_target_inside_source_or_existing_evidence_is_rejected,test_ci_easytier_build.EasyTierBuildEvidenceTests.test_zero_skipped_partial_duplicate_or_failed_contract_summaries_fail,test_ci_prepare_easytier_source.CleanSourcePreparationTests.test_patch_application_uses_the_verified_snapshot_if_original_path_changes,test_ci_prepare_easytier_source.CleanSourcePreparationTests.test_real_patch_and_exact_omissions_preserve_original_and_required_sources; assertion_events=0; error_events=9; unexpected_successes=0; exception_types=unclassified; additional_failed_methods=1; full diagnostics remain in the run artifacts"
+      ]
+    },
+    {
+      "job_id": 120255469468,
+      "run_id": 39905205347,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "failure",
+      "failure_summaries": [
+        "step=linux-public-control; exception=RuntimeError; full diagnostics remain in the run artifacts",
+        "suite=linux-public-control; executed_methods=85; failed_methods=test_overlay_supervisor.OwnedLifecycleTests.test_bootstrap_exec_failure_and_start_cancellation_leave_no_child,test_overlay_supervisor.OwnedLifecycleTests.test_changed_index_address_namespace_and_missing_observation_revoke,test_overlay_supervisor.OwnedLifecycleTests.test_concurrent_start_reserves_one_runner_and_one_child_pair,test_overlay_supervisor.OwnedLifecycleTests.test_exec_failure_is_reaped_and_clean_environment_pdeath_survives_exec,test_overlay_supervisor.OwnedLifecycleTests.test_failed_native_stop_retains_handles_and_retry_preserves_order,test_overlay_supervisor.OwnedLifecycleTests.test_kernel_monitor_does_not_adopt_loopback_or_nonexistent_interface,test_overlay_supervisor.OwnedLifecycleTests.test_late_observations_cannot_publish_readiness_after_overlay_death,test_overlay_supervisor.OwnedLifecycleTests.test_monitor_errors_are_sanitized_and_revocation_precedes_ordered_cleanup; assertion_events=0; error_events=14; unexpected_successes=0; exception_types=unclassified; additional_failed_methods=6; full diagnostics remain in the run artifacts"
+      ]
+    }
+  ],
+  "local_git_conversion_reproduction": {
+    "injected_git_config": {
+      "core.autocrlf": "true",
+      "core.eol": "crlf"
+    },
+    "before_preparer_methods": 10,
+    "before_errors": 3,
+    "error_code": "SOURCE_PATCH_SCOPE_OR_DIGEST_MISMATCH",
+    "after_preparer_and_build_methods": 17,
+    "after_errors": 0,
+    "patch_application_now_pins_lf": true,
+    "strict_after_hashes_unchanged": true,
+    "hosted_root_cause_trace_confirmed": false
+  },
+  "linux_lifecycle_fixture": {
+    "observed_error_methods": 14,
+    "official_exception_type": "unclassified",
+    "toolcache_path_policy_cause_is_inferred": true,
+    "production_executable_guards_unchanged": true
+  },
+  "latest_run_is_not_a_passing_baseline": true,
+  "other_candidate_and_build_only_jobs_still_running_at_observation": true,
+  "public_startup_allowed": false,
+  "complete_package": false
+}

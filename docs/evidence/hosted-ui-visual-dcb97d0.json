@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-10-29",
+  "status": "passed-with-scope-boundaries",
+  "run_id": 40816467332,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/40816467332",
+  "job_id": 123258584829,
+  "github_conclusion": "success",
+  "completed_at_utc": "2026-10-29T04:21:08Z",
+  "head_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+  "pr_merge_checkout": "b14d145c590cfbe2338283adc78d2b869d19f4f9",
+  "head_and_merge_tree": "ba87ba223d22700ff2a28decc9247984ffd52da8",
+  "head_and_merge_tree_equality_verified": true,
+  "prior_matrix_receipt": "docs/evidence/hosted-ui-visual-9c029cd.json",
+  "identity_comparison_to_prior": {
+    "prior_head": "9c029cd021d829c8c06ad8d32fd244dee64e8b4f",
+    "prior_full_tree": "fdd504d59bfd1ca1c01d151c2acd4e6e2807216c",
+    "full_tree_equal": false,
+    "launcher_subtree_equal": true,
+    "launcher_subtree_path": "src/launcher",
+    "launcher_subtree": "28e43896c1d3bfb4a7d59785a49aaa7fabb245d5",
+    "visual_runner_blob_equal": true,
+    "visual_runner_blob": "5b57966f70b9ceb9f3db3eec3103bd00bc46150e",
+    "visual_workflow_blob_equal": true,
+    "visual_workflow_blob": "2874479dbe465bc1c1a5863fca284ccb4bccd4fb",
+    "changes": "Server TUN test fixture and documentation/state only; this run independently rebuilt and rendered the unchanged launcher source."
+  },
+  "artifact": {
+    "id": 12872647630,
+    "name": "actual-wpf-layout-b14d145c590cfbe2338283adc78d2b869d19f4f9",
+    "size_in_bytes": 377212576,
+    "github_reported_archive_sha256": "fdd8cb9a8ab1ec8afef5c8817766cfa306fd9565b58070948a346c85bad5086e",
+    "archive_digest_independently_verified": false,
+    "expires_at_utc": "2026-11-28T04:20:50Z",
+    "downloaded_png_sha256_and_dimensions_independently_verified": 608
+  },
+  "phase_summary": [
+    {
+      "phase": "baseline",
+      "source_commit": "12d394086a22c04e7e1defc7678ceccfe02ee004",
+      "single_file_executable_sha256": "310b0d3f9f001f58d76679870cb255f86273c9b991f8f09721700c0d4d353dcf",
+      "exit_code": 1,
+      "frames": 128,
+      "png_hashes_dimensions_verified": 128,
+      "failed_checks": 130,
+      "layout_failures": 82,
+      "total_checks": 6960
+    },
+    {
+      "phase": "modified",
+      "source_commit": "b14d145c590cfbe2338283adc78d2b869d19f4f9",
+      "single_file_executable_sha256": "aef6b1847b2cb3cda27eda00e7597ff67fe637a3a393d5428bed45dd97588e25",
+      "exit_code": 0,
+      "frames": 128,
+      "png_hashes_dimensions_verified": 176,
+      "failed_checks": 0,
+      "layout_failures": 0,
+      "total_checks": 10160
+    },
+    {
+      "phase": "rollback",
+      "source_commit": "12d394086a22c04e7e1defc7678ceccfe02ee004",
+      "single_file_executable_sha256": "310b0d3f9f001f58d76679870cb255f86273c9b991f8f09721700c0d4d353dcf",
+      "exit_code": 1,
+      "frames": 128,
+      "png_hashes_dimensions_verified": 128,
+      "failed_checks": 130,
+      "layout_failures": 82,
+      "total_checks": 6960
+    },
+    {
+      "phase": "reapplied",
+      "source_commit": "b14d145c590cfbe2338283adc78d2b869d19f4f9",
+      "single_file_executable_sha256": "aef6b1847b2cb3cda27eda00e7597ff67fe637a3a393d5428bed45dd97588e25",
+      "exit_code": 0,
+      "frames": 128,
+      "png_hashes_dimensions_verified": 176,
+      "failed_checks": 0,
+      "layout_failures": 0,
+      "total_checks": 10160
+    }
+  ],
+  "comparison": {
+    "baseline_layout_failure_reproduced": true,
+    "modified_and_reapplied_passed": true,
+    "rollback_single_file_executable_hashes_match": true,
+    "error": null
+  },
+  "image_inspection": {
+    "method": "Agent viewed these unmodified downloaded PNGs with image tools. This is not user or physical-monitor acceptance.",
+    "samples": [
+      {
+        "path": "modified/settings-public-en-US-192-900x580.png",
+        "sha256": "08c0f123ec644c044e0e1793508d6e4731ecd2a75aeec78722cb8fa9aaf9adde"
+      },
+      {
+        "path": "modified/join-en-US-192-900x580.png",
+        "sha256": "57d7542d610cbd14bcf51874825714a5283d2f42fb01f7704c43f763bec471dd"
+      },
+      {
+        "path": "modified/cancel-zh-CN-192-900x580.png",
+        "sha256": "3aed5466325e7e25354c8a292471325c69d56899f5974a504d0ca9986b7586a5"
+      }
+    ],
+    "findings": "Dark scrollbar, visible settings close, full bounded host names, and correct Local footer remain present. No new visual regression seen in these samples."
+  },
+  "scope_limits": [
+    "The same fixed 128-scenario matrix and isolation rules as the prior receipt were executed in all four phases.",
+    "Root-DPI WPF renders and hosted HWND input checks do not establish physical-display scaling, IME, GPU/game or live LAN/Public behavior.",
+    "Gameplay Save is an isolated in-memory PreviewMode check, not disk-persistence acceptance.",
+    "Only three listed PNGs were visually inspected in this follow-up; all 608 image hashes/dimensions and frame checks were validated.",
+    "Rollback/reapply use retained single-file builds in fresh isolated directories; no source-rollback rebuild is claimed."
+  ],
+  "prior_failure_and_success_receipts_preserved": true,
+  "local_evidence_directory": ".local/evidence/cloud/visual-layout/40816467332/"
+}

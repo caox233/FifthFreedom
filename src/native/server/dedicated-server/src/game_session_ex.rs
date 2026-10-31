@@ -3,6 +3,7 @@
 
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
+use std::collections::BTreeSet;
 use std::sync::Arc;
 
 use quazal::prudp::ClientRegistry;
@@ -65,14 +66,37 @@ fn encodable_host_urls(urls: &[String]) -> Option<QList<StationURL>> {
     (!urls.is_empty()).then_some(urls)
 }
 
+// One DEBUG summary per search, with no player/session identifiers or attribute
+// values. This is a pre-mode-wrapper filter observation, not a rank diagnosis.
+// Bound the ID list even when a client supplies many unrelated properties.
+#[derive(Default)]
+struct QuickSearchTrace {
+    malformed: usize,
+    private: usize,
+    attributes: usize,
+    mismatch_ids: BTreeSet<u32>,
+    mismatch_ids_truncated: bool,
+}
+impl QuickSearchTrace {
+    fn mismatch(&mut self, id: u32) {
+        self.mismatch_ids.insert(id);
+        if self.mismatch_ids.len() > 16 {
+            self.mismatch_ids.pop_last();
+            self.mismatch_ids_truncated = true;
+        }
+    }
+}
+
 fn matches_quick_search(
     session: &crate::storage::GameSession,
     req_attrs: &HashMap<u32, u32>,
     logger: &Logger,
     query_id: u32,
     user_id: u32,
+    trace: &mut QuickSearchTrace,
 ) -> bool {
     let Ok(sess_attrs) = session.attributes.parse::<QList<Property>>() else {
+        trace.malformed += 1;
         warn!(
             logger,
             "Ignoring game session with malformed attributes";
@@ -87,6 +111,7 @@ fn matches_quick_search(
         .map(|p| (p.id, p.value))
         .collect::<HashMap<_, _>>();
     if is_private_room_attributes(&sess_attrs) {
+        trace.private += 1;
         info!(
             logger,
             "PrivateSessionHiddenFromMatchmaking";
@@ -98,6 +123,7 @@ fn matches_quick_search(
         );
         return false;
     }
+    let mut mismatch = false;
     for (id, value) in req_attrs {
         if !matchmaking_attribute_must_match(*id) {
             // 105 carries the retail coop capacity (2); 112 also
@@ -106,10 +132,12 @@ fn matches_quick_search(
             continue;
         }
         if sess_attrs.get(id) != Some(value) {
-            return false;
+            mismatch = true;
+            trace.mismatch(*id);
         }
     }
-    true
+    if mismatch { trace.attributes += 1; }
+    !mismatch
 }
 
 fn encode_search_result(
@@ -271,22 +299,24 @@ impl<CI> GameSessionExProtocolServerTrait<CI> for GameSessionExProtocolServerImp
         if let Entry::Vacant(entry) = req_attrs.entry(103) {
             entry.insert(0);
         }
+        let candidate_count = sessions.len();
+        let mut trace = QuickSearchTrace::default();
         let sessions: Vec<_> = sessions
             .into_iter()
             .filter(|session| {
                 invitation_search
-                    || matches_quick_search(session, &req_attrs, logger, query_id, user_id)
+                    || matches_quick_search(session, &req_attrs, logger, query_id, user_id, &mut trace)
             })
             .collect();
         info!(logger, "Found sessions {sessions:?}");
-        Ok(SearchSessionsResponse {
-            search_results: QList(
-                sessions
-                    .into_iter()
-                    .filter_map(|session| encode_search_result(session, logger))
-                    .collect(),
-            ),
-        })
+        let filtered_count = sessions.len();
+        let search_results: Vec<_> = sessions.into_iter()
+            .filter_map(|session| encode_search_result(session, logger)).collect();
+        debug!(logger, "QuickMatchFilterSummary stage=pre_mode query={} type={} candidates={} malformed={} private={} attributes={} encode_rejected={} returned={} invitation={} mismatch_ids={:?} ids_truncated={}",
+            query_id, session_type, candidate_count, trace.malformed, trace.private,
+            trace.attributes, filtered_count - search_results.len(), search_results.len(),
+            invitation_search, trace.mismatch_ids, trace.mismatch_ids_truncated);
+        Ok(SearchSessionsResponse { search_results: QList(search_results) })
     }
 }
 

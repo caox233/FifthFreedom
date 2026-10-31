@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39898671437",
+  "implementation_commit": "463aa521e5cdb3345e460442bacf8050bd42aef8",
+  "status": "completed",
+  "conclusion": "failure",
+  "jobs": [
+    {
+      "id": 120234916664,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120234916681,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120234916754,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120234916771,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120234916795,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120234960915,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120237038892,
+      "name": "Linux service and Windows client component identity",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "failure_boundary": "Windows failed in source tests/public_server_candidate; later Windows compilation/DPAPI/WPF and cross-platform assembly did not execute. Official redirect logs unavailable; root-cause analysis uses separate CPython source/local regression evidence.",
+  "observed_utc": "2026-10-23T04:17:23.489148+00:00",
+  "game_executed": false,
+  "production_deployed": false
+}

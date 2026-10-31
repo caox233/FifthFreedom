@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39929836621",
+  "job_id": 120335090572,
+  "source_head_sha": "b613861343df34c9151cb7cf6b4eeec9fdf4a4f6",
+  "checkout_merge_sha": "14d2f995bfa88338af12fd1c5630589aa3aaac88",
+  "conclusion": "failure",
+  "annotation": "WINTUN_SESSION_PROBE_FAILED stage=HOST code=HOST",
+  "portable_harness_tests": {
+    "passed": 14,
+    "skipped": 0
+  },
+  "artifact_id": 12491565593,
+  "artifact_zip_sha256": "4df1b9f6d85b335eb9f5d46db5b0f4bf41e2386f651eeaf42c7829ea04292c24",
+  "official_artifact_digest_matched": true,
+  "sanitized_receipt": {
+    "binary_uploaded": false,
+    "error_code": "HOST",
+    "network_configured": false,
+    "packets_sent": false,
+    "public_admission": false,
+    "runtime_executed": false,
+    "schema": 1,
+    "stage": "HOST",
+    "status": "failed"
+  },
+  "official_job_image": "windows-2025-vs2026",
+  "official_job_os": "Microsoft Windows Server 2025",
+  "authoritative_alias_source": {
+    "url": "https://github.com/actions/runner-images/blob/c87f6f636fffa43205bc05328efe9958af0f984f/helpers/GenerateResourcesAndImage.ps1",
+    "observed_sha256": "d851386045e3df068382458137a7ced05091245d4c6f65a473cc2c35ed6aec2c",
+    "enum": "Windows2025_vs2026",
+    "image_os": "win25-vs2026",
+    "commit": "c87f6f636fffa43205bc05328efe9958af0f984f"
+  },
+  "driver_execution_verified": false,
+  "public_admission": false
+}

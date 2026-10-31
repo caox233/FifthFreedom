@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "repository": "caox233/FifthFreedom",
+  "run_id": 39925069086,
+  "job_id": 120319326789,
+  "workflow": "easytier-windows-build-only.yml",
+  "branch_commit": "1a6b2e65e33b5af3a31db4fb8efc7403b5bfdfdb",
+  "checkout_commit": "49a7669662c0f0cfed3c4c076a0ce6c09a5f69b7",
+  "conclusion": "failure",
+  "actual_synthetic_source_tests": {
+    "passed": 12,
+    "failed": 0,
+    "ignored": 0
+  },
+  "reported_error_code": "WINDOWS_BUILD_FAILED",
+  "original_failure_stage_known": false,
+  "actual_cargo_build_reached": false,
+  "full_windows_compile_verified": false,
+  "runtime_executed": false,
+  "runtime_binary_uploaded": false,
+  "driver_loaded": false,
+  "original_run_receipt_sha256": "4a726bbeb935ef9b7076abc15607b4ca1bfa8fcd0bc8a0f0f930c21c458c15a2",
+  "diagnosis": {
+    "canonical_git_crlf_defect_independently_reproduced": true,
+    "first_hosted_failure_attributed_conclusively": false,
+    "original_archive_pins_changed": false,
+    "regression_before": {
+      "exit_code": 1,
+      "fixed_error": "SOURCE_INPUT_DIGEST_MISMATCH"
+    },
+    "regression_after": {
+      "exit_code": 0,
+      "passed": 1
+    },
+    "full_focused_suite_after": {
+      "passed": 14,
+      "failed": 0,
+      "ignored": 0
+    }
+  }
+}

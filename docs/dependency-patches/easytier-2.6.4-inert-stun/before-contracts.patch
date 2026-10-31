@@ -1,0 +1,85 @@
+--- a/easytier/src/common/config.rs
++++ b/easytier/src/common/config.rs
+@@ -2073,3 +2073,32 @@
+         remove_env_var("MIXED_LISTEN_PORT");
+     }
+ }
++
++#[cfg(test)]
++mod fifth_freedom_stun_config_contracts {
++    use super::*;
++    #[test]
++    fn explicit_tcp_list_survives_real_toml_roundtrip() {
++        let config = TomlConfigLoader::new_from_str(r#"tcp_stun_servers = ["198.51.100.10:3478"]"#).unwrap();
++        let value: toml::Value = toml::from_str(&config.dump()).unwrap();
++        assert_eq!(value.get("tcp_stun_servers"), Some(&toml::Value::Array(vec![toml::Value::String("198.51.100.10:3478".into())])));
++    }
++    #[test]
++    fn explicit_empty_lists_are_not_replaced_by_omission() {
++        let config = TomlConfigLoader::new_from_str("stun_servers=[]\ntcp_stun_servers=[]\nstun_servers_v6=[]\n").unwrap();
++        let value: toml::Value = toml::from_str(&config.dump()).unwrap();
++        for name in ["stun_servers", "tcp_stun_servers", "stun_servers_v6"] {
++            assert_eq!(value.get(name), Some(&toml::Value::Array(vec![])), "{name}");
++        }
++    }
++    #[test]
++    fn existing_custom_udp_and_ipv6_lists_keep_their_values() {
++        let config = TomlConfigLoader::new_from_str(r#"
++stun_servers = ["198.51.100.11:3478"]
++stun_servers_v6 = ["[2001:db8::11]:3478"]
++"#).unwrap();
++        let reparsed = TomlConfigLoader::new_from_str(&config.dump()).unwrap();
++        assert_eq!(reparsed.get_stun_servers(), Some(vec!["198.51.100.11:3478".into()]));
++        assert_eq!(reparsed.get_stun_servers_v6(), Some(vec!["[2001:db8::11]:3478".into()]));
++    }
++}
+--- a/easytier/src/common/stun.rs
++++ b/easytier/src/common/stun.rs
+@@ -1566,3 +1566,26 @@
+         println!("{:#?}", ret);
+     }
+ }
++
++#[cfg(test)]
++mod fifth_freedom_stun_collector_contracts {
++    use super::*;
++    #[tokio::test(flavor = "current_thread")]
++    async fn empty_get_stun_info_creates_no_tasks_or_started_state() {
++        let collector = StunInfoCollector::new(vec![], vec![], vec![]);
++        let info = collector.get_stun_info();
++        // Deliberately no await after this call: before-fix spawned tasks cannot
++        // run sockets or DNS before the failed assertion drops the collector.
++        assert!(info.public_ip.is_empty());
++        assert_eq!(collector.tasks.lock().unwrap().len(), 0);
++        assert!(!collector.started.load(std::sync::atomic::Ordering::Relaxed));
++    }
++    #[test]
++    fn unchanged_default_constructor_keeps_exact_default_lists() {
++        let collector = StunInfoCollector::new_with_default_servers();
++        assert_eq!(*collector.stun_servers.read().unwrap(), StunInfoCollector::get_default_servers());
++        assert_eq!(*collector.tcp_stun_servers.read().unwrap(), StunInfoCollector::get_default_tcp_servers());
++        assert_eq!(*collector.stun_servers_v6.read().unwrap(), StunInfoCollector::get_default_servers_v6());
++        assert!(!collector.started.load(std::sync::atomic::Ordering::Relaxed));
++    }
++}
+--- a/easytier/src/rpc_service/api.rs
++++ b/easytier/src/rpc_service/api.rs
+@@ -211,3 +211,18 @@
+         }
+     }
+ }
++
++#[cfg(test)]
++mod fifth_freedom_stun_inert_rpc_contracts {
++    use super::*;
++    #[test]
++    fn explicit_nonzero_loopback_keeps_its_exact_address() {
++        assert_eq!(parse_rpc_portal(Some("127.0.0.1:15998".into())).unwrap(), "127.0.0.1:15998".parse::<SocketAddr>().unwrap());
++    }
++    #[test]
++    fn bare_numeric_port_is_not_a_loopback_configuration() {
++        // This branch returns directly, so neither case opens a probe socket.
++        assert!(parse_rpc_portal(Some("15998".into())).unwrap().ip().is_unspecified());
++        assert!(parse_rpc_portal(Some("example.invalid:15998".into())).is_err());
++    }
++}

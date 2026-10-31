@@ -1,0 +1,474 @@
+{
+  "after_initial_contract_patch": {
+    "bytes": 11800,
+    "path": ".local/evidence/cloud/inert-stun/after-initial-contracts.patch",
+    "sha256": "6fdb7cba3da2fed33620a626ece4b1ed887b291d81b63c935926de419de36d36"
+  },
+  "after_initial_tested_source": [
+    {
+      "bytes": 70746,
+      "path": "easytier/src/common/config.rs",
+      "sha256": "b3228876308176175591fcda1c10fc1a1734e668d88812f2967fe05f72a4350c"
+    },
+    {
+      "bytes": 34854,
+      "path": "easytier/src/common/global_ctx.rs",
+      "sha256": "2179b92a611a65979342a2e0e57cf7c30d902bfc03e8fec3d076a1251f1d56ab"
+    },
+    {
+      "bytes": 56973,
+      "path": "easytier/src/common/stun.rs",
+      "sha256": "86b8742199830a150a2a66b9ca182270cb435045356685733b0ca2c181a39b55"
+    },
+    {
+      "bytes": 7497,
+      "path": "easytier/src/rpc_service/api.rs",
+      "sha256": "2001d731329e8a509063121277b6622f6a7609c354c2cb098caf9fb0941feb38"
+    },
+    {
+      "bytes": 1282,
+      "path": "easytier/tests/fifth_freedom_inert_profile.toml",
+      "sha256": "2c406da87177d2ec969de84d95840be314a88fb7a2cec1eeda8e5dc690131c5d"
+    }
+  ],
+  "audit_patches": [
+    {
+      "bytes": 4803,
+      "path": "docs/dependency-patches/easytier-2.6.4-inert-stun/inert-stun.patch",
+      "sha256": "6ed8be6d5f2ff5d15b5d892fd5670356ce67f8d089b384b833565ab69317939e"
+    },
+    {
+      "bytes": 11800,
+      "path": "docs/dependency-patches/easytier-2.6.4-inert-stun/contracts.patch",
+      "sha256": "8d32f8469ce42687186a5a4680ffa50cf820d9bb56596c448fb68600dbf1b037"
+    },
+    {
+      "bytes": 3728,
+      "path": "docs/dependency-patches/easytier-2.6.4-inert-stun/before-contracts.patch",
+      "sha256": "6b881b5645452478e2295b010bdccd5ef1a945998647530f827a034e1c068b08"
+    }
+  ],
+  "base_prepared": {
+    "cargo_lock_patched_sha256": "37c7e066bef9d801b7b67942a18bd7365485e613c18d14f366aed178bb38a696",
+    "patch_manifest_sha256": "319a05bc889df82bf4d374304cbbb6bd0c163ac9996d0e55ecee058dfd647810",
+    "source_tree_sha256": "980bb96687a83f7da040d8aa4c4f7134c1c07183637510f2f39a805eaa08a294"
+  },
+  "base_recipe": {
+    "bytes": 1769,
+    "path": "scripts/easytier-windows-owned-read.lock.json",
+    "sha256": "aee691f8baab6923aa5b1ee9c338e67401ea4b0634d468fb3739302ea4fc76f9"
+  },
+  "before_tested_source": [
+    {
+      "bytes": 66676,
+      "path": "easytier/src/common/config.rs",
+      "sha256": "b8a774b845e2277e19ab0e2e7c98df3f48cbb498057f7b14cebe1a1148ba3698"
+    },
+    {
+      "bytes": 35427,
+      "path": "easytier/src/common/global_ctx.rs",
+      "sha256": "1eeba045629324494f7bf6ab526251aaae9439abb399f2ee34a6e71106dbe2e6"
+    },
+    {
+      "bytes": 53171,
+      "path": "easytier/src/common/stun.rs",
+      "sha256": "15c70ce5b5e94975bc9a041be23dd277399f4fb9c08386351b9beab8ced258fb"
+    },
+    {
+      "bytes": 7497,
+      "path": "easytier/src/rpc_service/api.rs",
+      "sha256": "2001d731329e8a509063121277b6622f6a7609c354c2cb098caf9fb0941feb38"
+    }
+  ],
+  "executables": [
+    {
+      "bytes": 162213912,
+      "path": ".local/evidence/cloud/inert-stun/before-tests.elf",
+      "sha256": "92ba3a6810c9dc71d11aa0421960434f84e11c0e49e14122b2b0dc0773ecd02a"
+    },
+    {
+      "bytes": 162258856,
+      "path": ".local/evidence/cloud/inert-stun/final-tests.elf",
+      "sha256": "3aba5a21b58cfcd59b95d6a6a7e123e33ed2b004a8eccf66d2be847d2c1e81c5"
+    }
+  ],
+  "expected_prepared": {
+    "cargo_lock_patched_sha256": "37c7e066bef9d801b7b67942a18bd7365485e613c18d14f366aed178bb38a696",
+    "patch_manifest_sha256": "bbad0f9c745a018fb833ad0ced41a1e79c3253cf947a98288d5763d03f27f3eb",
+    "source_tree_sha256": "8cf92686e0cce91f6db26dccdb3ca36f4e776b21254da036939fc17e9992c584"
+  },
+  "files": [
+    {
+      "original_bytes": 65259,
+      "original_sha256": "ca0ac8596a79e0dc8f5586deefb66d772779b515cbd26ef2861fd3d077b9e50f",
+      "patched_bytes": 70746,
+      "patched_sha256": "ed9d4b3171035ac5816175ca77fecbf130a9ed73af8d68ddf8c220c41f00f152",
+      "path": "easytier/src/common/config.rs",
+      "production_only_bytes": 66177,
+      "production_only_sha256": "c171f92e084df9a4dd8842b21f9f8edb3ab9493f33b139405c422c6845011931"
+    },
+    {
+      "original_bytes": 35427,
+      "original_sha256": "1eeba045629324494f7bf6ab526251aaae9439abb399f2ee34a6e71106dbe2e6",
+      "patched_bytes": 34854,
+      "patched_sha256": "2179b92a611a65979342a2e0e57cf7c30d902bfc03e8fec3d076a1251f1d56ab",
+      "path": "easytier/src/common/global_ctx.rs",
+      "production_only_bytes": 34854,
+      "production_only_sha256": "2179b92a611a65979342a2e0e57cf7c30d902bfc03e8fec3d076a1251f1d56ab"
+    },
+    {
+      "original_bytes": 51945,
+      "original_sha256": "365c91594f104fd01631ca97e42b47341b331d9dcccc6712211694f0c0e765da",
+      "patched_bytes": 56973,
+      "patched_sha256": "86b8742199830a150a2a66b9ca182270cb435045356685733b0ca2c181a39b55",
+      "path": "easytier/src/common/stun.rs",
+      "production_only_bytes": 52701,
+      "production_only_sha256": "739d728489e16e43b6f20f906ac3fc1b699534a0761ba78dc253c3dc5194d93a"
+    },
+    {
+      "original_bytes": 6882,
+      "original_sha256": "fa45e40d67601a0d368619dbef020182919202f218bdce20c84aeeee59c347da",
+      "patched_bytes": 7497,
+      "patched_sha256": "2001d731329e8a509063121277b6622f6a7609c354c2cb098caf9fb0941feb38",
+      "path": "easytier/src/rpc_service/api.rs",
+      "production_only_bytes": 6882,
+      "production_only_sha256": "fa45e40d67601a0d368619dbef020182919202f218bdce20c84aeeee59c347da"
+    },
+    {
+      "original_bytes": null,
+      "original_sha256": null,
+      "patched_bytes": 1282,
+      "patched_sha256": "f34f61110ee4e29bfa124a0a2b8804177d022afe7b8ad17520a1646f76593d08",
+      "path": "easytier/tests/fifth_freedom_inert_profile.toml",
+      "production_only_bytes": null,
+      "production_only_sha256": null
+    }
+  ],
+  "kind": "independent-inert-stun-source-contracts-not-runtime-admitted",
+  "limits": {
+    "core_executed": false,
+    "driver_or_tun_started": false,
+    "nonempty_stun_network_executed": false,
+    "official_binary_pin_changed": false,
+    "old_recipe_changed": false,
+    "public_startup_allowed": false,
+    "upstream_test_default_lists_empty": true,
+    "windows_full_build_executed": false
+  },
+  "patch": {
+    "bytes": 16317,
+    "path": "docs/dependency-patches/easytier-2.6.4-inert-stun/inert-profile-combined.patch",
+    "role": "production-plus-contracts",
+    "sha256": "fa6a9bbfa8e61c8d996337af0a0c2d6654a802c8c8928f92995cb784995f43fb"
+  },
+  "profile": {
+    "bytes": 1282,
+    "conflict_scope": "10.254.253.0/24",
+    "ipv4": "10.254.253.1/24",
+    "path": "docs/dependency-patches/easytier-2.6.4-inert-stun/inert-profile.toml",
+    "rpc_arguments": [
+      "--rpc-portal",
+      "127.0.0.1:15998"
+    ],
+    "runtime_executed": false,
+    "runtime_insertions_only": [
+      "instance_id",
+      "flags.dev_name"
+    ],
+    "sha256": "f34f61110ee4e29bfa124a0a2b8804177d022afe7b8ad17520a1646f76593d08",
+    "source_path": "easytier/tests/fifth_freedom_inert_profile.toml"
+  },
+  "raw_logs": [
+    {
+      "bytes": 2500,
+      "path": ".local/evidence/cloud/inert-stun/before.stdout",
+      "sha256": "4d4f1228acff8370468015a63cd427082ac5c8663f4d612824140d2928413123"
+    },
+    {
+      "bytes": 484,
+      "path": ".local/evidence/cloud/inert-stun/before.stderr",
+      "sha256": "542427aaec1d365ee8e0b2419571c5259224c64feaab0cc39d07e22aa29500f9"
+    },
+    {
+      "bytes": 4,
+      "path": ".local/evidence/cloud/inert-stun/before.exit",
+      "sha256": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c"
+    },
+    {
+      "bytes": 2314,
+      "path": ".local/evidence/cloud/inert-stun/after.stdout",
+      "sha256": "f96b8da1fc4b1db9801bd3dc1f28d25a397cb54fb820a73d6900dc4158f86b35"
+    },
+    {
+      "bytes": 381,
+      "path": ".local/evidence/cloud/inert-stun/after.stderr",
+      "sha256": "996feb482d2276320ed6a90189c0ff8f5dcc33b1c6596b3e4c68d8e98c7caba2"
+    },
+    {
+      "bytes": 4,
+      "path": ".local/evidence/cloud/inert-stun/after.exit",
+      "sha256": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c"
+    },
+    {
+      "bytes": 1680,
+      "path": ".local/evidence/cloud/inert-stun/after-final.stdout",
+      "sha256": "0890084f24108fdd05cbabcbf37aaa73392ed33bf07a44f68d3ab20b08fa3e54"
+    },
+    {
+      "bytes": 327,
+      "path": ".local/evidence/cloud/inert-stun/after-final.stderr",
+      "sha256": "4e50ca689b5f31a93a9e98896b379442ff7a12990d347cedc62f91a9a1af9787"
+    },
+    {
+      "bytes": 2,
+      "path": ".local/evidence/cloud/inert-stun/after-final.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "bytes": 1667,
+      "path": ".local/evidence/cloud/inert-stun/retained-config.stdout",
+      "sha256": "3d9b6b9e0fef4f083d0c8325fb8e543578da9e16eaa376712fa4c36f01f14478"
+    },
+    {
+      "bytes": 0,
+      "path": ".local/evidence/cloud/inert-stun/retained-config.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2,
+      "path": ".local/evidence/cloud/inert-stun/retained-config.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "bytes": 170,
+      "path": ".local/evidence/cloud/inert-stun/retained-global-ctx.stdout",
+      "sha256": "d307c7d4587ea2d39de6f693b9559937f8ac1ef29ec1c8d87d19accd3b0baecb"
+    },
+    {
+      "bytes": 0,
+      "path": ".local/evidence/cloud/inert-stun/retained-global-ctx.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2,
+      "path": ".local/evidence/cloud/inert-stun/retained-global-ctx.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    }
+  ],
+  "reconstruction": {
+    "forward_matches_complete_final": true,
+    "logs": [
+      {
+        "bytes": 0,
+        "path": ".local/evidence/cloud/inert-stun/roundtrip-forward.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": ".local/evidence/cloud/inert-stun/roundtrip-forward.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": ".local/evidence/cloud/inert-stun/roundtrip-forward.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 0,
+        "path": ".local/evidence/cloud/inert-stun/roundtrip-reverse.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": ".local/evidence/cloud/inert-stun/roundtrip-reverse.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": ".local/evidence/cloud/inert-stun/roundtrip-reverse.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      }
+    ],
+    "reverse_matches_complete_original": true,
+    "source_receipt": {
+      "bytes": 129490,
+      "path": ".local/evidence/cloud/inert-stun/source-receipt.json",
+      "sha256": "6fec38133f10b270f2b63556463417826c43caa7bbbc87b8091946238e4c6746"
+    },
+    "split_matches_combined": true
+  },
+  "schema": 1,
+  "source_counts": {
+    "easytier": 704,
+    "tun": 49
+  },
+  "tests": {
+    "after_final": {
+      "exit": 0,
+      "failed": 0,
+      "ignored": 0,
+      "passed": 13
+    },
+    "after_initial": {
+      "exit": 101,
+      "failed": 1,
+      "failure": "existing get_ipv4 normalizes /32 to /24; corrected synthetic input only",
+      "ignored": 0,
+      "passed": 12
+    },
+    "before": {
+      "exit": 101,
+      "failed": 3,
+      "ignored": 0,
+      "passed": 4
+    },
+    "command": [
+      "cargo",
+      "+1.95.0",
+      "test",
+      "--offline",
+      "--locked",
+      "--target",
+      "x86_64-unknown-linux-gnu",
+      "-p",
+      "easytier",
+      "--lib",
+      "fifth_freedom_stun_",
+      "--",
+      "--test-threads=1"
+    ],
+    "environment": {
+      "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_ENCODED_RUSTFLAGS": "",
+      "CARGO_HOME": "/workspace/.toolchains/rust/cargo",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_TARGET_DIR": ".local/build/easytier-linux-gnu-guard1",
+      "PROTOC": "/workspace/.toolchains/protoc-35.1/bin/protoc",
+      "RUSTUP_HOME": "/workspace/.toolchains/rust/rustup"
+    },
+    "expected_passed": 13,
+    "features": "upstream defaults (GNU/ring), not selected Windows recipe",
+    "filter": "fifth_freedom_stun_",
+    "retained_config": {
+      "exit": 0,
+      "failed": 0,
+      "filter": "common::config::tests::",
+      "ignored": 0,
+      "passed": 21
+    },
+    "retained_global_ctx": {
+      "exact": true,
+      "exit": 0,
+      "failed": 0,
+      "filter": "common::global_ctx::tests::test_global_ctx",
+      "ignored": 0,
+      "passed": 1
+    },
+    "target": "x86_64-unknown-linux-gnu",
+    "toolchain": "1.95.0"
+  },
+  "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+  "upstream_source_references": [
+    {
+      "bytes": 65259,
+      "git_blob": "f92a3100a6448dc1b4a0fcfeb0fad7bd21e546c8",
+      "path": "easytier/src/common/config.rs",
+      "sha256": "ca0ac8596a79e0dc8f5586deefb66d772779b515cbd26ef2861fd3d077b9e50f",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/common/config.rs"
+    },
+    {
+      "bytes": 35427,
+      "git_blob": "91a4c457c1328b0c3854514d24068402ef617c7d",
+      "path": "easytier/src/common/global_ctx.rs",
+      "sha256": "1eeba045629324494f7bf6ab526251aaae9439abb399f2ee34a6e71106dbe2e6",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/common/global_ctx.rs"
+    },
+    {
+      "bytes": 51945,
+      "git_blob": "008a63f8f008d75d9b43f572b15a4587c6a67dbd",
+      "path": "easytier/src/common/stun.rs",
+      "sha256": "365c91594f104fd01631ca97e42b47341b331d9dcccc6712211694f0c0e765da",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/common/stun.rs"
+    },
+    {
+      "bytes": 6882,
+      "git_blob": "4aedca3114615fd516e7f72af04bbb7d6902a0fc",
+      "path": "easytier/src/rpc_service/api.rs",
+      "sha256": "fa45e40d67601a0d368619dbef020182919202f218bdce20c84aeeee59c347da",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/rpc_service/api.rs"
+    },
+    {
+      "bytes": 53002,
+      "git_blob": "85875135c6ae330218502a0210d701e5aa2c64b3",
+      "path": "easytier/src/core.rs",
+      "sha256": "6821ecbaea54555d2d60d46fbff7b8daebe8909a5c9f74d8783d1a17fe62293b",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/core.rs"
+    },
+    {
+      "bytes": 795,
+      "git_blob": "280cd307615a98c8e4ed366bc471f9eb34f77e05",
+      "path": "easytier/src/utils/mod.rs",
+      "sha256": "9a9c2762cacbaee7471ba6d054513614c933c3f18773cbbad4bcdf23ef61abad",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/utils/mod.rs"
+    },
+    {
+      "bytes": 66057,
+      "git_blob": "0f009088a8d9e17765cc4f76afb3d902fe9f768c",
+      "path": "easytier/src/instance/instance.rs",
+      "sha256": "1dcbda42adb89b109f7d91a93b40b35b1e91fea2024285f6a6bb7c14a43a09f5",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/instance/instance.rs"
+    },
+    {
+      "bytes": 36724,
+      "git_blob": "6e25226817fa4fb3ec00c3460d56e00a8c7cbda6",
+      "path": "easytier/src/gateway/tcp_proxy.rs",
+      "sha256": "fca483a5ac94729e12720df18b6c870925c0413685c21e8bd1a612e2d1817960",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/gateway/tcp_proxy.rs"
+    },
+    {
+      "bytes": 15230,
+      "git_blob": "45e71f30c5d0e2a322d37ca87b47deab36875cec",
+      "path": "easytier/src/gateway/udp_proxy.rs",
+      "sha256": "a3701dfc79067c0de359300907625a44d4ae5757e38a4c77aeba4178e749cce1",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/gateway/udp_proxy.rs"
+    },
+    {
+      "bytes": 15451,
+      "git_blob": "0e0182d28f8144857685ff54f7882514a35618fb",
+      "path": "easytier/src/gateway/icmp_proxy.rs",
+      "sha256": "3820d71c7f7c4142befd63d2b3768ca28a57b3e0e477865f434459eb16a513a9",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/gateway/icmp_proxy.rs"
+    },
+    {
+      "bytes": 40494,
+      "git_blob": "0cd5d07d98538e4fb3e5a8a18e723a7b7bc3e4c2",
+      "path": "easytier/src/gateway/socks5.rs",
+      "sha256": "170b20974af665a8482bdb3612483d1dce89d762f3cdaf9cfe9a83986b8ea8f9",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/gateway/socks5.rs"
+    },
+    {
+      "bytes": 25620,
+      "git_blob": "9baaeaa07dde1c607dbae03a0b93463ddbf0a454",
+      "path": "easytier/src/connector/tcp_hole_punch.rs",
+      "sha256": "f9c8c76f9415669cbb4d4870eea22175036df4815d47217d299337296e137d1a",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/connector/tcp_hole_punch.rs"
+    },
+    {
+      "bytes": 22480,
+      "git_blob": "e1c2e14bd26898148218748fbd8649b3f10cbd17",
+      "path": "easytier/src/connector/udp_hole_punch/mod.rs",
+      "sha256": "b36694cc874942dc3b07ea15db2458ffd39c2b1b156d034c8ab511327be2ae8e",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/connector/udp_hole_punch/mod.rs"
+    },
+    {
+      "bytes": 25107,
+      "git_blob": "d86bda8c030ed701b0395dbc12ecba256ddc231f",
+      "path": "easytier/src/common/upnp.rs",
+      "sha256": "50a0282dc164563edf6a9c0c4ca37c3194f0bfbe901a292829d9a753e6ad1cbb",
+      "url": "https://github.com/EasyTier/EasyTier/blob/8428a89d2dabc94c97d370ec607c6ca142473626/easytier/src/common/upnp.rs"
+    }
+  ]
+}

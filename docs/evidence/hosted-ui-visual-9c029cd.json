@@ -1,0 +1,290 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-10-29",
+  "status": "passed-with-scope-boundaries",
+  "workflow": "Fifth Freedom WPF visual layout",
+  "run_id": 40815530494,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/40815530494",
+  "job_id": 123255567718,
+  "github_conclusion": "success",
+  "head_commit": "9c029cd021d829c8c06ad8d32fd244dee64e8b4f",
+  "pr_merge_checkout": "2873f6f84700f5d98175ba7b071d4f835da93f52",
+  "head_and_merge_tree": "fdd504d59bfd1ca1c01d151c2acd4e6e2807216c",
+  "tree_equality_verified": true,
+  "baseline_commit": "12d394086a22c04e7e1defc7678ceccfe02ee004",
+  "artifact": {
+    "id": 12872855442,
+    "name": "actual-wpf-layout-2873f6f84700f5d98175ba7b071d4f835da93f52",
+    "size_in_bytes": 377212570,
+    "github_reported_archive_sha256": "9cb8f4ca78ce15e89e35e00a36117f36e9265784053835bbcb3bb3b68957d15b",
+    "archive_digest_independently_verified": false,
+    "expires_at_utc": "2026-11-28T04:06:21Z",
+    "downloaded_png_sha256_and_dimensions_independently_verified": 608
+  },
+  "matrix": {
+    "states": [
+      "main",
+      "settings",
+      "settings-public",
+      "settings-gameplay",
+      "discovery",
+      "join",
+      "create",
+      "cancel"
+    ],
+    "languages": [
+      "zh-CN",
+      "en-US"
+    ],
+    "sizes_dip": [
+      [
+        1120,
+        680
+      ],
+      [
+        900,
+        580
+      ]
+    ],
+    "root_dpi": [
+      96,
+      120,
+      144,
+      192
+    ],
+    "primary_scenarios_per_phase": 128,
+    "root_dpi_not_os_display_scaling": true
+  },
+  "phases": [
+    {
+      "phase": "baseline",
+      "source_commit": "12d394086a22c04e7e1defc7678ceccfe02ee004",
+      "single_file_executable_sha256": "ac2898eebf7cd34cac1e7a5dfa0aa676860982a0156f23e70ad098ecb350426f",
+      "exit_code": 1,
+      "frames": 128,
+      "png_hashes_dimensions_verified": 128,
+      "failed_checks": 130,
+      "layout_failures": 82,
+      "checks_by_category": {
+        "dpi": 128,
+        "resource-scope": 384,
+        "privacy": 128,
+        "state": 528,
+        "geometry": 592,
+        "overlap": 64,
+        "hit-area": 112,
+        "visual-hit-test": 112,
+        "text-clipping": 4912
+      },
+      "failures_by_category": {
+        "hit-area": 40,
+        "text-clipping": 42,
+        "state": 48
+      }
+    },
+    {
+      "phase": "modified",
+      "source_commit": "2873f6f84700f5d98175ba7b071d4f835da93f52",
+      "single_file_executable_sha256": "98f7d02d64811d1ee3b92256cce4d1f9d4975b3a72344438aa9c63dace9fe36d",
+      "exit_code": 0,
+      "frames": 128,
+      "png_hashes_dimensions_verified": 176,
+      "failed_checks": 0,
+      "layout_failures": 0,
+      "checks_by_category": {
+        "dpi": 128,
+        "resource-scope": 480,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 640,
+        "geometry": 848,
+        "overlap": 544,
+        "hit-area": 432,
+        "visual-hit-test": 400,
+        "text-clipping": 5024,
+        "input-hit-test": 384,
+        "scroll-restoration": 48,
+        "keyboard": 784,
+        "scroll-accessibility": 64
+      },
+      "failures_by_category": {}
+    },
+    {
+      "phase": "rollback",
+      "source_commit": "12d394086a22c04e7e1defc7678ceccfe02ee004",
+      "single_file_executable_sha256": "ac2898eebf7cd34cac1e7a5dfa0aa676860982a0156f23e70ad098ecb350426f",
+      "exit_code": 1,
+      "frames": 128,
+      "png_hashes_dimensions_verified": 128,
+      "failed_checks": 130,
+      "layout_failures": 82,
+      "checks_by_category": {
+        "dpi": 128,
+        "resource-scope": 384,
+        "privacy": 128,
+        "state": 528,
+        "geometry": 592,
+        "overlap": 64,
+        "hit-area": 112,
+        "visual-hit-test": 112,
+        "text-clipping": 4912
+      },
+      "failures_by_category": {
+        "hit-area": 40,
+        "text-clipping": 42,
+        "state": 48
+      }
+    },
+    {
+      "phase": "reapplied",
+      "source_commit": "2873f6f84700f5d98175ba7b071d4f835da93f52",
+      "single_file_executable_sha256": "98f7d02d64811d1ee3b92256cce4d1f9d4975b3a72344438aa9c63dace9fe36d",
+      "exit_code": 0,
+      "frames": 128,
+      "png_hashes_dimensions_verified": 176,
+      "failed_checks": 0,
+      "layout_failures": 0,
+      "checks_by_category": {
+        "dpi": 128,
+        "resource-scope": 480,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 640,
+        "geometry": 848,
+        "overlap": 544,
+        "hit-area": 432,
+        "visual-hit-test": 400,
+        "text-clipping": 5024,
+        "input-hit-test": 384,
+        "scroll-restoration": 48,
+        "keyboard": 784,
+        "scroll-accessibility": 64
+      },
+      "failures_by_category": {}
+    }
+  ],
+  "comparison": {
+    "baseline_layout_failure_reproduced": true,
+    "modified_and_reapplied_passed": true,
+    "rollback_single_file_executable_hashes_match": true,
+    "error": null
+  },
+  "instrumentation": {
+    "baseline_app_original_sha256": "186b63cf01c14352313830f9d9711d6c1c9bfa0c8d6824fb0ffe705ba03910fc",
+    "baseline_app_instrumented_sha256": "cc7cef9e0b8ce6fb3e2bc2fe069d5c755f6a14b97e43ee24717906405f52db10",
+    "probe_sha256": "af162fd4491596e1956ec87aed68919bfe3c19dd9ecec0f2b8bc52ca1ceff009"
+  },
+  "isolation": {
+    "fixture_id": "fifth-freedom-visual-fixture-v1",
+    "game_started": false,
+    "network_started": false,
+    "persisted_settings_read": false,
+    "identities": "Synthetic PreviewPlayer and PreviewHost; blank passwords; documentation-only addresses"
+  },
+  "image_inspection": {
+    "method": "Agents viewed the unmodified downloaded PNGs with image tools; this is not user or physical-monitor acceptance.",
+    "samples": [
+      {
+        "path_in_artifact": "modified/main-zh-CN-192-900x580.png",
+        "sha256": "6d968028ffb967925ef7b36dee8e64136b72971f711cd7a953b2f66e39137492"
+      },
+      {
+        "path_in_artifact": "modified/main-en-US-192-900x580.png",
+        "sha256": "f2b4bc7d2b21b22e0ef6041c930bc84d22ac0836868ff3d85353b610eb6096d6"
+      },
+      {
+        "path_in_artifact": "modified/settings-public-en-US-192-900x580.png",
+        "sha256": "08c0f123ec644c044e0e1793508d6e4731ecd2a75aeec78722cb8fa9aaf9adde"
+      },
+      {
+        "path_in_artifact": "modified/settings-public-en-US-192-900x580-scrolled-bottom.png",
+        "sha256": "3858401a0c94ad2c805e45bea0b7d56a4defe8d6ed2195de00108f42d004f734"
+      },
+      {
+        "path_in_artifact": "modified/join-en-US-192-900x580.png",
+        "sha256": "57d7542d610cbd14bcf51874825714a5283d2f42fb01f7704c43f763bec471dd"
+      },
+      {
+        "path_in_artifact": "modified/join-zh-CN-192-900x580.png",
+        "sha256": "244a1ae364f44ca74357f5541effb91097ca3374206bbc2e3c06530a85d2ec55"
+      },
+      {
+        "path_in_artifact": "modified/cancel-en-US-192-900x580.png",
+        "sha256": "3504e7fc95898e4374f0aa6d1697b55c779bc8358e229b42e1e1a14b94ef5ecf"
+      },
+      {
+        "path_in_artifact": "modified/settings-gameplay-zh-CN-192-900x580.png",
+        "sha256": "170f3b5e5cee94d4bb36b6df96da36f39271d9278026ae72de75563e284dfa52"
+      },
+      {
+        "path_in_artifact": "modified/discovery-zh-CN-192-900x580.png",
+        "sha256": "d726d0bb8b6f5d4e8288200c78bbe34bad6d82bbeb775943e76c61947ed69c3a"
+      },
+      {
+        "path_in_artifact": "modified/create-en-US-192-900x580.png",
+        "sha256": "257f9f6b9219a3abe4f22ebbcb2139e339e5fffb1ab596de8c53eb04fb9da759"
+      },
+      {
+        "path_in_artifact": "modified/settings-en-US-192-900x580.png",
+        "sha256": "9bad87301d174c64baf69c0e1f158f8d272904d6328843e6cb894b2031659f8d"
+      },
+      {
+        "path_in_artifact": "modified/settings-gameplay-en-US-192-900x580.png",
+        "sha256": "96f2ce61b9f8cf7995e8c960575071d1d28079843ee51e98ec5917e9e9d824c9"
+      },
+      {
+        "path_in_artifact": "modified/main-zh-CN-96-900x580.png",
+        "sha256": "1c73104468854a7e38f3eb02cd200c07023a4af3aaf2bddd70d439dad3889386"
+      },
+      {
+        "path_in_artifact": "modified/settings-public-zh-CN-120-1120x680.png",
+        "sha256": "38346ba13c78eea2e353cae8c8a46bfb709de7d81af4d0231ec2eea042935339"
+      },
+      {
+        "path_in_artifact": "baseline/main-en-US-192-900x580.png",
+        "sha256": "9c805724521f50beb4bf2c9f3398b1db84accc0ba8b5d0164ed4d1cf6aee7230"
+      },
+      {
+        "path_in_artifact": "rollback/main-en-US-192-900x580.png",
+        "sha256": "9c805724521f50beb4bf2c9f3398b1db84accc0ba8b5d0164ed4d1cf6aee7230"
+      },
+      {
+        "path_in_artifact": "reapplied/settings-public-en-US-192-900x580.png",
+        "sha256": "08c0f123ec644c044e0e1793508d6e4731ecd2a75aeec78722cb8fa9aaf9adde"
+      },
+      {
+        "path_in_artifact": "modified/join-en-US-144-900x580.png",
+        "sha256": "74479bf021f8a9d6942c58b9873eab41716ab79e7641ccb0ce08ff8cf339075b"
+      }
+    ],
+    "findings": [
+      "Production title resources and text are visible; sampled main panels and action groups do not overlap.",
+      "English public settings use the dark scrollbar. Initial close button and scrolled Save/Defaults actions are reachable; actual shown-window input checks pass.",
+      "Local join and cancel now show Players / quality instead of a stale Public caption; Public remains explicitly unavailable.",
+      "The bounded long synthetic host name and its address are fully displayed; this sample fits on one line and does not establish line-wrapping behavior.",
+      "Gameplay draft labels, slider, Save and Cancel are visible in both languages. Real focus/draft checks passed.",
+      "Discovery, join, create and cancel are synthetic UI states; screenshots do not establish real networking.",
+      "At 900x580 DIP and 96 root DPI secondary text is small after the production Viewbox transform; layout checks do not establish every user's readability preference."
+    ]
+  },
+  "scope_limits": [
+    "Root-DPI WPF RenderTargetBitmap captures are not changes to Windows display scaling and do not prove physical multi-monitor DPI behavior.",
+    "Shown-window input/focus checks use the hosted runner HWND; no IME, GPU, game-launch or live LAN/Public acceptance is claimed.",
+    "Gameplay Save in this probe commits PreviewMode memory only; this receipt does not establish disk persistence.",
+    "Rollback/reapply reuse retained single-file builds in fresh isolated program directories; they are not source rollback rebuilds.",
+    "Only the listed image samples were visually inspected; all 608 image hashes/dimensions and all frame metrics were checked."
+  ],
+  "historical_failures_preserved": [
+    {
+      "run_id": 40811466898,
+      "head": "4e8eb0b96481772d724022faa1453907b8681bda",
+      "defect": "Detached logical resource owner and invalid detached InputHitTest"
+    },
+    {
+      "run_id": 40813823778,
+      "head": "7e9fff371bb4e0654bb73e5878d292378dcf36c7",
+      "defect": "Eight header InputHitTest failures per modified phase from supplementary bottom-scroll state leakage"
+    }
+  ],
+  "local_evidence_directory": ".local/evidence/cloud/visual-layout/40815530494/"
+}

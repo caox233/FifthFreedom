@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T07:53:55.394690+00:00",
+  "source_head_sha": "6c11c8b85633ea5e2977ea0131c86ee01b316bbb",
+  "run_id": 39919260768,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39919260768",
+  "status": "completed",
+  "conclusion": "failure",
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no archive download",
+  "jobs": [
+    {
+      "id": 120301554876,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120301555123,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120301555154,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120301555164,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120301555199,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120301555325,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120301555328,
+      "name": "Strict retained native replay input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120301620750,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120304201642,
+      "name": "Same-run owned overlay and native development composition",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120304201875,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120304202415,
+      "name": "Same-run native owned lifecycle in synthetic namespaces",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12487500075,
+      "name": "linux-public-donor-reference-539b860a31014ef157ab68505c456c41df680ac6",
+      "size_in_bytes": 4005460,
+      "digest": "sha256:151edd74bc01dd2c34b39a6245281e1bce85d21cafdacb8556d257e882f3fbe1",
+      "expired": false
+    },
+    {
+      "id": 12487016493,
+      "name": "linux-native-socket-isolation-539b860a31014ef157ab68505c456c41df680ac6",
+      "size_in_bytes": 3680044,
+      "digest": "sha256:24a2a9ae53db13d0a0f86bc0f010e40b21e4655960a175a3545a6b6638d62774",
+      "expired": false
+    },
+    {
+      "id": 12486343623,
+      "name": "windows-fixed-port-preparation-539b860a31014ef157ab68505c456c41df680ac6",
+      "size_in_bytes": 948,
+      "digest": "sha256:306fae8fb55d6b55f8f6fc92cf960d57fcdb74975abf7e3fa95980713d3fe984",
+      "expired": false
+    },
+    {
+      "id": 12486127872,
+      "name": "windows-compile-only-components-539b860a31014ef157ab68505c456c41df680ac6",
+      "size_in_bytes": 31054,
+      "digest": "sha256:92e69e989b94a6c3609999286f20219b25b39dfd861f4a41a42ed3cdadcaa167",
+      "expired": false
+    },
+    {
+      "id": 12485993040,
+      "name": "linux-public-control-539b860a31014ef157ab68505c456c41df680ac6",
+      "size_in_bytes": 63555,
+      "digest": "sha256:7aac5b0496a6c9124c5881c2ef9791254e606f5d372c78c172676459c6e63ca4",
+      "expired": false
+    },
+    {
+      "id": 12485804068,
+      "name": "native-replay-input-gate-539b860a31014ef157ab68505c456c41df680ac6",
+      "size_in_bytes": 396,
+      "digest": "sha256:2026bf06eaeb2b0a568b504d4a51c64e9eb7fad85c35408f38fbdda49a1de5e6",
+      "expired": false
+    },
+    {
+      "id": 12485678633,
+      "name": "complete-package-input-gate-539b860a31014ef157ab68505c456c41df680ac6",
+      "size_in_bytes": 1657,
+      "digest": "sha256:49e911a9fd0987725c5228fd760afb95ca8bb578adb0c566f0d947b03a5a1e5a",
+      "expired": false
+    },
+    {
+      "id": 12485509811,
+      "name": "linux-lan-baseline-539b860a31014ef157ab68505c456c41df680ac6",
+      "size_in_bytes": 9878875,
+      "digest": "sha256:6959f4e2fd5dd6e1a4331221e1b33393e2caaa5e37b3e5895cb39111afe754f8",
+      "expired": false
+    }
+  ],
+  "windows_bounded_failure": "step=ci-test-PublicNativeReturn; exception=RuntimeError; managed_cases=PublicNativeReturn:15:UnauthorizedAccessException; return_phases=PublicNativeReturn:15:CONFIG_ACK; full diagnostics remain in the run artifacts",
+  "windows_source_checks_passed": true,
+  "windows_managed_suites_passed_this_run": [
+    "PortPlan",
+    "BackgroundTaskRegression",
+    "ObserverSession",
+    "NetworkEnvironment",
+    "PublicDeployment",
+    "PublicSessionControl"
+  ],
+  "windows_public_native_return": {
+    "passed_entire_suite": false,
+    "failed_case": "15",
+    "exception_class": "UnauthorizedAccessException",
+    "last_reported_phase": "CONFIG_ACK",
+    "statement_or_root_cause_confirmed": false,
+    "phase_limit": "The old phase remains CONFIG_ACK through delivery wait, child exit and directory cleanup; it does not identify which operation threw."
+  },
+  "windows_native_ipc_interop_source_transport_and_branding_reached": false,
+  "prior_success_not_retracted": {
+    "run_id": 39918375705,
+    "PublicNativeReturn_checks": 25,
+    "native_public_return_checks": 8,
+    "native_managed_interop_checks": 3
+  },
+  "external_native_replay": {
+    "tests": 13,
+    "executed": false,
+    "full_native_replay_verified": false,
+    "independent_gate_job_conclusion": "failure"
+  },
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false,
+  "complete_package": false,
+  "production_admission": false,
+  "game_executed": false,
+  "release_or_deployment": false,
+  "next_diagnostic_scope": "Separate actual delivery wait, owned process exit and directory cleanup; preserve first failure. Add this unchanged 25-case managed suite to the quick Windows job. No production ACL or pipe behavior fix inferred."
+}

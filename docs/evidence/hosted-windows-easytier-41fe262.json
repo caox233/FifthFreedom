@@ -1,0 +1,245 @@
+{
+  "schema": 1,
+  "repository": "caox233/FifthFreedom",
+  "workflow": "easytier-windows-build-only.yml",
+  "run_id": 39927010635,
+  "run_attempt": 1,
+  "job_id": 120325760177,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39927010635",
+  "branch_commit": "41fe262cc1e279b7cb44c3dcfba5b6a696ff60b7",
+  "checkout_commit": "529a741f6c5a5c4f2b960d4d51b5d52e6f16a7ad",
+  "conclusion": "success",
+  "actual_source_receipt_tests": {
+    "passed": 14,
+    "failed": 0,
+    "ignored": 0
+  },
+  "artifact": {
+    "id": 12490777499,
+    "name": "easytier-windows-build-only-receipts-529a741f6c5a5c4f2b960d4d51b5d52e6f16a7ad",
+    "bytes": 40898,
+    "sha256": "15f1ddb9d05496eeda25c4cf991093e553666b26244bd4db326c819691d495f7",
+    "digest_verified": true,
+    "members": [
+      {
+        "path": "easytier-windows-build-run.json",
+        "bytes": 410,
+        "sha256": "2300ee344d481cbfc717a79254f40e15d463ce2dbb46c4f619dccca7bf88f0a0"
+      },
+      {
+        "path": "easytier-windows-build/source-receipt.json",
+        "bytes": 136135,
+        "sha256": "00e90162a05efa52963892f1eaeb8ae1581e60b644f8d467a6d341a659da132d"
+      },
+      {
+        "path": "easytier-windows-build/receipt.json",
+        "bytes": 2423,
+        "sha256": "8a091ba4d8f70a14ac3961209d99578d6b0013a19e803cd75350f76ff0411235"
+      }
+    ]
+  },
+  "source": {
+    "upstream": {
+      "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "repository": "https://github.com/EasyTier/EasyTier",
+      "source_date_epoch": 1778588776,
+      "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+    },
+    "tun_upstream": {
+      "commit": "12378839e7985283df0e4fb536b7137230356db5",
+      "repository": "https://github.com/EasyTier/rust-tun",
+      "tree": "b2d6df5fedf4641ff4c699e731901fd998ec75f8"
+    },
+    "archives": [
+      {
+        "bytes": 13066240,
+        "format": "canonical git archive tar; not official release archive",
+        "sha256": "fe41b78a040f77f7fb9c87028b5dca79bf71c582036d1f84f355e6b79935ffd3"
+      },
+      {
+        "bytes": 225280,
+        "sha256": "a09620fb120b1f55d6d3151629e3a859f39e4278b31331f2c41970d006499d03"
+      }
+    ],
+    "source_tree_sha256": "0e01b494704e7a4f3afb67d7c54b446149fda7317938623d36164d0d53c0d1eb",
+    "patch_manifest_sha256": "74b55777b6501e237adc3676ffddd787f199aa116f66d0d6b43f640ae64270cd",
+    "patches": [
+      {
+        "bytes": 3140,
+        "path": "docs/dependency-patches/easytier-2.6.4-secure-session/contract-tests.patch",
+        "role": "contract-tests",
+        "sha256": "5673d6b3f24dd44a263b7863a491ec0c482b61feadd77cfc2534973d3d8d31c4"
+      },
+      {
+        "bytes": 792,
+        "path": "docs/dependency-patches/easytier-2.6.4-secure-session/require-encrypted-flag.patch",
+        "role": "production-guard",
+        "sha256": "06a16ca43e035eb1380c99ace8f19a8495bbd09b6413f0fe800752896aa3d2b3"
+      },
+      {
+        "bytes": 5365,
+        "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/ingress-contract-tests.patch",
+        "role": "contract-tests",
+        "sha256": "13a8719f4ff0679c3a0dcc56d1f61717f8659fcbf2337032656fd66889e072d9"
+      },
+      {
+        "bytes": 637,
+        "path": "docs/dependency-patches/easytier-2.6.4-ingress-data/require-encrypted-data-ingress.patch",
+        "role": "production-guard",
+        "sha256": "676e9b9dbeaad45cab7e7b85f245091c5e0d2a683f1436e4a1955f2b6e4245a3"
+      },
+      {
+        "bytes": 4765,
+        "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/explicit-pin-contract-tests.patch",
+        "role": "contract-tests",
+        "sha256": "9a3d13a08259acbe11352ccb084a565e04df465f42dc6d16f4a805429705b7cb"
+      },
+      {
+        "bytes": 1744,
+        "path": "docs/dependency-patches/easytier-2.6.4-explicit-pin/require-explicit-peer-pin.patch",
+        "role": "production-guard",
+        "sha256": "7eeeda28458f17d8ee393176a767725c19e3315f0bc49e9471ebe138cc123328"
+      },
+      {
+        "bytes": 20743,
+        "path": "docs/dependency-patches/easytier-2.6.4-windows-session/tun-session-observer.patch",
+        "role": "windows-session",
+        "sha256": "c61e570db8dd04d9c7dc182620a1ab5b586dd7c4e344aeac81e75f11331c3691"
+      },
+      {
+        "bytes": 6980,
+        "path": "docs/dependency-patches/easytier-2.6.4-windows-session/easytier-session-observer.patch",
+        "role": "windows-session",
+        "sha256": "4dcff819c3c5f730898a8873147ec7ff37fdee32bf143694b4f3b78e1483fec6"
+      },
+      {
+        "bytes": 723,
+        "path": "docs/dependency-patches/easytier-2.6.4-windows-session/modern-windows-build.patch",
+        "sha256": "f46dd1b4b4cec5347cf61be817486625843848072ce3f362fcd010b4bec28c43"
+      }
+    ],
+    "cargo_lock_original_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+    "cargo_lock_patched_sha256": "93933b3d72622fb04692d11defdf1ebc5ed979c5feedefceb74114bd2db6b6fc",
+    "cargo_override_sha256": "d2eff4d03f1efa57a6a0e0b37af6dd7841fd0b5a2a77d7a02e3bdd437eafc830",
+    "link_only_held_input": {
+      "bytes": 8290,
+      "path": "easytier/third_party/x86_64/Packet.lib",
+      "reason": "non-Linux prebuilt input excluded; original retained separately",
+      "sha256": "5be8eb0ef57344cedc940fd81edbf7fc98680ba0c8337b577e7fdc448408130b"
+    }
+  },
+  "recipe_sha256": "bdcde8dfd58c5c36683e30f36e1243920eeb51e9f2c8ac749f5aa1e7c258e113",
+  "source_file_counts": {
+    "easytier": 700,
+    "tun": 49
+  },
+  "build": {
+    "build_inputs": {
+      "bins": [
+        "easytier-core.exe",
+        "easytier-cli.exe"
+      ],
+      "execute_binaries": false,
+      "features": [
+        "default",
+        "ff-windows-session-observer"
+      ],
+      "profile": "release",
+      "rust_toolchain": "1.95.0",
+      "target": "x86_64-pc-windows-msvc",
+      "upload_binaries": false,
+      "win7_compatibility": false
+    },
+    "built_executables": {
+      "easytier-cli.exe": {
+        "bytes": 10085376,
+        "format": "PE32+",
+        "machine": "AMD64",
+        "sha256": "e7568053b5dfa972535d8abd6b1faba5edde55836f9a799f12fe1c8ad51a591a"
+      },
+      "easytier-core.exe": {
+        "bytes": 24649728,
+        "format": "PE32+",
+        "machine": "AMD64",
+        "sha256": "9e55cf74c87abd52889a7d401c6372fffd578ea62c750054ac4b156d155a9b1f"
+      }
+    },
+    "cargo_lock_sha256": "93933b3d72622fb04692d11defdf1ebc5ed979c5feedefceb74114bd2db6b6fc",
+    "checkout_commit": "529a741f6c5a5c4f2b960d4d51b5d52e6f16a7ad",
+    "dependency_license_closure_verified": false,
+    "driver_loaded": false,
+    "patch_manifest_sha256": "74b55777b6501e237adc3676ffddd787f199aa116f66d0d6b43f640ae64270cd",
+    "public_startup_allowed": false,
+    "resolution": {
+      "caller_features": [
+        "default",
+        "faketcp",
+        "ff-windows-session-observer",
+        "kcp",
+        "magic-dns",
+        "quic",
+        "smoltcp",
+        "socks5",
+        "tun",
+        "websocket",
+        "wireguard",
+        "zstd"
+      ],
+      "tun_features": [
+        "async",
+        "default",
+        "futures-core",
+        "tokio",
+        "tokio-util",
+        "wintun-dns"
+      ],
+      "tun_source": "verified-local-paired-tree",
+      "tun_version": "1.1.1"
+    },
+    "run_attempt": "1",
+    "run_id": "39927010635",
+    "runs": [
+      {
+        "exit_code": 0,
+        "known_source_locations": [],
+        "link_codes": [],
+        "log_sha256": "00d96f207a535cf04f2e2b7bb209e8bcd110023fc01f5db65de2a29e5e6d2a41",
+        "rust_codes": [],
+        "stage": "metadata"
+      },
+      {
+        "exit_code": 0,
+        "known_source_locations": [],
+        "link_codes": [],
+        "log_sha256": "a42e395210d22582bc6d6280b933c741b9303f0776838d26a7b863ef76e89bb4",
+        "rust_codes": [],
+        "stage": "core-cli-build"
+      }
+    ],
+    "runtime_binary_uploaded": false,
+    "runtime_executed": false,
+    "schema": 1,
+    "source_tree_sha256": "0e01b494704e7a4f3afb67d7c54b446149fda7317938623d36164d0d53c0d1eb",
+    "status": "paired_windows_core_cli_built_not_executed",
+    "win7_compatibility": false
+  },
+  "independent_verification": {
+    "artifact_member_allowlist": true,
+    "source_inventory_digest": true,
+    "ordered_patch_manifest_digest": true,
+    "all_patch_bytes_match_repository": true,
+    "recipe_and_expected_prepared_identities": true,
+    "actual_locked_paired_resolution": true,
+    "actual_metadata_and_build_exit_zero": true
+  },
+  "evidence_boundary": {
+    "full_windows_compile_codegen_link_verified": true,
+    "binary_bytes_downloaded_for_independent_rehash": false,
+    "binary_identity_source": "runner static PE inspection; binary artifact publication disabled",
+    "driver_or_session_executed": false,
+    "encrypted_peer_or_public_readiness_proven": false,
+    "official_archive_pins_changed": false,
+    "first_failed_run_preserved": 39925069086,
+    "first_failure_stage_known": false
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "schema": 1,
+  "date": "2026-11-01",
+  "timezone": "Asia/Hong_Kong",
+  "baseline_commit": "0e691519b878a8fbbb0695392eb2a2ba9616e841",
+  "candidate_source": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+  "package_observation_source": "User local verification relayed to the cloud task; private ZIPs, install directories and logs were not accessed by this agent. Cloud comparison uses the previously independently verified official candidate.",
+  "package": {
+    "two_user_local_zip_sha256": "36228f99ec05938bb20addcb9891987d318991234251214da6c2b8cfda125d6e",
+    "four_installed_components_match_official_user_report": true,
+    "official_components": [
+      {
+        "bytes": 146374575,
+        "compat_id": "scbl-lan-1.1.0",
+        "path": "FifthFreedom.exe",
+        "release_id": "fifth-freedom-1.1.0-migration1",
+        "role": "launcher",
+        "sha256": "c3c9a1f8ee9f98c869ef83e7294bfab8f37309b6070b55e74f07cbfc3c09a752",
+        "machine": "0x14c"
+      },
+      {
+        "bytes": 7746560,
+        "compat_id": "scbl-lan-1.1.0",
+        "path": "runtime/uplay_r1_loader.dll",
+        "release_id": "fifth-freedom-1.1.0-migration1",
+        "role": "main",
+        "sha256": "1d5f661db61ca10954d53a140031e4359e57e5044e811ca50ef56a4f359f9893",
+        "machine": "0x14c"
+      },
+      {
+        "bytes": 2424832,
+        "compat_id": "scbl-lan-1.1.0",
+        "path": "runtime/scbl_gameplay.dll",
+        "release_id": "fifth-freedom-1.1.0-migration1",
+        "role": "gameplay",
+        "sha256": "60f6eee1d8c68bd4d1692510128ec4b347434917a4d54f47c587b532f6e7222e",
+        "machine": "0x14c"
+      },
+      {
+        "bytes": 10867200,
+        "compat_id": "scbl-lan-1.1.0",
+        "path": "runtime/FifthFreedom.Server.exe",
+        "release_id": "fifth-freedom-1.1.0-migration1",
+        "role": "server",
+        "sha256": "77d574211cd11e7aece42a2dc6afdec819dfc290bd0c87e44fd15eeca753d814",
+        "machine": "0x8664"
+      }
+    ],
+    "three_loaded_main_sha256": "1d5f661db61ca10954d53a140031e4359e57e5044e811ca50ef56a4f359f9893",
+    "three_loaded_gameplay_sha256": "60f6eee1d8c68bd4d1692510128ec4b347434917a4d54f47c587b532f6e7222e",
+    "new_local_release_mismatch_observed": false,
+    "reinstall_or_old_package_explanation_for_this_machine_supported": false,
+    "different_new_player_screenshot_both_endpoint_identities_known": false,
+    "different_new_player_status": "needs-triage"
+  },
+  "user_executed_production_admission_matrix": {
+    "execution_location": "User local, not rerun in this cloud review",
+    "scbl_lan_1_1_to_e4": "RELEASE_MISMATCH",
+    "e4_to_scbl_lan_1_1": "RELEASE_MISMATCH",
+    "previous_fifth_freedom_candidate_to_e4": "PACKAGE_CATALOG_MISMATCH",
+    "e4_to_e4": "Ok",
+    "unknown_screenshot_installation_proven": false
+  },
+  "implementation": {
+    "scope": "Only explanatory Login/Register error messages and their tests; native admission, capability protocol, success paths, UI layout and user data unchanged.",
+    "release_rejection": "Different release identities; host and joining players use the same complete ZIP.",
+    "catalog_rejection": "Different complete build catalog even when the displayed version agrees; use the same complete ZIP.",
+    "matching": "RPC FailedPrecondition plus exact reason, or reason followed by the existing colon-space explanation delimiter; response error bodies use the same exact reason parsing. No contains matching.",
+    "unrelated_codes_or_transport_states": "Original message/status preserved; no inferred release mismatch from Unavailable, Cancelled, Internal or similar reason prefixes.",
+    "source_sha256": {
+      "src/launcher/src/Services/AuthService.cs": "c666a1ffe8ab6660cd080dffd36f98b9a72b239f7a74c7431858c302fea03400",
+      "src/launcher/src/Services/PackageAdmissionMessages.cs": "e13a5addf78a92577d99471a19aa25c3ae18734c40d4e73a51f07b826c020e34",
+      "tests/PackageAdmissionMessages/PackageAdmissionMessages.csproj": "0112e73b057cb1cd5521677c1d5ee265cc6bee9a07a87649761522b82109526e",
+      "tests/PackageAdmissionMessages/Program.cs": "c9c5cf77c6f03a7cdbec6439b1254f09f2cad8f07f7a01151fa26f515331398a",
+      "tests/PackageAdmissionMessages/TransportFixture.cs": "e281af99b5f4b7dc041227bf8419a680e1503cd56a83a60f783b0b98f7e0e580",
+      "tests/server/test_package_admission_messages.py": "f7837d1a2db631ae8e5da1297e3661dfcdcc1c8d8dcb2b6a697764d7980a05cc",
+      "tests/FinalLaunchPreparation/FinalLaunchPreparation.csproj": "d6008a51d86d4a3852707fd3558a37842b901aa77331c77dfc85349d7542eecc"
+    }
+  },
+  "regression": {
+    "test_project": "tests/PackageAdmissionMessages/PackageAdmissionMessages.csproj",
+    "production_sources_executed": [
+      "AuthService.cs",
+      "PackageAdmissionMessages.cs",
+      "AuthResults.cs"
+    ],
+    "transport": "Explicit in-memory fake LanConnection/API, real Grpc.Core RpcException status/detail; no sockets or server.",
+    "roles": [
+      {
+        "role": "B",
+        "exit_code": 1,
+        "executed": 43,
+        "passed": 27,
+        "failed": 16,
+        "failed_cases": [
+          "login/RELEASE_MISMATCH/response/False",
+          "login/RELEASE_MISMATCH/response/True",
+          "login/RELEASE_MISMATCH/rpc/False",
+          "login/RELEASE_MISMATCH/rpc/True",
+          "login/PACKAGE_CATALOG_MISMATCH/response/False",
+          "login/PACKAGE_CATALOG_MISMATCH/response/True",
+          "login/PACKAGE_CATALOG_MISMATCH/rpc/False",
+          "login/PACKAGE_CATALOG_MISMATCH/rpc/True",
+          "register/RELEASE_MISMATCH/response/False",
+          "register/RELEASE_MISMATCH/response/True",
+          "register/RELEASE_MISMATCH/rpc/False",
+          "register/RELEASE_MISMATCH/rpc/True",
+          "register/PACKAGE_CATALOG_MISMATCH/response/False",
+          "register/PACKAGE_CATALOG_MISMATCH/response/True",
+          "register/PACKAGE_CATALOG_MISMATCH/rpc/False",
+          "register/PACKAGE_CATALOG_MISMATCH/rpc/True"
+        ],
+        "log_sha256": "d5a6405baf5ec7d8b96c23c5b6ad0b9a5ea60b5ef0fcafd8cbf659ab72acc772"
+      },
+      {
+        "role": "M",
+        "exit_code": 0,
+        "executed": 43,
+        "passed": 43,
+        "failed": 0,
+        "failed_cases": [],
+        "log_sha256": "34fedd105a1e9785b5a5288969ec48622cd2e459a93ba417e66e5b66a1974f0f"
+      },
+      {
+        "role": "R",
+        "exit_code": 1,
+        "executed": 43,
+        "passed": 27,
+        "failed": 16,
+        "failed_cases": [
+          "login/RELEASE_MISMATCH/response/False",
+          "login/RELEASE_MISMATCH/response/True",
+          "login/RELEASE_MISMATCH/rpc/False",
+          "login/RELEASE_MISMATCH/rpc/True",
+          "login/PACKAGE_CATALOG_MISMATCH/response/False",
+          "login/PACKAGE_CATALOG_MISMATCH/response/True",
+          "login/PACKAGE_CATALOG_MISMATCH/rpc/False",
+          "login/PACKAGE_CATALOG_MISMATCH/rpc/True",
+          "register/RELEASE_MISMATCH/response/False",
+          "register/RELEASE_MISMATCH/response/True",
+          "register/RELEASE_MISMATCH/rpc/False",
+          "register/RELEASE_MISMATCH/rpc/True",
+          "register/PACKAGE_CATALOG_MISMATCH/response/False",
+          "register/PACKAGE_CATALOG_MISMATCH/response/True",
+          "register/PACKAGE_CATALOG_MISMATCH/rpc/False",
+          "register/PACKAGE_CATALOG_MISMATCH/rpc/True"
+        ],
+        "log_sha256": "d5a6405baf5ec7d8b96c23c5b6ad0b9a5ea60b5ef0fcafd8cbf659ab72acc772"
+      },
+      {
+        "role": "RP",
+        "exit_code": 0,
+        "executed": 43,
+        "passed": 43,
+        "failed": 0,
+        "failed_cases": [],
+        "log_sha256": "34fedd105a1e9785b5a5288969ec48622cd2e459a93ba417e66e5b66a1974f0f"
+      }
+    ],
+    "baseline_negative_failures_are_executed_assertions": true,
+    "baseline_or_rollback_compile_failure_accepted": false,
+    "coverage": [
+      "Login and Register",
+      "Both explicit admission reasons",
+      "RPC FailedPrecondition and response-error branches",
+      "Bare reason and actual production explanation format",
+      "Unknown reasons, embedded substrings, similar prefixes and case changes",
+      "Unavailable, Cancelled and Internal are not converted to identity errors",
+      "Successful results remain successful",
+      "Capability Unavailable/Cancelled return false in controlled transport",
+      "Pre-cancelled capability request propagates cancellation and performs no connection"
+    ],
+    "python_source_suite_wrapper": {
+      "path": "tests/server/test_package_admission_messages.py",
+      "executed": 1,
+      "passed": 1,
+      "skipped": 0,
+      "log_sha256": "4a2ff3b6e21956806a472eab8be1cca57f21bf38d5e27c46f8a61ea91c666f0e"
+    },
+    "existing_final_launch_preparation": {
+      "action": "build only, not test execution",
+      "exit_code": 0,
+      "warnings": 0,
+      "errors": 0,
+      "log_sha256": "d62a9e9a74f612c936bc140cce3d3aa942f7de9f2acae6b13330b5e9b97258c5"
+    }
+  },
+  "lan_capability_triage": {
+    "user_reported_counts": {
+      "Unavailable": 6,
+      "Cancelled": 1
+    },
+    "first_scan_no_usable_host_reported": true,
+    "cloud_reproduced_live_incident": false,
+    "root_cause_confirmed": false,
+    "task": "docs/tasks/lan-capability-discovery-feedback.md",
+    "stages_kept_separate": [
+      "UDP bounded discovery and valid reply admission",
+      "IPv4 DNS/source binding/TCP transport",
+      "GetCapabilities product/protocol/readiness/ports",
+      "Config/content HTTP reachability",
+      "Login/Register full package identity admission"
+    ],
+    "no_valid_discovery_reply_means_no_host_exists": false,
+    "rpc_cancelled_proves_caller_cancellation": false,
+    "capability_unavailable_proves_release_mismatch": false,
+    "new_production_discovery_bug_confirmed": false,
+    "reviewed_existing_host_discovery_tests_rerun": false,
+    "reviewed_exact_candidate_source_sha256": {
+      "src/launcher/src/Services/AuthService.cs": "97347bf07c14ee61f87494d4e301a6e98f71f44e04d1ed02fd043441a2a141a4",
+      "src/launcher/src/Services/LanConnection.cs": "6a9f96ed7d86daa331424850be03e65ac28885a55aaa94a90e9a23f4656f751a",
+      "src/launcher/src/Services/LocalHostDiscovery.cs": "a578f8ca12042cba4628bc37fa0474574e4d14a3e3fc9718d0d53716b1de1e41",
+      "src/launcher/src/Services/LocalHostDiscoveryFlow.cs": "172f9bb34a8cf62ef23ac0f03fdf099e14d783c9ed7dd94da1d2d080ea624fbb",
+      "src/launcher/src/Services/HostDiscoveryTargets.cs": "67a6c1790863787f8f60b67434f09fcb0a48b6b00752022f0448bc22de42b97d",
+      "src/launcher/src/MainWindow.LocalDiscovery.cs": "8805103f46d53275a184d47702ae40fe4eaa924d5453dc4ae8333e3410781555",
+      "src/launcher/src/MainWindow.NetworkEnvironment.cs": "722ef19d5d15d0047dabb84d6cfb25fec4e1a7a8e7e0aed29bc229876735c531",
+      "src/native/shared/api/src/release_contract.rs": "350f32ef8bd950171c1cad5077fca7f529580d7dc030186e7afcc32e9d2efe02"
+    }
+  },
+  "bounds": {
+    "servers_started": false,
+    "game_started": false,
+    "private_logs_or_player_identifiers_published": false,
+    "native_admission_relaxed": false,
+    "live_multiplayer_acceptance_claimed": false,
+    "whole_candidate_build_claimed_by_this_receipt": false
+  }
+}

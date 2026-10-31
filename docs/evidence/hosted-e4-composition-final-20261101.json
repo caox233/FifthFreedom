@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "supersedes_pending_observation_only": "docs/evidence/hosted-feedback-dependent-e4f8990.json",
+  "reviewed_at_utc": "2026-10-31T16:45:10.001951+00:00",
+  "source_commit": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+  "executed_commit": "abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+  "run_id": 41195418269,
+  "job": {
+    "id": 124524375647,
+    "name": "Same-run owned overlay and native development composition",
+    "html_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/job/124524375647",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-31T11:24:59Z",
+    "completed_at": "2026-10-31T11:37:43Z"
+  },
+  "job_record_sha256": "e0875bce97df9dfeb8a8c6a7765effe0bb3bba71daf998e2f770769a833f0288",
+  "artifact": {
+    "id": 13041303850,
+    "name": "owned-overlay-native-development-receipt-abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+    "size_in_bytes": 1750,
+    "digest": "sha256:0c51ebc1851c4993e2810a97868a73ba598d15a2730fd26fb7ab4683a8c51b1e",
+    "expired": false
+  },
+  "official_digest_size_and_zip_crc_verified": true,
+  "receipt_sha256": "4d32ec6cbdaf1d4f0cb213c2449a272bd9f35c3203cb2b129708a4da10e02075",
+  "receipt": {
+    "schema": "ff-owned-overlay-native-stack-development-v1",
+    "status": "owned_stack_development_verified",
+    "scope": {
+      "transport": "tcp",
+      "purpose": "owned-isolated-development",
+      "production_admission": false,
+      "ordinary_public_enabled": false,
+      "game_executed": false,
+      "complete_client_package": false,
+      "runtime_binary_uploaded": false,
+      "raw_runtime_output_retained": false
+    },
+    "cases": [
+      {
+        "case": "lease-revoke",
+        "status": "owned_stack_case_verified",
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "actual_native_ready": true,
+        "owned_listeners": 5,
+        "runtime_profile_sha256": "32d44523d9d90fb19e933e8edbf07d6d9beed81ce1bd545ff9f95befc0ad12ab",
+        "established_tcp": true,
+        "native_watchdog_exit": 92,
+        "ports_rebound": 5,
+        "held_tcp_eof_or_reset": true,
+        "overlay_alive_during_close": true,
+        "containment_after": [
+          {
+            "input": 0,
+            "output": 23,
+            "forward": 0
+          },
+          {
+            "input": 0,
+            "output": 23,
+            "forward": 0
+          }
+        ]
+      },
+      {
+        "case": "peer-loss",
+        "status": "owned_stack_case_verified",
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "actual_native_ready": true,
+        "owned_listeners": 5,
+        "runtime_profile_sha256": "74dfbb2277e6c7c364e4a153b6c7a8472c58ec23e8ddc0c3acc0ea9a9116b179",
+        "established_tcp": true,
+        "exact_peer_reaped": true,
+        "monitor_permanently_revoked": true,
+        "native_reaped": true,
+        "native_listeners_remaining": 0,
+        "remote_tcp_eof_claimed": false,
+        "containment_after": [
+          {
+            "input": 0,
+            "output": 23,
+            "forward": 0
+          },
+          {
+            "input": 0,
+            "output": 24,
+            "forward": 0
+          }
+        ]
+      }
+    ],
+    "precondition_failures": [],
+    "copied_package_native_verified": true,
+    "source_package_unchanged": true,
+    "private_stage_removed": true,
+    "source_commit": "abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+    "run_id": "41195418269",
+    "run_attempt": "1",
+    "runtime_candidate": {
+      "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+      "source_manifest_sha256": "60c85f25267ce640bb27901b167047722478fd91d39693a1609e925e28440181",
+      "patch_manifest_sha256": "8d2a4b28c147623c319f890a318dce8db6411ee1b52fbbfd49d377de7b1c4a4c",
+      "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+      "build_profile_sha256": "ff3866f1dedf21a4d532c1b445d7ddf4d252de44255c881be837c4d9ca9071ae",
+      "executable_sha256": "ea6193867d4d640f89b68fb3530176c45e9676f8dfed24a09c1010fc0e2e9681",
+      "executable_size": 28593032,
+      "role": "easytier-core",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "cli_identity": {
+      "bytes": 12261752,
+      "sha256": "d8c9f48d41ab95ec3375beec4f58d24d9ab3f9762d6333b8f91f75e7ef653950"
+    }
+  },
+  "containment_receipt": {
+    "checkout_commit": "abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+    "input_identity": "synthetic_profile_only_no_executable",
+    "precondition_failures": [],
+    "production_admission": false,
+    "raw_runtime_output_retained": false,
+    "runtime_binary_uploaded": false,
+    "runtime_executed": false,
+    "schema": "ff-easytier-containment-preflight-v1",
+    "status": "containment_preflight_verified",
+    "transports": [
+      {
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "status": "containment_pair_verified",
+        "transport": "quic"
+      },
+      {
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "status": "containment_pair_verified",
+        "transport": "wss"
+      },
+      {
+        "cleanup_errors": [],
+        "namespaces_created": 2,
+        "namespaces_removed": 2,
+        "status": "containment_pair_verified",
+        "transport": "tcp"
+      }
+    ]
+  },
+  "limits": [
+    "Owned isolated Linux development composition only; ordinary Public admission remains false.",
+    "This successful job does not exercise camera event dispatch, gameplay or the new live crash.",
+    "The earlier pending receipt remains immutable historical evidence."
+  ]
+}

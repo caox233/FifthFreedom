@@ -22,11 +22,13 @@ initial naming changes. `integration/scbl3/` preserves 594 donor files, includin
 its UI, Linux services, Windows services and build resources. Native gameplay
 behavior must not be replaced by the older 3.0 gameplay implementation.
 
-The UI currently remains the LAN interface. The donor UI is not integrated merely
-because its files are present. Port its presentation through explicit interfaces
-to retained launch, diagnostics, account, game-mode and save modules. Network
+The donor presentation is now integrated into the retained launcher and passed
+GitHub-hosted Windows no-game UI checks. The retained launch, diagnostics,
+account, game-mode and save modules remain the behavior baseline. Network
 selection must use separate LAN and public adapters; do not inherit EasyTier-only
 assumptions into LAN routing or silently create public listeners in LAN mode.
+Production environment integration is tracked in `docs/tasks/ui-02.md`; the
+Public option remains unavailable until its complete path has been reviewed.
 
 Public services require authentication, validation, persistence, transport and
 deployment review. A successful localhost test does not prove Internet readiness.

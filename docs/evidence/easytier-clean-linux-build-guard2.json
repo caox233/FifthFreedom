@@ -1,0 +1,100 @@
+{
+  "admission": {
+    "readiness_adapter_version": null,
+    "runtime_admission_ready": false,
+    "runtime_publication_approved": false,
+    "security_profile_id": null
+  },
+  "build_inputs": {
+    "bins": [
+      "easytier-core",
+      "easytier-cli"
+    ],
+    "cargo_features": "default",
+    "crypto_backend": "ring; wireguard enabled; openssl-crypto/aes-gcm absent",
+    "official_musl_jemalloc_build_reproduction": false,
+    "profile": "release",
+    "rust_toolchain": "1.95.0",
+    "target": "x86_64-unknown-linux-gnu"
+  },
+  "built_executables": {
+    "easytier-cli": {
+      "bytes": 12266040,
+      "sha256": "7ea639f40bbe7822f6a99816dcd63535bbe27e3ad77519af691fa767db525ae2"
+    },
+    "easytier-core": {
+      "bytes": 28623656,
+      "sha256": "e62795ce510f305e08b2d173bb9f3369018edeb742e37f4e04bc16edab542133"
+    }
+  },
+  "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+  "dependency_source_closure_verified": false,
+  "official_binary_reproduced": false,
+  "patch_manifest_sha256": "b8f0b6f180fedc4b6aa4ff2fb309e495c75e32fa58ccbc499ccf4ba593c4ed9a",
+  "public_startup_allowed": false,
+  "runs": [
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "78e58063294c6e06fa4bc0420b503fb843d6eba18df587d2fd809a3233ed318d",
+      "passed": 4,
+      "stage": "fifth_freedom_secure_profile_contract"
+    },
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "1386db2352fea39c1cd8882f2cbb08640ba0a7a9f542b3621d3c141e22e99679",
+      "passed": 10,
+      "stage": "fifth_freedom_ingress_contract"
+    },
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "90ec6ddae2d0e58d6a7c86611ca45d2397e5c91169eb01b048aac1af66ce9058",
+      "passed": 9,
+      "stage": "peers::secure_datagram::tests"
+    },
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "12620ee60b00be214ac71fa0c4e2216ed5b93ff6183da4b4abfdd48ee48b84d6",
+      "passed": 2,
+      "stage": "peers::peer_session::tests"
+    },
+    {
+      "exit_code": 0,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "a935a6e349b60d661d1e02630af5b9c07189c178ba1d95c97347bc4c34039e2f",
+      "passed": 1,
+      "stage": "peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip"
+    },
+    {
+      "exit_code": 0,
+      "log_sha256": "c71617b47b6722c735984bda960f9d6328465b30321d35621c9cec753fc1151a",
+      "stage": "release-build"
+    }
+  ],
+  "runtime_binary_uploaded": false,
+  "runtime_executed": false,
+  "schema": 1,
+  "source_archive_sha256": "fe41b78a040f77f7fb9c87028b5dca79bf71c582036d1f84f355e6b79935ffd3",
+  "source_tree_sha256": "c9d803ba7dfa4ba667bddea6049f82a79eb536f1bb4b0a00f56835f43d68dcf4",
+  "status": "built_and_contracts_verified_not_admitted",
+  "upstream": {
+    "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+    "repository": "https://github.com/EasyTier/EasyTier",
+    "source_date_epoch": 1778588776,
+    "tree": "bd962ff4a503fa93a570907a53eea37e2c3207db"
+  },
+  "evidence_scope": "Local managed Linux development environment; not a GitHub-hosted result",
+  "local_compilation_cache_reused": true,
+  "prior_guard1_binaries_retained_separately": true,
+  "prepared_source_unchanged_after_build": true,
+  "local_bindgen_note": "Explicit GCC system-header include used for the available local libclang; hosted runner installs clang/libclang development packages",
+  "upstream_fetch_archive_verified_without_checkout": true
+}

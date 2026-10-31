@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official Windows source job metadata, digest-verified source artifact and private failure log inspection; no runtime binary execution or publication",
+  "run_id": 39944703181,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39944703181",
+  "source_head": "4b49da73223b97e40ad4923325d45af1e3064684",
+  "checkout_commit": null,
+  "checkout_note": "The artifact name is retained as an opaque official identifier; source receipt does not attest the checked-out merge SHA.",
+  "job": {
+    "id": 120384383169,
+    "name": "Source contracts (windows-2022)",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "artifact": {
+    "id": 12497248738,
+    "name": "portable-source-evidence-windows-2022-b46c8fe56e1b160cbe7d1098843c7ac66eeb9249",
+    "size_in_bytes": 22246,
+    "digest": "sha256:7ad638eff2619da082167c8f24c22cbeb35786f8409829b329bf59161ca7b4d1"
+  },
+  "official_zip_digest_verified": true,
+  "source_exit_code": 1,
+  "suites": [
+    {
+      "suite": "build-source-logic",
+      "executed": 60,
+      "passed": 60,
+      "failures": 0,
+      "errors": 0,
+      "failed_method_ids": [],
+      "successful": true,
+      "skipped_count": 0
+    },
+    {
+      "suite": "ui",
+      "executed": 12,
+      "passed": 12,
+      "failures": 0,
+      "errors": 0,
+      "failed_method_ids": [],
+      "successful": true,
+      "skipped_count": 0
+    },
+    {
+      "suite": "server",
+      "executed": 132,
+      "passed": 68,
+      "failures": 0,
+      "errors": 0,
+      "failed_method_ids": [],
+      "successful": true,
+      "skipped_count": 64
+    },
+    {
+      "suite": "public_candidate",
+      "executed": 10,
+      "passed": 9,
+      "failures": 0,
+      "errors": 0,
+      "failed_method_ids": [],
+      "successful": true,
+      "skipped_count": 1
+    },
+    {
+      "suite": "public_server_candidate",
+      "executed": 22,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "failed_method_ids": [],
+      "successful": true,
+      "skipped_count": 1
+    },
+    {
+      "suite": "ci",
+      "executed": 302,
+      "passed": 268,
+      "failures": 2,
+      "errors": 0,
+      "failed_method_ids": [
+        "test_ci_owned_read.OwnedReadAdapterTests.test_actual_commands_use_fixed_target_exact_cargo_helper_and_two_digests",
+        "test_ci_owned_read.OwnedReadAdapterTests.test_cargo_binds_one_successful_same_manifest_non_test_binary"
+      ],
+      "successful": false,
+      "skipped_count": 32
+    }
+  ],
+  "failed_methods": [
+    "test_ci_owned_read.OwnedReadAdapterTests.test_actual_commands_use_fixed_target_exact_cargo_helper_and_two_digests",
+    "test_ci_owned_read.OwnedReadAdapterTests.test_cargo_binds_one_successful_same_manifest_non_test_binary"
+  ],
+  "private_ci_log_sha256": "54004d0c8cb72e15bf8fff321c069f66868174e5005d35f9cfc84d8e214fcef6",
+  "diagnosis": {
+    "exception_type": "AssertionError",
+    "failed_assertions": "Expected uncanonicalized temporary helper path versus the production selector's resolved path; command-array expectation had the same mismatch.",
+    "observed_windows_alias": "The private official assertions show the Windows short TEMP alias versus the canonical long user-directory spelling; raw paths are not published.",
+    "production_adapter_changed": false,
+    "test_correction": "Compare both expected selected helper identities with Path.resolve(); use actual parent/.. aliases so the same assertion defect is exercised portably without symlink privileges.",
+    "local_control": {
+      "old_assertions_with_actual_alias": {
+        "executed": 2,
+        "failed": 2,
+        "errors": 0
+      },
+      "fixed_adapter_suite": {
+        "executed": 11,
+        "passed": 11,
+        "skipped": 0
+      },
+      "inert_files_executed": false
+    }
+  },
+  "limitations": [
+    "The historical Windows source run remains failed. A subsequent actual Windows source run is required to verify the test correction.",
+    "All previous missing/duplicate/wrong-manifest/outside-target/changed-image/nonzero-exit and failure-marker checks remain active; no production selector or executable identity guard was relaxed.",
+    "The separate same-source owned-read Windows prerequisite job succeeded; its real execution receipt is verified independently and does not turn this source failure into a pass.",
+    "Both complete-package/private replay input gates and production admission remain unchanged."
+  ]
+}

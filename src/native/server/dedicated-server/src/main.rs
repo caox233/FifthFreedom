@@ -19,6 +19,8 @@ use std::sync::Arc;
 use quazal::prudp::packet::QPacket;
 use quazal::ClientInfo;
 use quazal::Context;
+use quazal::socket_policy::SocketPolicy;
+use quazal::source_policy::SourcePolicy;
 use sc_bl_protocols as protocols;
 use slog::Drain;
 use slog::Logger;
@@ -46,9 +48,17 @@ fn login_required<T>(ci: &ClientInfo<T>) -> quazal::rmc::Result<u32> {
 }
 
 mod api;
+mod auth_key_file;
+#[cfg(target_os = "linux")]
+mod instance_lock;
+#[cfg(target_os = "linux")]
+mod public_preflight;
+#[cfg(target_os = "linux")]
+mod public_lease;
 mod challenge;
 mod clan;
 mod config;
+mod deployment_profile;
 mod lan_runtime;
 mod observer_policy;
 mod game_session;
@@ -73,6 +83,7 @@ mod uplay_win;
 mod user_storage;
 
 use crate::config::Config;
+use crate::deployment_profile::DeploymentProfile;
 
 type NativeServer<'a> = quazal::prudp::Server<'a, fn(ClientInfo), fn(ClientInfo)>;
 
@@ -102,7 +113,7 @@ mod secure_close_retry_tests;
 ///
 /// This function sets up the necessary protocols and handlers for the server
 /// and then enters the server loop.
-fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is_secure: bool) -> io::Result<()> {
+fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is_secure: bool, socket_policy: &SocketPolicy, source_policy: SourcePolicy) -> io::Result<()> {
     use quazal::prudp::packet::StreamHandlerRegistry;
     use quazal::prudp::packet::StreamType;
     use quazal::prudp::packet::VPort;
@@ -131,7 +142,7 @@ fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is
         handler.register_protocol(uplay_win::new_protocol());
         handler.register_protocol(user_storage::new_protocol());
     } else {
-        handler.register_protocol(ticket::new_protocol(Arc::clone(storage)));
+        handler.register_protocol(ticket::new_protocol_with_source_policy(Arc::clone(storage), source_policy));
     }
 
     let mut registry = StreamHandlerRegistry::new(logger.clone());
@@ -143,7 +154,7 @@ fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is
         Box::new(handler),
     );
 
-    let mut server: NativeServer<'_> = Server::new(logger.clone(), ctx, registry);
+    let mut server: NativeServer<'_> = Server::new_with_source_policy(logger.clone(), ctx, registry, source_policy);
     if is_secure {
         // Only the secure/game connection owns online presence and room state.
         // The short-lived authentication connection must not clear an active
@@ -151,7 +162,7 @@ fn start_server(logger: &slog::Logger, ctx: &Context, storage: &Arc<Storage>, is
         configure_secure_close_handler(&mut server, logger, storage);
         server.user_handler = Some(handle_user_packet);
     }
-    server.bind(ctx.listen)?;
+    server.bind_with_policy(ctx.listen, socket_policy)?;
     lan_runtime::mark_ready(if is_secure { 8 } else { 4 });
     server.serve();
     Ok(())
@@ -246,6 +257,21 @@ fn ensure_data_dir() -> io::Result<()> {
 #[derive(argh::FromArgs)]
 /// dedicated server
 struct Args {
+    /// deployment profile: lan (default) or public (not integrated; fails closed)
+    #[argh(option, default = "DeploymentProfile::Lan")]
+    deployment_profile: DeploymentProfile,
+    /// optional absolute private 32-byte key file for trusted Linux control-plane sharing
+    #[argh(option)]
+    auth_key_file: Option<PathBuf>,
+    /// read-only Linux public deployment check; never starts any service
+    #[argh(option)]
+    check_public_deployment: Option<PathBuf>,
+    /// inherited trusted owner lease; valid only with explicit public deployment config
+    #[argh(option)]
+    owned_public_lease_fd: Option<i32>,
+    /// private Linux public deployment config for inherited owner lease startup
+    #[argh(option)]
+    public_deployment_config: Option<PathBuf>,
     /// path to config file (default: service.toml)
     #[argh(option, short = 'c', long = "config")]
     config_path: Option<PathBuf>,
@@ -287,12 +313,40 @@ where
 fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
     let args = argh::from_env::<Args>();
+    if let Some(path) = args.check_public_deployment.as_deref() {
+        #[cfg(target_os = "linux")]
+        {
+            public_preflight::arguments_valid(&args).map_err(|reason| eyre::eyre!(reason))?;
+            let report = public_preflight::check(path, &std::env::current_exe()?).map_err(|reason| eyre::eyre!(reason))?;
+            println!("{report}");
+            return Ok(());
+        }
+        #[cfg(not(target_os = "linux"))]
+        {
+            let _ = path;
+            return Err(eyre::eyre!("PUBLIC_PREFLIGHT_LINUX_REQUIRED"));
+        }
+    }
+    if args.owned_public_lease_fd.is_some() || args.public_deployment_config.is_some() {
+        #[cfg(target_os = "linux")]
+        { return run_owned_public(&args).map_err(|code| eyre::eyre!(code)); }
+        #[cfg(not(target_os = "linux"))]
+        { return Err(eyre::eyre!("PUBLIC_ACTIVATION_LINUX_REQUIRED")); }
+    }
+    // Resolve deployment before any persistent state or LAN-only startup action.
+    // Public deliberately has no startup plan until its secure adapters exist.
+    let startup_plan = args.deployment_profile.startup_plan()?;
     // Fail closed before data creation, database mutation, listeners or readiness.
     let verified_release = server_api::release_catalog::verify_server_package(&std::env::current_exe()?)?;
     sodiumoxide::init().map_err(|_| eyre::eyre!("crypto initialization failed"))?;
-    let root = args.data_dir.clone().unwrap_or(std::env::current_exe()?.parent().unwrap().join("lan-server-data"));
+    // Validate the explicit key input and TTL before data mutation or listeners.
+    let token_config = api::AuthTokenConfig::from_startup(verified_release.clone(), args.auth_key_file.as_deref())
+        .map_err(|reason| eyre::eyre!(reason))?;
+    let root = startup_plan.data_root(args.data_dir.clone(), &std::env::current_exe()?)?;
     std::fs::create_dir_all(&root)?;
     std::env::set_current_dir(std::fs::canonicalize(&root)?)?;
+    #[cfg(target_os = "linux")]
+    let _instance_lock = instance_lock::acquire(Path::new(".")).map_err(|reason| eyre::eyre!(reason))?;
     #[cfg(target_os = "windows")]
     let _instance_lock = {
         use std::os::windows::fs::OpenOptionsExt;
@@ -336,18 +390,24 @@ fn main() -> color_eyre::Result<()> {
     warn!(logger, "Clearing stale sessions");
     storage.invalidate_sessions()?;
 
+    run_services(logger, storage, config, token_config, SocketPolicy::lan(), SourcePolicy::lan())
+}
+
+fn run_services(logger: Logger, storage: Arc<Storage>, config: Config, token_config: api::AuthTokenConfig,
+    socket_policy: SocketPolicy, source_policy: SourcePolicy) -> color_eyre::Result<()> {
     let (service_exit_sender, service_exit_receiver) = mpsc::channel();
     let mut threads = Vec::new();
     for (name, svc) in config.quazal.into_services()? {
         let logger = logger.new(o!("service" => name.clone()));
-        info!(logger, "Loaded LAN service {}", name);
+        info!(logger, "Loaded service {}", name);
         let storage = Arc::clone(&storage);
+        let socket_policy = socket_policy.clone();
         let handle = match svc {
             quazal::Service::Authentication(ctx) => spawn_required_service(name, service_exit_sender.clone(), move || {
-                start_server(&logger, &ctx, &storage, false).map_err(|error| format!("authentication server failed: {error}"))
+                start_server(&logger, &ctx, &storage, false, &socket_policy, source_policy).map_err(|error| format!("authentication server failed: {error}"))
             }),
             quazal::Service::Secure(ctx) => spawn_required_service(name, service_exit_sender.clone(), move || {
-                start_server(&logger, &ctx, &storage, true).map_err(|error| format!("secure server failed: {error}"))
+                start_server(&logger, &ctx, &storage, true, &socket_policy, source_policy).map_err(|error| format!("secure server failed: {error}"))
             }),
             quazal::Service::Config(cfg) => spawn_required_service(name, service_exit_sender.clone(), move || {
                 if cfg.listen.port() != 80 {
@@ -357,10 +417,10 @@ fn main() -> color_eyre::Result<()> {
                         cfg.listen.port()
                     );
                 }
-                simple_http::serve(&logger, cfg.listen, &cfg.content()).map_err(|error| format!("config server failed: {error}"))
+                simple_http::serve(&logger, cfg.listen, &cfg.content(), &socket_policy, source_policy).map_err(|error| format!("config server failed: {error}"))
             }),
             quazal::Service::Content(srv) => spawn_required_service(name, service_exit_sender.clone(), move || {
-                simple_http::serve_many(&logger, srv.listen, &srv.files).map_err(|error| format!("content server failed: {error}"))
+                simple_http::serve_many(&logger, srv.listen, &srv.files, &socket_policy, source_policy).map_err(|error| format!("content server failed: {error}"))
             }),
         };
         threads.push(handle?);
@@ -370,7 +430,7 @@ fn main() -> color_eyre::Result<()> {
         let logger = logger.new(o!("service" => "api"));
         let runtime = tokio::runtime::Runtime::new().map_err(|error| format!("API runtime creation failed: {error}"))?;
         runtime
-            .block_on(api::start_server(logger, storage, config.api_server, Arc::new(config.debug), false, verified_release))
+            .block_on(api::start_server(logger, storage, config.api_server, Arc::new(config.debug), false, token_config, socket_policy, source_policy))
             .map_err(|error| format!("API server failed: {error:?}"))
     })?);
 
@@ -381,9 +441,71 @@ fn main() -> color_eyre::Result<()> {
     Err(eyre::eyre!("required service {} exited: {}", exit.name, exit.reason))
 }
 
+/// This narrow path trusts an explicitly inherited local-owner capability, not
+/// a CLI flag, environment value or network name. The production supervisor's
+/// admission provider remains closed pending actual runtime/profile proof.
+#[cfg(target_os = "linux")]
+fn run_owned_public(args: &Args) -> Result<(), &'static str> {
+    use std::os::fd::AsRawFd;
+    const INVALID: &str = "PUBLIC_ACTIVATION_ARGUMENT_INVALID";
+    if args.deployment_profile != DeploymentProfile::Public || args.init_lan.is_some()
+        || args.auth_key_file.is_some() || args.config_path.is_some() || args.data_dir.is_some()
+        || args.check_public_deployment.is_some() || args.smoke_ports || args.launcher {
+        return Err(INVALID);
+    }
+    let fd = args.owned_public_lease_fd.ok_or(INVALID)?;
+    let path = args.public_deployment_config.as_ref().ok_or(INVALID)?;
+    let lease = public_lease::UnadmittedLease::inherited(fd).map_err(|_| "PUBLIC_OWNER_LEASE_INVALID")?;
+    let executable = std::env::current_exe().map_err(|_| "PUBLIC_PREFLIGHT_PACKAGE_INVALID")?;
+    let plan = public_preflight::prepare(path, &executable)?;
+    let (binding, socket_policy, source_policy) = plan.activation_binding()?;
+    let interface = plan.interface_name();
+    let boundary = binding.clone();
+    let active = lease.admit(binding).map_err(|_| "PUBLIC_OWNER_LEASE_INVALID")?;
+    // Recheck after the bounded handshake and on every renewal. Each socket
+    // independently enforces device/index/address at bind; the owner supervises
+    // actual encrypted runtime health and revokes this lease when it changes.
+    let boundary_current = move || public_lease::boundary_current(&boundary, &interface);
+    if !boundary_current() { return Err("PUBLIC_ACTIVATION_BOUNDARY_INVALID"); }
+    let reporter = active.activate(boundary_current).map_err(|_| "PUBLIC_OWNER_LEASE_INVALID")?;
+    // The raw private document (including this default-false option) is bound
+    // into ADMIT. Keep the policy local to this admitted server-process lifetime.
+    let _observer_policy = observer_policy::owned_public(plan.observer_allowed());
+    lan_runtime::register_public_readiness(move |bit| reporter.bound(bit)).map_err(|_| "PUBLIC_ACTIVATION_READINESS_INVALID")?;
+    if unsafe { libc::fchdir(plan.data.as_raw_fd()) } != 0 { return Err("PUBLIC_ACTIVATION_DATA_INVALID"); }
+    let _instance_lock = instance_lock::acquire(Path::new(".")).map_err(|_| "PUBLIC_ACTIVATION_DATA_LOCK_INVALID")?;
+    // All package/key/private data/interface/owner gates and the watchdog precede
+    // the first persistent mutation. No LAN stdin/environment switch runs.
+    let logger = Logger::root(slog::Discard, o!());
+    let storage = Arc::new(Storage::init(logger.clone(), plan.admitted_client).map_err(|_| "PUBLIC_ACTIVATION_STORAGE_INVALID")?);
+    lan_runtime::configure_ports(&plan.config);
+    ensure_data_dir().map_err(|_| "PUBLIC_ACTIVATION_DATA_INVALID")?;
+    storage.invalidate_sessions().map_err(|_| "PUBLIC_ACTIVATION_STORAGE_INVALID")?;
+    run_services(logger, storage, plan.config, plan.auth, socket_policy, source_policy)
+        .map_err(|_| "PUBLIC_REQUIRED_SERVICE_EXITED")
+}
+
 #[cfg(test)]
 mod user_packet_tests {
     use super::*;
+
+    #[test]
+    fn deployment_cli_defaults_to_lan_without_reinterpreting_transport_names() {
+        use argh::FromArgs;
+        let args = Args::from_args(&["FifthFreedom.Server"], &[]).unwrap();
+        assert_eq!(args.deployment_profile, DeploymentProfile::Lan);
+        for invalid in ["fast", "compatible", "host", "join", "unknown"] {
+            assert!(Args::from_args(&["FifthFreedom.Server"], &["--deployment-profile", invalid]).is_err());
+        }
+    }
+
+    #[test]
+    fn explicit_public_cannot_enable_lan_initialization() {
+        use argh::FromArgs;
+        let args = Args::from_args(&["FifthFreedom.Server"], &["--deployment-profile", "public", "--init-lan", "127.0.0.1"]).unwrap();
+        assert_eq!(args.init_lan, Some(std::net::Ipv4Addr::LOCALHOST));
+        assert_eq!(args.deployment_profile.startup_plan(), Err(crate::deployment_profile::ProfileError::PublicNotIntegrated));
+    }
 
     #[test]
     fn untrusted_virtual_ports_are_dropped_without_panicking() {

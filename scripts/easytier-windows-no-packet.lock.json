@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "kind": "independent-windows-no-packet-build-only",
+  "base_recipe": {
+    "path": "scripts/easytier-windows-source.lock.json",
+    "bytes": 3126,
+    "sha256": "dd193ffbdafe7c816545c88fb23e74e850e6ff5755e6c66168eea2d87e98c129"
+  },
+  "base_prepared": {
+    "source_tree_sha256": "efb765a226be8ad35826c71868b105f09d5d6971b9d58580754389efec058fcd",
+    "patch_manifest_sha256": "8123326e2c84d5909cab0a14d7c8f6539d73dea59a4e7ad5485f8ae361f68476",
+    "cargo_lock_patched_sha256": "93933b3d72622fb04692d11defdf1ebc5ed979c5feedefceb74114bd2db6b6fc",
+    "cargo_override_sha256": "d2eff4d03f1efa57a6a0e0b37af6dd7841fd0b5a2a77d7a02e3bdd437eafc830"
+  },
+  "patch": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-no-packet/no-packet.patch",
+    "bytes": 7771,
+    "sha256": "28c87a392917b01202ebba4b4a74004787ec6d98b1591b83c8502868d9d71469"
+  },
+  "files": [
+    {
+      "path": "Cargo.lock",
+      "before": {
+        "bytes": 297133,
+        "sha256": "93933b3d72622fb04692d11defdf1ebc5ed979c5feedefceb74114bd2db6b6fc"
+      },
+      "after": {
+        "bytes": 297161,
+        "sha256": "37c7e066bef9d801b7b67942a18bd7365485e613c18d14f366aed178bb38a696"
+      }
+    },
+    {
+      "path": "easytier/Cargo.toml",
+      "before": {
+        "bytes": 10255,
+        "sha256": "74d3b13a26ff09aa6cb3ddb6cdf46b1b5214539bdeb9db5e277333f24385b6b1"
+      },
+      "after": {
+        "bytes": 10447,
+        "sha256": "f6c8f3b6e6b6d93c05fc014921c8d1900ac404371ae393db4baa1afe2a8c244a"
+      }
+    },
+    {
+      "path": "easytier/build.rs",
+      "before": {
+        "bytes": 7854,
+        "sha256": "754bbf024dfef62aff6a36a40f4b8de3cf8f5255da3a36cabf24ca9af9ba2dc3"
+      },
+      "after": {
+        "bytes": 8016,
+        "sha256": "f47e0058321e4c8ed011dbc9d69b7a109a0ddc9e93a4fba11525ef7ae56c765a"
+      }
+    },
+    {
+      "path": "easytier/src/common/network.rs",
+      "before": {
+        "bytes": 14558,
+        "sha256": "8e2761f11aab20da4923a6e59b77d2bf11358aeae15648e7fbddea6d052c1203"
+      },
+      "after": {
+        "bytes": 15421,
+        "sha256": "201921ebd1d71524732ef9dc8e9464deeea1ef8ac09305dd3ab85aee3b321692"
+      }
+    },
+    {
+      "path": "easytier/src/tunnel/websocket.rs",
+      "before": {
+        "bytes": 14887,
+        "sha256": "02b6038f7422cced25764f02ece97faddfb35517120e170db4c07160b4eb597a"
+      },
+      "after": {
+        "bytes": 14881,
+        "sha256": "245fc4fccfbde9a4a47e0085d593013f5f55450803292d2677e80a0dd60d60ed"
+      }
+    },
+    {
+      "path": "easytier/src/common/network/windows_interfaces.rs",
+      "before": null,
+      "after": {
+        "bytes": 1785,
+        "sha256": "c6986d726cd98339379f11298b2e63a2802c8a3bbc26b4ca9ad5cff072be5fb1"
+      }
+    }
+  ],
+  "omitted_link_input": {
+    "path": "easytier/third_party/x86_64/Packet.lib",
+    "bytes": 8290,
+    "sha256": "5be8eb0ef57344cedc940fd81edbf7fc98680ba0c8337b577e7fdc448408130b",
+    "reason": "non-Linux prebuilt input excluded; original retained separately"
+  },
+  "linked_module": {
+    "path": "docs/dependency-patches/easytier-2.6.4-windows-no-packet/source/windows_interfaces.rs",
+    "bytes": 1785,
+    "sha256": "c6986d726cd98339379f11298b2e63a2802c8a3bbc26b4ca9ad5cff072be5fb1",
+    "production_path": "easytier/src/common/network/windows_interfaces.rs"
+  },
+  "contract_tests": {
+    "manifest": "tests/native/windows-no-packet/Cargo.toml",
+    "expected_passed": 8,
+    "files": [
+      {
+        "path": "tests/native/windows-no-packet/Cargo.toml",
+        "bytes": 361,
+        "sha256": "5d176000561dd6e3a20e0ac1219fc826581905c748a5f1121617f7a6778cdd20"
+      },
+      {
+        "path": "tests/native/windows-no-packet/Cargo.lock",
+        "bytes": 9124,
+        "sha256": "2fc00d039762e449e5e644313efca70d070b0a3b29084c929c5039d1b9d0c145"
+      },
+      {
+        "path": "tests/native/windows-no-packet/src/lib.rs",
+        "bytes": 4545,
+        "sha256": "4f6fc57f29c7ffefe49260c4a3b00b821181dcda7bc0a0b6d9514373eb6a64b1"
+      }
+    ]
+  },
+  "build": {
+    "rust_toolchain": "1.95.0",
+    "target": "x86_64-pc-windows-msvc",
+    "profile": "release",
+    "features": [
+      "ff-windows-session-observer",
+      "kcp",
+      "magic-dns",
+      "quic",
+      "smoltcp",
+      "socks5",
+      "tun",
+      "websocket",
+      "wireguard",
+      "zstd"
+    ],
+    "bins": [
+      "easytier-core.exe",
+      "easytier-cli.exe"
+    ],
+    "win7_compatibility": false,
+    "execute_binaries": false,
+    "upload_binaries": false,
+    "no_default_features": true
+  },
+  "admission": {
+    "public_startup_allowed": false,
+    "driver_runtime_verified": false,
+    "dependency_license_closure_verified": false
+  },
+  "expected_prepared": {
+    "source_tree_sha256": "da75d381f7ddde2997777205529d3dde074dd6eaa2e05c87a974863bfa63e155",
+    "patch_manifest_sha256": "9f698410a6a004f34136712096871b841d74e5ce32d9e0c209ebccde86e6f82c",
+    "cargo_lock_patched_sha256": "37c7e066bef9d801b7b67942a18bd7365485e613c18d14f366aed178bb38a696"
+  }
+}

@@ -1,0 +1,487 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -38,6 +38,9 @@
+     "Win32_System_Threading",
+     "Win32_UI_WindowsAndMessaging",
+     "Win32_System_LibraryLoader",
++    "Win32_NetworkManagement_IpHelper",
++    "Win32_NetworkManagement_Ndis",
++    "Win32_Networking_WinSock",
+ ] }
+ wintun = { version = "0.5", features = ["panic_on_unsent_packets"] }
+ libloading = "0.8"
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -22,6 +22,8 @@
+ pub use crate::device::AbstractDevice;
+ 
+ mod configuration;
++#[cfg(any(windows, test))]
++mod session_lifetime;
+ pub use crate::configuration::{Configuration, Layer};
+ 
+ pub mod platform;
+--- /dev/null
++++ b/src/session_lifetime.rs
+@@ -0,0 +1,117 @@
++//! Local lifetime/identity observations, not encrypted-peer or process authority.
++use std::io;
++use std::sync::{Arc, Weak, atomic::{AtomicBool, Ordering}};
++
++pub(crate) fn unavailable() -> io::Error {
++    io::Error::new(io::ErrorKind::NotConnected, "OWNED_TUN_SESSION_UNAVAILABLE")
++}
++
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub struct SessionIdentity {
++    pub name: String,
++    pub guid: u128,
++    pub luid: u64,
++    pub index: u32,
++}
++
++pub(crate) fn validate_name(name: &str, guid: u128) -> io::Result<()> {
++    if guid == 0 || name != format!("ff-{guid:032x}") { return Err(unavailable()); }
++    Ok(())
++}
++
++pub(crate) struct SessionOwner(Arc<AtomicBool>);
++impl SessionOwner {
++    pub(crate) fn revoke(&self) { self.0.store(false, Ordering::Release); }
++}
++impl Drop for SessionOwner { fn drop(&mut self) { self.revoke(); } }
++
++pub(crate) struct SessionObservation<T> {
++    session: Weak<T>,
++    alive: Arc<AtomicBool>,
++    identity: SessionIdentity,
++}
++impl<T> Clone for SessionObservation<T> {
++    fn clone(&self) -> Self {
++        Self { session: self.session.clone(), alive: self.alive.clone(), identity: self.identity.clone() }
++    }
++}
++impl<T> SessionObservation<T> {
++    pub(crate) fn new(session: &Arc<T>, identity: SessionIdentity) -> io::Result<(SessionOwner, Self)> {
++        validate_name(&identity.name, identity.guid)?;
++        if identity.luid == 0 || identity.index == 0 { return Err(unavailable()); }
++        let alive = Arc::new(AtomicBool::new(true));
++        Ok((SessionOwner(alive.clone()), Self { session: Arc::downgrade(session), alive, identity }))
++    }
++    pub(crate) fn revoke(&self) { self.alive.store(false, Ordering::Release); }
++    pub(crate) fn observe(&self, read: impl FnOnce(&T) -> io::Result<SessionIdentity>) -> io::Result<SessionIdentity> {
++        if !self.alive.load(Ordering::Acquire) { return Err(unavailable()); }
++        let result = self.session.upgrade().ok_or_else(unavailable).and_then(|session| read(&session));
++        match result {
++            Ok(identity) if identity == self.identity && self.alive.load(Ordering::Acquire) => Ok(identity),
++            _ => { self.revoke(); Err(unavailable()) }
++        }
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    fn identity() -> SessionIdentity {
++        SessionIdentity { name: format!("ff-{:032x}", 7), guid: 7, luid: 12, index: 3 }
++    }
++    #[test]
++    fn creation_names_are_explicit_nonzero_and_exact() {
++        assert!(validate_name(&identity().name, 7).is_ok());
++        for (name, guid) in [("wintun".into(), 7), ("ff-00000000000000000000000000000000".into(), 0),
++            ("FF-00000000000000000000000000000007".into(), 7), (identity().name, 8)] {
++            assert!(validate_name(&name, guid).is_err());
++        }
++    }
++    #[test]
++    fn owner_drop_revokes_even_when_other_session_references_survive() {
++        let session = Arc::new(());
++        let (owner, observer) = SessionObservation::new(&session, identity()).unwrap();
++        assert!(observer.observe(|_| Ok(identity())).is_ok());
++        drop(owner);
++        assert!(observer.observe(|_| panic!("must not call kernel reader after owner loss")).is_err());
++        assert_eq!(Arc::strong_count(&session), 1);
++    }
++    #[test]
++    fn observer_never_extends_session_lifetime() {
++        let session = Arc::new(());
++        let (_owner, observer) = SessionObservation::new(&session, identity()).unwrap();
++        let another = observer.clone();
++        assert_eq!(Arc::strong_count(&session), 1);
++        drop(session);
++        assert!(another.observe(|_| panic!("closed session")).is_err());
++    }
++    #[test]
++    fn every_kernel_identity_component_is_pinned_and_loss_is_sticky() {
++        for field in 0..4 {
++            let session = Arc::new(());
++            let (_owner, observer) = SessionObservation::new(&session, identity()).unwrap();
++            let mut changed = identity();
++            match field { 0 => changed.guid += 1, 1 => changed.luid += 1,
++                2 => changed.index += 1, _ => changed.name.push('x') }
++            assert!(observer.observe(|_| Ok(changed)).is_err());
++            assert!(observer.observe(|_| Ok(identity())).is_err());
++        }
++    }
++    #[test]
++    fn kernel_failure_and_worker_failure_revoke_all_observers() {
++        let session = Arc::new(());
++        let (_owner, observer) = SessionObservation::new(&session, identity()).unwrap();
++        let copy = observer.clone();
++        assert!(observer.observe(|_| Err(io::Error::other("injected private details"))).is_err());
++        assert_eq!(copy.observe(|_| Ok(identity())).unwrap_err().to_string(), "OWNED_TUN_SESSION_UNAVAILABLE");
++        let (_owner, other) = SessionObservation::new(&session, identity()).unwrap();
++        other.revoke();
++        assert!(other.observe(|_| Ok(identity())).is_err());
++    }
++    #[test]
++    fn a_late_successful_read_cannot_restore_a_revoked_owner() {
++        let session = Arc::new(());
++        let (owner, observer) = SessionObservation::new(&session, identity()).unwrap();
++        assert!(observer.observe(|_| { owner.revoke(); Ok(identity()) }).is_err());
++    }
++}
+--- a/src/platform/windows/mod.rs
++++ b/src/platform/windows/mod.rs
+@@ -16,6 +16,8 @@
+ 
+ mod device;
+ mod verify_dll_file;
++mod session_identity;
++pub use session_identity::{SessionIdentity, SessionIdentityObserver};
+ 
+ use crate::configuration::Configuration;
+ use crate::error::Result;
+@@ -34,6 +36,7 @@
+     pub(crate) dns_servers: Option<Vec<IpAddr>>,
+     pub(crate) ring_cap: Option<u32>,
+     pub(crate) skip_config: bool,
++    pub(crate) request_new_session: bool,
+ }
+ 
+ impl Default for PlatformConfig {
+@@ -45,11 +48,21 @@
+             dns_servers: None,
+             ring_cap: None,
+             skip_config: false,
++            request_new_session: false,
+         }
+     }
+ }
+ 
+ impl PlatformConfig {
++    /// Development prerequisite: request a new adapter; never call Adapter::open.
++    /// This does NOT guarantee exclusive creation or absence of Wintun system
++    /// effects. Wintun 0.14.1 may rename a colliding adapter and install a driver.
++    /// Use only in an explicitly disposable Windows development environment.
++    /// Requires tun name ff-<32 lowercase GUID hex>, skip_config, and absolute DLL.
++    pub fn request_new_session(&mut self, guid: u128) {
++        self.device_guid = Some(guid);
++        self.request_new_session = true;
++    }
+     pub fn device_guid(&mut self, device_guid: u128) {
+         log::trace!("Windows configuration device GUID");
+         self.device_guid = Some(device_guid);
+--- a/src/platform/windows/device.rs
++++ b/src/platform/windows/device.rs
+@@ -17,6 +17,8 @@
+ use std::sync::Arc;
+ 
+ use wintun::Session;
++use crate::session_lifetime::{validate_name, unavailable, SessionOwner, SessionObservation};
++use super::session_identity::{read_adapter, SessionIdentityObserver};
+ 
+ use crate::configuration::Configuration;
+ use crate::device::AbstractDevice;
+@@ -36,9 +38,21 @@
+     /// Create a new `Device` for the given `Configuration`.
+     pub fn new(config: &Configuration) -> Result<Self> {
+         let wintun_file = &config.platform_config.wintun_file;
++        let new_session = config.platform_config.request_new_session;
++        let tun_name = config.tun_name.as_deref().unwrap_or("wintun");
++        let guid = config.platform_config.device_guid;
++        if new_session {
++            validate_name(tun_name, guid.ok_or_else(unavailable)?)?;
++            if !config.platform_config.skip_config || !std::path::Path::new(wintun_file).is_absolute() {
++                return Err(unavailable().into());
++            }
++        }
+         let wintun = unsafe {
+             // Ensure the dll file has not been tampered with.
+-            let abs_path = get_dll_absolute_path(wintun_file)?;
++            // The explicit development mode validates the exact absolute path
++            // before loading it. The ordinary backend preserves its old lookup.
++            let abs_path = if new_session { std::path::PathBuf::from(wintun_file) }
++                else { get_dll_absolute_path(wintun_file)? };
+             verify_embedded_signature(&abs_path)?;
+             let signer_name = get_signer_name(&abs_path)?;
+             let wp = super::WINTUN_PROVIDER;
+@@ -46,14 +60,24 @@
+                 return Err(format!("Signer \"{}\" not match \"{}\"", signer_name, wp).into());
+             }
+ 
+-            let wintun = libloading::Library::new(wintun_file)?;
++            let wintun = if new_session { libloading::Library::new(&abs_path)? }
++                else { libloading::Library::new(wintun_file)? };
+             wintun::load_from_library(wintun)?
+         };
+-        let tun_name = config.tun_name.as_deref().unwrap_or("wintun");
+-        let guid = config.platform_config.device_guid;
+-        let adapter = match wintun::Adapter::open(&wintun, tun_name) {
+-            Ok(a) => a,
+-            Err(_) => wintun::Adapter::create(&wintun, tun_name, tun_name, guid)?,
++        let adapter = if new_session {
++            // This requests creation, not exclusive ownership: official Wintun
++            // can rename a colliding adapter and perform global driver cleanup.
++            let adapter = wintun::Adapter::create(&wintun, tun_name, tun_name, guid)?;
++            let actual = read_adapter(&adapter)?;
++            if actual.name != tun_name || Some(actual.guid) != guid {
++                return Err(unavailable().into());
++            }
++            adapter
++        } else {
++            match wintun::Adapter::open(&wintun, tun_name) {
++                Ok(a) => a,
++                Err(_) => wintun::Adapter::create(&wintun, tun_name, tun_name, guid)?,
++            }
+         };
+ 
+         // on win7 guid will not be correctly assigned, user should skip the config step.
+@@ -81,10 +105,15 @@
+                 .unwrap_or(wintun::MAX_RING_CAPACITY),
+         )?;
+ 
++        let session = Arc::new(session);
++        let (owner, observation) = if new_session {
++            let actual = read_adapter(&session.get_adapter())?;
++            if actual.name != tun_name || Some(actual.guid) != guid { return Err(unavailable().into()); }
++            let (owner, observation) = SessionObservation::new(&session, actual)?;
++            (Some(owner), Some(SessionIdentityObserver(observation)))
++        } else { (None, None) };
+         let mut device = Device {
+-            tun: Tun {
+-                session: Arc::new(session),
+-            },
++            tun: Tun { session, owner, observation },
+             mtu,
+             name: tun_name.to_string(),
+         };
+@@ -95,6 +124,11 @@
+         }
+ 
+         Ok(device)
++    }
++
++    /// A weak local lifetime observation, never an encrypted-peer admission.
++    pub fn session_identity_observer(&self) -> Option<SessionIdentityObserver> {
++        self.tun.observation.clone()
+     }
+ 
+     pub fn split(self) -> (Reader, Writer) {
+@@ -247,6 +281,8 @@
+ 
+ pub struct Tun {
+     session: Arc<Session>,
++    owner: Option<SessionOwner>,
++    observation: Option<SessionIdentityObserver>,
+ }
+ 
+ impl Tun {
+@@ -254,17 +290,19 @@
+         self.session.clone()
+     }
+     fn read_by_ref(&self, mut buf: &mut [u8]) -> io::Result<usize> {
+-        match self.session.receive_blocking() {
++        let result = match self.session.receive_blocking() {
+             Ok(pkt) => match io::copy(&mut pkt.bytes(), &mut buf) {
+                 Ok(n) => Ok(n as usize),
+                 Err(e) => Err(e),
+             },
+             Err(e) => Err(io::Error::new(io::ErrorKind::ConnectionAborted, e)),
+-        }
++        };
++        if result.is_err() { if let Some(observer) = &self.observation { observer.revoke(); } }
++        result
+     }
+     fn write_by_ref(&self, mut buf: &[u8]) -> io::Result<usize> {
+         let size = buf.len();
+-        match self.session.allocate_send_packet(size as u16) {
++        let result = match self.session.allocate_send_packet(size as u16) {
+             Err(e) => Err(io::Error::new(io::ErrorKind::OutOfMemory, e)),
+             Ok(mut packet) => match io::copy(&mut buf, &mut packet.bytes_mut()) {
+                 Ok(s) => {
+@@ -273,7 +311,9 @@
+                 }
+                 Err(e) => Err(e),
+             },
+-        }
++        };
++        if result.is_err() { if let Some(observer) = &self.observation { observer.revoke(); } }
++        result
+     }
+ 
+     /// Recv a packet from tun device
+@@ -305,6 +345,8 @@
+ 
+ impl Drop for Tun {
+     fn drop(&mut self) {
++        // Revoke before waking or closing the underlying receive session.
++        if let Some(owner) = &self.owner { owner.revoke(); }
+         if let Err(err) = self.session.shutdown() {
+             log::error!("failed to shutdown session: {:?}", err);
+         }
+--- /dev/null
++++ b/src/platform/windows/session_identity.rs
+@@ -0,0 +1,64 @@
++//! Read-only identity from the adapter retained by an actual Wintun Session.
++//! This is not an encrypted-peer proof or an exclusive-adapter guarantee.
++use std::{io, net::Ipv4Addr};
++use windows_sys::{core::GUID, Win32::{Foundation::ERROR_SUCCESS,
++    NetworkManagement::{IpHelper::*, Ndis::{NET_LUID_LH, IfOperStatusUp}},
++    Networking::WinSock::{AF_INET, IpDadStatePreferred}}};
++use crate::session_lifetime::{unavailable, SessionObservation};
++pub use crate::session_lifetime::SessionIdentity;
++
++#[derive(Clone)]
++pub struct SessionIdentityObserver(pub(crate) SessionObservation<wintun::Session>);
++impl SessionIdentityObserver {
++    /// Observe the retained session's adapter identity. No name-based adoption.
++    pub fn identity(&self) -> io::Result<SessionIdentity> {
++        self.0.observe(|session| read_adapter(&session.get_adapter()))
++    }
++    /// Verify configured IPv4/interface state after configuration has completed.
++    /// Any observed loss is terminal for this observer, including rename-back.
++    pub fn observe_ipv4(&self, source: Ipv4Addr) -> io::Result<SessionIdentity> {
++        self.0.observe(|session| {
++            let identity = read_adapter(&session.get_adapter())?;
++            unsafe {
++                let mut interface: MIB_IF_ROW2 = std::mem::zeroed();
++                interface.InterfaceLuid.Value = identity.luid;
++                if GetIfEntry2(&mut interface) != ERROR_SUCCESS || interface.OperStatus != IfOperStatusUp
++                    || interface.InterfaceIndex != identity.index { return Err(unavailable()); }
++                let mut address: MIB_UNICASTIPADDRESS_ROW = std::mem::zeroed();
++                address.InterfaceLuid.Value = identity.luid;
++                address.Address.Ipv4.sin_family = AF_INET;
++                address.Address.Ipv4.sin_addr.S_un.S_addr = u32::from_ne_bytes(source.octets());
++                if GetUnicastIpAddressEntry(&mut address) != ERROR_SUCCESS
++                    || address.InterfaceLuid.Value != identity.luid || address.InterfaceIndex != identity.index
++                    || address.Address.Ipv4.sin_family != AF_INET
++                    || address.Address.Ipv4.sin_addr.S_un.S_addr != u32::from_ne_bytes(source.octets())
++                    || address.DadState != IpDadStatePreferred || address.ValidLifetime == 0 {
++                    return Err(unavailable());
++                }
++            }
++            Ok(identity)
++        })
++    }
++    pub(crate) fn revoke(&self) { self.0.revoke(); }
++}
++
++pub(crate) fn read_adapter(adapter: &wintun::Adapter) -> io::Result<SessionIdentity> {
++    unsafe {
++        // get_guid() in wintun 0.5.0 caches the requested GUID. Query the actual
++        // retained handle's LUID, then independently obtain GUID/index/alias.
++        let luid = NET_LUID_LH { Value: adapter.get_luid().Value };
++        let mut guid: GUID = std::mem::zeroed();
++        let mut index = 0;
++        let mut alias = [0u16; 257];
++        if luid.Value == 0 || ConvertInterfaceLuidToGuid(&luid, &mut guid) != ERROR_SUCCESS
++            || ConvertInterfaceLuidToIndex(&luid, &mut index) != ERROR_SUCCESS
++            || ConvertInterfaceLuidToAlias(&luid, alias.as_mut_ptr(), alias.len()) != ERROR_SUCCESS || index == 0 {
++            return Err(unavailable());
++        }
++        let end = alias.iter().position(|value| *value == 0).ok_or_else(unavailable)?;
++        let name = String::from_utf16(&alias[..end]).map_err(|_| unavailable())?;
++        let guid = (u128::from(guid.data1) << 96) | (u128::from(guid.data2) << 80)
++            | (u128::from(guid.data3) << 64) | u128::from(u64::from_be_bytes(guid.data4));
++        Ok(SessionIdentity { name, guid, luid: luid.Value, index })
++    }
++}
+--- a/src/async/win_device.rs
++++ b/src/async/win_device.rs
+@@ -22,7 +22,7 @@
+ 
+ use super::TunPacketCodec;
+ use crate::device::AbstractDevice;
+-use crate::platform::Device;
++use crate::platform::{Device, windows::SessionIdentityObserver};
+ 
+ /// An async TUN device wrapper around a TUN device.
+ pub struct AsyncDevice {
+@@ -49,7 +49,7 @@
+ impl AsyncDevice {
+     /// Create a new `AsyncDevice` wrapping around a `Device`.
+     pub fn new(device: Device) -> io::Result<AsyncDevice> {
+-        let session = WinSession::new(device.tun.get_session())?;
++        let session = WinSession::new(device.tun.get_session(), device.session_identity_observer())?;
+         Ok(AsyncDevice {
+             inner: device,
+             session,
+@@ -107,14 +107,22 @@
+     session: std::sync::Arc<wintun::Session>,
+     receiver: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
+     _task: std::thread::JoinHandle<()>,
++    observation: Option<SessionIdentityObserver>,
+ }
+ 
+ impl WinSession {
+-    fn new(session: std::sync::Arc<wintun::Session>) -> Result<WinSession, io::Error> {
++    fn new(session: std::sync::Arc<wintun::Session>, observation: Option<SessionIdentityObserver>) -> Result<WinSession, io::Error> {
+         let session_reader = session.clone();
+         let (receiver_tx, receiver_rx) = tokio::sync::mpsc::unbounded_channel::<Vec<u8>>();
+-        let task = std::thread::spawn(move || loop {
+-            match session_reader.receive_blocking() {
++        let worker_observation = observation.clone();
++        let task = std::thread::spawn(move || {
++            // Drop also runs on unwind: the worker cannot leave a live observation.
++            struct RevokeOnExit(Option<SessionIdentityObserver>);
++            impl Drop for RevokeOnExit {
++                fn drop(&mut self) { if let Some(observer) = &self.0 { observer.revoke(); } }
++            }
++            let _revoke = RevokeOnExit(worker_observation);
++            loop { match session_reader.receive_blocking() {
+                 Ok(packet) => {
+                     if let Err(err) = receiver_tx.send(packet.bytes().to_vec()) {
+                         log::error!("{}", err);
+@@ -125,13 +133,14 @@
+                     log::info!("{}", err);
+                     break;
+                 }
+-            }
++            } }
+         });
+ 
+         Ok(WinSession {
+             session,
+             receiver: receiver_rx,
+             _task: task,
++            observation,
+         })
+     }
+ }
+@@ -158,7 +167,13 @@
+         _cx: &mut Context<'_>,
+         buf: &[u8],
+     ) -> Poll<Result<usize, Error>> {
+-        let mut write_pack = self.session.allocate_send_packet(buf.len() as u16)?;
++        let mut write_pack = match self.session.allocate_send_packet(buf.len() as u16) {
++            Ok(packet) => packet,
++            Err(error) => {
++                if let Some(observer) = &self.observation { observer.revoke(); }
++                return Poll::Ready(Err(error.into()));
++            }
++        };
+         write_pack.bytes_mut().copy_from_slice(buf.as_ref());
+         self.session.send_packet(write_pack);
+         std::task::Poll::Ready(Ok(buf.len()))
+@@ -169,6 +184,10 @@
+     }
+ 
+     fn poll_shutdown(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Result<(), Error>> {
++        if let Some(observer) = &self.observation {
++            observer.revoke();
++            return Poll::Ready(self.session.shutdown().map_err(Into::into));
++        }
+         Poll::Ready(Ok(()))
+     }
+ }

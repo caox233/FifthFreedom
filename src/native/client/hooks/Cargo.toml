@@ -21,6 +21,9 @@ lan-goal-origin = []
 forward_calls = []
 modding = ["hooks-config/modding", "hooks-addresses/modding"]
 patch-free = []
+# Requires the preserved external C71 native replay fixture; never synthesize it
+# merely to compile unrelated owned-process/pipe tests on a clean checkout.
+native-replay-fixtures = []
 
 [dependencies]
 anyhow = { workspace = true }
@@ -36,7 +39,9 @@ serde = { workspace = true, features = ["derive"] }
 server_api = { path = "../../shared/api", package = "api" }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
-tokio = { workspace = true, features = ["rt-multi-thread"] }
+tokio = { workspace = true, features = ["rt-multi-thread", "net", "io-util", "sync"] }
+hyper-util = { version = "0.1", features = ["tokio"] }
+tower = { version = "0.5", features = ["util"] }
 toml = { workspace = true }
 tonic = { workspace = true }
 tracing = { workspace = true }
@@ -64,19 +69,29 @@ features = [
     "Win32_System_Environment",
     "Win32_System_LibraryLoader",
     "Win32_System_Memory",
+    "Win32_Security",
+    "Win32_Storage_FileSystem",
+    "Win32_System_IO",
+    "Win32_System_Pipes",
+    "Win32_System_Threading",
     "Win32_UI_Shell",
     "Win32_Networking",
     "Win32_Networking_WinSock",
     "Win32_NetworkManagement",
     "Win32_NetworkManagement_IpHelper",
+    "Win32_NetworkManagement_Ndis",
 ]
 
 [build-dependencies]
 winres = { workspace = true }
 
+[dev-dependencies]
+base64 = "0.22"
+serde_json = { workspace = true }
+
 [package.metadata.winres]
-ProductName = "SCBL LAN Hooks"
-FileDescription = "SCBL LAN Official developer build"
+ProductName = "Fifth Freedom"
+FileDescription = "Fifth Freedom native client"
 OriginalFilename = "uplay_r1_loader.dll"
 InternalName = "hooks-cn"
 CompanyName = "5th Echelon CN"

@@ -8,6 +8,7 @@ public partial class MainWindow
  internal string RunLanToolsChecks(string report)
  {
   if(!App.PreviewMode)throw new InvalidOperationException("Preview fixture required");
+  _settings.NetworkEnvironment="Lan";cmbNetworkEnvironment.SelectedValue="Lan";SetCredentialEnvironment(CredentialEnvironmentContext.Lan);
   int passed=0,failed=0;var lines=new List<string>();
   void Check(bool b,string label){lines.Add((b?"PASS ":"FAIL ")+label);if(b)passed++;else failed++;}
   SettingsButton_Click(this,new());Check(toolsOverlay.Visibility==Visibility.Visible&&toolsHomePanel.Visibility==Visibility.Visible,"settings button opens themed centralized panel");
@@ -38,6 +39,7 @@ public partial class MainWindow
   using var stream=typeof(SaveGameService).Assembly.GetManifestResourceStream("SCBL.LAN.DefaultSaves.manifest.json");
   Check(stream!=null,"packaged save manifest present");
   using var doc=JsonDocument.Parse(stream!);
+  Check(SaveGameService.ReadBundledSnapshotDate()==doc.RootElement.GetProperty("SnapshotDate").GetString() && txtSavesInfo.Text.Contains(SaveGameService.ReadBundledSnapshotDate()) && txtSavesInfo.Text.Contains("public default templates"),"save page uses actual bundled manifest date and public-template source");
   foreach(string mode in new[]{"Official","MOD"})
   {
    string backup=service.RestoreBundled(mode,RuntimePaths.Root);int count=0;

@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "source_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+  "executed_commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+  "identical_tree": "b04a875a3005f91ee85c8f403d3080b54c02cb28",
+  "source_merge_tree_equality_independently_verified": true,
+  "run_id": 41222450356,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356",
+  "job": {
+    "id": 124599695245,
+    "name": "Complete Windows candidate (requires admitted inputs)",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-31T17:02:28Z",
+    "completed_at": "2026-10-31T17:18:17Z"
+  },
+  "artifact": {
+    "id": 13050941008,
+    "name": "windows-complete-candidate-aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+    "size_in_bytes": 73032651,
+    "digest": "sha256:69f11285d7bb3ca45742fca24d4dc8b555e09a3f9c7e70f5dd2b3d7e7b935fd2",
+    "expires_at": "2026-11-14T17:18:09Z"
+  },
+  "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356/artifacts/13050941008",
+  "outer_sha256_and_size_match_official": true,
+  "outer_zip_crc_checked": true,
+  "build_result_sha256": "d4195a18a16ad816a28ae3cb86c074215ceaa1d5bd9c39d9db2179e829706e83",
+  "package_smoke_receipt_sha256": "bc6a3fd0c6d658810840fbd4361d62cab83f7c0b9640ce404c081f706334fdb8",
+  "package_smoke": {
+    "schema": 1,
+    "lane": "windows-package-smoke",
+    "commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+    "tracked_source_dirty": false,
+    "github_actions": true,
+    "run_id": "41222450356",
+    "run_attempt": "1",
+    "complete_package": true,
+    "game_executed": false,
+    "live_acceptance": false,
+    "deployed": false,
+    "published": false,
+    "launcher_probes": [
+      {
+        "flag": "--self-test",
+        "passed": 197,
+        "failed": 0,
+        "exit_code": 0,
+        "game_executed": false
+      },
+      {
+        "flag": "--lan-tools-self-test",
+        "passed": 27,
+        "failed": 0,
+        "exit_code": 0,
+        "game_executed": false
+      }
+    ],
+    "archive_sha256": "d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd",
+    "status": "package_no_game_checks_passed",
+    "exit_code": 0
+  },
+  "independent_download_verification": {
+    "source_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+    "archive": "fifth-freedom-1.1.0-migration1-program.zip",
+    "archive_bytes": 73304533,
+    "archive_sha256": "d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd",
+    "zip_crc_checked": true,
+    "exact_payload_files": 65,
+    "manifest_files": 63,
+    "checksum_rows": 64,
+    "four_embedded_identities_rebuilt_and_equal": true,
+    "components": [
+      {
+        "bytes": 146374575,
+        "compat_id": "scbl-lan-1.1.0",
+        "path": "FifthFreedom.exe",
+        "release_id": "fifth-freedom-1.1.0-migration1",
+        "role": "launcher",
+        "sha256": "681ec9ab968385cdc70e469e8aaf06038430f334222269b4d2f7648484128edd",
+        "machine": "0x14c"
+      },
+      {
+        "bytes": 7746560,
+        "compat_id": "scbl-lan-1.1.0",
+        "path": "runtime/uplay_r1_loader.dll",
+        "release_id": "fifth-freedom-1.1.0-migration1",
+        "role": "main",
+        "sha256": "ad7a0af1fa736fe90c0d850cc15c698750e42ef41380abd5ab7dd887fe67a4e9",
+        "machine": "0x14c"
+      },
+      {
+        "bytes": 2424832,
+        "compat_id": "scbl-lan-1.1.0",
+        "path": "runtime/scbl_gameplay.dll",
+        "release_id": "fifth-freedom-1.1.0-migration1",
+        "role": "gameplay",
+        "sha256": "a4653a06f988d147c57e0b5f29cc65dc4293799f44b26d408efe35945eab102f",
+        "machine": "0x14c"
+      },
+      {
+        "bytes": 10876928,
+        "compat_id": "scbl-lan-1.1.0",
+        "path": "runtime/FifthFreedom.Server.exe",
+        "release_id": "fifth-freedom-1.1.0-migration1",
+        "role": "server",
+        "sha256": "52546f3ebe528249436106ca9d9852a41b31d29529fee949b2b8b80685e78c3f",
+        "machine": "0x8664"
+      }
+    ],
+    "fusionfix_notice_source_entries_verified": 50,
+    "readme_matches_exact_source": true,
+    "production_readonly_package_verification": true,
+    "downloaded_binaries_executed": false,
+    "game_executed": false
+  },
+  "whole_candidate_workflow_success_claimed": false,
+  "live_crash_fix_proven": false,
+  "public_startup_admitted": false,
+  "limits": [
+    "Complete program candidate, not retail game files or formal Release.",
+    "Dedicated Windows ABI four-role results are a separate receipt; package build success does not substitute for them.",
+    "C71 native reviewed-input gate remains separate from complete-package input admission.",
+    "No game or downloaded executable was started during the independent ZIP review."
+  ],
+  "candidate_artifact_uploaded": true,
+  "formal_release_published": false
+}

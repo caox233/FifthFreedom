@@ -1,0 +1,52 @@
+{
+  "id": 39909129708,
+  "status": "completed",
+  "conclusion": "success",
+  "run_attempt": 1,
+  "url": "https://github.com/caox233/FifthFreedom/actions/runs/39909129708",
+  "source_head_sha": "a569ae72267c53ad1e5e95a7c2e584a92756f5d5",
+  "schema": 1,
+  "observed_utc": "2026-10-23T06:30:39.934383+00:00",
+  "evidence_source": "Official GitHub run/job/artifact metadata API; artifact archives not downloaded",
+  "jobs": [
+    {
+      "id": 120267788682,
+      "name": "Reviewed patched GNU source and finite contracts (no runtime artifact)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-23T06:02:37Z",
+      "completed_at": "2026-10-23T06:24:23Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12483016834,
+      "name": "easytier-linux-build-only-receipts-93e12973af1f7a1250a6b250174a574e6e7d750d",
+      "size_in_bytes": 39745,
+      "digest": "sha256:f8858ae7551ea359edde8d61a724543f89dc6d7d42bb02321f5394ee850a9ac1",
+      "expired": false
+    }
+  ],
+  "recipe": "guard3: six ordered reviewed patches, 35 finite contracts, GNU Release core/cli compilation",
+  "runtime_executed": false,
+  "runtime_binary_uploaded": false,
+  "dependency_source_closure_verified": false,
+  "public_startup_allowed": false,
+  "redundant_followup": {
+    "id": 39910723304,
+    "html_url": "https://github.com/caox233/FifthFreedom/actions/runs/39910723304",
+    "head_sha": "0ac6695a112bf15cbb016c1c34a0c011b3f07137",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "updated_at": "2026-10-23T06:25:59Z",
+    "cancellation_requested_via_official_gh": true,
+    "reason": "The exact six-patch guard3 source/compiler recipe already passed in the preceding hosted run; the separate first owned-overlay runtime probe remains running and was not cancelled.",
+    "counts_as_passing_evidence": false
+  },
+  "artifact_metadata_scope": {
+    "archives_downloaded": false,
+    "artifact_contents_verified": false,
+    "artifact_names_retained_as_opaque_api_metadata": true,
+    "name_embedded_hash_not_verified_as_checkout_sha": true
+  }
+}

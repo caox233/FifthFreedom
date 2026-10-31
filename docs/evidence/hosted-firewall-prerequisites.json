@@ -1,0 +1,95 @@
+{
+  "scope": "Bounded actual GitHub Windows firewall-only probes; no Arm, image/core/driver/game execution or Public admission. Original runtime c42 failed before dispatch; its exact failed field was not recorded. All original failures retained.",
+  "original_runtime": {
+    "run": 40371709889,
+    "artifact": 12673029377,
+    "sha256": "d48194e51f439fd08de1392cdac549c1eb67e367e888418bf22ba41c72f9074b",
+    "prepare_failed": true,
+    "core_started": false
+  },
+  "probes": [
+    {
+      "source_commit": "991ec1b6d7ac25d0593e7c97ba69830e8fd6ad85",
+      "run_id": 40377415703,
+      "job_id": 121764159359,
+      "artifact_id": 12677320024,
+      "official_zip_sha256": "910d5c78f38794396dc35caea6f04a32f202eeda98b2681cbd152f8d390d89dd",
+      "digest_verified": true,
+      "overall": "failure",
+      "observed_boundary": "APPLICATION_PACKAGE",
+      "unarmed_restore_succeeded": false,
+      "path_predicate_passed": true,
+      "admission_relaxed": false
+    },
+    {
+      "source_commit": "74d1429737331a464eb01046889519ac01faf25d",
+      "run_id": 40378390311,
+      "job_id": 121767626373,
+      "artifact_id": 12674254739,
+      "official_zip_sha256": "65b6ffc0589e3061a7d9a7159a469dd05050e32c19ad22cf87086afff39c0b20",
+      "digest_verified": true,
+      "overall": "failure",
+      "observed_boundary": "APPLICATION_PACKAGE present NULL",
+      "unarmed_restore_succeeded": false,
+      "path_predicate_passed": true,
+      "admission_relaxed": false
+    },
+    {
+      "source_commit": "72b43d48ecf0319724a9ccdcd6d669797b85c155",
+      "run_id": 40379698020,
+      "job_id": 121772287796,
+      "artifact_id": 12679095910,
+      "official_zip_sha256": "83e5f44cb6dba8bdb46aab6fc618355628aa82ab093b15c04efc9c7d1a1f0672",
+      "digest_verified": true,
+      "overall": "failure",
+      "observed_boundary": "ENFORCEMENT_STATUS; PackageNULL andPS15passed",
+      "unarmed_restore_succeeded": true,
+      "path_predicate_passed": true,
+      "admission_relaxed": false
+    },
+    {
+      "source_commit": "78c3f619d49850e6111d691b93754033156fd483",
+      "run_id": 40381458136,
+      "job_id": null,
+      "artifact_id": 12678842462,
+      "official_zip_sha256": "7911844a53bbbce1d19abdc8287c1878846d22fe5782640148f1df97db0529e2",
+      "digest_verified": true,
+      "overall": "failure",
+      "observed_boundary": "ENFORCEMENT_STATUS adapted ARRAY2; PS15+16passed",
+      "unarmed_restore_succeeded": true,
+      "path_predicate_passed": true,
+      "admission_relaxed": false
+    },
+    {
+      "source_commit": "d23eaa88e63a7458d7a7417866d250278efee961",
+      "run_id": 40382336436,
+      "job_id": 121781570571,
+      "artifact_id": 12679661346,
+      "official_zip_sha256": "cdb515fad1420e302e7b803bc6efe01b3e21c0756fbee4446b2f6356ad18ff17",
+      "digest_verified": true,
+      "overall": "failure",
+      "observed_boundary": "ENFORCEMENT_STATUS adapted ARRAY2 STRING OTHER_STRING; PS15+18passed",
+      "unarmed_restore_succeeded": true,
+      "path_predicate_passed": true,
+      "admission_relaxed": false
+    },
+    {
+      "source_commit": "d432382803db60ded02b47cc334dc624ec23b219",
+      "run_id": 40384304423,
+      "job_id": 121788387227,
+      "artifact_id": 12679872345,
+      "official_zip_sha256": "27b3b1a87f1ccb382741a2d3989e163dd40c47278a027dd82d57e90abf4945d6",
+      "digest_verified": true,
+      "overall": "failure",
+      "observed_boundary": "ENFORCEMENT_STATUS: authoritative UInt16Array [InactiveProfile, Full]; PowerShell 15 package and 22 diagnostic contracts passed",
+      "raw_cim_statuses": [
+        "InactiveProfile",
+        "Full"
+      ],
+      "raw_cim_type": "UInt16Array",
+      "unarmed_restore_succeeded": true,
+      "path_predicate_passed": true,
+      "admission_relaxed": false
+    }
+  ]
+}
