@@ -134,7 +134,19 @@ class TestCargoIdentity(unittest.TestCase):
             self.parse(self.rows())
 
     def test_archive_refuses_symlinks_and_path_escape_before_extraction(self):
-        for name, kind in (('../escaped', tarfile.REGTYPE), ('/absolute', tarfile.REGTYPE), ('link', tarfile.SYMTYPE)):
+        archive = io.BytesIO()
+        content = b'owned, inert source fixture'
+        with tarfile.open(fileobj=archive, mode='w') as tar:
+            entry = tarfile.TarInfo('src/example/source.rs')
+            entry.size = len(content)
+            tar.addfile(entry, io.BytesIO(content))
+        replay.extract_checkout(archive.getvalue(), self.root / 'valid-checkout')
+        self.assertEqual((self.root / 'valid-checkout/src/example/source.rs').read_bytes(), content)
+        for name, kind in (('../escaped', tarfile.REGTYPE), ('/absolute', tarfile.REGTYPE),
+                           ('\\rooted', tarfile.REGTYPE), ('C:/absolute', tarfile.REGTYPE),
+                           ('C:relative', tarfile.REGTYPE), ('//server/share', tarfile.REGTYPE),
+                           ('folder\\..\\escaped', tarfile.REGTYPE), ('file:stream', tarfile.REGTYPE),
+                           ('link', tarfile.SYMTYPE)):
             archive = io.BytesIO()
             with tarfile.open(fileobj=archive, mode='w') as tar:
                 entry = tarfile.TarInfo(name)

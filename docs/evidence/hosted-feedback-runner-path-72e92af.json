@@ -1,0 +1,42 @@
+{
+  "source_commit": "72e92af58c09bb04e00a6a7466b9f45890c098b3",
+  "run_id": 41191825957,
+  "job_id": 124509994860,
+  "job_conclusion": "failure",
+  "failed_step": "Source, UI routing, server contracts and CI tests",
+  "suite": "ci",
+  "executed_tests": 444,
+  "passed": 410,
+  "failed": 1,
+  "skipped": 33,
+  "failed_test": "test_native_production_replay.TestCargoIdentity.test_archive_refuses_symlinks_and_path_escape_before_extraction",
+  "subtest": {
+    "name": "/absolute"
+  },
+  "assertion": "AssertionError: ValueError not raised",
+  "actual_native_production_replay_execution": false,
+  "windows_job_log": {
+    "bytes": 235235,
+    "sha256": "e3c104c07e2f9e54705551e2fba5a3bde91da586d5cd04ca8fcc29e0e3e3015c"
+  },
+  "correction": "Validate Git/tar member paths using PurePosixPath independent of executor OS; reject Windows drive, rooted, backslash and alternate-stream forms before tarfile extraction. Legitimate source extraction positive control retained.",
+  "focused_correction_checks": {
+    "host": "Linux",
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "stderr_sha256": "fc6fe682622dd6932d56ff7ae7d830a698a51e7ff4df3828547cc528122ee6fd",
+    "scope": "Python runner admission controls, not native Windows execution"
+  },
+  "modified_source_sha256": {
+    "scripts/ci_native_production_replay.py": "f8f90f52904849c6a419e665ee72b06e6688caef58e8acb6404d5e5328c03149",
+    "tests/ci/test_native_production_replay.py": "f21727fa0b4ca41ea8622834856ecc1e9885b592b5cc5af078f6fe2432f99fe2"
+  },
+  "native_source_and_fixture_changed": false,
+  "camera_checks_and_failure_counter_unchanged": true,
+  "new_hosted_execution_pending": true,
+  "schema": 1,
+  "recorded_date_hong_kong": "2026-10-31",
+  "candidate_cancellation": "After preserving the Windows failure, superseded candidate work was cancelled; cancelled package/component steps are not passes. Independent actual WPF run41191825904 retained."
+}

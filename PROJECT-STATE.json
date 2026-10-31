@@ -5,7 +5,7 @@
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
   "LAST_CONFIRMED_RESULT": "Original d207fc6 source and d05f584 knowledge checkpoints and bundle hashes preserved. Current feedback implementation restores direct main MOD/Official/FOV with inline drafts; UI source contracts16 and persistence21 pass, WPF crossbuild passes. Actual address-loader four roles reproduce3 failures before/rollback and8 passes after/reapply; full crate18 and release admission5 pass. Quick-match selected31 and protocol feedback4 pass without changing matching/authentication policy. Camera/progression production boundaries and strict synthetic Windows four-role runner are implemented; hosted native execution, new actual WPF and full package remain pending. No live crash/matching/performance fix is claimed.",
-  "NEXT_EXECUTABLE_ACTION": "Commit reviewed playtest feedback changes, run an exact clean-checkout source gate, push the existing development branch and execute GitHub Windows native production four-role regressions plus actual WPF and complete-package checks. Download and independently verify the new unified program ZIP before delivery. Keep original six goals, live camera/matching/performance uncertainty, C71 missing inputs and ordinary Public ownership/WFP admission open.",
+  "NEXT_EXECUTABLE_ACTION": "Publish the reviewed portable archive-path correction after an exact clean source check, rerun GitHub candidate build and require actual camera/progression Windows four-role evidence before delivering the new complete package. Retain failed72e Windows source gate and cancelled successor steps; independent WPF72e capture remains active. Preserve six goals and all separate live/C71/Public boundaries.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -1781,7 +1781,7 @@
   "active_playtest_feedback": {
     "task": "docs/tasks/playtest-feedback-20261031.md",
     "baseline": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
-    "status": "reviewed_source_focused_checks_passed_hosted_verification_pending",
+    "status": "windows_source_runner_path_failure_corrected_native_replay_not_yet_executed",
     "raw_private_evidence_received_in_cloud": false,
     "game_started": false,
     "live_root_causes_confirmed": false,
@@ -1795,6 +1795,14 @@
       "docs/tasks/ui-mode-flow-review.md"
     ],
     "previous_complete_candidate_preserved": true,
-    "new_complete_candidate_verified": false
+    "new_complete_candidate_verified": false,
+    "first_hosted_failure": "docs/evidence/hosted-feedback-runner-path-72e92af.json",
+    "source_clean_check": {
+      "commit": "72e92af58c09bb04e00a6a7466b9f45890c098b3",
+      "executed": 713,
+      "passed": 711,
+      "skipped": 2,
+      "exit_code": 0
+    }
   }
 }

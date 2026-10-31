@@ -13,7 +13,7 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 import struct
 import subprocess
@@ -163,8 +163,15 @@ def run_command(command: list[str], cwd: Path, env: dict, output: Path, label: s
 def extract_checkout(archive: bytes, destination: Path) -> None:
     with tarfile.open(fileobj=io.BytesIO(archive), mode="r:") as data:
         for member in data.getmembers():
-            path = Path(member.name)
-            if path.is_absolute() or ".." in path.parts or member.issym() or member.islnk() or not (member.isfile() or member.isdir()):
+            # Git/tar member names use POSIX separators on every host. On
+            # Windows, Path('/absolute').is_absolute() is false because it has
+            # no drive; the tar filter may then strip its leading slash. Reject
+            # it before extraction rather than accepting that normalization.
+            path = PurePosixPath(member.name)
+            windows = PureWindowsPath(member.name)
+            if (path.is_absolute() or windows.drive or windows.root or "\\" in member.name
+                    or ".." in path.parts or any(":" in part for part in path.parts)
+                    or member.issym() or member.islnk() or not (member.isfile() or member.isdir())):
                 raise ValueError("PRODUCTION_REPLAY_ARCHIVE_MEMBER_INVALID")
         data.extractall(destination, filter="data")
 
