@@ -1,0 +1,341 @@
+{
+  "schema": 1,
+  "scope": "Independent static inspection of the shipped Windows gameplay PE; no DLL/game execution and no use of synthetic test success to infer production bytes.",
+  "source_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+  "executed_pr_merge_commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+  "same_git_tree": "b04a875a3005f91ee85c8f403d3080b54c02cb28",
+  "source_merge_tree_equality_checked": true,
+  "official_build": {
+    "run_id": 41222450356,
+    "job_id": 124599695245,
+    "conclusion_from_saved_official_job": "success",
+    "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356",
+    "job_record_sha256": "b6890d851161f6c96899fbf374380623f6f7821b79c41991b93bea9912b11bfd",
+    "artifact_id": 13050941008,
+    "artifact_name": "windows-complete-candidate-aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+    "outer_zip_bytes": 73032651,
+    "outer_zip_sha256": "69f11285d7bb3ca45742fca24d4dc8b555e09a3f9c7e70f5dd2b3d7e7b935fd2",
+    "official_artifact_digest_and_size_independently_rechecked": true,
+    "inner_program_zip_bytes": 73304533,
+    "inner_program_zip_sha256": "d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd",
+    "outer_and_inner_crc_checked": true,
+    "dll_equal_to_actual_inner_zip_member": true
+  },
+  "gameplay_pe": {
+    "bytes": 2424832,
+    "sha256": "a4653a06f988d147c57e0b5f29cc65dc4293799f44b26d408efe35945eab102f",
+    "machine": "0x14c",
+    "preferred_base": "0x10000000",
+    "sections": [
+      {
+        "name": ".text",
+        "virtual_size": 1833970,
+        "rva": 4096,
+        "raw_size": 1833984,
+        "raw_offset": 1024
+      },
+      {
+        "name": ".text.__",
+        "virtual_size": 208,
+        "rva": 1839104,
+        "raw_size": 512,
+        "raw_offset": 1835008
+      },
+      {
+        "name": ".rdata",
+        "virtual_size": 469398,
+        "rva": 1843200,
+        "raw_size": 469504,
+        "raw_offset": 1835520
+      },
+      {
+        "name": ".data",
+        "virtual_size": 71008,
+        "rva": 2314240,
+        "raw_size": 31744,
+        "raw_offset": 2305024
+      },
+      {
+        "name": ".reloc",
+        "virtual_size": 87940,
+        "rva": 2387968,
+        "raw_size": 88064,
+        "raw_offset": 2336768
+      }
+    ],
+    "codeview": [
+      {
+        "guid": "30ca35ea-8f0e-4fda-9f82-482648e57f68",
+        "age": 1,
+        "pdb_name": "scbl_gameplay.pdb"
+      }
+    ],
+    "coff_symbol_count": 0
+  },
+  "source_binding": {
+    "path": "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs",
+    "source_sha256": "84cc171028fa57ace068b1b65bf977f815155811815eb798216d4ec042476197",
+    "e4_source_sha256": "80e2841654924909e017bc97d3b11d1606d39cc11bfcfb3ca63cbf5653e338ba",
+    "e4_gameplay_sha256": "60f6eee1d8c68bd4d1692510128ec4b347434917a4d54f47c587b532f6e7222e",
+    "e4_analysis": "docs/evidence/native-disable-binary-map-20261101.json"
+  },
+  "actual_pe_byte_assertions": [
+    {
+      "rva": "0x13ca2",
+      "preferred_va": "0x10013ca2",
+      "file_offset": "0x130a2",
+      "hex": "ba1026b500",
+      "observation": "Disable initializer loads native target 0x00B52610 into EDX."
+    },
+    {
+      "rva": "0x236664",
+      "preferred_va": "0x10236664",
+      "file_offset": "0x234264",
+      "hex": "705a0d100000000000000000",
+      "observation": "Initial StaticDetour data: ffi=preferredVA100D5A70, closure and detour pointers start null."
+    },
+    {
+      "rva": "0x13d86",
+      "preferred_va": "0x10013d86",
+      "file_offset": "0x13186",
+      "hex": "c74004c83d1c10",
+      "observation": "Initializer assigns closure vtable preferredVA101C3DC8."
+    },
+    {
+      "rva": "0x13d8d",
+      "preferred_va": "0x10013d8d",
+      "file_offset": "0x1318d",
+      "hex": "870568662310",
+      "observation": "Initializer publishes closure into global RVA236668."
+    },
+    {
+      "rva": "0x1c3ddc",
+      "preferred_va": "0x101c3ddc",
+      "file_offset": "0x1c1fdc",
+      "hex": "30120010",
+      "observation": "Rust closure Fn slot +0x14 targets shim RVA1230; this is not a game-object vtable slot."
+    },
+    {
+      "rva": "0xd5a8a",
+      "preferred_va": "0x100d5a8a",
+      "file_offset": "0xd4e8a",
+      "hex": "894ddc",
+      "observation": "Incoming thiscall ECX receiver is preserved at EBP-24."
+    },
+    {
+      "rva": "0xd5ac6",
+      "preferred_va": "0x100d5ac6",
+      "file_offset": "0xd4ec6",
+      "hex": "ff7508ff75dcff75e0",
+      "observation": "Push incoming DWORD [EBP+8], saved receiver, then closure box pointer; no constant substituted for the argument."
+    },
+    {
+      "rva": "0xd5acf",
+      "preferred_va": "0x100d5acf",
+      "file_offset": "0xd4ecf",
+      "hex": "e87c3f0a00",
+      "observation": "Call boxed closure forwarding adapter RVA179A50."
+    },
+    {
+      "rva": "0xd5ae7",
+      "preferred_va": "0x100d5ae7",
+      "file_offset": "0xd4ee7",
+      "hex": "c20400",
+      "observation": "Native-facing Disable ffi returns with callee cleanup of four argument bytes."
+    },
+    {
+      "rva": "0x179a50",
+      "preferred_va": "0x10179a50",
+      "file_offset": "0x178e50",
+      "hex": "8b4424048b4804ff74240cff74240cff30ff511483c40cc3",
+      "observation": "Box adapter loads vtable and re-pushes opaque argument, receiver and closure data before slot+14 dispatch; adjusts only its own 12-byte call frame."
+    },
+    {
+      "rva": "0x1230",
+      "preferred_va": "0x10001230",
+      "file_offset": "0x630",
+      "hex": "8b4c24088b54240ce8f3740d00c3",
+      "observation": "Closure shim loads receiver from ESP+8 into ECX and original DWORD from ESP+C into EDX; calls Rust body RVA D8730 and returns."
+    },
+    {
+      "rva": "0xd874a",
+      "preferred_va": "0x100d874a",
+      "file_offset": "0xd7b4a",
+      "hex": "89cf89d6",
+      "observation": "Rust body preserves ECX receiver in EDI and EDX opaque argument in ESI."
+    },
+    {
+      "rva": "0xd87f4",
+      "preferred_va": "0x100d87f4",
+      "file_offset": "0xd7bf4",
+      "hex": "8b1d6c662310",
+      "observation": "Rust body loads the same Disable GenericDetour pointer from RVA23666C."
+    },
+    {
+      "rva": "0xd8811",
+      "preferred_va": "0x100d8811",
+      "file_offset": "0xd7c11",
+      "hex": "89f956ff5310",
+      "observation": "Restore receiver to ECX; push unchanged ESI argument; call original trampoline [EBX+10]."
+    },
+    {
+      "rva": "0xd8817",
+      "preferred_va": "0x100d8817",
+      "file_offset": "0xd7c17",
+      "hex": "8b45e8",
+      "observation": "Next instruction restores exception-registration state; there is no caller add esp,4 for the native argument."
+    },
+    {
+      "rva": "0xd8827",
+      "preferred_va": "0x100d8827",
+      "file_offset": "0xd7c27",
+      "hex": "c3",
+      "observation": "Internal Rust body uses ret0 because its parameters arrived in registers; this is separate from the native-facing ffi ret4."
+    },
+    {
+      "rva": "0x12352",
+      "preferred_va": "0x10012352",
+      "file_offset": "0x11752",
+      "hex": "ba7025b500",
+      "observation": "Cleanup initializer still targets native B52570, independently of Disable B52610."
+    },
+    {
+      "rva": "0x236658",
+      "preferred_va": "0x10236658",
+      "file_offset": "0x234258",
+      "hex": "505b0d100000000000000000",
+      "observation": "Cleanup ffi data points to RVA D5B50, with its own closure/detour atomics."
+    },
+    {
+      "rva": "0x12436",
+      "preferred_va": "0x10012436",
+      "file_offset": "0x11836",
+      "hex": "c74004d0441c10",
+      "observation": "Cleanup initializer assigns its own closure vtable at RVA1C44D0."
+    },
+    {
+      "rva": "0x1243d",
+      "preferred_va": "0x1001243d",
+      "file_offset": "0x1183d",
+      "hex": "87055c662310",
+      "observation": "Cleanup closure publishes to separate RVA23665C."
+    },
+    {
+      "rva": "0x2440",
+      "preferred_va": "0x10002440",
+      "file_offset": "0x1840",
+      "hex": "8b4c2408e967610d00",
+      "observation": "Cleanup closure shim passes only its receiver in ECX and jumps to RVA D85B0."
+    },
+    {
+      "rva": "0xd5bac",
+      "preferred_va": "0x100d5bac",
+      "file_offset": "0xd4fac",
+      "hex": "ff75dcff31ff501483c408",
+      "observation": "Cleanup ffi pushes only receiver and closure data for Rust Fn dispatch, not a native stack argument."
+    },
+    {
+      "rva": "0xd5bc7",
+      "preferred_va": "0x100d5bc7",
+      "file_offset": "0xd4fc7",
+      "hex": "c3",
+      "observation": "Native-facing Cleanup ffi still returns without popping a stack argument."
+    },
+    {
+      "rva": "0xd868f",
+      "preferred_va": "0x100d868f",
+      "file_offset": "0xd7a8f",
+      "hex": "89f1ff5710",
+      "observation": "Cleanup body sets ECX and calls original trampoline without pushing an extra argument."
+    },
+    {
+      "rva": "0xd86a4",
+      "preferred_va": "0x100d86a4",
+      "file_offset": "0xd7aa4",
+      "hex": "c3",
+      "observation": "Cleanup internal Rust body also remains ret0."
+    }
+  ],
+  "disassembly_chunks": {
+    "disable-initializer": {
+      "start_rva": "0x13c80",
+      "end_rva_exclusive": "0x13e59",
+      "pe_region_sha256": "372f013d47e52df15e7a6955d00cd5d376b8c1570adaf863bbf478b1de8b87c4",
+      "disassembly_sha256": "a60caee80065929d5cf3aa8ba78db355abff2950b598b804ba2607fb3b5d0769"
+    },
+    "disable-ffi": {
+      "start_rva": "0xd5a70",
+      "end_rva_exclusive": "0xd5b45",
+      "pe_region_sha256": "3ae1ba4bb7fc97f9884c92b9532e9bbf6e89d9b557005a173ba9f9143f299ae2",
+      "disassembly_sha256": "441e5515c435a4b43f7531ce52e36addadc338287e39f0e1fbca50047a4cc1a8"
+    },
+    "closure-adapter": {
+      "start_rva": "0x179a50",
+      "end_rva_exclusive": "0x179a68",
+      "pe_region_sha256": "48cece2b2fa492a2057f217808d438dcaa63ee5eecb577aa5cc088a38c9ebedb",
+      "disassembly_sha256": "af92ad78afb6f4d3d9920a4928a65cf53aadea98dd0a14e284ad147041b106bf"
+    },
+    "disable-shim": {
+      "start_rva": "0x1230",
+      "end_rva_exclusive": "0x123e",
+      "pe_region_sha256": "b033b6f74ecdd302f0952d32ddd492a58fda3514c94a56b1ee8a0dff02ffc4c2",
+      "disassembly_sha256": "f9835a8974046f68d08a802822ad52fe0d0d3047f621a0120fade9a45c66b017"
+    },
+    "disable-body": {
+      "start_rva": "0xd8730",
+      "end_rva_exclusive": "0xd88a5",
+      "pe_region_sha256": "0205379ed070678c7f4b69f6d63554b85eaea5dc124012757e5e807bf5b435d0",
+      "disassembly_sha256": "5910fb3c3bcc532ea799a0be9c49bb3b105c754ddaade47a2a0b1748282506f9"
+    },
+    "cleanup-initializer": {
+      "start_rva": "0x12330",
+      "end_rva_exclusive": "0x12509",
+      "pe_region_sha256": "778a0355880c42caf05142eb215f2d60ba37f112ff1af86bb149089594169010",
+      "disassembly_sha256": "27218e78d7fc340a16a3da99bd902b1380f5b06803f66c4729a709b18132aafc"
+    },
+    "cleanup-ffi": {
+      "start_rva": "0xd5b50",
+      "end_rva_exclusive": "0xd5c25",
+      "pe_region_sha256": "f00fbe9f9029bd6281f6d85ee51862420885049ea3f48fc9d739ddda1baf27b3",
+      "disassembly_sha256": "8519ffd4ff85c52432c41dfa5c38849019b7d7179a6d7e9c6b62034f3e9d21a4"
+    },
+    "cleanup-shim": {
+      "start_rva": "0x2440",
+      "end_rva_exclusive": "0x2449",
+      "pe_region_sha256": "70b7f4a199b3db7657f3946ee561cdfdfefa75f509a1b5a4fbb4be2bf0aafee3",
+      "disassembly_sha256": "caa104aa0dd77048c2e2753405f532cf81dd4d0068e394396356cb21b9bdb7b4"
+    },
+    "cleanup-body": {
+      "start_rva": "0xd85b0",
+      "end_rva_exclusive": "0xd8725",
+      "pe_region_sha256": "95544cc7fe9a5519a3d821af018884d87cec7c45d512e494333608b33cbbb1fb",
+      "disassembly_sha256": "3aa98d0ca42584896fbd984c03604163922c9dc7b55afc1da99d0ffa009d12cb"
+    }
+  },
+  "conclusion": {
+    "disable_incoming_contract": "Actual native-facing ffi at RVA D5A70 reads incoming [EBP+8], propagates the same DWORD through Box/Fn shims and returns C2 04 00 at RVA D5AE7.",
+    "disable_outgoing_contract": "Actual Rust body retains the argument in ESI and at RVA D8813 pushes it before calling the original trampoline at RVA D8814; ECX receives the original receiver.",
+    "no_hardcoded_outer_mode_value": "No replacement constant is introduced on the traced incoming-DWORD-to-original-call path.",
+    "cleanup_ret0_retained": "Actual independent B52570 initializer, ffi RVA D5B50 and original-call sequence retain ECX-only/no additional native stack argument; ffi ends C3 at RVA D5BC7.",
+    "e4_comparison": "Old Disable ffi at D59F0 ended C3 at D5A67 and its original call at D8791 had no argument push; both native boundaries now show the corrected four-byte stack contract. E4 Cleanup ffi at D5AD0 also ended C3 and remains the same ABI in the new PE.",
+    "return_type": "Unit/void remains declared. The compiled code still overwrites EAX with exception state after the native call; this does not establish a universal retail return type.",
+    "retail_vtable_slot_scope": "The user-reported game vtable +4D0 selects B52610. This review verifies the owned DLL hooks target B52610 and B52570 separately. It has no retail image or live vtable and does not claim an independent byte comparison of +4D8; this change adds no vtable-write operation in the reviewed source diff.",
+    "fixture_markers_absent_in_shipped_pe": true
+  },
+  "runtime_tests_separate": {
+    "job_id": 124599657507,
+    "status_reported_by_parent_at_task_handoff": "in_progress",
+    "runtime_result_independently_verified_here": false,
+    "synthetic_four_role_result_claimed_here": false,
+    "static_result_does_not_replace_runtime_test": true
+  },
+  "bounds": {
+    "downloaded_binaries_executed": false,
+    "game_executed": false,
+    "retail_game_bytes_accessed": false,
+    "private_logs_uploaded": false,
+    "source_modified_by_this_review": false,
+    "live_camera_crash_fix_proven": false,
+    "other_camera_lifecycle_or_multiplayer_crashes_proven_fixed": false
+  }
+}

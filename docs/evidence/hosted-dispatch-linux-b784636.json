@@ -1,0 +1,273 @@
+{
+  "schema": 1,
+  "kind": "hosted_linux_artifact_read_only_verification",
+  "recorded_at_utc": "2026-10-31T17:16:23+00:00",
+  "source_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+  "pr_checkout_commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+  "source_and_checkout_tree": "b04a875a3005f91ee85c8f403d3080b54c02cb28",
+  "source_and_checkout_tree_match_verified": true,
+  "run": {
+    "id": 41222450356,
+    "url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356",
+    "event": "pull_request",
+    "head_sha": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+    "status_at_metadata_download": "in_progress",
+    "conclusion_at_metadata_download": null
+  },
+  "verification_method": [
+    "Normal inherited gh api access downloaded official run/job/artifact metadata, job logs and artifact ZIPs.",
+    "Each outer ZIP byte count and SHA256 was recomputed and matched the official artifact API digest; every ZIP entry passed CRC and relative-path checks.",
+    "Hosted job logs and embedded receipts bind the PR checkout; both Git commit trees were read locally and compared exactly.",
+    "Test counts and each of the seven new quick-match cases were read from raw hosted test output, not inferred from job success.",
+    "Embedded components were read as bytes, independently hashed and compared with embedded receipts/checksum manifests; ELF64/x86_64 headers were inspected only."
+  ],
+  "lanes": [
+    {
+      "lane": "linux-lan-baseline",
+      "workspace": "src/native",
+      "job_id": 124599657326,
+      "job_url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356/job/124599657326",
+      "job_conclusion": "success",
+      "started_at_utc": "2026-10-31T17:01:15Z",
+      "completed_at_utc": "2026-10-31T17:06:46Z",
+      "artifact": {
+        "id": 13050652818,
+        "name": "linux-lan-baseline-aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+        "url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356/artifacts/13050652818",
+        "bytes": 9875884,
+        "sha256": "e60d7f28f7ceb7be06678ad11d10e1c90f78a065311860054c99da33bf4d9a05",
+        "official_digest_matches": true,
+        "zip_crc_verified": true,
+        "entries": 16,
+        "expires_at_utc": "2026-11-14T17:06:42Z"
+      },
+      "job_log_sha256": "cd4087b73ada84e652ce734254fe8df44c9099766f5337b12f2832a995d431ae",
+      "artifact_receipt_sha256": "6f682a3ce7a063841b031504bef0233cb950aeaca7f5d76e0befdef47af8ee96",
+      "artifact_receipt_commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+      "artifact_receipt_tracked_source_dirty": false,
+      "independently_hashed_components": [
+        {
+          "name": "dedicated_server",
+          "bytes": 30340496,
+          "sha256": "6c450d7e72f96ef71a0e774c33a8d704758f542537e35eacca328210323b3f8d",
+          "elf_class": 2,
+          "machine": 62
+        },
+        {
+          "name": "verify_public_package",
+          "bytes": 484360,
+          "sha256": "dcb1bf40c3d2aeefd58b504482a7662f2bbaee7023611dbe4ecae6a1e264ae33",
+          "elf_class": 2,
+          "machine": 62
+        }
+      ],
+      "rust_tests": {
+        "passed": 554,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0,
+        "includes_doctests": true,
+        "nonzero_suite_counts": [
+          56,
+          393,
+          2,
+          18,
+          69,
+          6,
+          5,
+          4,
+          1
+        ],
+        "stdout_entry": "logs/20261031T170136673114Z-ci-linux-lan-baseline-tests.stdout.txt",
+        "stdout_sha256": "ed2a3a4c5490420795ca090e02136c7b080c3929a8fbc115330e5c75fce10d68",
+        "dedicated_server_passed": 393
+      },
+      "component_checksum_rows_verified": 2,
+      "quick_match_in_full_server_suite": {
+        "passed": 38,
+        "serialized_protocol_cases_passed": 19,
+        "new_cases_explicitly_observed_ok": [
+          "quick_match_protocol_final_mode_can_remove_all_inner_search_results",
+          "quick_match_protocol_mod_party_plus_solo_follow_from_empty",
+          "quick_match_protocol_mod_competing_member_join_consumes_pending_follow",
+          "quick_match_protocol_mod_stale_target_after_search_does_not_join",
+          "quick_match_protocol_official_party_plus_solo_follow_from_empty",
+          "quick_match_protocol_official_competing_member_join_consumes_pending_follow",
+          "quick_match_protocol_official_stale_target_after_search_does_not_join"
+        ],
+        "interpretation": "Actual hosted full test selection contains all seven new cases. The competing-join case observes existing policy; it is not a player-failure reproduction or matching-policy fix."
+      },
+      "test_commands": [
+        [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "dedicated_server",
+          "-p",
+          "dedicated_server_config",
+          "-p",
+          "quazal",
+          "-p",
+          "sc_bl_protocols",
+          "-p",
+          "api",
+          "-p",
+          "hooks-addresses"
+        ]
+      ]
+    },
+    {
+      "lane": "linux-public-donor-reference",
+      "workspace": "integration/scbl3",
+      "job_id": 124599657406,
+      "job_url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356/job/124599657406",
+      "job_conclusion": "success",
+      "started_at_utc": "2026-10-31T17:02:27Z",
+      "completed_at_utc": "2026-10-31T17:08:02Z",
+      "artifact": {
+        "id": 13050358853,
+        "name": "linux-public-donor-reference-aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+        "url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356/artifacts/13050358853",
+        "bytes": 4005857,
+        "sha256": "cd68cefa493e1cb466aa1a6e2d65b36f69be4e2e2dc7d0bfdc004dff7b0340a3",
+        "official_digest_matches": true,
+        "zip_crc_verified": true,
+        "entries": 15,
+        "expires_at_utc": "2026-11-14T17:07:58Z"
+      },
+      "job_log_sha256": "42a878b77792cfc4d5d6ac663066dcfca0fe9e8bd42c3d33dacb6e58de7ba9fc",
+      "artifact_receipt_sha256": "91bc185d52bbdce2d0c4f386d3f4b2d5d64ee23d6acb5b1b7cc249101436b817",
+      "artifact_receipt_commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+      "artifact_receipt_tracked_source_dirty": false,
+      "independently_hashed_components": [
+        {
+          "name": "dedicated_server",
+          "bytes": 8981024,
+          "sha256": "259c9c1f54de3047e7cfa88890e60fc5ed746bd2a6c16aaf2ba725e0f36fe47f",
+          "elf_class": 2,
+          "machine": 62
+        }
+      ],
+      "rust_tests": {
+        "passed": 183,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0,
+        "includes_doctests": true,
+        "nonzero_suite_counts": [
+          152,
+          26,
+          4,
+          1
+        ],
+        "stdout_entry": "logs/20261031T170302788230Z-ci-linux-public-donor-reference-tests.stdout.txt",
+        "stdout_sha256": "0273ddd29b258a3d9cec050333682fe7cf5057f2f7d5b1844d6730727c4f8737"
+      },
+      "component_checksum_rows_verified": 1,
+      "manager_tests": {
+        "passed": 154,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "stderr_sha256": "1167cc4ec30c2fe9d82c98d2bb438de32a6d6acec948462945a7192dd03bd2df"
+      },
+      "test_commands": [
+        [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "dedicated_server",
+          "-p",
+          "dedicated_server_config",
+          "-p",
+          "quazal",
+          "-p",
+          "sc_bl_protocols",
+          "-p",
+          "api"
+        ],
+        [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "server/manager/tests",
+          "-v"
+        ]
+      ]
+    },
+    {
+      "lane": "linux-public-control",
+      "workspace": "src/public",
+      "job_id": 124599657481,
+      "job_url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356/job/124599657481",
+      "job_conclusion": "success",
+      "started_at_utc": "2026-10-31T17:02:22Z",
+      "completed_at_utc": "2026-10-31T17:02:58Z",
+      "artifact": {
+        "id": 13050467800,
+        "name": "linux-public-control-aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+        "url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356/artifacts/13050467800",
+        "bytes": 68111,
+        "sha256": "ee7fd513b780d6a5b3dc29c6fbb134bbe6657217f95f53bebf75e57ebb27ea5c",
+        "official_digest_matches": true,
+        "zip_crc_verified": true,
+        "entries": 17,
+        "expires_at_utc": "2026-11-14T17:02:55Z"
+      },
+      "job_log_sha256": "b92aacd246107ab41beeb0c8cb28f41bb0c15b406b490c0347217872925e0dbe",
+      "artifact_receipt_sha256": "3c7bc49e09c7800e73717df096498bed74442860d751487a9e8eb2f93ab971ac",
+      "artifact_receipt_commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+      "artifact_receipt_tracked_source_dirty": false,
+      "independently_hashed_components": [
+        {
+          "name": "FifthFreedom-Control.pyz",
+          "bytes": 56536,
+          "sha256": "7ca9074c84422ba9409698307529067deb49889667a6a1ab76ed6d290ce38bed"
+        }
+      ],
+      "python_tests": [
+        {
+          "suite": "linux-public-control.txt",
+          "passed": 151,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_log_sha256": "62ebf48a2633c84534269a7d0bd3c1205815dcc43d7f9440251e879777066841"
+        },
+        {
+          "suite": "public-candidate-builder.txt",
+          "passed": 10,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_log_sha256": "43b3b16c793d51244d55071245fe77743047fc15b9593c7e05eeeb59170129d2"
+        }
+      ],
+      "deployment_template_hashes_verified": 2,
+      "public_runtime_scope": "read_only_control_service",
+      "native_public_game_server_enabled": false,
+      "test_transport": "synthetic_loopback_tls_only"
+    }
+  ],
+  "limits": {
+    "downloaded_binaries_executed": false,
+    "tests_rerun_during_verification": false,
+    "complete_windows_candidate_verified_by_this_receipt": false,
+    "whole_workflow_success_claimed": false,
+    "game_started": false,
+    "capture_started": false,
+    "production_deployed": false,
+    "formal_release_published": false,
+    "live_multiplayer_acceptance": false,
+    "notes": [
+      "LAN and donor outputs are Linux components. The donor remains a reference; the control service is a separate read-only service with synthetic loopback TLS tests.",
+      "Offline quick-match protocol coverage does not establish live same-room acceptance, a retail level-to-filter mapping, or resolution of the reported greater-than-56 matching symptom.",
+      "Windows ABI, complete candidate package, camera retail behavior and other workflow jobs are outside this receipt."
+    ]
+  }
+}

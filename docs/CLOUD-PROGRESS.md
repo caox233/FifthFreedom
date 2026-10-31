@@ -1727,3 +1727,38 @@ bytes, modes and path sets:1312→1714→1312, clean. Its456 changed paths occup
 c99b637b560f4df4f920669932b4dcc5f958ebf0a9d986be8ce4210877bd8c0c.
 This is a verified local source checkpoint, not a GitHub push, a new hosted
 Windows result or a replacement for the original private four-role evidence.
+
+
+## November 1: confirmed camera ABI correction and complete candidate
+
+The new locally confirmed e4 crash is not dismissed as an old installation.
+The supplied retail ret4/virtual-call facts and independent public PE mapping
+identified a missing DWORD in Disable's x86 thiscall signature. b784636 forwards
+that opaque value and preserves the independent Cleanup ret0 boundary, camera
+controls and existing UI layout. Known return-path facts do not establish every
+other caller's return semantics.
+
+The complete Windows candidate and dedicated ABI job in run41222450356 both
+succeeded. Downloaded program ZIP SHA256 is
+`d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd`.
+Actual B/R each finish16 unhooked controls then observe a wrong-argument execute
+fault at the first hooked call; the handler exits without resuming. M/RP each
+finish64calls/515checks, zero failures. Synthetic fault addresses differ from
+retail EIP1; this does not certify all live crashes. Real release DLL bytes
+independently confirm ret4 and forwarding. UI197/save27,65files/four identities,
+UTF8 checksums and50 source/notice entries pass. WPF672images match e4 exactly.
+
+Source checks: Linux729pass2skip, Windows612pass119skip. LinuxLAN554Rust checks
+include38 quick-match controls and7 new scenarios; those are not live same-room
+acceptance. New login/register messages distinguish release vs catalog refusal
+without weakening admission. LAN availability/cancellation, other-player
+identity rejection and valid-viewport performance remain distinct open records.
+C71 and ordinaryPublic admission remain closed; all six original milestones and
+accepted gameplay scope persist. No game, private capture, deployment or Release
+was started. The developer-evidence coordination rule is in CLOUD-HANDOFF.md;
+no user technical questionnaire or immediate retest is required.
+
+See [candidate and concise instructions](DEVELOPMENT-CANDIDATE-TESTING.md),
+[actual ABI execution](evidence/hosted-camera-abi-b784636.json),
+[real built PE](evidence/camera-disable-built-abi-b784636.json), and
+[complete package](evidence/hosted-complete-package-b784636.json).

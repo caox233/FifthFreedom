@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Original cloud checkout and remote are 0e691519 with knowledge2044879 preserved. New November1 local evidence proves e4 installed and loaded, and reports execute AV EIP=1 (not recovered EIP0). Retail +4D0 Disable has ECX plus one DWORD/ret4 while e4 detour lacks that argument; independent public PE mapping associates the reported wrapper offsets with Disable. Production parameter-forwarding correction is in progress with strict hosted x86 replay pending. Prior e4 composition now independently verified successful; it does not cover gameplay. Original six milestones and accepted gameplay scope remain.",
-  "NEXT_EXECUTABLE_ACTION": "Finish isolated actual Win32x86 Disable virtual-dispatch B/M/R/RP without mistaking a premature harness crash for complete case coverage; preserve Cleanup ret0 and opaque argument. Run new exact-SHA hosted unified Windows candidate and source/Linux checks, download and verify ZIP identities/checksums and packaged save/UI smoke, publish reviewed source/DevDocs. Keep matching same-room, valid-viewport performance, distinct LAN availability and other-player release rejection open; no automatic game/capture/deployment/Release.",
+  "LAST_CONFIRMED_RESULT": "Exact b784636 complete Windows candidate built/downloaded/verified: programZIP d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd, UI197/save27,65files/fouridentities/UTF8checksums. Actual Windows Disable ABI B/R each stop after16 unhooked controls at first hooked wrong-argument executeAV (not retail EIP1 replay); M/RP each64calls/515checks0fail. Actual release PE confirms ret4/opaque forwarding and unchanged Cleanup ret0. Retained lifecycle/progression replay passes; source731 items and LinuxLAN554 pass stated scopes;672 WPF PNGs equal e4. No full live crash/matching/performance or Public admission claim.",
+  "NEXT_EXECUTABLE_ACTION": "Read any remaining same-run41222450356 dependent composition terminal result and verify its receipts without treating pending work as pass. Continue original six goals and distinct needs-triage records: LAN capability Unavailable/Cancelled vs discovery, actual multiplayer search/join target selection, valid-viewport EMF frame timing, other-player release admission, VSS/history/C71, ordinaryPublic owned Windows/NIC/WFP/session prerequisites and source/provenance closure. New camera ABI correction is delivered; live causal coverage remains open. Development-side missing evidence stays in handoff, not user technical questionnaires; no automatic game/capture/deployment/Release.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -23,12 +23,12 @@
     {
       "id": 2,
       "name": "SCBL3 UI with retained LAN behavior",
-      "status": "Direct SCBL3 MOD/Official/FOV restored; exact e4 complete Local candidate and actual WPF verified; physical/live checks and ordinary Public execution remain open"
+      "status": "Direct SCBL3 MOD/Official/FOV restored; exact b784636 complete Local candidate and actual WPF verified; physical/live checks and ordinary Public execution remain open"
     },
     {
       "id": 3,
       "name": "Windows LAN and Linux public servers",
-      "status": "Exact e4 complete Windows Local candidate and Linux components verified; ordinary Public owned Windows/NIC/WFP/session admission remains open"
+      "status": "Exact b784636 complete Windows Local candidate and Linux components verified; ordinary Public owned Windows/NIC/WFP/session admission remains open"
     },
     {
       "id": 4,
@@ -97,7 +97,7 @@
     "knowledge_initial_commit": "c01ccf440990752cf8fd9b6b573cc41fef6fad31",
     "continuous_goal": "No Goal query/create/scheduler interface is available in this session. Full six-milestone scope is retained here; current turn runs autonomously, later turns require a new message or platform wake-up. No unlimited background execution is promised.",
     "api_access": "Normal gh api, git fetch, non-force push and remote SHA verification succeeded using inherited platform access; prior401 preserved as history",
-    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40816624490",
+    "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356",
     "pull_request": "https://github.com/caox233/FifthFreedom/pull/1",
     "hosted_history": [
       {
@@ -242,16 +242,16 @@
         "complete_package": "skipped_private_input_gate_failed"
       }
     ],
-    "candidate_windows_source": "Exact source 329f18a Windows component stage/upload succeeded; the official 61-file download and all 50 notice/source files were verified, including 5 hidden inputs. Four Windows component hashes independently bind to the same-run assembly. Source tests: 554 passed, 116 skipped, zero failures/errors. This is not the full Windows client.",
+    "candidate_windows_source": "b784636 Windows component124599657507 and full package124599695245 succeeded. Separate component ABI B/R partial negative and M/RP64calls515checks passed; fullpackageUI197/save27,65files/fouridentities/UTF8 checksums independently verified.",
     "knowledge_pull_request": "https://github.com/caox233/FifthFreedom-DevDocs/pull/1",
-    "candidate_linux_matrix": "Exact source 329f18a matrix 40420957466 passed all 9 QUIC/WSS/TCP phases; six namespaces removed, core reaped, TUN absent and new traffic denied. Finite guard3 development evidence, not native lease, peer-map71 or ordinary Public/live acceptance.",
-    "validated_implementation_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
-    "candidate_component_result": "Exact dcb Windows components123259098088 and complete package123259140125 both succeeded. PackageUI182/save27; WindowsNetworkPreferences111/discovery46/draft21; download65files/63manifest/64checksums/four identities/50 notice-source entries verified. Linux component lanes pass; C71 remains13missing/0executed and ordinary Public is not admitted.",
-    "knowledge_snapshot_commit": "57a7e23bc46b37e5118a94a14abb43ae82d65c28",
-    "knowledge_snapshot_source": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
-    "knowledge_snapshot_files": 314,
-    "last_verified_remote_source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
-    "latest_reviewed_local_implementation_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+    "candidate_linux_matrix": "b784636 actual LinuxLAN554 Rust, donor183Rust/154manager and control151+10 pass; corresponding38quickmatch controls pass offline. Earlier guard3 QUIC/WSS/TCP matrix remains historical evidence; ordinaryPublic not admitted.",
+    "validated_implementation_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+    "candidate_component_result": "Complete Windows Local candidate artifact13050941008 verified; this is distinct from component artifact13050946720 and the C71 gate13missing/0executed. Exact same-source actual WPF672PNG pairs equal e4. Live crash/matching/performance, ordinaryPublic and all six milestones not declared complete.",
+    "knowledge_snapshot_commit": "c6a0b713adcc050b041da17fc8884a5dd75db23e",
+    "knowledge_snapshot_source": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+    "knowledge_snapshot_files": 361,
+    "last_verified_remote_source_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+    "latest_reviewed_local_implementation_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
     "latest_reviewed_local_implementation_pushed": true,
     "authentication_recovery": {
       "status": "recovered_actual_operations_verified",
@@ -308,15 +308,37 @@
     "validated_implementation_commit_historical_before_329f": "2b66f307a8b4fd1106ca529a72f974bebc362d54",
     "candidate_component_result_historical_before_329f": "Exact 9139 candidate: six success, four failure, one skipped complete package. Windows component and assembly runner builds succeeded but uploaded artifacts omit five declared hidden source files (45/50 notices and 57/62 candidate files). Read-only production validation reproduces the same early missing-input failure; lifecycle and composition have no new runtime success. Eight save and thirteen C71 gates remain distinct.",
     "crash_dispatch_20261101": {
-      "status": "implementation_and_test_harness_in_progress_not_hosted_pass",
+      "status": "exact_source_hosted_abi_regression_and_complete_candidate_verified",
       "baseline": "0e691519b878a8fbbb0695392eb2a2ba9616e841",
       "report": "docs/evidence/camera-dispatch-feedback-20261101.json",
       "independent_binary_map": "docs/evidence/native-disable-binary-map-20261101.json",
       "prior_composition_final": "docs/evidence/hosted-e4-composition-final-20261101.json",
       "signature_fix": "Disable(receiver, opaque_argument), forwarding unchanged; Cleanup remains receiver-only; no +4D8 change",
       "live_crash_fix_proven": false,
-      "full_goal_complete": false
-    }
+      "full_goal_complete": false,
+      "implementation_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+      "candidate_run": 41222450356,
+      "candidate_artifact": 13050941008,
+      "candidate_url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356/artifacts/13050941008",
+      "program_zip_sha256": "d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd",
+      "runtime_evidence": "docs/evidence/hosted-camera-abi-b784636.json",
+      "built_pe_evidence": "docs/evidence/camera-disable-built-abi-b784636.json",
+      "complete_package_evidence": "docs/evidence/hosted-complete-package-b784636.json"
+    },
+    "prior_current_pointers_20261101": {
+      "candidate_run": "https://github.com/caox233/FifthFreedom/actions/runs/40816624490",
+      "candidate_windows_source": "Exact source 329f18a Windows component stage/upload succeeded; the official 61-file download and all 50 notice/source files were verified, including 5 hidden inputs. Four Windows component hashes independently bind to the same-run assembly. Source tests: 554 passed, 116 skipped, zero failures/errors. This is not the full Windows client.",
+      "candidate_linux_matrix": "Exact source 329f18a matrix 40420957466 passed all 9 QUIC/WSS/TCP phases; six namespaces removed, core reaped, TUN absent and new traffic denied. Finite guard3 development evidence, not native lease, peer-map71 or ordinary Public/live acceptance.",
+      "validated_implementation_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+      "candidate_component_result": "Exact dcb Windows components123259098088 and complete package123259140125 both succeeded. PackageUI182/save27; WindowsNetworkPreferences111/discovery46/draft21; download65files/63manifest/64checksums/four identities/50 notice-source entries verified. Linux component lanes pass; C71 remains13missing/0executed and ordinary Public is not admitted.",
+      "knowledge_snapshot_commit": "57a7e23bc46b37e5118a94a14abb43ae82d65c28",
+      "knowledge_snapshot_source": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+      "knowledge_snapshot_files": 314,
+      "last_verified_remote_source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+      "latest_reviewed_local_implementation_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+      "latest_reviewed_local_implementation_pushed": true
+    },
+    "knowledge_pointer_scope": "Last verified implementation snapshot before this delivery-document commit; final documentation mirror binds its exact source in FifthFreedom-DevDocs/SNAPSHOT.json, avoiding circular source/knowledge commit references."
   },
   "validation_boundaries": [
     "no new game execution or live acceptance",

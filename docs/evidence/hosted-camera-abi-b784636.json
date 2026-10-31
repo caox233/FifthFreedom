@@ -1,0 +1,538 @@
+{
+  "schema": 1,
+  "source_commit": "b7846360b6e80a90fca23f580f3778b2a85abe90",
+  "executed_commit": "aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+  "identical_source_tree": "b04a875a3005f91ee85c8f403d3080b54c02cb28",
+  "run_id": 41222450356,
+  "job": {
+    "id": 124599657507,
+    "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-31T17:01:24Z",
+    "completed_at": "2026-10-31T17:26:40Z"
+  },
+  "artifact": {
+    "id": 13050946720,
+    "name": "windows-component-build-evidence-aa35da89094b15d75b60944a71dff5cf46c4ffb2",
+    "size_in_bytes": 394102,
+    "digest": "sha256:a13980d4657f347a86f270f44abfda649925094edfbd449a9d49fd2ffd8d78a5"
+  },
+  "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41222450356/artifacts/13050946720",
+  "official_digest_size_crc_independently_verified": true,
+  "exact_stdout_stderr_hashes_and_strict_result_parsers_independently_rechecked": true,
+  "camera_disable_abi": {
+    "baseline_commit": "0e691519b878a8fbbb0695392eb2a2ba9616e841",
+    "scope": "Production StaticDetour and replacement; synthetic x86 vtable caller and native leaf; not retail instruction replay",
+    "source": {
+      "path": "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs",
+      "baseline": {
+        "canonical_sha256": "80e2841654924909e017bc97d3b11d1606d39cc11bfcfb3ca63cbf5653e338ba",
+        "compiled_sha256": "40edc8ab4d42db975609c20413a80b7b7f4302615bfbed12f45aca2175735c4e",
+        "test_module_appended": true,
+        "exact_reverse_to_canonical": true
+      },
+      "modified": {
+        "canonical_sha256": "84cc171028fa57ace068b1b65bf977f815155811815eb798216d4ec042476197",
+        "compiled_sha256": "84cc171028fa57ace068b1b65bf977f815155811815eb798216d4ec042476197",
+        "test_module_appended": false,
+        "exact_reverse_to_canonical": true
+      }
+    },
+    "fixture": {
+      "path": "src/native/client/hooks/gameplay/src/sticky_camera_abi_tests.rs",
+      "sha256": "37672f29e3cb9dce5b85007f6abf5cbbe3294a8ef58b1d476390cd84eed713a6"
+    },
+    "runner_sources": {
+      "scripts/ci_camera_abi_replay.py": {
+        "canonical_sha256": "a853cc2633b38201af37e8444f4415d03864b1ef7b247b95d44552b1a14ccf06",
+        "working_sha256": "a853cc2633b38201af37e8444f4415d03864b1ef7b247b95d44552b1a14ccf06",
+        "only_checkout_crlf_difference_allowed": true
+      },
+      "scripts/ci_native_production_replay.py": {
+        "canonical_sha256": "4428ac3002efa7cb6d2b0e936b5df29a2eb154a005efbb58a50ee369128cf611",
+        "working_sha256": "4428ac3002efa7cb6d2b0e936b5df29a2eb154a005efbb58a50ee369128cf611",
+        "only_checkout_crlf_difference_allowed": true
+      },
+      "scripts/build.py": {
+        "canonical_sha256": "b9c1d71188063a7a293ff2bfe232277ab65e943e5d1a425a61f617df9b603c6c",
+        "working_sha256": "b9c1d71188063a7a293ff2bfe232277ab65e943e5d1a425a61f617df9b603c6c",
+        "only_checkout_crlf_difference_allowed": true
+      }
+    },
+    "roles": [
+      {
+        "name": "baseline",
+        "compile_exit": 0,
+        "execution_exit": 101,
+        "executable": {
+          "file": "scbl_gameplay-35464a674640b4fd.exe",
+          "machine": "i386",
+          "sha256": "a627afe10fd829848b758adc75aa7a31e7910cfbd8a2d2917148cbf1650c5358",
+          "bytes": 15501824
+        },
+        "stdout_sha256": "1ae81ac8bec28a20f6fabf9bdc93368d1577aa9c11d4bdb3cf6d8f86002f8bcc",
+        "stderr_sha256": "ea625d6537d29e83d4a0c92f6e54372f3d8681d2acdc90b05c5720a1dd3d055d",
+        "checks": {
+          "status": "expected_missing_argument_fault_observed",
+          "completed_cases": 16,
+          "first_hooked_call_returned": false,
+          "remaining_cases_executed": false,
+          "complete_matrix_pass_claimed": false,
+          "observation": {
+            "schema": 1,
+            "completed_cases": 16,
+            "stage": 1,
+            "repeat": 0,
+            "receiver": 0,
+            "argument": 324508639,
+            "received_argument": 63302036,
+            "native_count_delta": 1,
+            "receiver_correct": true,
+            "cleanup_correct": true,
+            "previous_cases_validated": true,
+            "prior_failures": 0,
+            "cleanup_calls": 17,
+            "exception_code": 3221225477,
+            "access": 8,
+            "eip": 23407772,
+            "exception_address": 23407772,
+            "access_target": 23407772,
+            "child_exit_code": 86,
+            "context_resumed": false,
+            "game_executed": false
+          }
+        }
+      },
+      {
+        "name": "modified",
+        "compile_exit": 0,
+        "execution_exit": 0,
+        "executable": {
+          "file": "scbl_gameplay-35464a674640b4fd.exe",
+          "machine": "i386",
+          "sha256": "87fcef918b3fc964c68c6aeb70908f9352ce54322294bef96c2e0fe15098854c",
+          "bytes": 15502848
+        },
+        "stdout_sha256": "23425532b8f550a628f8b6b8a20b8062477985e2705e31279b9ca58dbf20007d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "checks": {
+          "schema": 1,
+          "status": "passed",
+          "cases": 64,
+          "hooked_calls": 32,
+          "unhooked_calls": 32,
+          "cleanup_calls": 64,
+          "negative_controls": 1,
+          "checks": 515,
+          "failures": {
+            "stack_cleanup": 0,
+            "argument_forwarding": 0,
+            "receiver": 0,
+            "nonvolatile": 0,
+            "native_count": 0,
+            "cleanup": 0,
+            "caller_stack": 0,
+            "branch": 0,
+            "restoration": 0
+          },
+          "game_executed": false,
+          "retail_body": false,
+          "native_return_type_confirmed": false
+        }
+      },
+      {
+        "name": "rollback",
+        "compile_exit": 0,
+        "execution_exit": 101,
+        "executable": {
+          "file": "scbl_gameplay-35464a674640b4fd.exe",
+          "machine": "i386",
+          "sha256": "554f57c98a732f97872540d1a1e00c90639f2e542071a4c64b98658cb2d1ffbb",
+          "bytes": 15501824
+        },
+        "stdout_sha256": "93317679fab5a8f5136b48471c1d732edf88debbd1f115f96eafb688d1526d4a",
+        "stderr_sha256": "0f0a57811d712140ae6026f1c28d5a0cbbf9abdda653a60360ed923d1812bd83",
+        "checks": {
+          "status": "expected_missing_argument_fault_observed",
+          "completed_cases": 16,
+          "first_hooked_call_returned": false,
+          "remaining_cases_executed": false,
+          "complete_matrix_pass_claimed": false,
+          "observation": {
+            "schema": 1,
+            "completed_cases": 16,
+            "stage": 1,
+            "repeat": 0,
+            "receiver": 0,
+            "argument": 324508639,
+            "received_argument": 57075124,
+            "native_count_delta": 1,
+            "receiver_correct": true,
+            "cleanup_correct": true,
+            "previous_cases_validated": true,
+            "prior_failures": 0,
+            "cleanup_calls": 17,
+            "exception_code": 3221225477,
+            "access": 8,
+            "eip": 17312924,
+            "exception_address": 17312924,
+            "access_target": 17312924,
+            "child_exit_code": 86,
+            "context_resumed": false,
+            "game_executed": false
+          }
+        }
+      },
+      {
+        "name": "reapplied",
+        "compile_exit": 0,
+        "execution_exit": 0,
+        "executable": {
+          "file": "scbl_gameplay-35464a674640b4fd.exe",
+          "machine": "i386",
+          "sha256": "2a3d33fe5f63699046ca2fe2f513a1c455432284a342aaeaa66ba4f5be1abe6c",
+          "bytes": 15502848
+        },
+        "stdout_sha256": "23425532b8f550a628f8b6b8a20b8062477985e2705e31279b9ca58dbf20007d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "checks": {
+          "schema": 1,
+          "status": "passed",
+          "cases": 64,
+          "hooked_calls": 32,
+          "unhooked_calls": 32,
+          "cleanup_calls": 64,
+          "negative_controls": 1,
+          "checks": 515,
+          "failures": {
+            "stack_cleanup": 0,
+            "argument_forwarding": 0,
+            "receiver": 0,
+            "nonvolatile": 0,
+            "native_count": 0,
+            "cleanup": 0,
+            "caller_stack": 0,
+            "branch": 0,
+            "restoration": 0
+          },
+          "game_executed": false,
+          "retail_body": false,
+          "native_return_type_confirmed": false
+        }
+      }
+    ],
+    "retail_eip_one_reproduced": false,
+    "important_boundary": "Baseline and rollback each complete16 unhooked controls, then stop at the first hooked call with wrong opaque argument and an observed execute AV. Their owned synthetic fault addresses differ from the reported retail EIP1. Modified and reapplied each complete64calls/515checks, with64Cleanup calls and0failures. This proves the ABI correction, not a retail crash/dump replay."
+  },
+  "retained_production_regressions": {
+    "baseline_commit": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+    "roles": [
+      {
+        "name": "baseline",
+        "compile_exit": 0,
+        "executable": {
+          "file": "scbl_gameplay-1c2e87fb823bb9eb.exe",
+          "sha256": "386e4e651a89856011f1c3e3bf97cd512f0ac190856eab7d183bee90e722ffdc",
+          "machine": "i386",
+          "bytes": 15465984
+        },
+        "lanes": {
+          "sticky-camera": {
+            "exit_code": 101,
+            "checks": {
+              "passed": 9,
+              "failed": 1,
+              "ignored": 0,
+              "measured": 0,
+              "filtered": 1241,
+              "callback_checks": 87,
+              "callback_failures": 35,
+              "callback_failure_names": [
+                "cancel_asset_reuse_blocks_new_start",
+                "cancel_destroy_blocks_new_start",
+                "cancel_destruction_no_native_whistle_fallback",
+                "cancel_replacement_blocks_new_start",
+                "cancel_shutdown_blocks_new_start",
+                "cancel_world_switch_blocks_new_start",
+                "detonate_result_after_native_lifecycle_callback",
+                "end_failure_does_not_stop_destroyed_or_replaced_actor",
+                "lifecycle_destruction_blocks_native_trigger",
+                "nested_accepted_start_consumes_outer_fallback",
+                "nested_pair_still_has_paired_end",
+                "old_failed_end_does_not_stop_nested_pair",
+                "outer_failure_keeps_nested_pair",
+                "runtime_end_nested_start_never_mixes_or_republishes",
+                "runtime_nested_start_never_mixes_original_whistle",
+                "runtime_nested_start_remains_owned"
+              ]
+            },
+            "stdout_sha256": "ecf221d954342042e7b612e4c6b4aa02bedd41371a44a85dcee5c23e5a7f3807",
+            "stderr_sha256": "f2078b83e97d989372e127a5ae3f4f218ea2366b27a4dfbda0d302ddae93ef78"
+          },
+          "progression": {
+            "exit_code": 101,
+            "checks": {
+              "passed": 0,
+              "failed": 2,
+              "ignored": 0,
+              "measured": 0,
+              "filtered": 1249
+            },
+            "stdout_sha256": "5345818dcfca418757358f6c4117dd699efdb598a9c4c4881b5e4191400bb4ce",
+            "stderr_sha256": "2b9a0365035b8a2c3d42c679d485ce892d0d6cccc8ec53567f36c238dcd0bcd4"
+          }
+        }
+      },
+      {
+        "name": "modified",
+        "compile_exit": 0,
+        "executable": {
+          "file": "scbl_gameplay-1c2e87fb823bb9eb.exe",
+          "sha256": "486f532525eb3564763533666882458c947e4d27dec836d9891714228fa37716",
+          "machine": "i386",
+          "bytes": 15472640
+        },
+        "lanes": {
+          "sticky-camera": {
+            "exit_code": 0,
+            "checks": {
+              "passed": 10,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "filtered": 1241,
+              "callback_checks": 87,
+              "callback_failures": 0,
+              "callback_failure_names": []
+            },
+            "stdout_sha256": "73429adc99e0b3d7dee05d6bda80a08a86d60ffc602cbd944c7b8fc170d7135b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "progression": {
+            "exit_code": 0,
+            "checks": {
+              "passed": 2,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "filtered": 1249
+            },
+            "stdout_sha256": "056599472883ca005203508cfe690a4aa1d024cd3de033591e42185ce0af8667",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "name": "rollback",
+        "compile_exit": 0,
+        "executable": {
+          "file": "scbl_gameplay-1c2e87fb823bb9eb.exe",
+          "sha256": "7c723ef0fded0728b0cc992a50d1d4c7c8331a699d9473840189d1c80c143d5e",
+          "machine": "i386",
+          "bytes": 15465984
+        },
+        "lanes": {
+          "sticky-camera": {
+            "exit_code": 101,
+            "checks": {
+              "passed": 9,
+              "failed": 1,
+              "ignored": 0,
+              "measured": 0,
+              "filtered": 1241,
+              "callback_checks": 87,
+              "callback_failures": 35,
+              "callback_failure_names": [
+                "cancel_asset_reuse_blocks_new_start",
+                "cancel_destroy_blocks_new_start",
+                "cancel_destruction_no_native_whistle_fallback",
+                "cancel_replacement_blocks_new_start",
+                "cancel_shutdown_blocks_new_start",
+                "cancel_world_switch_blocks_new_start",
+                "detonate_result_after_native_lifecycle_callback",
+                "end_failure_does_not_stop_destroyed_or_replaced_actor",
+                "lifecycle_destruction_blocks_native_trigger",
+                "nested_accepted_start_consumes_outer_fallback",
+                "nested_pair_still_has_paired_end",
+                "old_failed_end_does_not_stop_nested_pair",
+                "outer_failure_keeps_nested_pair",
+                "runtime_end_nested_start_never_mixes_or_republishes",
+                "runtime_nested_start_never_mixes_original_whistle",
+                "runtime_nested_start_remains_owned"
+              ]
+            },
+            "stdout_sha256": "ecf221d954342042e7b612e4c6b4aa02bedd41371a44a85dcee5c23e5a7f3807",
+            "stderr_sha256": "9c77a2d3ff48dc34d0dc718547c6cd6ee380234e9f0a8dc20973dc480a47402b"
+          },
+          "progression": {
+            "exit_code": 101,
+            "checks": {
+              "passed": 0,
+              "failed": 2,
+              "ignored": 0,
+              "measured": 0,
+              "filtered": 1249
+            },
+            "stdout_sha256": "5345818dcfca418757358f6c4117dd699efdb598a9c4c4881b5e4191400bb4ce",
+            "stderr_sha256": "6906a7609c2f75d55e7f9dbb19c8655bc7641c7db3e701dcbf164fab6773ecfc"
+          }
+        }
+      },
+      {
+        "name": "reapplied",
+        "compile_exit": 0,
+        "executable": {
+          "file": "scbl_gameplay-1c2e87fb823bb9eb.exe",
+          "sha256": "04acff0a9ed18e8e939c15881436a5c66a028d65c4fb766d41f5974ecbf6af22",
+          "machine": "i386",
+          "bytes": 15472640
+        },
+        "lanes": {
+          "sticky-camera": {
+            "exit_code": 0,
+            "checks": {
+              "passed": 10,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "filtered": 1241,
+              "callback_checks": 87,
+              "callback_failures": 0,
+              "callback_failure_names": []
+            },
+            "stdout_sha256": "73429adc99e0b3d7dee05d6bda80a08a86d60ffc602cbd944c7b8fc170d7135b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "progression": {
+            "exit_code": 0,
+            "checks": {
+              "passed": 2,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "filtered": 1249
+            },
+            "stdout_sha256": "056599472883ca005203508cfe690a4aa1d024cd3de033591e42185ce0af8667",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    ]
+  },
+  "other_component_checks": {
+    "diagnostic_stream_checks": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "linked_production": true,
+      "full_diagnostic_zip_exercised": false
+    },
+    "custom_address_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "actual DX11-only custom file loader, legacy dual-key and malformed-input refusal; no DX9 UI or game activation"
+    },
+    "native_authentication_checks": [
+      {
+        "filter": "native_bridge_fixture_tests",
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "native_observer_fixture_tests",
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "auth_key_file",
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "public_source",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "lan_source_tests",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "deployment_profile::tests",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "release_admission_tests",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      }
+    ],
+    "protocol_feedback_checks": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "synthetic production Login/admission and same-sequence PRUDP response-cache/database behavior; not the cause of distinct live requests"
+    },
+    "native_public_return_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "owned synthetic Windows processes and production named-pipe contracts"
+    },
+    "native_managed_interop": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "helper_relative_to_cargo_target": "i686-pc-windows-msvc/debug/deps/hooks-6ceb5aec3d25e2c0.exe",
+      "helper_sha256": "468b4665efacb02b2c45ca642a284f0bca11ab163475e316bec3c3a3dbd4af8c",
+      "helper_bytes": 14708224,
+      "helper_selected_from_same_invocation_cargo_json": true,
+      "game_executed": false,
+      "package_and_loaded_dll_admission_exercised": false
+    },
+    "native_public_source_transport_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "production_admission": false,
+      "scope": "owned Windows loopback sockets, interface/source binding and revocation of retained API transports"
+    },
+    "port_zero_metadata_checks": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "actual sockaddr metadata reader preserves caller port zero; upstream caller and live 10049 origin remain unknown"
+    },
+    "native_replay_admission": {
+      "required_feature": "native-replay-fixtures",
+      "held_checks": 13,
+      "executed_checks": 0,
+      "status": "held_missing_external_input",
+      "full_native_replay_verified": false,
+      "source_sha256": "a0942f34386a90b7dfbfa95d634e98b0211e4248fc4c18d87ca98dce8552e679",
+      "scope": "targeted IPC and socket tests do not certify all hooks/native instruction replays"
+    }
+  },
+  "complete_package": false,
+  "complete_package_evidence": "docs/evidence/hosted-complete-package-b784636.json",
+  "game_executed": false,
+  "live_crash_fix_proven": false,
+  "ordinary_public_admitted": false,
+  "c71_replaced": false
+}

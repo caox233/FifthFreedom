@@ -1,7 +1,7 @@
 # 摄影机投出闪退与音频回调生命周期
 
 Status: **needs-triage**（多端闪退的完整动态因果）；11 月 1 日新增证据确认
-Disable 栈参数 ABI 缺陷，已最小修正，等待新的托管 Windows 四角色执行。
+Disable 栈参数 ABI 缺陷，已最小修正并完成真实托管 Windows 四角色验证。
 10 月 31 日音频生命周期回归的通过结果保留，不代表这项新 ABI 问题此前已覆盖。
 
 ## 联测反馈保留
@@ -49,6 +49,27 @@ execute AV 的异常地址/EIP/目标一致时写出收据并退出隔离子进�
 旧参数丢失且 ESP 差 -4，新参数保留且 ESP 差 0；这是独立本地报告，不能冒充云端
 托管结果。云端的源码编译、fixture 检查与后续真实结果分别记录于
 [本轮源码与测试边界收据](../evidence/camera-disable-abi-source-20261101.json)。
+
+### b784636 的实际交付结果
+
+官方 run `41222450356` / Windows 作业 `124599657507` 成功，精确源码与 PR checkout
+`aa35da89094b15d75b60944a71dff5cf46c4ffb2` 的 tree 相同。下载 artifact `13050946720`
+后重算官方 digest/CRC、所有输出摘要与生产/runner/fixture Git 对象，再由严格解析器
+独立重读四角色：全部实际编译退出 0；B/R 各正常完成 16 个无挂钩控制，在第一个挂钩
+调用中记录单次原生执行、正确 receiver、错误参数及 execute AV，子进程观测后退出 86，
+父测试以 101 真实失败。异常没有恢复，余下场景未运行。M/RP 各 64 次调用、64 次
+Cleanup、515 检查全部通过，零跳过。合成异常 EIP 与玩家 EIP=1 不同，不宣称重放了
+真实 WER；见[完整执行收据](../evidence/hosted-camera-abi-b784636.json)。
+
+完整程序包作业 `124599695245` 也成功。内层 ZIP SHA256
+`d08f55da2dfdcdf293f37212b2e3fbfdab803d0785a0de1af4196f61b6518cdd`，
+实际 gameplay DLL 为 `a4653a06f988d147c57e0b5f29cc65dc4293799f44b26d408efe35945eab102f`。
+独立读取其真实机器码确认 Disable 入口 `C2 04 00`、opaque 参数贯穿 closure/body
+并压入原 trampoline；Cleanup 仍 `C3`。
+[静态成品证据](../evidence/camera-disable-built-abi-b784636.json)与运行回放分开。
+包内 UI197/save27、65 文件、四身份和 UTF-8 校验通过，既有生命周期/内存回放保留。
+这关闭已确认 ABI 缺参的源码/隔离验证缺口，不关闭全部游戏闪退。现在不要求用户
+重测或转述技术数据，后续集中联测边界见[候选说明](../DEVELOPMENT-CANDIDATE-TESTING.md)。
 
 ### 10 月 31 日的历史摘要
 
