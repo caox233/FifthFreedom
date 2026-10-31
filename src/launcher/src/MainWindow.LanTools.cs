@@ -93,13 +93,12 @@ public partial class MainWindow
     {
         if (_toolsOperation || _isBusy || _dialogTcs != null) return;
         if (_toolsPage == "recovery" && page != "recovery") ClearRecoveryFields();
-        if (page != "gameplay") CancelGameplayDraft();
+        CancelGameplayDraft();
         CancelLocalDiscovery();
         _toolsPage = page; guideOverlay.Visibility = Visibility.Collapsed;
         toolsOverlay.Visibility = Visibility.Visible;
         toolsHomePanel.Visibility = page == "home" ? Visibility.Visible : Visibility.Collapsed;
         serverSettingsPanel.Visibility = page == "server" ? Visibility.Visible : Visibility.Collapsed;
-        gameplaySettingsPanel.Visibility = page == "gameplay" ? Visibility.Visible : Visibility.Collapsed;
         recoveryPanel.Visibility = page == "recovery" ? Visibility.Visible : Visibility.Collapsed;
         savesPanel.Visibility = page == "saves" ? Visibility.Visible : Visibility.Collapsed;
         playersPanel.Visibility = page == "players" ? Visibility.Visible : Visibility.Collapsed;
@@ -150,7 +149,7 @@ public partial class MainWindow
     {
         _toolsOperation = value; SetBusy(value);
         btnToolsClose.IsEnabled = btnRecoveryPage.IsEnabled = btnSavesPage.IsEnabled = btnPlayersPage.IsEnabled = btnAdvancedDiagnosticsPage.IsEnabled = !value;
-        btnServerSettingsPage.IsEnabled = btnLanSettingsPage.IsEnabled = btnGameplaySettingsPage.IsEnabled = !value;
+        btnServerSettingsPage.IsEnabled = btnLanSettingsPage.IsEnabled = !value;
         btnResetPassword.IsEnabled = btnRestoreOfficial.IsEnabled = btnRestoreMod.IsEnabled = !value;
         btnCaptureOnce.IsEnabled = btnExportCapture.IsEnabled = !value;
         recoveryCode.IsEnabled = recoveryPassword.IsEnabled = recoveryConfirm.IsEnabled = !value;

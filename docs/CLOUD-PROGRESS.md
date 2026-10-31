@@ -1,5 +1,28 @@
 # Cloud implementation evidence
 
+## Playtest feedback in progress — 2026-10-31 (Asia/Hong_Kong)
+
+The original d207fc6 workspace, d05f584 knowledge snapshot and both recovery
+bundles remain preserved. This turn handles the user's
+[separate playtest observations](tasks/playtest-feedback-20261031.md), with
+[direct main-screen controls](tasks/ui-mode-flow-review.md), real DX11-only
+[address loader compatibility](tasks/package-compatibility-feedback.md),
+[bounded progression allocation admission](tasks/progression-table-regions.md),
+[quick-match filter controls](tasks/quick-match-same-session.md) and
+[separate native ticket/port-zero investigation](tasks/protocol-feedback.md).
+[EMF frame comparison](tasks/emf-performance-feedback.md) has no real input and
+therefore no measured performance-improvement claim. The actual linked tests,
+initial failures and limited correction claims are retained per task; new
+Windows production replay, WPF pictures and unified package remain pending.
+
+The earlier dcb run has now ended: every full-package/component/composition job
+succeeded and the sole failed job is the independent C71 missing-input gate.
+See [the final observation](evidence/hosted-final-dcb97d0.json). That observation
+supplements the old in-progress receipt; it does not establish ordinary Public
+or live multiplayer acceptance.
+
+## Previous delivered candidate — dcb97d0
+
 The revised complete Windows Local development candidate from source
 `dcb97d0295c9c8700fd390249f2d617430d89dcf` is now
 [downloadable](https://github.com/caox233/FifthFreedom/actions/runs/40816624490/artifacts/12872324166).

@@ -1,6 +1,6 @@
 # Launcher modes, settings and local connection flow
 
-Status: ready-for-human for the delivered UI/Local candidate checks; ready-for-agent for the independent Public execution chain.
+Status: ready-for-agent for the 2026-10-31 direct-controls correction and its new hosted checks; the previously delivered UI/Local candidate and independent Public execution gap remain recorded below.
 
 The user tested the complete da180 Windows LAN candidate and requested these
 changes on the original integration branch. The fixed review baseline is
@@ -82,7 +82,7 @@ inspect ancestors root-to-leaf before any descendant. Runtime pins and Public
 readiness gates stay unchanged; sequential checks are not claimed to eliminate
 concurrent filesystem mutation races.
 
-## Verified revised delivery
+## Historical verified revised delivery (before direct-controls feedback)
 
 Source `dcb97d0295c9c8700fd390249f2d617430d89dcf` now has a complete Windows
 package from manual run40816624490/job123259140125: actual packaged UI182 and
@@ -104,3 +104,47 @@ WFP coverage. Its temporary owned rules were removed; original policy was not
 enabled or changed. Public configuration can be selected and saved, while
 actual Public game startup remains blocked. C71, multiplayer matching/chat and
 the original live/gameplay boundaries are not closed by this delivery.
+
+## 2026-10-31 direct-controls correction
+
+Status: **ready-for-agent** for the new hosted visual/full-package checks; the
+previous dcb package remains historical evidence, not validation of this change.
+The user clarified that general UI feedback did not authorize a redesigned main
+screen. The comparison baseline for this correction is the delivered source tree
+at `d207fc611be3a89351f8517fcbc37aeb18610dd4`.
+
+The original SCBL main-screen arrangement is restored in the existing shell:
+left launch/status/options and right sign-in remain in place, with Public/Local
+beside direct MOD/Official choices and the FOV slider below. The extra main-screen
+explanation, gameplay summary and “Game options / 调整玩法” entry are removed.
+There is no separate gameplay settings page. DX11-only launch/migration, the
+single settings entry, default Public, accurate unavailable Public status,
+server configuration and confirmed Local discovery/join/create are preserved.
+No backend implementation is rolled back.
+
+The directly visible controls retain the previously requested draft behavior.
+Save/Cancel appears inline after an edit, in a reserved row so the launch control
+does not move. Cancel or Escape restores committed values; Reset changes only
+the draft, and Save uses the existing atomic persistence service. An unresolved
+dirty draft disables launch instead of silently using or saving it. Owned busy,
+network transition and active-game boundaries disable the direct controls and
+actions. Independent source review identified a transient draft/visible-value
+mismatch during a mode transition; rejected input now preserves the existing
+draft and resumes it after the transition, without changing saved values.
+
+[The focused regression receipt](../evidence/ui-direct-controls-regression.json)
+records two new portable source/layout contract failures on the old UI and
+16/16 passing checks after the change. Isolated patch apply/reverse/reapply
+repeats the real source checks with exact restored bytes, preserving the original
+private four-role evidence. The unchanged draft service passes 21 real temporary
+filesystem/persistence checks. These checks do not establish WPF rendering.
+
+The actual WPF probe now checks direct-control visibility on the main screen,
+absence of the removed entry, real shown-window input/focus traversal and direct
+Save/Cancel/Escape behavior. The historical scenario token `settings-gameplay`
+is kept for four-phase comparison, but now depicts a dirty draft on the main
+screen. The existing DPI/language/window-size matrix and independent Public/
+Local dialog checks remain. Packaged self-tests also exercise busy/transition
+refusal without dropping a pending draft. Hosted execution and inspection of its
+actual rendered images are required before the unified candidate is delivered;
+Linux cross-compilation is not a screenshot or live gameplay result.

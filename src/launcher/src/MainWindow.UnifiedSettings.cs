@@ -12,14 +12,11 @@ public partial class MainWindow
 
     private void RenderModePresentation()
     {
-        if (networkModeDescription is null) return;
+        if (txtNetworkModeLabel is null) return;
         bool local = IsLocalUiMode;
         txtNetworkModeLabel.Text = L("联机模式", "Connection mode");
         itemPublicEnvironment.Content = L("公网模式", "Public mode");
         itemLocalEnvironment.Content = L("本地模式", "Local mode");
-        networkModeDescription.Text = local
-            ? L("查找同一网络的房主，或手动输入地址。连接与创建均需确认。", "Find hosts on your network or enter an address. Joining and hosting require confirmation.")
-            : L("使用已配置的公网服务器。启动前必须通过连接与安全检查。", "Use your configured public server. Connection and safety checks must pass before launch.");
         btnPublicConfiguration.Content = L("服务器设置", "Server settings");
         btnLocalConnection.Content = L("查找 / 连接房主", "Find / connect to host");
         btnPublicConfiguration.Visibility = local ? Visibility.Collapsed : Visibility.Visible;
@@ -45,6 +42,7 @@ public partial class MainWindow
         txtServerLabel.Text = local ? L("房主地址", "Host address") : L("公网服务器", "Public server");
         AutomationProperties.SetName(cmbNetworkEnvironment, txtNetworkModeLabel.Text);
         AutomationProperties.SetName(txtServer, txtServerLabel.Text);
+        RenderGameplaySummary();
     }
 
     private bool TryContainAuxiliaryOverlayFocus(KeyboardFocusChangedEventArgs e)
@@ -61,11 +59,8 @@ public partial class MainWindow
     {
         RenderModePresentation();
         btnServerSettingsPage.Content = L("公网服务器", "Public server");
-        btnGameplaySettingsPage.Content = L("玩法 / FOV", "Gameplay / FOV");
-        btnOpenGameOptions.Content = L("调整玩法", "Game options");
         btnGameplaySave.Content = L("保存", "Save");
         btnGameplayCancel.Content = L("取消", "Cancel");
-        txtGameplaySettingsHelp.Text = L("修改先作为草稿。保存后用于下次启动；取消或 Esc 保留之前的设置。DX11 是唯一支持的渲染方式。", "Changes are a draft. Save to use them on the next launch; Cancel or Esc retains previous settings. DX11 is the supported renderer.");
         RenderGameplaySummary();
         btnLanSettingsPage.Content = L("本地 / OB", "Local / OB");
         txtServerSettingsDescription.Text = L(
@@ -136,7 +131,7 @@ public partial class MainWindow
         // local settings write is a game/network operation.
         _toolsOperation = active;
         btnToolsClose.IsEnabled = btnRecoveryPage.IsEnabled = btnSavesPage.IsEnabled = btnPlayersPage.IsEnabled = btnAdvancedDiagnosticsPage.IsEnabled = !active;
-        btnServerSettingsPage.IsEnabled = btnLanSettingsPage.IsEnabled = btnGameplaySettingsPage.IsEnabled = !active;
+        btnServerSettingsPage.IsEnabled = btnLanSettingsPage.IsEnabled = !active;
         txtServerEndpoint.IsEnabled = txtServerUpdatePort.IsEnabled = txtTestServerEndpoint.IsEnabled = txtTestServerUpdatePort.IsEnabled = !active;
         txtPublicDeploymentPath.IsEnabled = cmbPublicTransport.IsEnabled = btnPublicDeploymentBrowse.IsEnabled = !active;
         btnServerSettingsSave.IsEnabled = btnServerSettingsReset.IsEnabled = !active && !_isGameRunning && !_isGameStarting && !_ownedGameLaunchActive;

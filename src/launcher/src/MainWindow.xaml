@@ -771,38 +771,54 @@
   </StackPanel>
   <Grid Grid.Row="1" Margin="76,12,42,18">
    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="66"/><ColumnDefinition Width="376"/></Grid.ColumnDefinitions>
-   <StackPanel x:Name="heroPanel" Grid.Column="0" Width="396" HorizontalAlignment="Left" VerticalAlignment="Center">
-    <StackPanel x:Name="networkModePanel" Margin="0,0,0,18">
-     <TextBlock x:Name="txtNetworkModeLabel" Text="联机模式" FontSize="12" Foreground="#A5ADB2" Margin="0,0,0,8"/>
-     <ListBox x:Name="cmbNetworkEnvironment" Style="{StaticResource ModeListBox}" Width="380" Height="48" Tag="170"
-              SelectedValue="Public" SelectedValuePath="Tag" SelectionChanged="NetworkEnvironment_SelectionChanged" AutomationProperties.Name="联机模式">
-      <ListBox.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" Columns="2"/></ItemsPanelTemplate></ListBox.ItemsPanel>
-      <ListBoxItem x:Name="itemPublicEnvironment" Content="公网模式" Tag="Public" FontSize="20"/>
-      <ListBoxItem x:Name="itemLocalEnvironment" Content="本地模式" Tag="Lan" FontSize="20"/>
-     </ListBox>
-     <TextBlock x:Name="networkModeDescription" Text="配置公网服务器后，检查连接前置条件。" TextWrapping="Wrap" FontSize="12" LineHeight="20" Foreground="#A5ADB2" Margin="0,12,0,6"/>
-     <Grid Height="44">
-      <Button x:Name="btnPublicConfiguration" Content="服务器设置" HorizontalAlignment="Left" Height="44" Padding="0,0,18,0" Style="{StaticResource CinematicLinkButton}" Click="ServerSettingsPage_Click"/>
-      <Button x:Name="btnLocalConnection" Content="查找 / 连接房主" Visibility="Collapsed" HorizontalAlignment="Left" Height="44" Padding="0,0,18,0" Style="{StaticResource CinematicLinkButton}" Click="LocalConnection_Click"/>
-     </Grid>
-    </StackPanel>
-    <Border x:Name="bdStatusPanel" Background="#8C080B0D" BorderBrush="#2EFFFFFF" BorderThickness="1,0,0,0" Padding="14,10" Margin="0,0,0,22">
+   <StackPanel x:Name="heroPanel" Grid.Column="0" Width="396" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,36">
+    <Border x:Name="bdStatusPanel" Background="Transparent" Margin="0,0,0,16">
      <StackPanel Orientation="Horizontal">
-      <Ellipse x:Name="serverStatusLight" Width="8" Height="8" Fill="#788289" Margin="0,0,9,0" VerticalAlignment="Top"/>
+      <Ellipse x:Name="serverStatusLight" Width="8" Height="8" Fill="#788289" Margin="0,6,9,0" VerticalAlignment="Top"/>
       <TextBlock x:Name="txtConnectionStatusCaption" Visibility="Collapsed"/>
-      <TextBlock x:Name="txtServerStatus" Text="尚未就绪" FontSize="13" Width="330" LineHeight="21" TextWrapping="Wrap"/>
+      <TextBlock x:Name="txtServerStatus" Text="尚未就绪" FontSize="14" MaxWidth="350" TextWrapping="Wrap"/>
      </StackPanel>
     </Border>
-    <!-- LAN role is selected only after a discovery/manual/create confirmation. -->
+    <Grid x:Name="launchOptionsPanel" Width="358" HorizontalAlignment="Left" Margin="0,0,0,4">
+     <Grid.ColumnDefinitions><ColumnDefinition Width="196"/><ColumnDefinition Width="20"/><ColumnDefinition Width="142"/></Grid.ColumnDefinitions>
+     <StackPanel x:Name="networkModePanel">
+      <TextBlock x:Name="txtNetworkModeLabel" Text="联机模式" FontSize="11" Foreground="#9CA8AD" Margin="0,0,0,5"/>
+      <ListBox x:Name="cmbNetworkEnvironment" Style="{StaticResource ModeListBox}" Width="180" Height="88" Tag="150"
+               SelectedValue="Public" SelectedValuePath="Tag" SelectionChanged="NetworkEnvironment_SelectionChanged" AutomationProperties.Name="联机模式">
+       <ListBoxItem x:Name="itemPublicEnvironment" Grid.Row="0" Content="公网模式" Tag="Public"/>
+       <ListBoxItem x:Name="itemLocalEnvironment" Grid.Row="1" Content="本地模式" Tag="Lan"/>
+      </ListBox>
+     </StackPanel>
+     <Border Grid.Column="1" Width="1" Height="88" Background="#35FFFFFF" VerticalAlignment="Bottom"/>
+     <StackPanel Grid.Column="2">
+      <TextBlock x:Name="txtGameplayModeLabel" Text="游戏模式" FontSize="11" Foreground="#9CA8AD" Margin="0,0,0,5"/>
+      <ListBox x:Name="cmbGameplayMode" Style="{StaticResource ModeListBox}" Width="124" Height="88" Tag="112" SelectedValue="MOD" SelectedValuePath="Tag" SelectionChanged="GameplayMode_SelectionChanged" AutomationProperties.Name="游戏模式" ToolTip="队友请使用相同游戏模式。">
+       <ListBoxItem x:Name="itemGameplayMod" Grid.Row="0" Content="MOD" Tag="MOD"/><ListBoxItem x:Name="itemGameplayOfficial" Grid.Row="1" Content="官方" Tag="Official"/>
+      </ListBox>
+     </StackPanel>
+    </Grid>
+    <Grid Height="44" Margin="0,0,0,8">
+     <Button x:Name="btnPublicConfiguration" Content="服务器设置" HorizontalAlignment="Left" Height="44" Padding="0,0,18,0" Style="{StaticResource CinematicLinkButton}" Click="ServerSettingsPage_Click"/>
+     <Button x:Name="btnLocalConnection" Content="查找 / 连接房主" Visibility="Collapsed" HorizontalAlignment="Left" Height="44" Padding="0,0,18,0" Style="{StaticResource CinematicLinkButton}" Click="LocalConnection_Click"/>
+    </Grid>
+    <!-- LAN role remains a confirmed discovery/manual/create outcome. -->
     <TextBlock x:Name="txtConnectionModeLabel" Visibility="Collapsed"/>
     <ListBox x:Name="cmbConnectionMode" Visibility="Collapsed" SelectedIndex="0" SelectionChanged="ConnectionMode_SelectionChanged">
      <ListBoxItem x:Name="itemClientMode" Content="加入房主"/><ListBoxItem x:Name="itemHostMode" Content="创建房主"/>
     </ListBox>
-    <Grid Margin="0,0,0,22">
-     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-     <TextBlock x:Name="txtGameplaySummary" Text="MOD · FOV 1.20× · DX11" FontSize="13" Foreground="#A5ADB2" VerticalAlignment="Center"/>
-     <Button x:Name="btnOpenGameOptions" Grid.Column="1" Content="调整玩法" Height="44" Style="{StaticResource CinematicLinkButton}" Click="GameplaySettingsPage_Click"/>
+    <Grid x:Name="fovPanel" Width="344" HorizontalAlignment="Left" Margin="0,0,0,6">
+     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+     <TextBlock x:Name="txtFovLabel" Text="视野范围（FOV）" FontSize="11" Foreground="#A5ADB2"/>
+     <TextBlock x:Name="txtFovValue" Grid.Column="1" Text="1.20×" FontSize="12" Foreground="{StaticResource ReadyAccentBrush}" Margin="0,0,14,0"/>
+     <Button x:Name="btnFovReset" Grid.Column="2" Height="44" MinWidth="80" Content="默认" Style="{StaticResource CinematicLinkButton}" FontSize="11" Click="FovReset_Click" ToolTip="默认 1.20×；1.00× 为原始视野"/>
+     <Slider x:Name="fovSlider" Height="44" Grid.Row="1" Grid.ColumnSpan="3" Minimum="1.0" Maximum="1.3" Value="1.2" SmallChange="0.05" LargeChange="0.1" TickFrequency="0.05" IsSnapToTickEnabled="True" Style="{StaticResource ModFovSlider}" ValueChanged="FovSlider_ValueChanged" AutomationProperties.Name="FOV 视野倍率" ToolTip="1.00–1.30 倍，默认 1.20。官方与 MOD 均可使用，下次启动生效。"/>
     </Grid>
+    <TextBlock x:Name="txtGameplaySettingsMessage" Visibility="Collapsed" Width="358" HorizontalAlignment="Left" TextWrapping="Wrap" FontSize="11" LineHeight="18" Foreground="{StaticResource ReadyAccentBrush}"/>
+    <StackPanel x:Name="gameplayDraftActions" Visibility="Hidden" Orientation="Horizontal" Height="44" Margin="0,0,0,8">
+     <Button x:Name="btnGameplaySave" Content="保存" Height="44" MinWidth="80" Style="{StaticResource CinematicLinkButton}" Click="SaveGameplayDraft_Click" Margin="0,0,24,0"/>
+     <Button x:Name="btnGameplayCancel" Content="取消" Height="44" MinWidth="80" Style="{StaticResource CinematicLinkButton}" Click="CancelGameplayDraft_Click"/>
+    </StackPanel>
     <Button x:Name="btnLaunch" Content="启动游戏" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Click="LaunchButton_Click" AutomationProperties.Name="{Binding Content, RelativeSource={RelativeSource Self}}"/>
    </StackPanel>
    <Border x:Name="authPanel" Grid.Column="2" Background="#72080B0D" BorderBrush="#2EFFFFFF" BorderThickness="1,0,0,0" Padding="26,20,22,20" VerticalAlignment="Center">
@@ -851,38 +867,12 @@
     <DockPanel Margin="0,0,0,16"><Button x:Name="btnToolsClose" DockPanel.Dock="Right" Content="×" Width="44" Height="44" Style="{StaticResource WindowChromeCloseButton}" Click="ToolsClose_Click"/><TextBlock x:Name="txtToolsTitle" Text="设置" FontSize="24" FontWeight="SemiBold"/></DockPanel>
     <WrapPanel x:Name="settingsNavigation" Margin="0,0,0,12">
      <Button x:Name="btnServerSettingsPage" Content="公网服务器" Height="44" Style="{StaticResource CinematicLinkButton}" Click="ServerSettingsPage_Click" Margin="0,0,24,0"/>
-     <Button x:Name="btnGameplaySettingsPage" Content="玩法 / FOV" Height="44" Style="{StaticResource CinematicLinkButton}" Click="GameplaySettingsPage_Click" Margin="0,0,24,0"/>
      <Button x:Name="btnLanSettingsPage" Content="本地 / OB" Height="44" Style="{StaticResource CinematicLinkButton}" Click="LanSettingsPage_Click" Margin="0,0,24,0"/>
      <Button x:Name="btnRecoveryPage" Content="忘记密码" Height="44" Style="{StaticResource CinematicLinkButton}" Click="ForgotPasswordButton_Click" Margin="0,0,24,0"/>
      <Button x:Name="btnSavesPage" Content="恢复完整存档" Height="44" Style="{StaticResource CinematicLinkButton}" Click="RestoreSavesButton_Click" Margin="0,0,24,0"/>
      <Button x:Name="btnPlayersPage" Content="在线玩家 / 联机质量" Height="44" Style="{StaticResource CinematicLinkButton}" Click="PlayersButton_Click" Margin="0,0,24,0"/>
      <Button x:Name="btnAdvancedDiagnosticsPage" Content="高级诊断" Height="44" Style="{StaticResource CinematicLinkButton}" Click="AdvancedDiagnosticsButton_Click"/>
     </WrapPanel>
-    <StackPanel x:Name="gameplaySettingsPanel" Visibility="Collapsed">
-     <TextBlock x:Name="txtGameplaySettingsHelp" Text="修改先作为草稿；确认保存后用于下次启动。" TextWrapping="Wrap" LineHeight="22" Margin="0,0,0,18"/>
-    <Grid x:Name="launchOptionsPanel" Width="380" HorizontalAlignment="Left" Margin="0,0,0,18">
-     <StackPanel>
-      <TextBlock x:Name="txtGameplayModeLabel" Text="游戏模式" FontSize="12" Foreground="#A5ADB2" Margin="0,0,0,6"/>
-      <ListBox x:Name="cmbGameplayMode" Style="{StaticResource ModeListBox}" Width="260" Height="44" Tag="112" SelectedValue="MOD" SelectedValuePath="Tag" SelectionChanged="GameplayMode_SelectionChanged" AutomationProperties.Name="游戏模式" ToolTip="队友请使用相同游戏模式。">
-       <ListBox.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" Columns="2"/></ItemsPanelTemplate></ListBox.ItemsPanel>
-       <ListBoxItem x:Name="itemGameplayMod" Content="MOD" Tag="MOD"/><ListBoxItem x:Name="itemGameplayOfficial" Content="官方" Tag="Official"/>
-      </ListBox>
-     </StackPanel>
-    </Grid>
-    <Grid x:Name="fovPanel" Width="380" HorizontalAlignment="Left" Margin="0,0,0,14">
-     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-     <TextBlock x:Name="txtFovLabel" Text="视野范围（FOV）" FontSize="11" Foreground="#A5ADB2"/>
-     <TextBlock x:Name="txtFovValue" Grid.Column="1" Text="1.20×" FontSize="12" Foreground="{StaticResource ReadyAccentBrush}" Margin="0,0,14,0"/>
-     <Button x:Name="btnFovReset" Grid.Column="2" Content="默认" Style="{StaticResource CinematicLinkButton}" FontSize="11" Click="FovReset_Click" ToolTip="默认 1.20×；1.00× 为原始视野"/>
-     <Slider x:Name="fovSlider" Grid.Row="1" Grid.ColumnSpan="3" Minimum="1.0" Maximum="1.3" Value="1.2" SmallChange="0.05" LargeChange="0.1" TickFrequency="0.05" IsSnapToTickEnabled="True" Style="{StaticResource ModFovSlider}" ValueChanged="FovSlider_ValueChanged" AutomationProperties.Name="FOV 视野倍率" ToolTip="1.00–1.30 倍，默认 1.20。官方与 MOD 均可使用，下次启动生效。"/>
-    </Grid>
-     <TextBlock x:Name="txtGameplaySettingsMessage" TextWrapping="Wrap" LineHeight="22" Foreground="{StaticResource ReadyAccentBrush}" Margin="0,0,0,14"/>
-     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-      <Button x:Name="btnGameplayCancel" Content="取消" Height="44" MinWidth="80" Style="{StaticResource CinematicLinkButton}" Click="CancelGameplayDraft_Click" Margin="0,0,24,0"/>
-      <Button x:Name="btnGameplaySave" Content="保存" Height="44" Style="{StaticResource CinematicDialogAction}" Click="SaveGameplayDraft_Click"/>
-     </StackPanel>
-    </StackPanel>
     <StackPanel x:Name="serverSettingsPanel" Visibility="Collapsed">
      <TextBlock x:Name="txtServerSettingsDescription" TextWrapping="Wrap" LineHeight="21" Foreground="#A5ADB2" Margin="0,0,0,14"/>
      <Grid>

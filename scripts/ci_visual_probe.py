@@ -15,10 +15,11 @@ import tarfile
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-BASELINE = "12d394086a22c04e7e1defc7678ceccfe02ee004"
+BASELINE = "d207fc611be3a89351f8517fcbc37aeb18610dd4"
 FIXTURE_ID = "fifth-freedom-visual-fixture-v1"
 STATES = ("main", "settings", "settings-public", "settings-gameplay", "discovery", "join", "create", "cancel")
 LAYOUT_CATEGORIES = {"geometry", "overlap", "hit-area", "visual-hit-test", "input-hit-test", "text-clipping", "scroll-accessibility"}
+DIRECT_CONTROL_REQUIREMENTS = {"main-direct-gameplay-controls", "main-game-options-entry-absent"}
 
 
 def sha(path: Path) -> str:
@@ -100,7 +101,12 @@ def instrument_baseline(source: Path) -> dict:
     original = text
     original_hash = sha(path)
     if "--visual-probe" in text:
-        raise ValueError("Baseline unexpectedly already contains the visual probe")
+        # This feedback baseline already has the isolated startup. Update only
+        # the observer/assertions; preserve its old product layout and behavior.
+        return {"baseline_app_original_sha256": original_hash,
+                "baseline_app_instrumented_sha256": original_hash,
+                "probe_sha256": sha(source / "src/launcher/src/MainWindow.VisualProbe.cs"),
+                "existing_isolated_startup_preserved": True, "entry_patch": ""}
     marker = '        bool toolsCheck=e.Args.Length==2 && e.Args[0]=="--lan-tools-self-test";'
     if text.count(marker) != 1 or text.count("        PreviewMode=musicCheck") != 1:
         raise ValueError("Baseline startup changed; review probe injection")
@@ -115,6 +121,13 @@ def instrument_baseline(source: Path) -> dict:
             "probe_sha256": sha(source / "src/launcher/src/MainWindow.VisualProbe.cs"),
             "entry_patch": "".join(difflib.unified_diff(original.splitlines(keepends=True), text.splitlines(keepends=True),
                                fromfile="baseline/App.xaml.cs", tofile="instrumented/App.xaml.cs"))}
+
+
+def direct_control_failure_reproduced(result: dict) -> bool:
+    """Require the reported regression, not an unrelated old layout failure."""
+    targets = {check.get("Target") for check in result.get("failures", [])
+               if check.get("Category") == "state"}
+    return DIRECT_CONTROL_REQUIREMENTS.issubset(targets)
 
 
 def capture_phase(program: Path, phase: str, revision: str, artifacts: Path) -> dict:
@@ -182,12 +195,13 @@ def main() -> int:
     except Exception as failure:
         error = type(failure).__name__ + ": " + str(failure)
     complete = len(results) == 4
-    baseline_failed = complete and all(results[index]["layout_failure_count"] > 0 for index in (0, 2))
+    baseline_failed = complete and all(direct_control_failure_reproduced(results[index]) for index in (0, 2))
     current_passed = complete and all(not results[index]["failures"] for index in (1, 3))
     paired = complete and all(results[a]["executable_sha256"] == results[b]["executable_sha256"] for a, b in ((0, 2), (1, 3)))
     receipt = dict(schema=1, fixture_id=FIXTURE_ID, source_commit=revision, baseline_commit=BASELINE,
                    root_dpi_not_os_display_dpi=True, game_started=False, network_started=False,
-                   results=results, error=error, baseline_layout_failure_reproduced=baseline_failed,
+                   results=results, error=error, baseline_direct_control_failure_reproduced=baseline_failed,
+                   baseline_layout_failure_reproduced=complete and all(results[index]["layout_failure_count"] > 0 for index in (0, 2)),
                    modified_and_reapplied_passed=current_passed, rollback_executable_hashes_match=paired)
     (artifacts / "comparison.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
     if error or not (baseline_failed and current_passed and paired):

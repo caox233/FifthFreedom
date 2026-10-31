@@ -98,7 +98,9 @@ unsafe fn execute(owner:Owner,command:Command)->bool{
             if word(vt,0x7b0)!=Some(0x00ad3ea0)||word(vt,0x7b4)!=Some(0x00aa5280){return false;}
             let available:unsafe extern "thiscall" fn(usize)->u32=std::mem::transmute(0x00ad3ea0usize);
             if available(camera)==0{return false;}
+            if !READY.load(Ordering::Acquire)||device(camera)!=Some(owner){return false;}
             crate::sticky_camera_sound::cancel(camera);
+            if !READY.load(Ordering::Acquire)||device(camera)!=Some(owner){return false;}
             let trigger:unsafe extern "thiscall" fn(usize)=std::mem::transmute(0x00aa5280usize);
             trigger(camera); // native fuse + NetStickyCam trigger; no camera-view exit call
             true
@@ -168,9 +170,17 @@ pub(crate) unsafe fn input(controller:usize,delivered:u32)->bool{
 fn whistle(camera:usize){unsafe{
     // Remote native WhistleMessage reaches this exact function too. No packet
     // contents or player-input state are reinterpreted on the receiving machine.
-    let accepted=READY.load(Ordering::Acquire)&&device(camera).is_some()
-        &&crate::sticky_camera_sound::try_whistle(camera);
-    whistle_result(camera,accepted);
+    let owner=if READY.load(Ordering::Acquire){device(camera)}else{None};
+    use crate::sticky_camera_sound::WhistleEmission;
+    let emission=if owner.is_some(){crate::sticky_camera_sound::whistle_emission(camera)}else{WhistleEmission::Unavailable};
+    // The replacement calls native audio, which can reenter actor cleanup.
+    // Neither fallback Whistle nor ATS/network publication may target a
+    // destroyed/replaced actor merely because it was valid before that call.
+    if owner.is_some()&&(!READY.load(Ordering::Acquire)||device(camera)!=owner){return;}
+    // An inner Whistle already published the accepted replacement. The outer
+    // callback owns neither a fallback sound nor another ATS/network emission.
+    if emission==WhistleEmission::Superseded{return;}
+    whistle_result(camera,emission==WhistleEmission::Accepted);
 }}
 unsafe fn whistle_result(camera:usize,accepted:bool){
     if !accepted{Whistle.call(camera);return;}
@@ -317,3 +327,7 @@ const PINS:&[(usize,usize,&str)]=&[
 #[cfg(test)]
 #[path="sticky_camera_world_tests.rs"]
 mod camera_world_regression;
+
+#[cfg(test)]
+#[path="sticky_camera_lifecycle_runtime_fixture.rs"]
+pub(crate) mod lifecycle_fixture;

@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "date_hong_kong": "2026-10-31",
+  "baseline": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+  "status": "offline_regression_passed_live_cause_unresolved",
+  "scope": "Synthetic Login/RVSec/SQLite and existing PRUDP capture seam; no real game, player logs, SYN/CONNECT, UDP send, production auth changes or release deployment",
+  "observed_report": {
+    "distinct_rmc_10_1_internal_errors": 799,
+    "duplicate_single_log_entry": false,
+    "native_refusal": "PACKAGE_IDENTITY_REQUIRED",
+    "launcher_release_mismatch_is_separate": true,
+    "zero_destination_port_traces": 9,
+    "port_zero_error": 10049,
+    "port_zero_upstream_producer": "unknown",
+    "binary_scope": "Local reviewer binds native/gameplay hashes to da1805e binaries; native source unchanged through dcb97d0; launcher/running-server identity not established"
+  },
+  "command": "cargo test --offline --locked -p dedicated_server --features maintenance-test-seams protocol_feedback_ -- --nocapture",
+  "first_run": {
+    "passed": 2,
+    "failed": 1,
+    "ignored": 0,
+    "exit_code": 101,
+    "log_sha256": "92f7be42dcba08e10c9e52e1a4e73f0fac5f4c48c752ebbd36c7007f3718d85e",
+    "failure": "Negative fixture tried to update admitted immutable release identity; SQLite1811 correctly refused. Test fixture only corrected to separate foreign historical row."
+  },
+  "corrected_run": {
+    "passed": 4,
+    "failed": 0,
+    "ignored": 0,
+    "exit_code": 0,
+    "log_sha256": "2c438850a9237402e76c6b7fe252b23cdbadf45664af6401aa9a0d9ba2f0604a"
+  },
+  "checks": {
+    "distinct_denied_calls": 64,
+    "denied_ticket_rows": 0,
+    "binding_preserved": true,
+    "guard_cases": [
+      "missing run",
+      "wrong source",
+      "stale heartbeat",
+      "retired run",
+      "foreign release"
+    ],
+    "admitted_positive_control": true,
+    "same_sequence_retransmissions_per_denied_or_admitted_case": 8,
+    "same_sequence_response_bytes_identical": true,
+    "same_sequence_ticket_rows": [
+      0,
+      1
+    ],
+    "new_admitted_requests_issue_new_tickets": true
+  },
+  "windows_parser_check": {
+    "filter": "protocol_feedback_zero_destination_port_remains_zero_in_actual_sockaddr_reader",
+    "status": "hosted_execution_pending",
+    "scope": "Actual safe sockaddr snapshot handles zero without rewriting, normal13000, null/truncated refusal; not retail invalid-endpoint producer or Winsock failure reproduction"
+  },
+  "source_sha256": {
+    "src/native/server/dedicated-server/src/ticket.rs": "1a1fef39f77f44a223b30bc51a79d3130722d59d8b273aa608da131b30baa66b",
+    "src/native/server/dedicated-server/src/protocol_feedback_tests.rs": "c298d37653fdd3b4cc10db6b54eb08e45e72649c147b72a1aa1a5d235eb57f00",
+    "src/native/client/hooks/src/hooks/storm.rs": "84a4450dfefa4e129cf03099a87107b17244076c02a0aef89bc46f142fc2d0af",
+    "src/native/server/dedicated-server/src/storage/gameplay.rs": "c2114a25f78aff439a119d4421e57a2d7ac66a29132ee2bfd5dc9649a2a4d3fe",
+    "src/native/server/quazal/src/prudp.rs": "eb909de22efb611c2545756bc552af182c2c831774b67487befeb04d91a1c56f",
+    "src/native/server/quazal/src/rmc.rs": "89bf7bf77ebc7b827e09f3485dac7746a555b75297fc40a144ecf05bfeb9063d"
+  },
+  "production_logic_unchanged": true,
+  "privacy": {
+    "raw_logs_copied": false,
+    "real_accounts_or_players": false,
+    "public_receipt_contains_only_aggregate_outcomes_and_source_log_digests": true
+  },
+  "live_issue_fixed": false
+}

@@ -4,8 +4,8 @@
   "status": "migration_in_progress",
   "goal_complete": false,
   "ACTIVE_OBJECT": "Fifth Freedom repository",
-  "LAST_CONFIRMED_RESULT": "Revised complete Windows Local candidate from dcb97d0295c9c8700fd390249f2d617430d89dcf passed manual run40816624490/fulljob123259140125 build, packaged UI182/save27 and upload. Artifact12872324166 was downloaded and independently verified: inner ZIP73,314,154bytes SHA25662a324f300f259b9de716f05368fa4c7bd1bfb8e22eda7b17c8b22b3c35d8cf6;65files/63manifest/64checksum/four PE identities/50 notice-source files. Source688 checks pass Linux686+2skips and Windows569+119skips. WPF run40816467332 verifies608PNGs and modified/reapplied128scenarios each with10160assertions/0fail. Public selection/configuration works separately from actual startup, which remains blocked by the exact dcb Windows FIREWALL_POLICY_UNAVAILABLE prerequisite; C71 and live multiplayer remain open. No game or capture executed.",
-  "NEXT_EXECUTABLE_ACTION": "Continue docs/tasks/owned-core-runtime.md and UI-09 from the exact dcb Windows prerequisite refusal (docs/evidence/hosted-public-firewall-dcb97d0.json): determine the supported per-profile/enforcement and owned NIC/session proof without weakening UNKNOWN coverage or altering user firewall policy. Keep the delivered UI/Local candidate available for focused new-flow and multiplayer checks; continue quick-match empty-lobby/protocol investigation and C71 source closure in parallel, preserving all six goals and accepted gameplay.",
+  "LAST_CONFIRMED_RESULT": "Original d207fc6 source and d05f584 knowledge checkpoints and bundle hashes preserved. Current feedback implementation restores direct main MOD/Official/FOV with inline drafts; UI source contracts16 and persistence21 pass, WPF crossbuild passes. Actual address-loader four roles reproduce3 failures before/rollback and8 passes after/reapply; full crate18 and release admission5 pass. Quick-match selected31 and protocol feedback4 pass without changing matching/authentication policy. Camera/progression production boundaries and strict synthetic Windows four-role runner are implemented; hosted native execution, new actual WPF and full package remain pending. No live crash/matching/performance fix is claimed.",
+  "NEXT_EXECUTABLE_ACTION": "Commit reviewed playtest feedback changes, run an exact clean-checkout source gate, push the existing development branch and execute GitHub Windows native production four-role regressions plus actual WPF and complete-package checks. Download and independently verify the new unified program ZIP before delivery. Keep original six goals, live camera/matching/performance uncertainty, C71 missing inputs and ordinary Public ownership/WFP admission open.",
   "INPUT_PATHS": [
     "docs/MIGRATION.md",
     "docs/ACCEPTANCE.md",
@@ -1777,5 +1777,24 @@
     "revised_wpf_dcb": "docs/evidence/hosted-ui-visual-dcb97d0.json",
     "retained_public_firewall_dcb": "docs/evidence/hosted-public-firewall-dcb97d0.json",
     "revised_windows_components_dcb": "docs/evidence/hosted-windows-components-dcb97d0.json"
+  },
+  "active_playtest_feedback": {
+    "task": "docs/tasks/playtest-feedback-20261031.md",
+    "baseline": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+    "status": "reviewed_source_focused_checks_passed_hosted_verification_pending",
+    "raw_private_evidence_received_in_cloud": false,
+    "game_started": false,
+    "live_root_causes_confirmed": false,
+    "tasks": [
+      "docs/tasks/sticky-camera-deploy-crash.md",
+      "docs/tasks/quick-match-same-session.md",
+      "docs/tasks/progression-table-regions.md",
+      "docs/tasks/emf-performance-feedback.md",
+      "docs/tasks/package-compatibility-feedback.md",
+      "docs/tasks/protocol-feedback.md",
+      "docs/tasks/ui-mode-flow-review.md"
+    ],
+    "previous_complete_candidate_preserved": true,
+    "new_complete_candidate_verified": false
   }
 }

@@ -209,12 +209,26 @@ def windows_components(receipt: dict) -> None:
     env["CARGO_NET_GIT_FETCH_WITH_CLI"] = "true"
     native = ROOT / "src/native"
     run_build_step("ci-native-core-tests", [cargo, "test", "--locked", "-p", "hooks-plugin-api", "-p", "hooks-config", "-p", "api", "--lib"], native, env)
+    address_log = run_build_step("ci-native-custom-addresses", [cargo, "test", "--locked", "-p", "hooks-addresses",
+        "custom_address_tests", "--", "--nocapture"], native, env)
+    receipt["custom_address_checks"] = {
+        "passed": required_native_test_count(address_log.with_suffix(".stdout.txt").read_text(encoding="utf-8"), expected=8),
+        "failed": 0, "ignored": 0, "game_executed": False,
+        "scope": "actual DX11-only custom file loader, legacy dual-key and malformed-input refusal; no DX9 UI or game activation",
+    }
     with owned_server_test_env(env) as test_env:
         receipt["native_authentication_checks"] = required_native_tests(cargo, test_env, (
             "native_bridge_fixture_tests", "native_observer_fixture_tests", "auth_key_file",
             "public_source", "lan_source_tests",
-            "deployment_profile::tests",
+            "deployment_profile::tests", "release_admission_tests",
         ))
+        protocol_log = run_build_step("ci-native-protocol-feedback", [cargo, "test", "--locked", "-p", "dedicated_server",
+            "--features", "maintenance-test-seams", "protocol_feedback_", "--", "--nocapture"], native, test_env)
+        receipt["protocol_feedback_checks"] = {
+            "passed": required_native_test_count(protocol_log.with_suffix(".stdout.txt").read_text(encoding="utf-8"), expected=4),
+            "failed": 0, "ignored": 0, "game_executed": False,
+            "scope": "synthetic production Login/admission and same-sequence PRUDP response-cache/database behavior; not the cause of distinct live requests",
+        }
     ipc_log = run_build_step("ci-native-public-return", [cargo, "test", "--locked", "-p", "hooks", "--lib",
         "--features", "patch-free,lan-goal-origin", "api::public_return::tests", "--", "--test-threads=1"], native, env)
     receipt["native_public_return_checks"] = {
@@ -244,6 +258,25 @@ def windows_components(receipt: dict) -> None:
         "passed": required_native_test_count(source_log.with_suffix(".stdout.txt").read_text(encoding="utf-8", errors="replace"), expected=8),
         "failed": 0, "ignored": 0, "game_executed": False, "production_admission": False,
         "scope": "owned Windows loopback sockets, interface/source binding and revocation of retained API transports",
+    }
+    port_log = run_build_step("ci-native-port-zero-feedback", [cargo, "test", "--locked", "-p", "hooks", "--lib",
+        "--features", "patch-free,lan-goal-origin", "protocol_feedback_", "--", "--nocapture"], native, env)
+    receipt["port_zero_metadata_checks"] = {
+        "passed": required_native_test_count(port_log.with_suffix(".stdout.txt").read_text(encoding="utf-8"), expected=1),
+        "failed": 0, "ignored": 0, "game_executed": False,
+        "scope": "actual sockaddr metadata reader preserves caller port zero; upstream caller and live 10049 origin remain unknown",
+    }
+    replay_output = ART / "ci/windows-components/native-production-replay"
+    run_build_step("ci-native-production-replay", [sys.executable, "-B", ROOT / "scripts/ci_native_production_replay.py",
+        "--output", replay_output], ROOT, env)
+    replay_receipt = json.loads((replay_output / "receipt.json").read_text(encoding="utf-8"))
+    if replay_receipt.get("status") != "passed" or replay_receipt.get("source_commit") != receipt["commit"]:
+        raise RuntimeError("PRODUCTION_REPLAY_SOURCE_OR_RESULT_MISMATCH")
+    receipt["synthetic_production_replay"] = {
+        "status": "passed", "receipt": "native-production-replay/receipt.json",
+        "receipt_sha256": hashlib.sha256((replay_output / "receipt.json").read_bytes()).hexdigest(),
+        "baseline": replay_receipt["baseline_commit"], "game_executed": False,
+        "retail_instruction_replay": False, "c71_inputs_replaced": False,
     }
     for label, args in (
         ("hooks", ["-p", "hooks", "--lib", "--features", "patch-free,lan-goal-origin"]),
@@ -294,6 +327,8 @@ def linux_server(lane: str, receipt: dict) -> None:
     env.update(CARGO_TARGET_DIR=str(ART / "ci/cargo" / lane), CARGO_BUILD_JOBS="2", CARGO_INCREMENTAL="0", CARGO_NET_GIT_FETCH_WITH_CLI="true")
     receipt["workspace"] = workspace.relative_to(ROOT).as_posix()
     packages = ["dedicated_server", "dedicated_server_config", "quazal", "sc_bl_protocols", "api"]
+    if not donor:
+        packages.append("hooks-addresses")
     args = ["cargo", "test", "--locked"]
     for package in packages:
         args.extend(["-p", package])

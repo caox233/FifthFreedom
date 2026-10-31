@@ -20,6 +20,10 @@ use crate::SERVER_PID;
 #[path = "public_source_ticket_tests.rs"]
 mod public_source_ticket_tests;
 
+#[cfg(test)]
+#[path = "protocol_feedback_tests.rs"]
+mod protocol_feedback_tests;
+
 /// Implementation of the `TicketGrantingProtocolServerTrait` for handling ticket-granting requests.
 struct TicketGrantingProtocolServerImpl {
     storage: Arc<Storage>,

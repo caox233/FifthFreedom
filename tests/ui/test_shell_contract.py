@@ -153,6 +153,25 @@ class ShellContractTests(unittest.TestCase):
         self.assertEqual((slider.get('Minimum'), slider.get('Maximum'), slider.get('Value')), ('1.0', '1.3', '1.2'))
         self.assertEqual(slider.get('ValueChanged'), 'FovSlider_ValueChanged')
 
+    def test_mod_and_fov_are_direct_main_screen_controls(self):
+        hero = self.controls['heroPanel']
+        direct = {e.get(X + 'Name') for e in hero.iter()}
+        for name in ['cmbGameplayMode', 'fovSlider', 'btnFovReset', 'btnGameplaySave', 'btnGameplayCancel']:
+            self.assertIn(name, direct, name + ' must be directly reachable on the main screen')
+        for name in ['btnOpenGameOptions', 'txtGameplaySummary', 'gameplaySettingsPanel',
+                     'btnGameplaySettingsPage', 'networkModeDescription']:
+            self.assertNotIn(name, self.controls)
+        self.assertEqual(hero.get('VerticalAlignment'), 'Bottom')
+        self.assertEqual(self.controls['gameplayDraftActions'].get('Visibility'), 'Hidden')
+
+    def test_main_mode_strip_retains_mod_and_official_beside_network_mode(self):
+        launch_options = self.controls['launchOptionsPanel']
+        names = {e.get(X + 'Name') for e in launch_options.iter()}
+        self.assertTrue({'cmbNetworkEnvironment', 'cmbGameplayMode'} <= names)
+        gameplay = self.controls['cmbGameplayMode']
+        self.assertEqual([item.get('Tag') for item in gameplay if item.tag == P + 'ListBoxItem'],
+                         ['MOD', 'Official'])
+
     def test_local_discovery_has_confirmation_retry_manual_and_cancel(self):
         overlay = self.controls['localDiscoveryOverlay']
         self.assertEqual(overlay.get('Visibility'), 'Collapsed')

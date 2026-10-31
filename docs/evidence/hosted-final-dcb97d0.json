@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "observed_date_hong_kong": "2026-10-31",
+  "source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+  "run": {
+    "id": 40816624490,
+    "head_sha": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "jobs": [
+    {
+      "id": 123259097864,
+      "name": "Strict retained native replay input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123259098074,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 123259098088,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 123259098112,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 123259098146,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 123259098174,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 123259098177,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 123259140125,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 123264461757,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 123264656647,
+      "name": "Same-run owned overlay and native development composition",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 123264656686,
+      "name": "Same-run native owned lifecycle in synthetic namespaces",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "interpretation": "Overall failure is solely the independently retained C71 unavailable-input gate; full Windows package and all component/composition/lifecycle jobs succeeded. This later observation does not rewrite the earlier in-progress delivery receipt.",
+  "game_executed_by_this_observation": false
+}

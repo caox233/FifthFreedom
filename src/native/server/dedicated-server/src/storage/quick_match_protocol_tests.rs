@@ -445,4 +445,6 @@ mod quick_match_protocol {
     fn quick_match_protocol_official_empty_lobby_overlapping_search_then_create() { empty_lobby_overlapping_search_then_create(1); }
     #[test]
     fn quick_match_protocol_mod_empty_lobby_overlapping_search_then_create() { empty_lobby_overlapping_search_then_create(2); }
+
+    include!("quick_match_filter_trace_tests.rs");
 }

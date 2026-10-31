@@ -145,7 +145,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        if (App.PreviewMode) { cmbBindAdapter.Items.Add(new ComboBoxItem {Content="自动按服务器路由",Tag=""});cmbBindAdapter.SelectedIndex=0;ApplyLocalization();return; }
+        if (App.PreviewMode) { cmbBindAdapter.Items.Add(new ComboBoxItem {Content="自动按服务器路由",Tag=""});cmbBindAdapter.SelectedIndex=0;ApplyLocalization(); _gameplayControlsReady = true; return; }
 
         ForceEnglishInputForPlainTextBoxes();
         LoadSettingsToUi();
@@ -159,6 +159,7 @@ public partial class MainWindow : Window
         ApplyLocalization();
         SetGameRunningState(false);
         PlayStartupMusicIfEnabled();
+        _gameplayControlsReady = true;
     }
 
 
@@ -1266,7 +1267,7 @@ public partial class MainWindow : Window
         if (_isGameRunning)
             return !_isEndingGame;
 
-        if (_isGameStarting || _statusRefreshRunning || _isBusy || _publicSettingsSaving || _networkEnvironmentChanging
+        if (_gameplayDraft?.IsDirty == true || _isGameStarting || _statusRefreshRunning || _isBusy || _publicSettingsSaving || _networkEnvironmentChanging
             || SelectedNetworkEnvironment == NetworkEnvironmentKind.Public)
             return false;
 
@@ -1482,6 +1483,7 @@ public partial class MainWindow : Window
         fovSlider.IsEnabled = btnFovReset.IsEnabled = !busy && !_isGameRunning && !_isGameStarting;
         cmbConnectionMode.IsEnabled = !busy && !_isGameRunning && !_isGameStarting;
         RenderNetworkEnvironment();
+        RenderGameplaySummary();
         UpdateServerAddressInputState(_lastLanLocalReady);
         txtUsername.IsEnabled = !busy && !_isGameRunning && !_isGameStarting;
         txtPassword.IsEnabled = !busy && !_isGameRunning && !_isGameStarting;
@@ -3736,6 +3738,9 @@ public partial class MainWindow : Window
     {
         if(e.Key==System.Windows.Input.Key.Escape && dialogOverlay.Visibility==Visibility.Visible)
         {CompleteDialog(MessageBoxResult.No);e.Handled=true;}
+        else if (e.Key == Key.Escape && _gameplayDraftActive && toolsOverlay.Visibility != Visibility.Visible
+            && localDiscoveryOverlay.Visibility != Visibility.Visible)
+        { CancelGameplayDraft(); cmbGameplayMode.Focus(); e.Handled = true; }
     }
 
     private void DialogNoButton_Click(object sender, RoutedEventArgs e)

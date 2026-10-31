@@ -92,6 +92,14 @@ class VisualReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Unsafe"):
             self.validate()
 
+    def test_feedback_baseline_requires_both_reported_direct_control_failures(self):
+        failures = [{"Category": "state", "Target": target, "Passed": False}
+                    for target in sorted(visual.DIRECT_CONTROL_REQUIREMENTS)]
+        self.assertTrue(visual.direct_control_failure_reproduced({"failures": failures}))
+        self.assertFalse(visual.direct_control_failure_reproduced({"failures": failures[:1]}))
+        self.assertFalse(visual.direct_control_failure_reproduced({"failures": [
+            {"Category": "geometry", "Target": "unrelated", "Passed": False}]}))
+
 
 if __name__ == "__main__":
     unittest.main()

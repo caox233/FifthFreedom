@@ -181,3 +181,69 @@ successful lobby. Retain failures and which queue/room transition was observed;
 do not include private account details or raw logs in public evidence. This check
 is added to [candidate testing](../DEVELOPMENT-CANDIDATE-TESTING.md), without
 reopening accepted F3, MAC-11 HUD, Chinese/world-camera or VSS EMF results.
+
+## Level-boundary feedback, 2026-10-31 (Asia/Hong_Kong)
+
+Status remains **needs-triage**. The new user report concerns quick matching
+above level56. The supplied private-log review summarizes 25 host SearchSessions
+calls (8 empty,17 nonempty) and six `expired-coordination-window` fallbacks;
+there is no per-search character-level label. These counts do not establish a
+level threshold. No private logs or player identifiers are copied into Git.
+
+The currently inspected wire query contains `type_id`, `query_id` and opaque
+numeric Properties. Storage/account schemas and the search/mode wrapper expose
+no named character-rank field or greater-than56 branch. Property103 separates
+game modes,113 distinguishes lobby/game state, and105/112 are the existing
+capacity exceptions. Other requested properties remain strict equality filters.
+The available historical code references do not bind property106–110 to rank;
+they must not be renamed or exempted on a guess. The retail client may author
+different requests or choose different returned rooms; that remains unverified.
+
+`expired-coordination-window` is emitted while resolving a member's **departure**
+after the750ms Party coordination window, not by SearchSessions or progression.
+The existing accepted-invite, host-migration, active-elsewhere and generation
+checks remain in that path. No window is widened and no authentication/filter is
+disabled to force matching.
+
+The new protocol tests start with zero game rooms, use distinct bound tickets,
+create rooms through real serialized CreateSession, and exercise numeric values
+55/56/57/999 through properties106–110. They verify exact returned keys, separate
+room selection by different queries, a two-person Party plus an independent
+solo caller, actual Join and final rosters. Official/MOD isolation, private rooms,
+capacity exemptions and social Party preservation remain enforced. These are
+**numeric-filter controls**, not real character-level fixtures or a replay of
+the users' requests. The original overlapping-empty-search tests remain.
+
+A bounded `QuickMatchFilterSummary` is now available only at the existing DEBUG
+logging level: one record per search, counts by rejection stage and at most16
+mismatched attribute IDs, with no property values, account/session IDs, ticket
+material or endpoint text. `stage=pre_mode` is explicit: the existing outer
+mode/active-run wrapper can still reject rows afterward. This adds observation;
+it does not change accepted searches, matching targets, capacity or admission.
+
+The initial retained protocol suite passed10/10. The expanded suite passed12/12,
+zero ignored. Its first attempt passed10 and failed2 because the new test omitted
+the real social lobby's103/113 mismatch IDs from its expected summary; only that
+expectation was corrected. An isolated broad baseline role later also saw one
+old test fail during SQLite **initialization**, before any matchmaking request;
+that failure is retained separately and is not called a level-related failure.
+See [the current receipt](../evidence/quick-match-level-feedback-20261031.json).
+The focused new-summary contract completed baseline/modified/rollback/reapply:
+0/2,2/0,0/2,2/0 passed/failed, with each baseline failure explicitly the absent
+DEBUG summary, not a reproduced player failure. The broader `quick_match_`
+selection then passed31, failed0, ignored0 with default parallelism, including
+the existing departure-window and Party-restore tests. That later pass does not
+erase or explain the earlier SQLite initialization failure.
+
+Four reviewed runtime records retained the56-row progression curve after
+`allocation-range`; five enabled the999-row extension. A concrete single-memory-
+region refusal is being addressed independently in
+[the progression task](progression-table-regions.md). This is neither proof that
+all four real rejections share that cause nor proof of a matching failure.
+No real level, XP, token count or save is changed to make clients converge.
+
+The next real candidate comparison remains55/56/57/high, single callers and
+mixed Parties on the same server/mode, checking the actual same-room outcome.
+It must distinguish empty search, filtered rooms, client target choice, departure
+restoration and P2P/game entry. Existing offline controls do not replace this
+multiplayer check, and no new private capture or automatic game start is requested.

@@ -180,8 +180,10 @@ public partial class MainWindow
         return found;
     }
 
-    private static string[] VisualActionNames(string state) => state is "main" or "cancel"
-        ? ["btnLaunch", "btnSettings", "btnLocalConnection", "btnPublicConfiguration"]
+    private bool IsDirectGameplayScenario(string state) => state == "settings-gameplay" && FindName("gameplayDraftActions") != null;
+
+    private string[] VisualActionNames(string state) => state is "main" or "cancel" || IsDirectGameplayScenario(state)
+        ? ["btnLaunch", "btnSettings", "btnLocalConnection", "btnPublicConfiguration", "itemGameplayMod", "itemGameplayOfficial", "fovSlider", "btnFovReset", "btnGameplaySave", "btnGameplayCancel"]
         : state.StartsWith("settings", StringComparison.Ordinal) ? ["btnToolsClose"]
         : ["btnLocalConfirm", "btnLocalRescan", "btnLocalManual", "btnLocalCreate", "btnLocalCancel"];
 
@@ -207,6 +209,58 @@ public partial class MainWindow
             checks.Add(new("input-hit-test", name,
                 OwnsHit(surface.InputHitTest(new Point(rect.X+rect.Width/2, rect.Y+rect.Height/2)) as DependencyObject, element),
                 $"actual shown HWND; content DPI={VisualTreeHelper.GetDpi(surface).PixelsPerInchX}; HWND device DPI={(PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 ?? 0)*96}"));
+        }
+        if (IsDirectGameplayScenario(scenario.State))
+        {
+            double savedFov = _settings.FovScale;
+            string savedMode = _settings.GameplayMode;
+            double nextFov = savedFov < 1.25 ? savedFov + .05 : savedFov - .05;
+            string nextMode = savedMode == "MOD" ? "Official" : "MOD";
+            fovSlider.Value = nextFov; cmbGameplayMode.SelectedValue = nextMode;
+            surface.UpdateLayout();
+            foreach (string name in VisualActionNames(scenario.State)) CheckActualInputHit(name);
+            Check("direct-edit-keeps-overlays-closed", toolsOverlay.Visibility != Visibility.Visible);
+            Check("gameplay-edits-remain-draft", _settings.FovScale == savedFov && _settings.GameplayMode == savedMode &&
+                GetSelectedFovScale() == savedFov && GetSelectedGameplayMode() == savedMode);
+            var save = FindName("btnGameplaySave") as Button;
+            var cancel = FindName("btnGameplayCancel") as Button;
+            Check("dirty-draft-blocks-launch", !btnLaunch.IsEnabled);
+            Check("gameplay-save-enabled-for-dirty-draft", save?.IsEnabled == true);
+            var directSource = PresentationSource.FromVisual(this);
+            if (directSource == null) { Check("escape-hwnd-source", false); return checks.ToArray(); }
+            cmbGameplayMode.Focus();
+            cmbGameplayMode.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, directSource, Environment.TickCount, Key.Escape)
+                { RoutedEvent = Keyboard.PreviewKeyDownEvent });
+            Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+            Check("escape-cancels-direct-gameplay-draft", _settings.FovScale == savedFov && _settings.GameplayMode == savedMode &&
+                Math.Abs(fovSlider.Value-savedFov) < .00001 && Equals(cmbGameplayMode.SelectedValue, savedMode));
+            Check("escape-keeps-main-focus", OwnsHit(Keyboard.FocusedElement as DependencyObject, cmbGameplayMode));
+            fovSlider.Value = nextFov; cmbGameplayMode.SelectedValue = nextMode;
+            save?.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Check("gameplay-preview-save-commits-memory", Math.Abs(_settings.FovScale-nextFov) < .00001 && _settings.GameplayMode == nextMode,
+                "production main-screen Save uses CommitPreview; real disk persistence is covered separately");
+            fovSlider.Value = savedFov; cmbGameplayMode.SelectedValue = savedMode;
+            cancel?.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Check("direct-cancel-restores-last-preview-save", Math.Abs(fovSlider.Value-nextFov) < .00001 &&
+                Equals(cmbGameplayMode.SelectedValue, nextMode) && Math.Abs(_settings.FovScale-nextFov) < .00001 && _settings.GameplayMode == nextMode);
+            Check("cancel-keeps-main-screen", toolsOverlay.Visibility != Visibility.Visible &&
+                FindName("gameplayDraftActions") is UIElement actions && actions.Visibility == Visibility.Hidden);
+            var targets = new[] { cmbGameplayMode as Control, fovSlider, save, cancel };
+            fovSlider.Value = savedFov;
+            surface.UpdateLayout();
+            bool allReachable = true;
+            foreach (var target in targets)
+            {
+                if (target == null) { allReachable = false; continue; }
+                target.Focus();
+                allReachable &= OwnsHit(Keyboard.FocusedElement as DependencyObject, target);
+                (Keyboard.FocusedElement as UIElement)?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                (Keyboard.FocusedElement as UIElement)?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
+                allReachable &= OwnsHit(Keyboard.FocusedElement as DependencyObject, target);
+            }
+            Check("direct-controls-keyboard-reachable", allReachable, "actual shown HWND; focus, Tab then Shift+Tab");
+            cancel?.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            return checks.ToArray();
         }
         foreach (string name in VisualActionNames(scenario.State)) CheckActualInputHit(name);
         if (scenario.State is "main" or "cancel") return checks.ToArray();
@@ -345,7 +399,17 @@ public partial class MainWindow
                     ? "Local immediately displays its neutral presence caption without stale Public state"
                     : "Public displays its unavailable connection caption without LAN presence");
         }
-        string[] required = scenario.State.StartsWith("settings", StringComparison.Ordinal)
+        bool directGameplay = IsDirectGameplayScenario(scenario.State);
+        if (scenario.State is "main" or "cancel" or "settings-gameplay")
+        {
+            var mainPanel = FindName("heroPanel") as FrameworkElement;
+            Check("state", "main-direct-gameplay-controls", new[] { "cmbGameplayMode", "fovSlider", "btnFovReset" }.All(name =>
+                FindName(name) is FrameworkElement control && mainPanel?.IsAncestorOf(control) == true && Presented(control, surface)),
+                "MOD/Official and FOV are directly visible on the SCBL main screen");
+            Check("state", "main-game-options-entry-absent", FindName("btnOpenGameOptions") == null && FindName("networkModeDescription") == null,
+                "no extra Game options entry or explanatory block replaces direct controls");
+        }
+        string[] required = scenario.State.StartsWith("settings", StringComparison.Ordinal) && !directGameplay
             ? ["toolsOverlay", "toolsCard", "btnToolsClose"]
             : scenario.State is "discovery" or "join" or "create" && productionHook
                 ? ["localDiscoveryOverlay", "localDiscoveryPanel", "btnLocalCancel"]
@@ -363,10 +427,11 @@ public partial class MainWindow
         {
             string[] pageControls = scenario.State == "settings-public"
                 ? ["serverSettingsPanel", "txtServerEndpoint", "txtTestServerEndpoint", "btnServerSettingsSave", "btnServerSettingsReset"]
+                : directGameplay ? ["heroPanel", "cmbGameplayMode", "fovSlider", "btnGameplaySave", "btnGameplayCancel"]
                 : ["gameplaySettingsPanel", "cmbGameplayMode", "fovSlider", "btnGameplaySave", "btnGameplayCancel"];
             foreach (string name in pageControls) Check("state", name, named.ContainsKey(name), "actual settings page control is present");
         }
-        bool main = scenario.State is "main" or "cancel";
+        bool main = scenario.State is "main" or "cancel" || directGameplay;
         if (main && named.TryGetValue("heroPanel", out var hero) && named.TryGetValue("authPanel", out var auth))
         {
             var left = Bounds(hero); var right = Bounds(auth);

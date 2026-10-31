@@ -7,7 +7,10 @@
 Windows 自有网络会话前置实现及配对源码构建见 [UI-09](tasks/ui-09.md)。
 当前公网模式可选择并配置，未就绪时明确阻止启动；真实 Windows 公网自有网络会话仍未完成。
 统一模式、本地有界发现、单一设置入口、MOD/FOV 草稿及 DX11 迁移见
-[当前 UI 整改](tasks/ui-mode-flow-review.md)。[实际 WPF 检查](tasks/ci-visual-01.md)
+[当前 UI 整改](tasks/ui-mode-flow-review.md)。2026-10-31 用户明确要求保留原主屏的
+直接 MOD/官方及 FOV 控件；本轮移除“调整玩法”中转和额外说明，草稿保存/取消原位显示，
+不以 UI 整理为由改版或整体回退后端。新画面结果必须按新提交单独记录。
+[此前实际 WPF 检查](tasks/ci-visual-01.md)
 已生成中英、两种窗口尺寸及 100/125/150/200% 根 DPI 画面；物理显示器、IME 和实机边界另列。
 包下载、精确构建版本和集中验收见[候选测试说明](DEVELOPMENT-CANDIDATE-TESTING.md)。
 本文其余源码对照和步骤保留为迁移合同；已执行结果以具体任务收据为准。
@@ -41,7 +44,7 @@ Windows 自有网络会话前置实现及配对源码构建见 [UI-09](tasks/ui-
 | 顶部样式、`SettingsButton_Click`、语言/音乐/窗口按钮 | LAN 同名事件及音乐暂停/恢复 | 不带入 donor 自动联网的 Loaded 事件 |
 | `btnLaunch` / `LaunchButton_Click` | LAN `LaunchButton_Click` → `RunLaunchFlowAsync` → `GameLaunchPreparation` | 原包校验、命名管道、启动/运行/结束/未确认状态均保留 |
 | `cmbGameplayMode` / `GameplayModePresentation_SelectionChanged` | LAN `GameplayMode_SelectionChanged` | 保留 Official/MOD 校验、FOV 1.0–1.3、缺玩法模块阻止启动 |
-| donor MOD/FOV 弹层 | LAN `fovSlider`、`GetSelectedFovScale`、`FovReset_Click` | 保存/取消应先在草稿值上操作，取消不能改变持久值 |
+| donor MOD/FOV 行为，按最新要求保留主屏直接控件 | LAN `fovSlider`、`GetSelectedFovScale`、`FovReset_Click` | 原位保存/取消先操作草稿，取消不能改变持久值；不能再用中转按钮藏起直接控件 |
 | `cmbNetworkMode` / `NetworkMode_SelectionChanged` | **不能直接复用事件**，见下一节 | 公网快速/兼容不是 LAN 加入/房主 |
 | 账号/密码呈现 | LAN `MainWindow.Credentials.cs` 与原输入事件 | 每服务器凭据作用域、DPAPI、取消记住后删除、切服务器不得复用旧密码 |
 | `ForgotPasswordButton_Click` 与恢复弹层 | LAN 同名入口、`ResetPassword_Click` | 新恢复码替代旧码的语义保留 |

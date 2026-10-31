@@ -223,7 +223,7 @@ public partial class MainWindow
         if (state == "main") { txtServer.Text = "public.example.invalid:11010"; txtServerStatus.Text = L("公网尚未就绪，请完成服务器配置与前置检查。", "Public is not ready. Complete server configuration and prerequisites."); btnLaunch.IsEnabled = false; return; }
         if (state == "settings") { ShowToolsPreview("home"); return; }
         if (state == "settings-public") { ServerSettingsPage_Click(this, new()); return; }
-        if (state == "settings-gameplay") { GameplaySettingsPage_Click(this, new()); return; }
+        if (state == "settings-gameplay") { CancelGameplayDraft(); BeginGameplayDraft(); return; }
         txtServer.Text = "192.0.2.10:50051";
         if (state == "cancel") { txtServerStatus.Text = L("已取消房主发现，未连接或创建。", "Discovery cancelled; no connection or host was started."); return; }
         localDiscoveryOverlay.Visibility = Visibility.Visible;

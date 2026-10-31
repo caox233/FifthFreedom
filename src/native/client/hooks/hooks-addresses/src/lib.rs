@@ -138,6 +138,9 @@ pub struct Addresses {
 
 #[derive(Serialize, Deserialize)]
 struct SavedAddresses {
+    // DX11-only tables need not carry the retired renderer's empty map.
+    // Present malformed maps still fail parsing; DX11 and its fields stay required.
+    #[serde(default)]
     dx9: HashMap<String, Addresses>,
     dx11: HashMap<String, Addresses>,
 }
@@ -1015,6 +1018,9 @@ pub fn search_patterns(filepath: &Path) -> Result<Addresses, Error> {
 
     Ok(addr)
 }
+
+#[cfg(test)]
+mod custom_address_tests;
 
 #[cfg(test)]
 mod tests {

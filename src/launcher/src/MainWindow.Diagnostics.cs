@@ -51,6 +51,7 @@ public partial class MainWindow
         try {
             foreach(string mode in new[]{"Official","MOD"}) foreach(double fov in new[]{1.0,1.25,1.3}) {
                 cmbGameplayMode.SelectedValue=mode;fovSlider.Value=fov;
+                SaveGameplayDraft_Click(this, new RoutedEventArgs());
                 string config=ScblLan.GameRuntime.Config(c,"fixture","synthetic-password","fixture-id",GetSelectedGameplayMode(),GetSelectedFovScale());
                 var pipe=new ScblLan.LaunchPipe(config,exe);
                 Environment.SetEnvironmentVariable("SCBL_LAN_TEST_FOV",fov.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -106,7 +107,7 @@ public partial class MainWindow
             result.Add("PASS packaged x86 gameplay DLL loads and rejects null ABI input");
         } finally{System.Runtime.InteropServices.NativeLibrary.Free(module);}
         foreach(string requested in new[]{"Official","MOD"}) {
-            cmbGameplayMode.SelectedValue=requested;string mode=GetSelectedGameplayMode();
+            cmbGameplayMode.SelectedValue=requested;SaveGameplayDraft_Click(this, new RoutedEventArgs());string mode=GetSelectedGameplayMode();
             string config=$"ConfigServer = \"127.0.0.1\"\nApiServer = \"http://127.0.0.1:50051/\"\nGameplayMode = \"{mode}\"\n[User]\nUsername = \"fixture\"\nPassword = \"synthetic-test-password\"\nAccountId = \"fixture-id\"\n";
             var pipe=new ScblLan.LaunchPipe(config,exe);
             try {
@@ -367,11 +368,21 @@ public partial class MainWindow
         _isEndingGame=false;_isGameStarting=true;Check(!CanCloseAfterGameStop(),"pending startup cannot be treated as a completed stop");
         _isGameStarting=false;Check(CanCloseAfterGameStop(),"completed game stop allows explicit close");
         Check(Math.Abs(GetSelectedFovScale()-1.2)<0.00001,"FOV defaults to SCBL 1.20x");
-        fovSlider.Value=1.25;Check(txtFovValue.Text=="1.25×" && GetSelectedFovScale()==1.25,"FOV slider value and label agree");
+        fovSlider.Value=1.25;
+        Check(txtFovValue.Text=="1.25×" && GetSelectedFovScale()==1.2 && _settings.FovScale==1.2,
+            "direct FOV edit shows draft while launch and persisted values remain committed");
+        Check(gameplayDraftActions.Visibility==Visibility.Visible && btnGameplaySave.IsEnabled && !CanLaunchGame(),
+            "dirty main-screen draft exposes Save/Cancel and blocks launch until resolved");
+        CancelGameplayDraft_Click(this,new RoutedEventArgs());
+        Check(fovSlider.Value==1.2 && gameplayDraftActions.Visibility==Visibility.Hidden,"direct Cancel restores committed FOV without opening settings");
+        fovSlider.Value=1.25;SaveGameplayDraft_Click(this,new RoutedEventArgs());
+        Check(_settings.FovScale==1.25 && GetSelectedFovScale()==1.25,"direct Save commits preview FOV for launch");
         Check(SplinterCellCNLauncher.Services.GameplayRuntime.NormalizeFov(double.NaN)==1.2 && SplinterCellCNLauncher.Services.GameplayRuntime.NormalizeFov(9)==1.3 && SplinterCellCNLauncher.Services.GameplayRuntime.NormalizeFov(-2)==1,"FOV invalid/boundary values normalized");
         var persisted=System.Text.Json.JsonSerializer.Deserialize<SplinterCellCNLauncher.Models.LauncherSettings>(System.Text.Json.JsonSerializer.Serialize(new SplinterCellCNLauncher.Models.LauncherSettings{FovScale=1.25}));
         Check(persisted?.FovScale==1.25,"FOV setting serialization round trip");
-        FovReset_Click(this,new RoutedEventArgs());Check(GetSelectedFovScale()==1.2,"FOV reset restores default");
+        FovReset_Click(this,new RoutedEventArgs());
+        Check(fovSlider.Value==1.2 && GetSelectedFovScale()==1.25,"FOV reset changes draft only");
+        SaveGameplayDraft_Click(this,new RoutedEventArgs());Check(GetSelectedFovScale()==1.2,"saved FOV reset restores default");
         Check(GetSelectedGameplayMode()=="MOD","gameplay mode defaults to MOD");
         Check(GetSelectedGameExecutable()=="Blacklist_DX11_game.exe","DX11 remains the only launch executable");
         cmbGameplayMode.SelectedValue="MOD";
@@ -379,6 +390,20 @@ public partial class MainWindow
         Check(FindName("cmbGameExecutable") is null && GetSelectedGameExecutable()=="Blacklist_DX11_game.exe" && GetSelectedGameplayMode()=="MOD",
               "renderer selector is absent and fixed DX11 cannot replace the MOD selection");
         SetBusy(true);Check(!cmbGameplayMode.IsEnabled,"gameplay selection locked while busy");SetBusy(false);
+        fovSlider.Value=1.25;SetBusy(true);
+        Check(!btnGameplaySave.IsEnabled && !btnGameplayCancel.IsEnabled,"direct draft actions lock during an owned busy operation");
+        SaveGameplayDraft_Click(this,new RoutedEventArgs());
+        Check(_settings.FovScale==1.2,"blocked direct Save cannot commit during an owned operation");
+        SetBusy(false);CancelGameplayDraft_Click(this,new RoutedEventArgs());
+        fovSlider.Value=1.25;_networkEnvironmentChanging=true;RenderModePresentation();
+        Check(!cmbGameplayMode.IsEnabled && !fovSlider.IsEnabled && !btnGameplaySave.IsEnabled,
+            "environment transition freezes direct controls and draft Save");
+        fovSlider.Value=1.3;SaveGameplayDraft_Click(this,new RoutedEventArgs());
+        Check(fovSlider.Value==1.25 && _gameplayDraft?.Fov==1.25 && _settings.FovScale==1.2,
+            "rejected input during transition preserves the existing visible draft and committed value");
+        _networkEnvironmentChanging=false;RenderModePresentation();
+        Check(fovSlider.IsEnabled && btnGameplaySave.IsEnabled,"completed transition restores the same editable draft");
+        CancelGameplayDraft_Click(this,new RoutedEventArgs());
         SetGameStartingState(true);Check(!cmbGameplayMode.IsEnabled,"gameplay selection locked while starting");
         Check(!fovSlider.IsEnabled && !btnFovReset.IsEnabled,"FOV controls locked while starting");
         SetGameRunningState(true);Check(!cmbGameplayMode.IsEnabled,"gameplay selection locked while running");
@@ -440,16 +465,18 @@ public partial class MainWindow
             Check(Bounds(txtUsername).Left > size.Width/2 && Bounds(txtUsername).Top < Bounds(txtPassword).Top &&
                   Bounds(txtPassword).Top < Bounds(txtServer).Top, $"SCBL vertical sign-in fields {size.Width}x{size.Height}");
             Check(Bounds(btnExportDiagnostics).Right<Bounds(btnCheckNetwork).Left,"diagnostic export occupies former Hook slot before network check");
-            foreach(var e in new FrameworkElement[]{btnLaunch,txtUsername,txtPassword,txtServer,cmbBindAdapter,btnExportDiagnostics,btnCheckNetwork,btnWindowClose,cmbNetworkEnvironment,btnOpenGameOptions,chkRememberPassword})
+            foreach(var e in new FrameworkElement[]{btnLaunch,txtUsername,txtPassword,txtServer,cmbBindAdapter,btnExportDiagnostics,btnCheckNetwork,btnWindowClose,cmbNetworkEnvironment,cmbGameplayMode,fovSlider,btnFovReset,chkRememberPassword})
             {
                 var rect=Bounds(e);
                 Check(rect.Width>10 && rect.Height>10 && rect.Left>=0 && rect.Top>=0 && rect.Right<=size.Width+1 && rect.Bottom<=size.Height+1,
                     $"visible control {e.Name} {size.Width}x{size.Height}");
             }
-            GameplaySettingsPage_Click(this, new RoutedEventArgs());
+            CancelGameplayDraft();
+            fovSlider.Value = _settings.FovScale < 1.25 ? _settings.FovScale + .05 : _settings.FovScale - .05;
             ArrangePresentation();
-            Check(toolsOverlay.Visibility == Visibility.Visible && gameplaySettingsPanel.Visibility == Visibility.Visible,
-                $"gameplay draft opens in unified settings {size.Width}x{size.Height}");
+            Check(toolsOverlay.Visibility != Visibility.Visible && heroPanel.IsAncestorOf(cmbGameplayMode)
+                && heroPanel.IsAncestorOf(fovSlider) && FindName("btnOpenGameOptions") is null,
+                $"MOD and FOV remain directly on the main screen {size.Width}x{size.Height}");
             foreach (var e in new FrameworkElement[] { cmbGameplayMode, fovSlider, btnGameplaySave, btnGameplayCancel })
             {
                 var rect = Bounds(e);
@@ -457,7 +484,7 @@ public partial class MainWindow
                     && rect.Right <= size.Width + 1 && rect.Bottom <= size.Height + 1,
                     $"visible gameplay draft control {e.Name} {size.Width}x{size.Height}");
             }
-            ToolsClose_Click(this, new RoutedEventArgs());
+            CancelGameplayDraft_Click(this, new RoutedEventArgs());
             ArrangePresentation();
             ShowDiagnosticDialog(true);ArrangePresentation();
             var card=Bounds(dialogCard);
