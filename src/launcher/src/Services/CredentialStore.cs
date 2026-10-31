@@ -5,7 +5,7 @@ using ScblLan;
 
 namespace SplinterCellCNLauncher.Services;
 
-/// <summary>Only passwords entered into this launcher: current-user DPAPI, bound to endpoint + username.</summary>
+/// <summary>Current-user DPAPI bound to an explicit environment/deployment, endpoint and username.</summary>
 public sealed class CredentialStore
 {
     private static readonly object Gate = new();
@@ -18,9 +18,18 @@ public sealed class CredentialStore
         return "SCBL-LAN-DPAPI-v1\n"+address.Host.ToLowerInvariant()+":"+address.Port+"\n"+username.Trim();
     }
     private string FilePath(string scope) => Path.Combine(directory,Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(scope)))+".bin");
-    public string? Load(string server,string username)
+    // Legacy overloads are explicitly LAN-only and preserve their exact v1
+    // entropy/file names. Public callers must supply a typed identity.
+    public string? Load(string server,string username) => Load(CredentialEnvironmentContext.Lan.CreateIdentity(server, username));
+    public bool TryLoad(CredentialIdentity identity, out string? password)
     {
-        string scope=Scope(server,username),path=FilePath(scope);
+        password = Load(identity);
+        return password is not null;
+    }
+    public string? Load(CredentialIdentity identity)
+    {
+        ArgumentNullException.ThrowIfNull(identity);
+        string scope=identity.ScopeValue,path=FilePath(scope);
         lock(Gate) {
             if(!File.Exists(path))return null;
             using var stream=new FileStream(path,FileMode.Open,FileAccess.Read,FileShare.Read);
@@ -31,10 +40,12 @@ public sealed class CredentialStore
             finally{CryptographicOperations.ZeroMemory(plain);}
         }
     }
-    public void Save(string server,string username,string password)
+    public void Save(string server,string username,string password) => Save(CredentialEnvironmentContext.Lan.CreateIdentity(server, username), password);
+    public void Save(CredentialIdentity identity, string password)
     {
+        ArgumentNullException.ThrowIfNull(identity);
         if(!PasswordPolicy.IsValidPassword(password))throw new ArgumentException("Empty, oversized or invalidly encoded password.");
-        string scope=Scope(server,username),path=FilePath(scope);
+        string scope=identity.ScopeValue,path=FilePath(scope);
         byte[] plain=Encoding.UTF8.GetBytes(password),encrypted;
         try{encrypted=Transform(plain,scope,true);}finally{CryptographicOperations.ZeroMemory(plain);}
         lock(Gate) {
@@ -46,9 +57,11 @@ public sealed class CredentialStore
             finally{if(File.Exists(temp))File.Delete(temp);}
         }
     }
-    public void Remove(string server, string username)
+    public void Remove(string server, string username) => Delete(CredentialEnvironmentContext.Lan.CreateIdentity(server, username));
+    public void Delete(CredentialIdentity identity)
     {
-        string path=FilePath(Scope(server,username));
+        ArgumentNullException.ThrowIfNull(identity);
+        string path=FilePath(identity.ScopeValue);
         lock(Gate) { if(File.Exists(path))File.Delete(path); }
     }
     public void Clear()

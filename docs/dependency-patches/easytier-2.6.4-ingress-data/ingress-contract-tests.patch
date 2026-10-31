@@ -1,0 +1,135 @@
+diff --git a/easytier/src/peers/peer_conn.rs b/easytier/src/peers/peer_conn.rs
+index 5e2b6d5..7571616 100644
+--- a/easytier/src/peers/peer_conn.rs
++++ b/easytier/src/peers/peer_conn.rs
+@@ -247,6 +247,130 @@ impl TunnelFilter for PeerSessionTunnelFilter {
+     fn filter_output(&self) {}
+ }
+ 
++// Bounded production-filter contract: synthetic established sessions only.
++// These tests neither open transports nor claim a Noise-handshake exploit.
++#[cfg(test)]
++mod fifth_freedom_ingress_contract {
++    use super::*;
++    use crate::tunnel::packet_def::StandardAeadTail;
++
++    const A: PeerId = 10;
++    const B: PeerId = 20;
++    const C: PeerId = 30;
++    const MARKER: &[u8] = b"fifth-freedom-synthetic-ingress-data";
++
++    fn session(peer: PeerId) -> PeerSession {
++        PeerSession::new(
++            peer, [0x6b; 32], 1, 0,
++            "aes-256-gcm".to_string(), "aes-256-gcm".to_string(),
++            Some([0x44; 32]),
++        )
++    }
++
++    fn packet(from: PeerId, kind: PacketType) -> ZCPacket {
++        let mut packet = ZCPacket::new_with_payload(MARKER);
++        packet.fill_peer_manager_hdr(from, B, kind as u8);
++        packet
++    }
++
++    fn established() -> (PeerSessionTunnelFilter, ZCPacket) {
++        let filter = PeerSessionTunnelFilter::new_with_peer(B, true);
++        filter.set_peer_id(A);
++        filter.set_session(Arc::new(session(A)));
++        let mut original = packet(A, PacketType::Data);
++        session(B).encrypt_payload(A, B, &mut original).unwrap();
++        assert!(original.peer_manager_header().unwrap().is_encrypted());
++        (filter, original)
++    }
++
++    fn assert_rejected_then_original_accepted(from: PeerId) {
++        let (filter, original) = established();
++        assert!(filter.after_received(Ok(packet(from, PacketType::Data))).is_none());
++        let decoded = filter.after_received(Ok(original)).unwrap().unwrap();
++        assert_eq!(decoded.payload(), MARKER);
++    }
++
++    #[test]
++    fn secure_plaintext_zero_sender_is_dropped() {
++        assert_rejected_then_original_accepted(0);
++    }
++
++    #[test]
++    fn secure_plaintext_mismatched_sender_is_dropped() {
++        assert_rejected_then_original_accepted(C);
++    }
++
++    #[test]
++    fn secure_plaintext_matching_sender_is_dropped() {
++        assert_rejected_then_original_accepted(A);
++    }
++
++    #[test]
++    fn secure_plaintext_without_peer_is_dropped() {
++        let filter = PeerSessionTunnelFilter::new_with_peer(B, true);
++        assert!(filter.after_received(Ok(packet(A, PacketType::Data))).is_none());
++    }
++
++    #[test]
++    fn secure_plaintext_without_session_is_dropped() {
++        let filter = PeerSessionTunnelFilter::new_with_peer(B, true);
++        filter.set_peer_id(A);
++        assert!(filter.after_received(Ok(packet(A, PacketType::Data))).is_none());
++    }
++
++    #[test]
++    fn matching_encrypted_data_decrypts_and_replay_drops() {
++        let (filter, original) = established();
++        let replay = original.clone();
++        let decoded = filter.after_received(Ok(original)).unwrap().unwrap();
++        assert_eq!(decoded.payload(), MARKER);
++        assert!(!decoded.peer_manager_header().unwrap().is_encrypted());
++        assert!(filter.after_received(Ok(replay)).is_none());
++    }
++
++    #[test]
++    fn matching_tampered_tag_drops_without_consuming_valid_sequence() {
++        let (filter, original) = established();
++        let mut changed = original.clone();
++        let tag_offset = changed.payload().len() - StandardAeadTail::SIZE;
++        changed.mut_payload()[tag_offset] ^= 1;
++        assert!(filter.after_received(Ok(changed)).is_none());
++        let decoded = filter.after_received(Ok(original)).unwrap().unwrap();
++        assert_eq!(decoded.payload(), MARKER);
++    }
++
++    #[test]
++    fn encrypted_relay_frame_is_preserved_for_downstream_session_validation() {
++        let (filter, _) = established();
++        let mut relayed = packet(C, PacketType::Data);
++        session(B).encrypt_payload(C, B, &mut relayed).unwrap();
++        let expected = relayed.clone().inner();
++        let forwarded = filter.after_received(Ok(relayed)).unwrap().unwrap();
++        assert!(forwarded.peer_manager_header().unwrap().is_encrypted());
++        assert_eq!(forwarded.inner(), expected);
++        // This is filter compatibility only: the manager must still perform
++        // end-to-end relay-session validation before a frame reaches the NIC.
++    }
++
++    #[test]
++    fn unencrypted_handshake_and_ping_pong_controls_remain_compatible() {
++        for kind in [PacketType::Ping, PacketType::Pong, PacketType::NoiseHandshakeMsg1] {
++            let (filter, _) = established();
++            let control = packet(A, kind);
++            let expected = control.clone().inner();
++            assert_eq!(filter.after_received(Ok(control)).unwrap().unwrap().inner(), expected);
++        }
++    }
++
++    #[test]
++    fn disabled_secure_filter_preserves_legacy_plaintext() {
++        let filter = PeerSessionTunnelFilter::new_with_peer(B, false);
++        let legacy = packet(A, PacketType::Data);
++        let expected = legacy.clone().inner();
++        assert_eq!(filter.after_received(Ok(legacy)).unwrap().unwrap().inner(), expected);
++    }
++}
++
+ pub struct PeerConnCloseNotify {
+     conn_id: PeerConnId,
+     sender: Arc<std::sync::Mutex<Option<broadcast::Sender<()>>>>,

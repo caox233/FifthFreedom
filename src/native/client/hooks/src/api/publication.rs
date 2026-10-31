@@ -1,9 +1,9 @@
 //! Local game-session publication: desired state, serialized RPC, and scheduled ownership.
 //! Public callers retain the parent API entry points.
 
-use super::{create_channel, runtime, Error, TOKEN};
+use super::{runtime, Error};
 #[cfg(test)]
-use super::event;
+use super::{event, TOKEN};
 use server_api::misc::misc_client::MiscClient;
 use server_api::misc::{ClearGameSessionRequest, SetGameSessionRequest, UplayGameSession};
 use std::sync::{Mutex, OnceLock};

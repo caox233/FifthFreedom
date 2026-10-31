@@ -1,0 +1,794 @@
+{
+  "schema": 1,
+  "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14",
+  "checkout_merge": "3f594212ca7c77808dc6220b0dc50de469359fab",
+  "head_tree_matches_checkout_tree": true,
+  "merge_binding": {
+    "parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    ],
+    "sha": "3f594212ca7c77808dc6220b0dc50de469359fab",
+    "tree": "a0af6ea8065d2c1e025c1931595a01490d2c95af"
+  },
+  "official_artifacts": [
+    {
+      "digest": "sha256:a3fe1359f9853d33741f7e0b4b8b82ef2c2e88a0caec55df4c67c1c8d2e5d3e7",
+      "id": 12686310037,
+      "name": "windows-owned-core-runtime-receipts-3f594212ca7c77808dc6220b0dc50de469359fab",
+      "official_digest_verified": true,
+      "run_id": 40387245341,
+      "size_in_bytes": 53013,
+      "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    },
+    {
+      "digest": "sha256:47d25401b8870120aa61beef5290bca80f1a5fb4cb708d124560e6768cc0edc1",
+      "id": 12682222287,
+      "name": "linux-public-donor-reference-3f594212ca7c77808dc6220b0dc50de469359fab",
+      "official_digest_verified": true,
+      "run_id": 40387245159,
+      "size_in_bytes": 4005891,
+      "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    },
+    {
+      "digest": "sha256:42c4e939fd5c50a07fd19b779f9370f957215c38cf8d4ffaf6bbca159700902d",
+      "id": 12680954107,
+      "name": "easytier-peer-map-build-only-receipts-3f594212ca7c77808dc6220b0dc50de469359fab",
+      "official_digest_verified": true,
+      "run_id": 40387245054,
+      "size_in_bytes": 40465,
+      "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    },
+    {
+      "digest": "sha256:cb5c7fc32932b96f95bc2ff261474b53e96d61dc9531054a679db6b40d080f37",
+      "id": 12681002531,
+      "name": "linux-public-control-3f594212ca7c77808dc6220b0dc50de469359fab",
+      "official_digest_verified": true,
+      "run_id": 40387245159,
+      "size_in_bytes": 67734,
+      "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    },
+    {
+      "digest": "sha256:e4d88656e783d4ed7f40cb67d1d48649b5a79bb86015a00608b2462f8133b2a7",
+      "id": 12682271010,
+      "name": "linux-native-socket-isolation-3f594212ca7c77808dc6220b0dc50de469359fab",
+      "official_digest_verified": true,
+      "run_id": 40387245159,
+      "size_in_bytes": 3680033,
+      "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    },
+    {
+      "digest": "sha256:72625863ca231eb1903020d7655d6296218cd6b64e6c6cc3e7d14fb9f02b6d02",
+      "id": 12684835069,
+      "name": "windows-compile-only-components-3f594212ca7c77808dc6220b0dc50de469359fab",
+      "official_digest_verified": true,
+      "run_id": 40387245159,
+      "size_in_bytes": 74841018,
+      "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    },
+    {
+      "digest": "sha256:df8ab63f462309b67707516475e18425c443a07f0f2cbc28cc77892ca23a83dd",
+      "id": 12682135870,
+      "name": "windows-owned-core-dependencies-3f594212ca7c77808dc6220b0dc50de469359fab",
+      "official_digest_verified": true,
+      "run_id": 40387244997,
+      "size_in_bytes": 817,
+      "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    },
+    {
+      "digest": "sha256:5cf411e0f610d34a579d5bb6224ce2ef094ec66ebad34c615f2f15e447fe05cf",
+      "id": 12681786963,
+      "name": "windows-loopback-prerequisite-3f594212ca7c77808dc6220b0dc50de469359fab",
+      "official_digest_verified": true,
+      "run_id": 40387244997,
+      "size_in_bytes": 2243,
+      "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    },
+    {
+      "digest": "sha256:e73a6f39cfdfc0898d7b8ef7c62f56941e5be098dfcb572209ea9cf91872e4cc",
+      "id": 12682595360,
+      "name": "easytier-windows-owned-read-receipts-3f594212ca7c77808dc6220b0dc50de469359fab",
+      "official_digest_verified": true,
+      "run_id": 40387245070,
+      "size_in_bytes": 50356,
+      "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    },
+    {
+      "digest": "sha256:110c35c64141d5135348000038c1b1ba1c9a539a3ebd6af7c347c2fd156b7829",
+      "id": 12682131106,
+      "name": "windows-owned-core-read-3f594212ca7c77808dc6220b0dc50de469359fab",
+      "official_digest_verified": true,
+      "run_id": 40387244997,
+      "size_in_bytes": 775,
+      "source_head": "9aede37dd34cb770b72003bb50dcec237ac8ed14"
+    }
+  ],
+  "run_final_states": [
+    {
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "conclusion": "failure",
+          "id": 121798674641
+        }
+      ],
+      "run_id": 40387245341
+    },
+    {
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "conclusion": "failure",
+          "id": 121798674628
+        },
+        {
+          "conclusion": "success",
+          "id": 121798674840
+        },
+        {
+          "conclusion": "failure",
+          "id": 121798674875
+        },
+        {
+          "conclusion": "success",
+          "id": 121798674953
+        },
+        {
+          "conclusion": "failure",
+          "id": 121798674986
+        },
+        {
+          "conclusion": "success",
+          "id": 121798675055
+        },
+        {
+          "conclusion": "success",
+          "id": 121798675065
+        },
+        {
+          "conclusion": "skipped",
+          "id": 121799082415
+        },
+        {
+          "conclusion": "skipped",
+          "id": 121811022171
+        },
+        {
+          "conclusion": "skipped",
+          "id": 121811023064
+        },
+        {
+          "conclusion": "skipped",
+          "id": 121811023735
+        }
+      ],
+      "run_id": 40387245159
+    },
+    {
+      "conclusion": "success",
+      "jobs": [
+        {
+          "conclusion": "success",
+          "id": 121798674098
+        },
+        {
+          "conclusion": "success",
+          "id": 121798674459
+        },
+        {
+          "conclusion": "success",
+          "id": 121798674496
+        },
+        {
+          "conclusion": "success",
+          "id": 121798674588
+        },
+        {
+          "conclusion": "success",
+          "id": 121798674591
+        }
+      ],
+      "run_id": 40387244997
+    },
+    {
+      "conclusion": "success",
+      "jobs": [
+        {
+          "conclusion": "success",
+          "id": 121798673521
+        },
+        {
+          "conclusion": "success",
+          "id": 121798673814
+        },
+        {
+          "conclusion": "success",
+          "id": 121798673931
+        },
+        {
+          "conclusion": "success",
+          "id": 121798674103
+        }
+      ],
+      "run_id": 40387245054
+    },
+    {
+      "conclusion": "success",
+      "jobs": [
+        {
+          "conclusion": "success",
+          "id": 121798673382
+        },
+        {
+          "conclusion": "success",
+          "id": 121798673734
+        },
+        {
+          "conclusion": "success",
+          "id": 121798673767
+        }
+      ],
+      "run_id": 40387245070
+    }
+  ],
+  "windows_prerequisites": {
+    "dependencies": {
+      "dll_loaded": false,
+      "driver_exercised": false,
+      "easytier_executed": false,
+      "official_inputs_unchanged": true,
+      "passed_checks": 13,
+      "skipped_checks": 0
+    },
+    "final_preparation_checks": {
+      "passed": 9,
+      "skipped": 0
+    },
+    "iis_restored": true,
+    "loopback_return_checks": {
+      "passed": 28,
+      "pipe_boundary_queries": [
+        "FACTORY:SUCCESS:LOCAL_BYTE:SERVER",
+        "LEGACY:SUCCESS:BYTE:SERVER",
+        "PRODUCTION:SUCCESS:LOCAL_BYTE:CLIENT"
+      ],
+      "skipped": 0
+    },
+    "owned_read": {
+      "driver_exercised": false,
+      "easytier_executed": false,
+      "images_unchanged": true,
+      "interop_passed_checks": 4,
+      "managed_passed_checks": 22,
+      "native_passed_checks": 8,
+      "skipped_checks": 0
+    }
+  },
+  "inert_runtime": {
+    "driver_after_clean": true,
+    "driver_before_clean": true,
+    "driver_uninstalled": false,
+    "error_code": "FIREWALL_POLICY_UNAVAILABLE",
+    "firewall_checks": [
+      {
+        "application_package_kind": null,
+        "application_path_case_insensitive_match": null,
+        "enforcement": {
+          "count": 2,
+          "item_type": "NONE",
+          "items": [
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            },
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            }
+          ],
+          "shape": "ARRAY",
+          "status": "MULTIPLE"
+        },
+        "enforcement_cim": {
+          "cim_type": "UInt16Array",
+          "query": "FOUND",
+          "value": {
+            "count": 2,
+            "item_type": "NONE",
+            "items": [
+              {
+                "item_type": "UINT16",
+                "status": "InactiveProfile"
+              },
+              {
+                "item_type": "UINT16",
+                "status": "Full"
+              }
+            ],
+            "shape": "ARRAY",
+            "status": "MULTIPLE"
+          }
+        },
+        "enforcement_trace": {
+          "count": 2,
+          "item_type": "NONE",
+          "items": [
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            },
+            {
+              "item_type": "STRING",
+              "status": "OTHER_STRING"
+            }
+          ],
+          "shape": "ARRAY",
+          "status": "MULTIPLE"
+        },
+        "enforcement_trace_query": "SINGLE_MATCH",
+        "mode": "Prepare",
+        "rule_check": "ENFORCEMENT_STATUS",
+        "rule_direction": "Inbound",
+        "rule_store": "ActiveStore"
+      },
+      {
+        "application_package_kind": null,
+        "application_path_case_insensitive_match": null,
+        "enforcement": null,
+        "enforcement_cim": null,
+        "enforcement_trace": null,
+        "enforcement_trace_query": "NOT_RUN",
+        "mode": "Restore",
+        "rule_check": "ABSENT",
+        "rule_direction": "Outbound",
+        "rule_store": "ActiveStore"
+      }
+    ],
+    "firewall_restore": {
+      "active_rules_verified": false,
+      "application_path_rules": true,
+      "armed": false,
+      "exact_drain_verified": false,
+      "mode": "Restore",
+      "original_policy_unchanged": true,
+      "owned_rules_removed": true,
+      "packet_behavior_verified": false,
+      "pid_isolation": false,
+      "policy_enabled_or_changed": false
+    },
+    "managed_contracts_passed": 22,
+    "packet_behavior_verified": false,
+    "passed": false,
+    "peer_traffic_verified": false,
+    "pid_isolation": false,
+    "public_admission": false,
+    "run_id": "40387245341",
+    "runtime_binary_uploaded": false
+  },
+  "boundaries": {
+    "complete_unified_package_delivered": false,
+    "formal_release_published": false,
+    "game_executed": false,
+    "live_acceptance_claimed": false,
+    "production_deployed": false,
+    "public_enabled": false,
+    "tracked_files_modified_by_this_review": false
+  },
+  "reviewed_utc": "2026-10-26T20:32:52.500770+00:00",
+  "prior_verification_not_repeated": [
+    "source",
+    "matrix",
+    "fast-WFP"
+  ],
+  "candidate": {
+    "assembly_native_lifecycle_composition": "SKIPPED following failed Linux LAN baseline, not executed",
+    "downloaded_component_hashes": {
+      "FifthFreedom-Control.pyz": {
+        "bytes": 56356,
+        "independently_rehashed_from_verified_zip": true,
+        "sha256": "36bb5f3807c83fb1d31b7ff3f35272fbc64f6211a247bdc3cbc9b2fbe10a8a25"
+      },
+      "FifthFreedom.Server.exe": {
+        "bytes": 10890752,
+        "independently_rehashed_from_verified_zip": true,
+        "sha256": "1ef580fbf349e80b81fee7327d62a7d4f4078c0ca3f08fb95061e6c6b20874c6"
+      },
+      "FifthFreedom.component-only.exe": {
+        "bytes": 144932783,
+        "independently_rehashed_from_verified_zip": true,
+        "sha256": "4095aa87c882ea2a45067c995388a77bb212902de65d329266f80a89b3fb4f35"
+      },
+      "dedicated_server": {
+        "bytes": 8981024,
+        "independently_rehashed_from_verified_zip": true,
+        "sha256": "259c9c1f54de3047e7cfa88890e60fc5ed746bd2a6c16aaf2ba725e0f36fe47f"
+      },
+      "scbl_gameplay.dll": {
+        "bytes": 2430976,
+        "independently_rehashed_from_verified_zip": true,
+        "sha256": "79718eb4328a7d02b5d06fe681db18e479de32a2216eef772e963cc25d256189"
+      },
+      "uplay_r1_loader.dll": {
+        "bytes": 7746048,
+        "independently_rehashed_from_verified_zip": true,
+        "sha256": "73649ba7dfab3a8696fdd7380b2e1a973b73c9f73848d3402d6a1e5454848e1c"
+      }
+    },
+    "job_result_counts": {
+      "failure": 3,
+      "skipped": 4,
+      "success": 4
+    },
+    "linux_donor": {
+      "bounded_test_results": [
+        {
+          "bytes": 18365,
+          "groups": [
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 0,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 0,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 152,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 0,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 26,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 0,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 0,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 0,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 0,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 4,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 0,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 0,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "status": "ok"
+            },
+            {
+              "failed": 0,
+              "filtered_out": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 0,
+              "status": "ok"
+            }
+          ],
+          "path": "logs/20261026T193513874059Z-ci-linux-public-donor-reference-tests.stdout.txt",
+          "sha256": "1f847e5b17189d9100fbb70a669b2d21fb3898c37935de7ae68d8a25205859f3"
+        }
+      ],
+      "failed": 0,
+      "ignored": 0,
+      "passed_tests": 183,
+      "scope": "reference donor component build and workspace tests; not integrated public server",
+      "workspace": "integration/scbl3"
+    },
+    "linux_lan": "375 passed 1 failed in affected Rust group; SQLite code 5 database is locked; existing lan-failure-9aede37 official receipt retained",
+    "linux_public_control": {
+      "native_public_game_server_enabled": false,
+      "scope": "read_only_control_service",
+      "suites": [
+        {
+          "errors": 0,
+          "failures": 0,
+          "passed": 145,
+          "skipped": 0,
+          "suite": "linux-public-control"
+        },
+        {
+          "errors": 0,
+          "failures": 0,
+          "passed": 10,
+          "skipped": 0,
+          "suite": "public-candidate-builder"
+        }
+      ],
+      "test_transport": "synthetic_loopback_tls_only"
+    },
+    "native_replay_gate": "13 unexecuted reviewed-fixture inputs; existing first-9aede37 receipt retained",
+    "package_gate": "8 missing held SAV/META inputs; existing first-9aede37 receipt retained",
+    "run_id": 40387245159,
+    "windows_components": {
+      "diagnostic_stream": {
+        "failed": 0,
+        "full_diagnostic_zip_exercised": false,
+        "linked_production": true,
+        "passed": 12,
+        "skipped": 0
+      },
+      "fusionfix_permission_closure": false,
+      "launcher_passed": 166,
+      "native_authentication_passed": 19,
+      "native_managed_interop_passed": 3,
+      "native_public_return": {
+        "failed": 0,
+        "game_executed": false,
+        "ignored": 0,
+        "passed": 8,
+        "scope": "owned synthetic Windows processes and production named-pipe contracts"
+      },
+      "native_replay_held": 13,
+      "native_source_transport_passed": 8,
+      "status": "components_built_and_selected_tests_passed"
+    }
+  },
+  "socket_isolation": {
+    "cleanup_errors": [],
+    "encrypted_overlay_verified": false,
+    "harness_passed": 26,
+    "interface_isolation_verified": true,
+    "namespaces_created": 3,
+    "namespaces_removed": 3,
+    "owned_overlay_liveness_verified": false
+  },
+  "build_receipts": {
+    "inert-failure": {
+      "run_id": "40387245341",
+      "status": "windows_inert_owned_read_built_not_executed",
+      "runs": [
+        {
+          "exit_code": 0,
+          "log_sha256": "4d211fdbe3d0802d1c1bf175cc075c4e557791456b5e1c3a67b5f8caf47305a6",
+          "stage": "inert-profile-contract"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "7528237be6d75ea35582d178dd299ef1d5486a5bcf52848e64a1c9cc104abde4",
+          "stage": "owned-read-contract"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "7d75649c3def648fa118d6ff2211dd5e44866b90b48770c4a28f88bbaec05fff",
+          "stage": "interface-contract"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "b6d931991fa07398eaa11fb306a4afe8198e6b0df342a82c88f38c9315b25e34",
+          "stage": "typed-session-contract"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "381fd99ace06133dad943fb8bfca902473524c9ae526da528392c648dee579c2",
+          "stage": "metadata"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "b8229420565cd95f2dfc0c5acc0cd91c2b5f1074d3955239f6d4df8e3bee10dd",
+          "stage": "selected-graph"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "0e8e3d7ff62b7aa836eedf4f79a8684edca867ff0f156be95af0c5460c734512",
+          "stage": "core-cli-build"
+        }
+      ],
+      "patch_count": 13,
+      "patch_manifest_sha256": "bbad0f9c745a018fb833ad0ced41a1e79c3253cf947a98288d5763d03f27f3eb",
+      "source_tree_sha256": "8cf92686e0cce91f6db26dccdb3ca36f4e776b21254da036939fc17e9992c584",
+      "runtime_executed": false,
+      "runtime_binary_uploaded": false,
+      "binary_hashes_are_runner_reported_not_independently_rehashed": true,
+      "public_startup_allowed": false,
+      "packet_dll_absent_from_normal_and_delay_imports": true
+    },
+    "linux-peer-map-build": {
+      "run_id": "40387245054",
+      "status": "built_and_contracts_verified_not_admitted",
+      "runs": [
+        {
+          "exit_code": 0,
+          "failed": 0,
+          "ignored": 0,
+          "log_sha256": "fc81c262091a6ded9fca562caa3ba32c70f704d8bb7fc2bab17f23c9da2fe87c",
+          "passed": 12,
+          "stage": "fifth_freedom_peer_map_challenge_contract"
+        },
+        {
+          "exit_code": 0,
+          "failed": 0,
+          "ignored": 0,
+          "log_sha256": "12d2d5d6bd621826bd58f0cb8a99e8b167663ca521da6e21f2a23feb8fc927eb",
+          "passed": 15,
+          "stage": "fifth_freedom_data_challenge_"
+        },
+        {
+          "exit_code": 0,
+          "failed": 0,
+          "ignored": 0,
+          "log_sha256": "197dc039738e740d81a74a11bd5d116395b03575b8e420be674159b37ab2a977",
+          "passed": 15,
+          "stage": "fifth_freedom_receive_"
+        },
+        {
+          "exit_code": 0,
+          "failed": 0,
+          "ignored": 0,
+          "log_sha256": "6cc01f2e980070e428fa9e2c5925707d6e32f084e931dc8307ac63a013d537cd",
+          "passed": 4,
+          "stage": "fifth_freedom_secure_profile_contract"
+        },
+        {
+          "exit_code": 0,
+          "failed": 0,
+          "ignored": 0,
+          "log_sha256": "eb224ee85793ff201314d871757301746f51a788268529132dbff0536299c41d",
+          "passed": 10,
+          "stage": "fifth_freedom_ingress_contract"
+        },
+        {
+          "exit_code": 0,
+          "failed": 0,
+          "ignored": 0,
+          "log_sha256": "68035d087a553a9532b8af2a91c93397de92bea92273b7a75b0169e5b2f2927d",
+          "passed": 9,
+          "stage": "peers::secure_datagram::tests"
+        },
+        {
+          "exit_code": 0,
+          "failed": 0,
+          "ignored": 0,
+          "log_sha256": "b57585577ea33dfe3698b05cc4dc8337adf23d89781b6dffdbc34a7969482460",
+          "passed": 2,
+          "stage": "peers::peer_session::tests"
+        },
+        {
+          "exit_code": 0,
+          "failed": 0,
+          "ignored": 0,
+          "log_sha256": "b2122cfca48d7049891d63374d96645b721e1edddcdefc4033e7635e7bc77685",
+          "passed": 3,
+          "stage": "ff_explicit_pin_contract"
+        },
+        {
+          "exit_code": 0,
+          "failed": 0,
+          "ignored": 0,
+          "log_sha256": "348ce6feee468c9dc6b64e6d3cf5d4235adda09538f64df9ab5e3ff8d7f8a529",
+          "passed": 1,
+          "stage": "peers::peer_conn::tests::peer_conn_secure_mode_data_roundtrip"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "9069c9d4c2122954e38697fef5b082b8d77684f167c082450c69f08c8b5fbebe",
+          "stage": "release-build"
+        }
+      ],
+      "patch_count": 12,
+      "patch_manifest_sha256": "80ced5a4c62459fb105d04dd42d2911559191b955584059c3cf8ad9578d4abb3",
+      "source_tree_sha256": "4f0a55d01c4a25dcb4bd7c62972b51e42425b99959566fb3046887dfecda2140",
+      "runtime_executed": false,
+      "runtime_binary_uploaded": false,
+      "binary_hashes_are_runner_reported_not_independently_rehashed": true,
+      "public_startup_allowed": false
+    },
+    "windows-owned-build": {
+      "run_id": "40387245070",
+      "status": "windows_owned_read_built_not_executed",
+      "runs": [
+        {
+          "exit_code": 0,
+          "log_sha256": "72f32ed7981201cc8c83e2c549fc37f9729c0cd50c59ad87d11562c6be2fd99e",
+          "stage": "owned-read-contract"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "8f6fdb2d693688a652138f69f1ea6eca8c1382828c0e1fc929e059d927f29c9f",
+          "stage": "interface-contract"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "c54831e2962ac9daebfe348306ad094c79cd66c756b256cf40c74c50c71dfb5a",
+          "stage": "typed-session-contract"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "f3ee47b83aa90e158466a4f5119a9d768808ed8bce9974c3a8691acd47d139e7",
+          "stage": "metadata"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "a7165515b449d7bd9aedc4399c5389910eaf99aef957ea2a29b611c097dce15a",
+          "stage": "selected-graph"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "fce4abd382b8fa528912be7068d037aaf59a1254fe771acff02b0c662efcacaf",
+          "stage": "core-cli-build"
+        }
+      ],
+      "patch_count": 12,
+      "patch_manifest_sha256": "319a05bc889df82bf4d374304cbbb6bd0c163ac9996d0e55ecee058dfd647810",
+      "source_tree_sha256": "980bb96687a83f7da040d8aa4c4f7134c1c07183637510f2f39a805eaa08a294",
+      "runtime_executed": false,
+      "runtime_binary_uploaded": false,
+      "binary_hashes_are_runner_reported_not_independently_rehashed": true,
+      "public_startup_allowed": false,
+      "packet_dll_absent_from_normal_and_delay_imports": true
+    }
+  },
+  "scope": "Selected exact 9a hosted component/build/prerequisite results and inert failure; full source inventory/raw logs excluded; earlier source/matrix/fast-WFP receipts not repeated."
+}

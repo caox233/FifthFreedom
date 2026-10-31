@@ -1,0 +1,116 @@
+{
+  "recorded_utc": "2026-10-26T19:24:06.558093+00:00",
+  "files_sha256": {
+    "src/public/fifth_freedom_control/owned_process.py": "0e820aebd4a3ff1e24059b71ff18c61c2c4b772266e783563ab8bcddf1057075",
+    "src/public/fifth_freedom_control/owned_overlay.py": "9b0cf84825a3c99924a9e77dac207c926f4aeef6653c2953958dfde97c9bedef",
+    "tests/server/test_owned_overlay.py": "675cf9a88fb59f7a5e98713a51c428d02f655078f00f426fb80a4a248bcc8f52"
+  },
+  "focused_command": "python3 -B -m unittest discover -s tests/server -p test_owned_overlay.py -v",
+  "focused_exit": 0,
+  "focused_passed": 26,
+  "focused_skipped": 0,
+  "independent_review": {
+    "agent": "review_recovery",
+    "passed": 26,
+    "skipped": 0,
+    "confirmed_code_findings": 0
+  },
+  "new_test_functions": 3,
+  "new_scenarios": [
+    "real leader SYS_exit followed by group exit0",
+    "real leader gone at exec barrier before spawn returns",
+    "nonzero group completion rejects",
+    "EOF while real worker lives times out and reaps",
+    "cancellation while real worker lives reaps exact child"
+  ],
+  "retained_controls": [
+    "observed foreign image remains rejected after exit0",
+    "non-ENOENT procfs errors sticky",
+    "live image reappearance after pending fails permanently",
+    "bootstrap cleanup failed handle retained for retry",
+    "double cancellation cleanup",
+    "ordinary long-lived child identity unchanged"
+  ],
+  "before_stress": {
+    "queries": 56,
+    "failures": [
+      {
+        "iteration": 8,
+        "chain": [
+          "OWNED_QUERY_FAILED",
+          "QUERY_IMAGE_CHANGED"
+        ],
+        "states": [
+          {
+            "state": "unavailable",
+            "pidfd_exit_at_followup": false,
+            "exec_confirmed": true
+          }
+        ],
+        "child_closed": true,
+        "exit": 0
+      },
+      {
+        "iteration": 50,
+        "chain": [
+          "OWNED_QUERY_FAILED",
+          "QUERY_IMAGE_CHANGED"
+        ],
+        "states": [
+          {
+            "state": "unavailable",
+            "pidfd_exit_at_followup": false,
+            "exec_confirmed": true
+          }
+        ],
+        "child_closed": true,
+        "exit": 0
+      },
+      {
+        "iteration": 55,
+        "chain": [
+          "OWNED_QUERY_FAILED",
+          "QUERY_IMAGE_CHANGED"
+        ],
+        "states": [
+          {
+            "state": "unavailable",
+            "pidfd_exit_at_followup": false,
+            "exec_confirmed": true
+          }
+        ],
+        "child_closed": true,
+        "exit": 0
+      }
+    ],
+    "source_unchanged": true,
+    "program": "owned copy of system printf",
+    "network": false
+  },
+  "after_stress": {
+    "queries": 500,
+    "failures": [],
+    "states": {
+      "match": 1008,
+      "mismatch": 0,
+      "exit_pending": 96,
+      "exited": 896,
+      "unavailable": 0
+    },
+    "program": "owned copy of system printf",
+    "network": false,
+    "game": false,
+    "implementation_sha256": {
+      "owned_process.py": "0e820aebd4a3ff1e24059b71ff18c61c2c4b772266e783563ab8bcddf1057075",
+      "owned_overlay.py": "9b0cf84825a3c99924a9e77dac207c926f4aeef6653c2953958dfde97c9bedef"
+    }
+  },
+  "hosted_unique_cause_proven": false,
+  "hosted_cleanup_result_changed": false,
+  "worker_cleanup_code_explanation": "status marks CHILD_START_CLEANUP_UNCONFIRMED when either native or overlay handle is None, including possible failure before native spawn; historical receipt lacks spawn-stage and actual child handle proof, so remains unconfirmed",
+  "game": false,
+  "network_namespace_started": false,
+  "complete_package": false,
+  "implementation_commit": "aac0243825d7c6a04168df37cc712118f080a664",
+  "before_control_log_sha256": "b133b2fe542f4acf7e9c9e04220ba9a3d34b3a00a42c2820fcb522a68710a787"
+}

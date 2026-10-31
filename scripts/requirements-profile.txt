@@ -1,0 +1,2 @@
+# Private owned-probe TOML generation only; public parser/zipapp imports are stdlib.
+cryptography==50.0.0

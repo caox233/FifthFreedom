@@ -1,0 +1,493 @@
+name: Fifth Freedom development candidates
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fifth-freedom-candidate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native-replay-inputs:
+    name: Strict retained native replay input gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Require reviewed C71 native fixture source and provenance
+        run: python -B scripts/ci_native_replay_inputs.py
+      - name: Preserve the explicit unavailable-input receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-replay-input-gate-${{ github.sha }}
+          path: artifacts/ci/native-replay-inputs/receipt.json
+          if-no-files-found: error
+          retention-days: 14
+
+  package-inputs:
+    name: Strict complete-package input gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Verify all pinned package inputs without substituting private saves
+        run: python -B scripts/ci_checks.py package-inputs
+      - name: Preserve gate receipt even when blocked
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: complete-package-input-gate-${{ github.sha }}
+          path: |
+            artifacts/ci/package-inputs-receipt.json
+            artifacts/ci/test-logs/
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-components:
+    name: Windows WPF, x86 hooks, gameplay and LAN components
+    runs-on: windows-2022
+    timeout-minutes: 120
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # The synthetic production regression compares this exact pinned
+          # public baseline with HEAD in an isolated temporary source copy.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned profile key-validation provider
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: -r scripts/requirements-profile.txt
+      - name: Source, UI routing, server contracts and CI tests
+        run: python -B scripts/ci_checks.py source
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - name: Install the pinned Rust toolchain and x86 target
+        run: rustup toolchain install nightly-2025-10-15 --profile minimal --target i686-pc-windows-msvc
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Prepare the fixed loopback port only for the known default IIS site
+        id: iis_prepare
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "$env:RUNNER_TEMP/ff-windows-iis" -ErrorAction Stop | Out-Null
+          & ./scripts/ci_windows_iis.ps1 -Mode Prepare -State "$env:RUNNER_TEMP/ff-windows-iis/restore-plan.json" -Report "$env:RUNNER_TEMP/ff-windows-iis/prepare.json"
+      - name: Compile, test and run isolated no-game UI checks without claiming complete-package admission
+        run: python -B scripts/ci_candidate.py windows-components
+      - name: Restore only the recorded default IIS site state
+        if: ${{ always() && (steps.iis_prepare.outcome == 'success' || steps.iis_prepare.outcome == 'failure' || steps.iis_prepare.outcome == 'cancelled') }}
+        shell: pwsh
+        run: |
+          & ./scripts/ci_windows_iis.ps1 -Mode Restore -State "$env:RUNNER_TEMP/ff-windows-iis/restore-plan.json" -Report "$env:RUNNER_TEMP/ff-windows-iis/restore.json"
+      - name: Preserve sanitized fixed-port preparation and restoration evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-fixed-port-preparation-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/ff-windows-iis/prepare.json
+            ${{ runner.temp }}/ff-windows-iis/restore.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Stage only the verified public Windows payload including pinned source files
+        id: windows_public_payload
+        run: >-
+          python -B scripts/ci_artifact_publication.py --lane windows-components
+          --destination "${{ runner.temp }}/ff-public-windows-payload"
+          --commit "${{ github.sha }}" --run-id "${{ github.run_id }}" --run-attempt "${{ github.run_attempt }}"
+      - name: Preserve the exact public Windows payload and complete source inventory
+        if: ${{ steps.windows_public_payload.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-compile-only-components-${{ github.sha }}
+          path: ${{ runner.temp }}/ff-public-windows-payload/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve Windows build evidence separately with default hidden-file exclusion
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-component-build-evidence-${{ github.sha }}
+          path: |
+            artifacts/ci/windows-components/
+            !artifacts/ci/windows-components/components/**
+            artifacts/ci/source-receipt.json
+            artifacts/ci/test-logs/
+            artifacts/logs/
+          if-no-files-found: error
+          retention-days: 14
+
+  linux-lan-baseline:
+    name: Linux linux-lan-baseline
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      SODIUM_USE_PKG_CONFIG: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install signed Linux native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends build-essential pkg-config cmake libsodium-dev libssl-dev libsqlite3-dev
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install nightly-2025-10-15 --profile minimal
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Build and test the explicitly selected server source
+        run: python -B scripts/ci_candidate.py linux-lan-baseline
+      - name: Preserve reference components and build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-lan-baseline-${{ github.sha }}
+          path: |
+            artifacts/ci/linux-lan-baseline/
+            artifacts/logs/
+          if-no-files-found: error
+          retention-days: 14
+
+  linux-public-donor-reference:
+    name: Linux linux-public-donor-reference
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      SODIUM_USE_PKG_CONFIG: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install signed Linux native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends build-essential pkg-config cmake libsodium-dev libssl-dev libsqlite3-dev
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install nightly-2025-10-15 --profile minimal
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Build and test the explicitly selected server source
+        run: python -B scripts/ci_candidate.py linux-public-donor-reference
+      - name: Preserve reference components and build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-public-donor-reference-${{ github.sha }}
+          path: |
+            artifacts/ci/linux-public-donor-reference/
+            artifacts/logs/
+          if-no-files-found: error
+          retention-days: 14
+
+  linux-public-control:
+    name: Linux protected public control service
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned profile key-validation provider
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: -r scripts/requirements-profile.txt
+      - name: Test retained authentication and protected loopback TLS lifecycle
+        run: python -B scripts/ci_candidate.py linux-public-control
+      - name: Preserve isolated control-service candidate and test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-public-control-${{ github.sha }}
+          path: |
+            artifacts/ci/linux-public-control/
+            artifacts/ci/test-logs/
+            artifacts/logs/
+          if-no-files-found: error
+          retention-days: 14
+
+  linux-public-server-integrity:
+    name: Linux service/client identities and static deployment preflight
+    needs: [windows-components, linux-lan-baseline]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Download this workflow's exact Windows component artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: windows-compile-only-components-${{ github.sha }}
+          path: ${{ runner.temp }}/public-server-inputs/windows
+      - name: Download this workflow's exact retained Linux component artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-lan-baseline-${{ github.sha }}
+          path: ${{ runner.temp }}/public-server-inputs/linux
+      - name: Install signed runtime libraries for the system-linked Linux executable
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libsodium23 libsqlite3-0 libssl3t64
+      - name: Verify same-run identities and require read-only deployment preflight
+        run: python -B scripts/ci_candidate.py linux-public-server-integrity
+      - name: Stage only the verified component candidate including pinned source files
+        id: assembly_public_payload
+        run: >-
+          python -B scripts/ci_artifact_publication.py --lane linux-public-server-integrity
+          --destination "${{ runner.temp }}/ff-public-server-payload"
+          --commit "${{ github.sha }}" --run-id "${{ github.run_id }}" --run-attempt "${{ github.run_attempt }}"
+      - name: Preserve the exact public component candidate and complete source inventory
+        if: ${{ steps.assembly_public_payload.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-public-server-component-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/ff-public-server-payload/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve identity build evidence separately with default hidden-file exclusion
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-public-server-build-evidence-${{ github.sha }}
+          path: |
+            artifacts/ci/linux-public-server-integrity/
+            !artifacts/ci/linux-public-server-integrity/candidate/**
+            artifacts/logs/
+          if-no-files-found: warn
+          retention-days: 14
+
+  linux-native-owned-lifecycle:
+    name: Same-run native owned lifecycle in synthetic namespaces
+    needs: linux-public-server-integrity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        id: python
+        with:
+          python-version: '3.12'
+      - name: Download only this workflow's exact verified component candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-public-server-component-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/native-lifecycle-input
+      - name: Install signed native runtime and owned namespace tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libsodium23 libsqlite3-0 libssl3t64 iproute2
+      - name: Require withheld denied EOF expiry and parent-death contracts
+        env:
+          PROBE_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/native-lifecycle"
+          package="$RUNNER_TEMP/native-lifecycle-input/ci/linux-public-server-integrity/candidate"
+          probe_status=0
+          sudo --non-interactive -- "$PROBE_PYTHON" -B -I -S scripts/ci_native_lifecycle.py \
+            --package "$package" --candidate-receipt "$package/CANDIDATE-RECEIPT.json" \
+            --runner-temp /tmp --report "$RUNNER_TEMP/native-lifecycle/receipt.json" \
+            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            > "$RUNNER_TEMP/native-lifecycle.stdout" 2> "$RUNNER_TEMP/native-lifecycle.stderr" || probe_status=$?
+          python -B scripts/ci_probe_result.py --kind native --exit-code "$probe_status" \
+            --receipt "$RUNNER_TEMP/native-lifecycle/receipt.json" --error-log "$RUNNER_TEMP/native-lifecycle.stderr"
+      - name: Preserve only the sanitized native lifecycle receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-owned-lifecycle-receipt-${{ github.sha }}
+          path: ${{ runner.temp }}/native-lifecycle/receipt.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  linux-owned-overlay-native-stack:
+    name: Same-run owned overlay and native development composition
+    needs: linux-public-server-integrity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        id: python
+        with:
+          python-version: '3.12'
+      - name: Download only this workflow's verified component candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-public-server-component-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/owned-stack-input
+      - name: Install signed namespace tools without loading drivers
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends iproute2 nftables
+      - name: Install pinned profile key-validation provider
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: -r scripts/requirements-profile.txt
+      - name: Require actual containment and prerequisites before compiling runtime sources
+        env:
+          PROBE_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/owned-stack"
+          probe_status=0
+          sudo --non-interactive --preserve-env=GITHUB_ACTIONS,RUNNER_ENVIRONMENT,GITHUB_SHA -- "$PROBE_PYTHON" -I -B scripts/ci_easytier_probe.py \
+            --containment-only --output "$RUNNER_TEMP/owned-stack/containment.json" \
+            > "$RUNNER_TEMP/owned-stack-containment.stdout" 2> "$RUNNER_TEMP/owned-stack-containment.stderr" || probe_status=$?
+          python -B scripts/ci_probe_result.py --kind containment --exit-code "$probe_status" \
+            --receipt "$RUNNER_TEMP/owned-stack/containment.json" --error-log "$RUNNER_TEMP/owned-stack-containment.stderr"
+      - name: Install signed GNU compiler and native runtime libraries
+        run: sudo apt-get install --yes --no-install-recommends build-essential pkg-config cmake libsodium-dev libssl-dev libsqlite3-dev clang libclang-dev
+      - name: Install the reviewed GNU build toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --target x86_64-unknown-linux-gnu
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Require owned composition cleanup and control regressions
+        run: python -B -m unittest discover -s tests/ci -p test_owned_stack.py -v
+      - name: Build this job's exact guard3 core and CLI after all 35 finite contracts
+        run: python -B scripts/ci_easytier_build.py
+      - name: Verify real lease revocation and peer loss with the same-run native candidate
+        env:
+          PROBE_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: |
+          package="$RUNNER_TEMP/owned-stack-input/ci/linux-public-server-integrity/candidate"
+          probe_status=0
+          sudo --non-interactive --preserve-env=GITHUB_ACTIONS,RUNNER_ENVIRONMENT,GITHUB_SHA -- "$PROBE_PYTHON" -I -B scripts/ci_owned_stack.py \
+            --package "$package" --candidate-receipt "$package/CANDIDATE-RECEIPT.json" \
+            --build-receipt "$PWD/artifacts/ci/easytier-build-only/receipt.json" \
+            --core "$RUNNER_TEMP/fifth-easytier-build-only/target/x86_64-unknown-linux-gnu/release/easytier-core" \
+            --cli "$RUNNER_TEMP/fifth-easytier-build-only/target/x86_64-unknown-linux-gnu/release/easytier-cli" \
+            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --output "$RUNNER_TEMP/owned-stack/receipt.json" \
+            > "$RUNNER_TEMP/owned-stack.stdout" 2> "$RUNNER_TEMP/owned-stack.stderr" || probe_status=$?
+          python -B scripts/ci_probe_result.py --kind owned-stack --exit-code "$probe_status" \
+            --receipt "$RUNNER_TEMP/owned-stack/receipt.json" --error-log "$RUNNER_TEMP/owned-stack.stderr"
+      - name: Preserve only sanitized composition and containment receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: owned-overlay-native-development-receipt-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/owned-stack/containment.json
+            ${{ runner.temp }}/owned-stack/receipt.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  linux-socket-isolation:
+    name: Linux native socket ingress isolation (synthetic namespaces)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      SODIUM_USE_PKG_CONFIG: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install signed native build and owned namespace test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends build-essential pkg-config cmake libsodium-dev libssl-dev libsqlite3-dev iproute2
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install nightly-2025-10-15 --profile minimal
+      - name: Install checksum-pinned protoc
+        run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Require controls, ingress isolation and owned namespace cleanup
+        run: python -B scripts/ci_candidate.py linux-socket-isolation
+      - name: Preserve synthetic isolation evidence without enabling Public startup
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-native-socket-isolation-${{ github.sha }}
+          path: |
+            artifacts/ci/linux-socket-isolation/
+            artifacts/ci/test-logs/
+            artifacts/logs/
+          if-no-files-found: warn
+          retention-days: 14
+
+  windows-complete-package:
+    name: Complete Windows candidate (requires admitted inputs)
+    needs: package-inputs
+    runs-on: windows-2022
+    timeout-minutes: 120
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      CI: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - run: rustup toolchain install nightly-2025-10-15 --profile minimal --target i686-pc-windows-msvc
+      - run: python -B scripts/ci_setup_protoc.py --destination "${{ runner.temp }}/protoc-35.1" --github-env
+      - name: Run the unchanged full build, regression and package-verification entry
+        run: python -B scripts/build.py all
+      - name: Verify isolated packaged UI and bundled-save checks without starting a game
+        run: python -B scripts/ci_candidate.py windows-package-smoke
+      - name: Preserve candidate package or failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-complete-candidate-${{ github.sha }}
+          path: |
+            artifacts/*-program.zip
+            artifacts/BUILD-RESULT.json
+            artifacts/ci/windows-package-smoke/
+            artifacts/logs/
+            artifacts/program/**/package/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,48 @@
+# Synthetic owned Windows TUN observation only; no peers or network authentication claim.
+# Required CLI addition: --rpc-portal 127.0.0.1:15998 (nonzero; conflict fails).
+instance_name = "fifth-freedom-owned-read-inert"
+ipv4 = "10.254.253.1/24"
+dhcp = false
+ipv6_public_addr_provider = false
+ipv6_public_addr_auto = false
+listeners = []
+peer = []
+mapped_listeners = []
+exit_nodes = []
+proxy_network = []
+routes = []
+port_forward = []
+stun_servers = []
+tcp_stun_servers = []
+stun_servers_v6 = []
+
+[network_identity]
+network_name = "fifth-freedom-owned-read-inert"
+network_secret = "synthetic-no-network-peers"
+
+[flags]
+enable_encryption = true
+enable_ipv6 = false
+no_tun = false
+use_smoltcp = false
+enable_exit_node = false
+proxy_forward_by_system = false
+accept_dns = false
+enable_udp_broadcast_relay = false
+disable_upnp = true
+disable_p2p = true
+need_p2p = false
+disable_tcp_hole_punching = true
+disable_udp_hole_punching = true
+disable_sym_hole_punching = true
+enable_kcp_proxy = false
+disable_kcp_input = true
+disable_relay_kcp = true
+enable_relay_foreign_network_kcp = false
+enable_quic_proxy = false
+disable_quic_input = true
+disable_relay_quic = true
+enable_relay_foreign_network_quic = false
+disable_relay_data = true
+relay_all_peer_rpc = false
+relay_network_whitelist = ""

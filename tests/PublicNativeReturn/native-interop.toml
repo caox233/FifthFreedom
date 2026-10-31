@@ -1,0 +1,10 @@
+# Inert synthetic fixture shared by the managed owner and real native parser.
+# No request is made to this loopback placeholder; it is not a deployment.
+ApiServer = "http://127.0.0.1:1"
+GameplayMode = "MOD"
+[User]
+Username = "synthetic-client"
+Password = "synthetic-password"
+AccountId = "synthetic-account"
+[Networking]
+IpAddress = "10.66.0.10"

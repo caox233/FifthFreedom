@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official failed run/job metadata plus downloaded sanitized receipt verified against official SHA256 digest",
+  "run_id": 39924391718,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39924391718",
+  "job_id": 120317103110,
+  "job_url": "https://github.com/caox233/FifthFreedom/actions/runs/39924391718/job/120317103110",
+  "source_head": "45e879be85814ac7b7a46596092d139398610f90",
+  "receipt_checkout_commit": "0464036f24d88f65b8788f50b2129ef3c85cadf7",
+  "status": "completed",
+  "conclusion": "failure",
+  "artifact_id": 12489470931,
+  "archive_bytes": 1295,
+  "archive_sha256": "16b7e82176aef2d12e41a70f71a328abf2b86e2f0b8bf9fd952a541052e6a8e6",
+  "official_artifact_digest_matches": true,
+  "failed_step": [
+    "Exercise owned QUIC WSS and development TCP in isolated namespaces"
+  ],
+  "passed_prerequisites": [
+    "Prepare the same-job six-patch source and verify finite contracts and GNU build"
+  ],
+  "transport": "quic",
+  "phases_completed": 0,
+  "fixed_error": "OVERLAY_READY_TIMEOUT",
+  "readiness_timeout": {
+    "expected_authenticated": true,
+    "last_observation": {
+      "core_image_matches": true,
+      "local_bind_kind": null,
+      "peer_authenticated": false,
+      "query_code": "PEER_RESOLVED_ENDPOINT_INVALID",
+      "query_state": "parse-rejected",
+      "schema": "ff-easytier-readiness-observation-v1",
+      "tun_owned": true
+    },
+    "observation_count": 123,
+    "role": "initiator",
+    "schema": "ff-easytier-readiness-timeout-v1"
+  },
+  "cleanup": {
+    "namespaces_created": 2,
+    "namespaces_removed": 2,
+    "cleanup_errors": []
+  },
+  "private_stage_removed": true,
+  "scope": {
+    "production_admission": false,
+    "game_executed": false,
+    "native_owner_lease_verified": false,
+    "runtime_binary_uploaded": false,
+    "raw_runtime_output_retained": false
+  },
+  "limitations": [
+    "The final observation verified the owned core image and TUN, but the peer record was rejected by the exact resolved-endpoint parser; this does not prove the underlying network peer was unauthenticated.",
+    "No positive/wrong-pin/restore phase completed; WSS and TCP matrix rows were not reached.",
+    "Two namespace removals and private-stage cleanup are explicit; no additional all-child-reap claim is inferred.",
+    "The original 6c readiness timeout remains unchanged; this is a separate run with bounded last-observation evidence."
+  ]
+}

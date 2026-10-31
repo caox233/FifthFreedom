@@ -1,0 +1,440 @@
+diff --git a/easytier/src/peers/peer_conn.rs b/easytier/src/peers/peer_conn.rs
+--- a/easytier/src/peers/peer_conn.rs
++++ b/easytier/src/peers/peer_conn.rs
+@@ -2194,6 +2194,51 @@
+ 
+         assert_eq!(c_peer.get_conn_info().network_name, "shared".to_string());
+         assert_eq!(s_peer.get_conn_info().network_name, "user".to_string());
++    }
++
++    #[tokio::test]
++    async fn fifth_freedom_data_challenge_noise_echo_and_policy() {
++        let (c,s)=create_ring_tunnel_pair();
++        let cid=new_peer_id(); let sid=new_peer_id();
++        let cc=get_mock_global_ctx(); let sc=get_mock_global_ctx();
++        set_secure_mode_cfg(&cc,true); set_secure_mode_cfg(&sc,true);
++        // Pin independently to the owned synthetic server's configured key,
++        // not a key first learned from the received handshake metadata.
++        let key:[u8;32]=BASE64_STANDARD.decode(sc.config.get_secure_mode().unwrap().local_public_key.unwrap()).unwrap().try_into().unwrap();
++        let ps=Arc::new(PeerSessionStore::new());
++        let mut client=PeerConn::new(cid,cc,Box::new(c),ps.clone());
++        let mut server=PeerConn::new(sid,sc,Box::new(s),ps);
++        let (cr,sr)=tokio::join!(client.do_handshake_as_client(),server.do_handshake_as_server()); cr.unwrap(); sr.unwrap();
++        assert_eq!(client.get_conn_info().noise_remote_static_pubkey,key);
++        let endpoints=DataChallengeEndpoints { local_ipv4:"10.66.0.10".parse().unwrap(), remote_ipv4:"10.66.0.20".parse().unwrap(), local_port:23001,remote_port:23002 };
++        let mut wrong=key; wrong[0]^=1;
++        assert!(matches!(client.send_data_challenge(sid,wrong,endpoints,Duration::from_secs(2)).await,Err(DataChallengeError::Unavailable)));
++        assert!(matches!(client.send_data_challenge(sid.wrapping_add(1),key,endpoints,Duration::from_secs(2)).await,Err(DataChallengeError::Unavailable)));
++        let (ss,mut sr)=create_packet_recv_chan(); server.start_recv_loop(ss).await;
++        let (cs,mut cr)=create_packet_recv_chan(); client.start_recv_loop(cs).await;
++        let mut ticket=client.send_data_challenge(sid,key,endpoints,Duration::from_secs(2)).await.unwrap();
++        let request=timeout(Duration::from_secs(1),recv_packet_from_chan(&mut sr)).await.unwrap().unwrap();
++        let mut bytes=request.payload().to_vec();
++        // Model only the remote kernel/echo response, without creating a socket
++        // or claiming that an actual TUN/UDP service was reached.
++        {
++            let mut ip=pnet::packet::ipv4::MutableIpv4Packet::new(&mut bytes).unwrap();
++            let src=ip.get_source(); let dst=ip.get_destination();
++            ip.set_source(dst); ip.set_destination(src);
++            ip.set_checksum(pnet::packet::ipv4::checksum(&ip.to_immutable()));
++        }
++        {
++            let mut udp=pnet::packet::udp::MutableUdpPacket::new(&mut bytes[20..]).unwrap();
++            let src=udp.get_source(); let dst=udp.get_destination(); udp.set_source(dst); udp.set_destination(src);
++            let checksum=pnet::packet::udp::ipv4_checksum(&udp.to_immutable(),&endpoints.remote_ipv4,&endpoints.local_ipv4);
++            udp.set_checksum(if checksum==0 {0xffff} else {checksum});
++        }
++        let mut response=ZCPacket::new_with_payload(&bytes); response.fill_peer_manager_hdr(sid,cid,PacketType::Data as u8);
++        server.send_msg(response).await.unwrap();
++        let accepted=timeout(Duration::from_secs(1),recv_packet_from_chan(&mut cr)).await.unwrap().unwrap();
++        assert_eq!(accepted.payload(),bytes); let proof=ticket.take_response().unwrap();
++        assert_eq!(proof.connection_id(),client.get_conn_id()); assert!(proof.round_trip_if_current().is_some());
++        assert!(ticket.take_response().is_none()); drop(client); assert!(proof.round_trip_if_current().is_none());
+     }
+ 
+     #[tokio::test]
+diff --git a/easytier/src/peers/peer_conn_data_challenge.rs b/easytier/src/peers/peer_conn_data_challenge.rs
+--- a/easytier/src/peers/peer_conn_data_challenge.rs
++++ b/easytier/src/peers/peer_conn_data_challenge.rs
+@@ -448,3 +448,381 @@
+         finish_send(ticket, self.send_msg(request)).await
+     }
+ }
++
++#[cfg(test)]
++mod fifth_freedom_data_challenge_contract {
++    use super::*;
++    const A: PeerId = 10;
++    const B: PeerId = 20;
++    fn endpoints() -> DataChallengeEndpoints {
++        DataChallengeEndpoints {
++            local_ipv4: Ipv4Addr::new(10, 66, 0, 10),
++            remote_ipv4: Ipv4Addr::new(10, 66, 0, 20),
++            local_port: 23001,
++            remote_port: 23002,
++        }
++    }
++    fn session(peer: PeerId) -> Arc<PeerSession> {
++        Arc::new(PeerSession::new(
++            peer,
++            [0x6b; 32],
++            1,
++            0,
++            "aes-256-gcm".into(),
++            "aes-256-gcm".into(),
++            Some([0x44; 32]),
++        ))
++    }
++    struct Fixture {
++        filter: PeerSessionTunnelFilter,
++        receiver: Arc<PeerSession>,
++        sender: Arc<PeerSession>,
++        close: Arc<PeerConnCloseNotify>,
++    }
++    impl Fixture {
++        fn new() -> Self {
++            let filter = PeerSessionTunnelFilter::new_with_peer(B, true);
++            filter.set_peer_id(A);
++            let receiver = session(A);
++            filter.set_session(receiver.clone());
++            Self {
++                filter,
++                receiver,
++                sender: session(B),
++                close: Arc::new(PeerConnCloseNotify::new(PeerConnId::new_v4())),
++            }
++        }
++        fn start(&self, duration: Duration) -> (DataChallenge, Vec<u8>) {
++            reserve(
++                &self.filter,
++                &self.close,
++                &self.receiver,
++                endpoints(),
++                duration,
++            )
++            .unwrap()
++        }
++        fn reply(&self, ticket: &DataChallenge) -> Vec<u8> {
++            packet(endpoints().reverse(), &ticket.nonce)
++        }
++        fn encrypted(&self, payload: &[u8]) -> ZCPacket {
++            let mut p = ZCPacket::new_with_payload(payload);
++            p.fill_peer_manager_hdr(A, B, PacketType::Data as u8);
++            self.sender.encrypt_payload(A, B, &mut p).unwrap();
++            p
++        }
++        fn receive(&self, payload: &[u8]) {
++            self.filter.after_received(Ok(self.encrypted(payload)));
++        }
++    }
++    #[test]
++    fn actual_accept_correlates_once_and_duplicate_does_not_extend_deadline() {
++        let f = Fixture::new();
++        let (mut t, request) = f.start(MAX_TIMEOUT);
++        // Independent one's-complement summation of actual wire bytes, including
++        // the IPv4 pseudo-header, checks the pnet-produced packet semantics.
++        let valid_sum = |bytes: &[u8]| {
++            let mut sum = 0u32;
++            for pair in bytes.chunks(2) {
++                sum += (u32::from(pair[0]) << 8) + u32::from(*pair.get(1).unwrap_or(&0));
++            }
++            while sum >> 16 != 0 {
++                sum = (sum & 0xffff) + (sum >> 16);
++            }
++            sum == 0xffff
++        };
++        assert!(valid_sum(&request[..20]));
++        let mut pseudo = request[12..20].to_vec();
++        pseudo.extend_from_slice(&[0, 17]);
++        pseudo.extend_from_slice(&((request.len() - 20) as u16).to_be_bytes());
++        pseudo.extend_from_slice(&request[20..]);
++        assert!(valid_sum(&pseudo));
++        let ip = Ipv4Packet::new(&request).unwrap();
++        assert_eq!(ip.get_source(), endpoints().local_ipv4);
++        let udp = UdpPacket::new(ip.payload()).unwrap();
++        assert_eq!(udp.get_destination(), endpoints().remote_port);
++        assert_eq!(udp.payload().len(), PAYLOAD_LEN);
++        assert!(t.take_response().is_none());
++        f.receive(&f.reply(&t));
++        let proof = t.take_response().unwrap();
++        assert_eq!(proof.connection_id(), f.close.get_conn_id());
++        assert!(proof.round_trip_if_current().is_some());
++        f.receive(&f.reply(&t));
++        assert!(t.take_response().is_none());
++        f.close.notify_close();
++        assert!(proof.round_trip_if_current().is_none());
++    }
++    #[test]
++    fn fast_response_before_send_completion_is_preserved() {
++        let f = Fixture::new();
++        let (mut t, _) = f.start(MAX_TIMEOUT);
++        f.receive(&f.reply(&t));
++        assert!(t.current());
++        assert!(t.take_response().is_some());
++    }
++    #[test]
++    fn one_slot_drop_and_late_old_response_cannot_complete_replacement() {
++        let f = Fixture::new();
++        let (old, _) = f.start(MAX_TIMEOUT);
++        let stale = f.reply(&old);
++        assert!(matches!(
++            reserve(&f.filter, &f.close, &f.receiver, endpoints(), MAX_TIMEOUT),
++            Err(DataChallengeError::Busy)
++        ));
++        drop(old);
++        let (mut current, _) = f.start(MAX_TIMEOUT);
++        f.receive(&stale);
++        assert!(current.take_response().is_none());
++        f.receive(&f.reply(&current));
++        assert!(current.take_response().is_some());
++    }
++    #[test]
++    fn wrong_nonce_tuple_and_checksums_do_not_combine_with_recent_observation() {
++        let f = Fixture::new();
++        let (mut t, _) = f.start(MAX_TIMEOUT);
++        let mut nonce = t.nonce;
++        nonce[0] ^= 1;
++        let mut other = endpoints().reverse();
++        other.local_port += 1;
++        let mut cases = vec![
++            packet(endpoints().reverse(), &nonce),
++            packet(other, &t.nonce),
++            packet(endpoints(), &t.nonce),
++        ];
++        for at in [10, 26, DATAGRAM_LEN - 1] {
++            let mut bad = f.reply(&t);
++            bad[at] ^= 1;
++            cases.push(bad);
++        }
++        for bytes in cases {
++            f.receive(&bytes);
++            assert!(t.take_response().is_none());
++            assert!(
++                f.filter
++                    .authenticated_data_observation(&f.close, &f.receiver)
++                    .is_some()
++            );
++        }
++        f.receive(&f.reply(&t));
++        assert!(t.take_response().is_some());
++    }
++    #[test]
++    fn fragmented_truncated_extended_and_compressed_data_never_complete() {
++        let f = Fixture::new();
++        let (mut t, _) = f.start(MAX_TIMEOUT);
++        let valid = f.reply(&t);
++        let mut cases = vec![
++            valid[..DATAGRAM_LEN - 1].to_vec(),
++            [valid.as_slice(), &[0]].concat(),
++        ];
++        for (at, value) in [(0, 0x46), (6, 0x20), (7, 1), (9, 6), (3, 0)] {
++            let mut bad = valid.clone();
++            bad[at] = value;
++            if let Some(mut ip) = MutableIpv4Packet::new(&mut bad) {
++                let sum = pnet::packet::ipv4::checksum(&ip.to_immutable());
++                ip.set_checksum(sum);
++            }
++            cases.push(bad);
++        }
++        for bad in cases {
++            f.receive(&bad);
++            assert!(t.take_response().is_none());
++        }
++        let mut p = ZCPacket::new_with_payload(&valid);
++        p.fill_peer_manager_hdr(A, B, PacketType::Data as u8);
++        p.mut_peer_manager_header().unwrap().set_compressed(true);
++        f.sender.encrypt_payload(A, B, &mut p).unwrap();
++        f.filter.after_received(Ok(p));
++        assert!(t.take_response().is_none());
++    }
++    #[test]
++    fn wrong_peer_destination_plaintext_bad_tag_and_replay_do_not_complete() {
++        let f = Fixture::new();
++        let (mut t, _) = f.start(MAX_TIMEOUT);
++        let bytes = f.reply(&t);
++        for (from, to) in [(0, B), (30, B), (A, 30)] {
++            let mut p = f.encrypted(&bytes);
++            let h = p.mut_peer_manager_header().unwrap();
++            h.from_peer_id.set(from);
++            h.to_peer_id.set(to);
++            f.filter.after_received(Ok(p));
++            assert!(t.take_response().is_none());
++        }
++        let mut plain = ZCPacket::new_with_payload(&bytes);
++        plain.fill_peer_manager_hdr(A, B, PacketType::Data as u8);
++        assert!(f.filter.after_received(Ok(plain)).is_none());
++        let mut bad = f.encrypted(&bytes);
++        bad.mut_payload()[0] ^= 1;
++        assert!(f.filter.after_received(Ok(bad)).is_none());
++        assert!(t.take_response().is_none());
++        let unrelated = f.encrypted(b"other-data");
++        let replay = unrelated.clone();
++        f.filter.after_received(Ok(unrelated));
++        assert!(f.filter.after_received(Ok(replay)).is_none());
++        assert!(t.take_response().is_none());
++        f.receive(&bytes);
++        assert!(t.take_response().is_some());
++    }
++    #[test]
++    fn timeout_is_real_and_old_drop_cannot_clear_new_attempt() {
++        let f = Fixture::new();
++        let (mut old, _) = f.start(MIN_TIMEOUT);
++        let reply = f.reply(&old);
++        std::thread::sleep(Duration::from_millis(20));
++        f.receive(&reply);
++        assert!(old.take_response().is_none());
++        let (mut new, _) = f.start(MAX_TIMEOUT);
++        drop(old);
++        f.receive(&f.reply(&new));
++        assert!(new.take_response().is_some());
++        let (mut short, _) = f.start(MIN_TIMEOUT);
++        f.receive(&f.reply(&short));
++        let proof = short.take_response().unwrap();
++        std::thread::sleep(Duration::from_millis(20));
++        assert!(proof.round_trip_if_current().is_none());
++    }
++    #[test]
++    fn queued_success_cannot_cross_same_generation_sync_or_generation_aba() {
++        for aba in [false, true] {
++            let f = Fixture::new();
++            let (mut t, _) = f.start(MAX_TIMEOUT);
++            f.receive(&f.reply(&t));
++            f.receiver
++                .sync_root_key([0x22; 32], if aba { 2 } else { 1 }, 0, false);
++            if aba {
++                f.receiver.sync_root_key([0x33; 32], 1, 0, false);
++            }
++            assert!(t.take_response().is_none());
++            assert!(!t.current());
++        }
++    }
++    #[test]
++    fn post_sync_valid_reply_cannot_complete_pre_sync_attempt() {
++        let f = Fixture::new();
++        let (mut t, _) = f.start(MAX_TIMEOUT);
++        let bytes = f.reply(&t);
++        f.receiver.sync_root_key([0x22; 32], 1, 0, false);
++        f.sender.sync_root_key([0x22; 32], 1, 0, false);
++        f.receive(&bytes);
++        assert!(
++            f.filter
++                .authenticated_data_observation(&f.close, &f.receiver)
++                .is_some()
++        );
++        assert!(t.take_response().is_none());
++    }
++    #[test]
++    fn replacement_peer_change_close_and_owner_loss_invalidate_handles() {
++        let f = Fixture::new();
++        let (mut t, _) = f.start(MAX_TIMEOUT);
++        f.receive(&f.reply(&t));
++        f.filter.set_session(session(A));
++        assert!(t.take_response().is_none());
++        let f = Fixture::new();
++        let (mut t, _) = f.start(MAX_TIMEOUT);
++        f.receive(&f.reply(&t));
++        let proof = t.take_response().unwrap();
++        f.filter.set_peer_id(30);
++        assert!(proof.round_trip_if_current().is_none());
++        let f = Fixture::new();
++        let (mut t, _) = f.start(MAX_TIMEOUT);
++        f.receive(&f.reply(&t));
++        f.close.notify_close();
++        assert!(t.take_response().is_none());
++        let f = Fixture::new();
++        let (mut t, _) = f.start(MAX_TIMEOUT);
++        let weak = Arc::downgrade(&f.receiver);
++        drop(f);
++        assert!(weak.upgrade().is_none());
++        assert!(t.take_response().is_none());
++    }
++    #[test]
++    fn invalid_bounds_legacy_and_exhausted_installation_never_reserve() {
++        let mut f = Fixture::new();
++        for d in [Duration::ZERO, MAX_TIMEOUT + MIN_TIMEOUT] {
++            assert!(matches!(
++                reserve(&f.filter, &f.close, &f.receiver, endpoints(), d),
++                Err(DataChallengeError::InvalidInput)
++            ));
++        }
++        let mut invalid = endpoints();
++        invalid.local_port = 0;
++        assert!(reserve(&f.filter, &f.close, &f.receiver, invalid, MAX_TIMEOUT).is_err());
++        f.filter.enabled = false;
++        assert!(reserve(&f.filter, &f.close, &f.receiver, endpoints(), MAX_TIMEOUT).is_err());
++        f.filter.enabled = true;
++        f.filter.session.lock().unwrap().installation = None;
++        assert!(reserve(&f.filter, &f.close, &f.receiver, endpoints(), MAX_TIMEOUT).is_err());
++    }
++    #[tokio::test]
++    async fn cancelled_and_failed_send_release_only_their_ticket() {
++        let f = Fixture::new();
++        let (t, _) = f.start(MAX_TIMEOUT);
++        let mut sending = Box::pin(finish_send(t, std::future::pending::<Result<(), Error>>()));
++        assert!(
++            tokio::time::timeout(Duration::from_millis(1), &mut sending)
++                .await
++                .is_err()
++        );
++        assert!(f.filter.session.lock().unwrap().challenge.is_some());
++        drop(sending);
++        assert!(f.filter.session.lock().unwrap().challenge.is_none());
++        let (t, _) = f.start(MAX_TIMEOUT);
++        let failed = finish_send(t, async {
++            Err(Error::WaitRespError("synthetic failure".into()))
++        })
++        .await;
++        assert!(matches!(failed, Err(DataChallengeError::SendFailed)));
++        assert!(f.filter.session.lock().unwrap().challenge.is_none());
++        let (mut t, _) = f.start(MAX_TIMEOUT);
++        f.receive(&f.reply(&t));
++        assert!(t.take_response().is_some());
++    }
++    #[tokio::test]
++    async fn send_timeout_and_late_success_are_never_published() {
++        let f = Fixture::new();
++        let (t, _) = f.start(MIN_TIMEOUT);
++        assert!(matches!(
++            finish_send(t, std::future::pending::<Result<(), Error>>()).await,
++            Err(DataChallengeError::TimedOut)
++        ));
++        assert!(f.filter.session.lock().unwrap().challenge.is_none());
++        let (t, _) = f.start(MAX_TIMEOUT);
++        let result = finish_send(t, async {
++            f.receiver.sync_root_key([0x22; 32], 1, 0, false);
++            Ok(())
++        })
++        .await;
++        assert!(matches!(result, Err(DataChallengeError::Unavailable)));
++        assert!(f.filter.session.lock().unwrap().challenge.is_none());
++        let (t, _) = f.start(MAX_TIMEOUT);
++        let result = finish_send(t, async {
++            f.close.notify_close();
++            Ok(())
++        })
++        .await;
++        assert!(matches!(result, Err(DataChallengeError::Unavailable)));
++    }
++    #[tokio::test]
++    async fn response_during_send_survives_only_without_intervening_sync() {
++        let f = Fixture::new();
++        let (t, _) = f.start(MAX_TIMEOUT);
++        let bytes = f.reply(&t);
++        let mut ready = finish_send(t, async {
++            f.receive(&bytes);
++            Ok(())
++        })
++        .await
++        .unwrap();
++        assert!(ready.take_response().is_some());
++        let (t, _) = f.start(MAX_TIMEOUT);
++        let bytes = f.reply(&t);
++        let stale = finish_send(t, async {
++            f.receive(&bytes);
++            f.receiver.sync_root_key([0x22; 32], 1, 0, false);
++            Ok(())
++        })
++        .await;
++        assert!(matches!(stale, Err(DataChallengeError::Unavailable)));
++    }
++}

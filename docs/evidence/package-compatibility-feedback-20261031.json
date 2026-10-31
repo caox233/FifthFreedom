@@ -1,0 +1,185 @@
+{
+  "date_hong_kong": "2026-10-31",
+  "baseline_commit": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+  "change": "Only missing legacy dx9 map defaults empty. Required DX11 data, exact executable hashing and built-in precedence remain. No renderer or release admission weakening.",
+  "production_files_sha256": {
+    "src/native/client/hooks/hooks-addresses/src/lib.rs": "4569c0570314dc50500572541f7309eadd81d971829c2fb553514ab69c1a13b8",
+    "src/native/client/hooks/hooks-addresses/src/custom_address_tests.rs": "ec1c6d9b830de588a426ea51498b8a9dbb2a9a922e4dc2481d0708d9e9e2955c",
+    "src/native/server/dedicated-server/src/release_admission_tests.rs": "728e36d3d1764d09104cfb29262d7fa61c174c1e2cd29a39ce1f8a3bfe5723b1"
+  },
+  "address_loader": {
+    "first_baseline": {
+      "executed": 8,
+      "passed": 5,
+      "failed": 3,
+      "ignored": 0,
+      "exit": 101
+    },
+    "modified_full_crate": {
+      "executed": 18,
+      "passed": 18,
+      "failed": 0,
+      "ignored": 0,
+      "exit": 0
+    },
+    "four_roles": {
+      "baseline_commit": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+      "production_file": "src/native/client/hooks/hooks-addresses/src/lib.rs",
+      "shared_source_mutated_for_rollback": false,
+      "test_source_sha256": "ec1c6d9b830de588a426ea51498b8a9dbb2a9a922e4dc2481d0708d9e9e2955c",
+      "roles": [
+        {
+          "phase": "baseline",
+          "exit": 101,
+          "passed": 5,
+          "failed": 3,
+          "ignored": 0,
+          "source_sha256": "02a266298829332762e7ed87467a0e6c7dc9858f5d66ae7542b28e40a798f735",
+          "log_sha256": "a0548e2efc8f6ab8e2cddc7f06e59e5b76ab6ad038732d1d7c5fb3f1e376357e"
+        },
+        {
+          "phase": "modified",
+          "exit": 0,
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "source_sha256": "4569c0570314dc50500572541f7309eadd81d971829c2fb553514ab69c1a13b8",
+          "log_sha256": "2a7316c6abb40fe6acf4eac520dbb30ef78ca69385ee268b52d07c7c65fa938f"
+        },
+        {
+          "phase": "rollback",
+          "exit": 101,
+          "passed": 5,
+          "failed": 3,
+          "ignored": 0,
+          "source_sha256": "02a266298829332762e7ed87467a0e6c7dc9858f5d66ae7542b28e40a798f735",
+          "log_sha256": "887d08ca65b24cf506ebfd7782f469a137dbcaf3d5a15f54cae2b78986a6b743"
+        },
+        {
+          "phase": "reapplied",
+          "exit": 0,
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "source_sha256": "4569c0570314dc50500572541f7309eadd81d971829c2fb553514ab69c1a13b8",
+          "log_sha256": "e022b98bd3dde7b1066dd0fad12bb550b4c5173a32a8baf59b1ab1429aa51d0a"
+        }
+      ],
+      "scope": "Real production JSON file loader, built-in precedence merge and binary hash selector; synthetic bytes, never executable game code",
+      "private_original_four_roles_modified": false,
+      "game_executed": false
+    },
+    "command": "cargo test --offline --locked -p hooks-addresses custom_address_tests -- --nocapture",
+    "full_crate_command": "cargo test --offline --locked -p hooks-addresses -- --nocapture",
+    "local_reported_windows_only_dx11_producer_regression": "Previously established locally B1/M0/R1 using actual SavedAddresses/load_custom_addresses; no original private logs copied"
+  },
+  "release_admission": {
+    "command": "cargo test --offline --locked -p dedicated_server release_admission_tests -- --nocapture",
+    "executed": 5,
+    "passed": 5,
+    "failed": 0,
+    "ignored": 0,
+    "exit": 0,
+    "new_test_scope": "Real MyUsers Login/Register, real SQLite and signed claims; coherent differing release and compat declarations rejected for Account/Official/MOD before state mutation",
+    "production_release_admission_changed": false
+  },
+  "public_packages_rechecked": [
+    {
+      "source_commit": "da1805e6764ac202bf6b8c1a9548fa2c44d4c085",
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "compat_id": "scbl-lan-1.1.0",
+      "catalog_sha256": "be66b742755cc6a4f73b30ec7b475969069bf0987cfc3b4cd8acb630a4d2f2ea",
+      "four_role_bytes_and_hashes_recomputed": true,
+      "components": [
+        {
+          "bytes": 146206639,
+          "compat_id": "scbl-lan-1.1.0",
+          "path": "FifthFreedom.exe",
+          "release_id": "fifth-freedom-1.1.0-migration1",
+          "role": "launcher",
+          "sha256": "530917c11f80d072b439aa14086da8cd449d14aaad9f7bad65077a8e89fd2cbf"
+        },
+        {
+          "bytes": 7746048,
+          "compat_id": "scbl-lan-1.1.0",
+          "path": "runtime/uplay_r1_loader.dll",
+          "release_id": "fifth-freedom-1.1.0-migration1",
+          "role": "main",
+          "sha256": "34183282c059a23d3da551e6652b170c33070543b514de835fa04f65da59e97d"
+        },
+        {
+          "bytes": 2430976,
+          "compat_id": "scbl-lan-1.1.0",
+          "path": "runtime/scbl_gameplay.dll",
+          "release_id": "fifth-freedom-1.1.0-migration1",
+          "role": "gameplay",
+          "sha256": "50ce67c22069544f45f3453e67b388207621385e8009e69a758fafc597699d7e"
+        },
+        {
+          "bytes": 10890752,
+          "compat_id": "scbl-lan-1.1.0",
+          "path": "runtime/FifthFreedom.Server.exe",
+          "release_id": "fifth-freedom-1.1.0-migration1",
+          "role": "server",
+          "sha256": "165997832d286f8a8508aca6314c3802f8c0e85cd854217890fad622a82b8be6"
+        }
+      ]
+    },
+    {
+      "source_commit": "dcb97d0295c9c8700fd390249f2d617430d89dcf",
+      "release_id": "fifth-freedom-1.1.0-migration1",
+      "compat_id": "scbl-lan-1.1.0",
+      "catalog_sha256": "511c898e4c0a98e677445d88f2376aed7b1a559a39314d2b21bc97b0fbb10c7f",
+      "four_role_bytes_and_hashes_recomputed": true,
+      "components": [
+        {
+          "bytes": 146366383,
+          "compat_id": "scbl-lan-1.1.0",
+          "path": "FifthFreedom.exe",
+          "release_id": "fifth-freedom-1.1.0-migration1",
+          "role": "launcher",
+          "sha256": "1609949b3cd8055efb41c5b217b37b12a13e3b05ab1777350be9abd25be2b15e"
+        },
+        {
+          "bytes": 7746048,
+          "compat_id": "scbl-lan-1.1.0",
+          "path": "runtime/uplay_r1_loader.dll",
+          "release_id": "fifth-freedom-1.1.0-migration1",
+          "role": "main",
+          "sha256": "f217524dc29c2338899e3886b0075535fcff9099905ee3a2f1004ed3742eedd3"
+        },
+        {
+          "bytes": 2430976,
+          "compat_id": "scbl-lan-1.1.0",
+          "path": "runtime/scbl_gameplay.dll",
+          "release_id": "fifth-freedom-1.1.0-migration1",
+          "role": "gameplay",
+          "sha256": "d5db74bf08334fc9a4d62e1a379f32bcc1c37b89df441a62b0612cc40a74def7"
+        },
+        {
+          "bytes": 10890752,
+          "compat_id": "scbl-lan-1.1.0",
+          "path": "runtime/FifthFreedom.Server.exe",
+          "release_id": "fifth-freedom-1.1.0-migration1",
+          "role": "server",
+          "sha256": "9cde1049c5ff3783ec169f78bfcff9ed6ee5cce424859d0bca3a829cc2a406f8"
+        }
+      ]
+    }
+  ],
+  "native_source_diff_between_these_two_packages": [],
+  "same_release_compat_different_catalog_expected_error": "PACKAGE_CATALOG_MISMATCH",
+  "reported_screenshot_error": "RELEASE_MISMATCH",
+  "reported_missing_identity_error_is_separate": true,
+  "reported_screenshot_actual_launcher_server_identity_verified": false,
+  "logs_sha256": {
+    "addresses-baseline.log": "34b66d013d0efc8b4fc8ffdee173675b13e19f571b0dc6efefec47ae0825413d",
+    "addresses-modified.log": "2ec140c0bd847c4d500ff6116f583d3d975e0816e0efed84503546cfd5a2366c",
+    "release-admission.log": "9bafddecb32f1167e93a88b4170c84ccefc5f567f7c5ec3bfb0871eaede875c8",
+    "address-four-role-receipt.json": "4a3e26a4a69e4eafdf8c3f20aaf7c5b1a7ba8442a012d29d5eb2cfc4ed2143ab"
+  },
+  "game_executed": false,
+  "raw_player_logs_or_identifiers_published": false,
+  "live_crash_or_matching_fix_claimed": false,
+  "hosted_windows_current_revision_pending": true
+}

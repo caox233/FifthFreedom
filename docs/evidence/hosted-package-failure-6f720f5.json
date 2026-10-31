@@ -1,0 +1,442 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-10-27T22:21:38.460839+00:00",
+  "source_head": "6f720f56ab026f54edfb7ad08fdfbf01c24832a6",
+  "checkout_merge": {
+    "sha": "c5682a82702e521fe2a02cbdb020399b098f199a",
+    "parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "6f720f56ab026f54edfb7ad08fdfbf01c24832a6"
+    ],
+    "tree": "07cf35902fe21c786c630d839d4a9eedd0b59e94",
+    "tree_equals_source_head": true
+  },
+  "run_id": 40591620277,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/40591620277",
+  "complete_windows_job": {
+    "id": 122497093920,
+    "status": "completed",
+    "conclusion": "failure",
+    "full_build_step": "Run the unchanged full build, regression and package-verification entry",
+    "full_build_exit": 1,
+    "package_smoke": "skipped",
+    "first_terminal_failure": "ERROR [Errno 2] No such file or directory, displaying the package update-note path (Chinese filename)",
+    "failure_utc": "2026-10-27T22:18:40Z",
+    "official_job_log_bytes": 36457,
+    "official_job_log_sha256": "3682039041e9432651da51f7f4995fc6e0cc3b91eec81e479d7125eacaab2e3c",
+    "phase_source_inference": "The package had written SHA256SUMS; build.py next invokes verify_package.verify before ZIP creation. The log contains no traceback or exception class."
+  },
+  "successful_before_failure": {
+    "build_entry_python": {
+      "executed": 69,
+      "passed": 66,
+      "skipped": 3,
+      "errors": 0,
+      "failures": 0
+    },
+    "port_plan_checks_passed": 13,
+    "background_task_regression_exit": 0,
+    "observer_session_exit": 0,
+    "native_core": {
+      "test_groups_passed": [
+        17,
+        13
+      ],
+      "failed": 0,
+      "ignored": 0
+    },
+    "component_build_exit": {
+      "main": 0,
+      "gameplay": 0,
+      "server": 0,
+      "publish_launcher": 0
+    },
+    "scope": "Actual retained build command receipts; component success is not complete-package success."
+  },
+  "admitted_inputs": {
+    "job_id": 122497032033,
+    "artifact_id": 12774780837,
+    "zip_sha256": "36ac4e7f7e9bb7649a743cea7584d209daaee00f88c9ad516860f022a56400da",
+    "official_digest_verified": true,
+    "receipt": {
+      "schema": 1,
+      "mode": "package-inputs",
+      "inputs": {
+        "status": "ready",
+        "required_input_count": 20,
+        "verified_input_count": 20,
+        "held_input_count_all_sources": 4,
+        "missing_held_package_inputs": [],
+        "errors": [],
+        "complete_package_ready": true
+      },
+      "suites": [
+        {
+          "suite": "strict-package-inputs",
+          "executed": 2,
+          "passed": 2,
+          "failed_test_cases": 0,
+          "failed_method_ids": [],
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "expected_failures": 0,
+          "unexpected_successes": 0,
+          "successful": true
+        }
+      ],
+      "game_executed": false,
+      "published": false,
+      "exit_code": 0
+    }
+  },
+  "separate_c71": {
+    "job_id": 122497031985,
+    "artifact_id": 12773703932,
+    "zip_sha256": "76a2eafa98912f8b905b553edb434233a83d712f1d13244a563b3a8c61735f0e",
+    "official_digest_verified": true,
+    "receipt": {
+      "schema": 1,
+      "status": "blocked_native_replay_inputs",
+      "required_feature": "native-replay-fixtures",
+      "retained_test_count": 13,
+      "retained_test_source_unchanged": true,
+      "fixture_source_supplied": false,
+      "reviewed_fixture_manifest_supplied": false,
+      "fixture_authenticated": false,
+      "missing_contract": "C71 fixture source, native bytes/generator and reviewed provenance manifest",
+      "executed_native_replay_tests": 0,
+      "full_native_replay_verified": false,
+      "game_executed": false,
+      "complete_package": false
+    },
+    "not_dependency_of_complete_windows_job": true
+  },
+  "official_failure_artifact": {
+    "id": 12775745737,
+    "name": "windows-complete-candidate-c5682a82702e521fe2a02cbdb020399b098f199a",
+    "bytes": 30329,
+    "sha256": "67a5f3da680743676a8aa1b9782146ce3f2a5c506e7b49b4461568f8437ebf9e",
+    "official_digest_match": true,
+    "file_count": 43,
+    "payload": "14 command log triplets plus package/SHA256SUMS.txt; not a complete program package",
+    "program_zip_present": false,
+    "build_result_present": false,
+    "package_smoke_present": false,
+    "files": [
+      {
+        "path": "logs/20261027T220438343812Z-dotnet-version.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T220438343812Z-dotnet-version.json",
+        "bytes": 156,
+        "sha256": "1752bb02c0a52b190784559840cadce3c3883f12c293113f0bf4afe24c65f34d"
+      },
+      {
+        "path": "logs/20261027T220438343812Z-dotnet-version.stdout.txt",
+        "bytes": 10,
+        "sha256": "94736f29af38df9c42385cbda3e0854adaa638d67829700bc8907ecc4f876f87"
+      },
+      {
+        "path": "logs/20261027T220443350899Z-rust-version.json",
+        "bytes": 178,
+        "sha256": "c321e3b6db5ad26be7136b1497b9e92c3a4da43eabc28ad5d604bb23376b832e"
+      },
+      {
+        "path": "logs/20261027T220443350899Z-rust-version.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T220447464715Z-git-version.json",
+        "bytes": 168,
+        "sha256": "7c81d32067a7643e0f17519bf2d180d608e96b8e57361fae4dc936eb88419c5d"
+      },
+      {
+        "path": "logs/20261027T220443350899Z-rust-version.stdout.txt",
+        "bytes": 44,
+        "sha256": "e153d79fc5a16bdccdcb822dec50dd9c3c3f347b6f6c5ffc8757d7b226835130"
+      },
+      {
+        "path": "logs/20261027T220447464715Z-git-version.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T220447464715Z-git-version.stdout.txt",
+        "bytes": 29,
+        "sha256": "2964ef01f7b45b90e9c4fd64bd55299c72d255f6c194b69339fd4950b26050dc"
+      },
+      {
+        "path": "logs/20261027T220447495945Z-cmake-version.json",
+        "bytes": 265,
+        "sha256": "265e5f960415fe158127467126f71291c49d7813351080750aa9900ef8c18483"
+      },
+      {
+        "path": "logs/20261027T220447495945Z-cmake-version.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T220447495945Z-cmake-version.stdout.txt",
+        "bytes": 97,
+        "sha256": "02282b1eefbb0dd98bd4578caa8861cc2de062ebcbef435bace0359683bbfa57"
+      },
+      {
+        "path": "logs/20261027T220449829041Z-protoc-version.json",
+        "bytes": 174,
+        "sha256": "39d8ce2c0e31604f41cff98d4ec45b193d4c71ef9db6815f8b04583f45c9ab03"
+      },
+      {
+        "path": "logs/20261027T220449829041Z-protoc-version.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T220449829041Z-protoc-version.stdout.txt",
+        "bytes": 16,
+        "sha256": "e4e6912b6b322df863db6b25d2966ab6ec4e740a0a17128260f3038a9803b45c"
+      },
+      {
+        "path": "logs/20261027T220449844641Z-test-build-entry.json",
+        "bytes": 297,
+        "sha256": "6ce3a9b522f18833d601fe49808bb986157dd53af8b48087d07dc626c8b2ba60"
+      },
+      {
+        "path": "logs/20261027T220449844641Z-test-build-entry.stderr.txt",
+        "bytes": 10638,
+        "sha256": "07445cfc3d057d6d8390e1b19b6478e130418397a12e54720257b73951821922"
+      },
+      {
+        "path": "logs/20261027T220449844641Z-test-build-entry.stdout.txt",
+        "bytes": 549,
+        "sha256": "f64d343463e56e08ddcf22c06b6e1e2ab71abd0bc318cd4e4a45448503f2901d"
+      },
+      {
+        "path": "logs/20261027T220457202919Z-test-PortPlan.json",
+        "bytes": 299,
+        "sha256": "23199131e8c2e03e240f3c7766bf0ed35793ad10332bc4fd54c534aa85e657b2"
+      },
+      {
+        "path": "logs/20261027T220457202919Z-test-PortPlan.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T220457202919Z-test-PortPlan.stdout.txt",
+        "bytes": 935,
+        "sha256": "7de5cf51be854608fb8ec97332eca2b9a1661b89ee39310da0781637a590f829"
+      },
+      {
+        "path": "logs/20261027T220512877224Z-test-BackgroundTaskRegression.json",
+        "bytes": 331,
+        "sha256": "c69648e1860cee3828d6c445024726dce4779eeb449938183bc0e90101bb2698"
+      },
+      {
+        "path": "logs/20261027T220512877224Z-test-BackgroundTaskRegression.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T220515520616Z-test-ObserverSession.json",
+        "bytes": 313,
+        "sha256": "e240237a5c32a0e526a58acf3cf2ee6853213bf7ddea1569a0c0f2d8e1a3b573"
+      },
+      {
+        "path": "logs/20261027T220512877224Z-test-BackgroundTaskRegression.stdout.txt",
+        "bytes": 638,
+        "sha256": "06704f17189389abf618aa9dc1184573bf4acba0898c6c42471e65ca445515a0"
+      },
+      {
+        "path": "logs/20261027T220515520616Z-test-ObserverSession.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T220515520616Z-test-ObserverSession.stdout.txt",
+        "bytes": 185,
+        "sha256": "e6a5a7131918e1be09d4845f0b1e9c2f38899bd67da61e79fb0d1401db2def6e"
+      },
+      {
+        "path": "logs/20261027T220518517167Z-test-native-core.stderr.txt",
+        "bytes": 4358,
+        "sha256": "9f951e82e8df6ae858c5a3042f7d585e2a2d62185e3d9109847ede8bad9d62f6"
+      },
+      {
+        "path": "logs/20261027T220518517167Z-test-native-core.json",
+        "bytes": 272,
+        "sha256": "8311bd199ed8b3046a6469bdd957253a78c853b4e69d59f8064bebed8639bc89"
+      },
+      {
+        "path": "logs/20261027T220518517167Z-test-native-core.stdout.txt",
+        "bytes": 2593,
+        "sha256": "e03b41dd52d74d3779033168d017bd1e459c24da2a4080d48a5a848e9f84687a"
+      },
+      {
+        "path": "logs/20261027T220606606929Z-build-main.json",
+        "bytes": 302,
+        "sha256": "d259cd37923f9b48cb70d75b4dc202a65579d328db27ba775f3b6e68f059221a"
+      },
+      {
+        "path": "logs/20261027T220606606929Z-build-main.stderr.txt",
+        "bytes": 20893,
+        "sha256": "3f8379fc9f5f7d62c75d6cf055fdd3086327a69bd96a7363a99b9c6dc4b12246"
+      },
+      {
+        "path": "logs/20261027T220606606929Z-build-main.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T221145793600Z-build-gameplay.json",
+        "bytes": 299,
+        "sha256": "bc80491a220224a12219c214ae837adcfa4e66af8db85443803134afddfd83f4"
+      },
+      {
+        "path": "logs/20261027T221145793600Z-build-gameplay.stderr.txt",
+        "bytes": 13747,
+        "sha256": "cd80d33ec35989255078a91a8b5246551ddf75d01de85334b3358e6aae320aac"
+      },
+      {
+        "path": "logs/20261027T221145793600Z-build-gameplay.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T221314292588Z-build-server.json",
+        "bytes": 284,
+        "sha256": "fb788ec5b7f4ea57c1c8e0d3df16a5e669d1fd6070fc232eac4917ce54c7de85"
+      },
+      {
+        "path": "logs/20261027T221314292588Z-build-server.stderr.txt",
+        "bytes": 12516,
+        "sha256": "03da8fb78113b09399bcb66c7c8b4846bd248065229ec0da2a9a5289c503d492"
+      },
+      {
+        "path": "logs/20261027T221314292588Z-build-server.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T221753071831Z-publish-launcher.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/20261027T221753071831Z-publish-launcher.json",
+        "bytes": 678,
+        "sha256": "6aba743cbab90521bc05d4d0f51e0852e910f58e75af9824f24b55303060eab0"
+      },
+      {
+        "path": "logs/20261027T221753071831Z-publish-launcher.stdout.txt",
+        "bytes": 354,
+        "sha256": "5e7e5fd5af1e58048a4eee3c1c117aa6acf6c28aafbbe29a1b07cfb189e44be2"
+      },
+      {
+        "path": "program/fifth-freedom-1.1.0-migration1/package/SHA256SUMS.txt",
+        "bytes": 8583,
+        "sha256": "71e008a96acefc2ba65c475795c02844f81b07c67fb938efbb816c726a5bbf16"
+      }
+    ]
+  },
+  "checksum_encoding_analysis": {
+    "sum_file": "program/fifth-freedom-1.1.0-migration1/package/SHA256SUMS.txt",
+    "sum_bytes": 8583,
+    "sum_sha256": "71e008a96acefc2ba65c475795c02844f81b07c67fb938efbb816c726a5bbf16",
+    "utf8_filename": "\u66f4\u65b0\u516c\u544a.txt",
+    "utf8_filename_hex": "e69bb4e696b0e585ace5918a2e747874",
+    "checksum_line_digest": "ee3cbc379fac0fb79a5cfa92a3d80d9fc5a347808368b7734eeebef19b0912b1",
+    "exact_source_update_notes_sha256": "ee3cbc379fac0fb79a5cfa92a3d80d9fc5a347808368b7734eeebef19b0912b1",
+    "source_bytes_match_recorded_digest": true,
+    "same_sum_bytes_cp1252_name_unicode_escape": "\\xe6\\u203a\\xb4\\xe6\\u2013\\xb0\\xe5\\u2026\\xac\\xe5\\u2018\\u0160.txt",
+    "cp1252_decoded_name_differs": true,
+    "cp1252_reencoded_error_filename_would_look_like_utf8": true,
+    "runner_ansi_encoding_directly_observed": false,
+    "limitation": "Artifacts prove the UTF-8 checksum entry and source-note bytes; they do not retain the failing process locale setting or a raw repr of its decoded filename. Exact-source unqualified read_text plus controlled encoding regression can establish the cross-code-page defect without asserting an unrecorded locale measurement."
+  },
+  "source_checks": {
+    "run_id": 40591620254,
+    "jobs": [
+      122497031546,
+      122497031234
+    ],
+    "artifacts": [
+      {
+        "id": 12774167149,
+        "name": "portable-source-evidence-ubuntu-24.04-c5682a82702e521fe2a02cbdb020399b098f199a",
+        "zip_sha256": "3dcbb49ccb0a2ee6f9cdbf267500858c0e1209081745710507c2faffe28135e1",
+        "receipt_sha256": "f1840c79f81e96d1cfe60d7066b4307fd4565a65b9bb60cf8a3481214451517e",
+        "official_digest_verified": true,
+        "executed": 670,
+        "passed": 668,
+        "skipped": 2,
+        "failure_events": 0,
+        "inputs": {
+          "status": "ready",
+          "required_input_count": 20,
+          "verified_input_count": 20,
+          "held_input_count_all_sources": 4,
+          "missing_held_package_inputs": [],
+          "errors": [],
+          "complete_package_ready": true
+        },
+        "exit_code": 0
+      },
+      {
+        "id": 12774058594,
+        "name": "portable-source-evidence-windows-2022-c5682a82702e521fe2a02cbdb020399b098f199a",
+        "zip_sha256": "214485d411d4fdeac692cb288712329f29a050766f98d701e6a958476c490396",
+        "receipt_sha256": "2640285dd8e7d19c6ae84da255f63df7c6ae44485b43ff8b52de1c25a5d43b52",
+        "official_digest_verified": true,
+        "executed": 670,
+        "passed": 554,
+        "skipped": 116,
+        "failure_events": 0,
+        "inputs": {
+          "status": "ready",
+          "required_input_count": 20,
+          "verified_input_count": 20,
+          "held_input_count_all_sources": 4,
+          "missing_held_package_inputs": [],
+          "errors": [],
+          "complete_package_ready": true
+        },
+        "exit_code": 0
+      }
+    ]
+  },
+  "windows_public_firewall_prerequisite": {
+    "run": 40591620252,
+    "id": 12774316898,
+    "sha256": "ef11c3c3d79c77d55c0b4909f6a372ca9ec341c2313a929824722fbc5ca6f46f",
+    "error_code": "FIREWALL_POLICY_UNAVAILABLE",
+    "phase": "Prepare",
+    "raw_cim_statuses": [
+      "InactiveProfile",
+      "Full"
+    ],
+    "core_executed": false,
+    "restore": {
+      "active_rules_verified": false,
+      "application_path_rules": true,
+      "armed": false,
+      "exact_drain_verified": false,
+      "mode": "Restore",
+      "original_policy_unchanged": true,
+      "owned_rules_removed": true,
+      "packet_behavior_verified": false,
+      "pid_isolation": false,
+      "policy_enabled_or_changed": false
+    },
+    "wfp_coverage": "UNKNOWN"
+  },
+  "remaining_scope": [
+    "The original missing-input gate is now genuinely ready; this new failure is a packaging verification defect, not a missing SAV or C71 input.",
+    "build.py writes UTF-8 SHA256SUMS; exact source verify_package.py uses read_text() without encoding. The archived UTF-8 update-note entry matches the source file digest. A non-UTF-8 default read selects a different filename.",
+    "Actual failing runner locale was not recorded. Preserve this evidence and require a controlled code-page regression plus new-SHA hosted full build/smoke before declaring repaired.",
+    "No same-SHA retry, hash weakening, renamed component-only ZIP, game launch, production deployment or formal Release was used.",
+    "Public remains closed; accepted gameplay results and earlier failures remain retained."
+  ]
+}

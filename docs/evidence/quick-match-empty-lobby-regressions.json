@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "kind": "empty-lobby-server-protocol-characterization",
+  "recorded_date": "2026-10-28",
+  "date_timezone": "Asia/Hong_Kong",
+  "base_commit_during_run": "6f720f56ab026f54edfb7ad08fdfbf01c24832a6",
+  "tested_uncommitted_file": "src/native/server/dedicated-server/src/storage/quick_match_protocol_tests.rs",
+  "tested_file_sha256": "ec2986d33e17045bb5d613fbf5eca03d1498a0c5ec482a63a9af0ad31196a3f7",
+  "command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "-p",
+    "dedicated_server",
+    "quick_match_protocol_",
+    "--",
+    "--nocapture"
+  ],
+  "initial_attempt": {
+    "exit_code": 101,
+    "passed": 6,
+    "failed": 4,
+    "ignored": 0,
+    "filtered": 370,
+    "test_file_sha256": "6b025b25d5224352b14dfcba74051f8be89aa1e0518cbb7e0bd976564b08e53f",
+    "log_sha256": "13a9fc87ed0df4e69ee303f0084d21a8c749bbdec94cfd4e7b106555e55894da",
+    "cause": "Test expected the caller to discover its own hosted room, contrary to existing caller exclusion in production search; no production defect established."
+  },
+  "corrected_attempt": {
+    "exit_code": 0,
+    "passed": 10,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 370,
+    "new_empty_lobby_cases": 4,
+    "retained_existing_room_cases": 6,
+    "log_sha256": "cf671d1687528c47b1bcadd17bcdf7834c0d964f444e22aea949f4a7f78b2d4b",
+    "default_test_parallelism": true,
+    "independent_build_directory": true
+  },
+  "schedules": [
+    {
+      "name": "create-before-second-search",
+      "modes": [
+        "Official",
+        "MOD"
+      ],
+      "initial_active_rooms": 0,
+      "independent_users_and_bound_tickets": 2,
+      "actual_protocols": [
+        "SearchSessions",
+        "CreateSession",
+        "SearchSessions",
+        "JoinSession",
+        "SearchSessions"
+      ],
+      "join_key_from_actual_response": true,
+      "final_active_rooms": 1,
+      "shared_stored_and_serialized_roster": [
+        1,
+        2
+      ],
+      "caller_owned_room_excluded_from_search": true
+    },
+    {
+      "name": "both-search-empty-before-create",
+      "modes": [
+        "Official",
+        "MOD"
+      ],
+      "initial_active_rooms": 0,
+      "independent_users_and_bound_tickets": 2,
+      "worker_threads": 2,
+      "both_empty_responses_required_before_creates": true,
+      "controller_barrier_timeout_seconds": 10,
+      "created_rooms": 2,
+      "post_create_rosters": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "each_caller_discovers_only_other_host": true,
+      "re_search_merges_rooms": false,
+      "explicit_join_key_from_actual_response": true,
+      "after_b_joins_a_rosters": [
+        [
+          1,
+          2
+        ],
+        [
+          2
+        ]
+      ],
+      "b_explicitly_leaves_own_room": true,
+      "final_active_rooms": 1,
+      "final_shared_roster": [
+        1,
+        2
+      ],
+      "selection_and_leave_order_supplied_by_test_controller": true
+    }
+  ],
+  "source_trace": {
+    "search_excludes_caller_host": "game_session_ex.rs calls Storage::search_sessions(type_id, Some(user_id)); sessions.rs filters creator_id != caller",
+    "create_does_not_elect_existing_host": "Storage::create_game_session inserts a new room for each accepted create request",
+    "join_does_not_retire_other_owned_room": "Storage::join_game_session_unbounded inserts membership in the referenced room",
+    "native_retail_order_not_reimplemented": "hooks/quazal.rs traces and delegates to original game methods"
+  },
+  "unchanged_production_sources": [
+    {
+      "path": "src/native/server/dedicated-server/src/game_session.rs",
+      "sha256": "6757a01acafc8a212c7808ed536f8b10ed4e67dacf49a1808126749ee590e496",
+      "byte_identical_to_handoff": true
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/game_session_ex.rs",
+      "sha256": "b83b02108c7fc1547d331d277e8ffb74c572679dd53bc751046dcc3849cc3b5e",
+      "byte_identical_to_handoff": true
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/storage/mod.rs",
+      "sha256": "528b3114c50a32323ae8697a8690b9714a8f642e4ef57869093f2da13c9b6894",
+      "byte_identical_to_handoff": true
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/storage/sessions.rs",
+      "sha256": "dd922718a96253a35a3fc3b91e8499e49c1ad6dd72ff57aeba062d558061fcb0",
+      "byte_identical_to_handoff": true
+    },
+    {
+      "path": "src/native/server/dedicated-server/src/gameplay_modes.rs",
+      "sha256": "e0f45593046c5c13146502b9b5c8b50c0075b839007e8a96967fa2fbee5157cd",
+      "byte_identical_to_handoff": true
+    },
+    {
+      "path": "src/native/client/hooks/src/hooks/quazal.rs",
+      "sha256": "15f2205d6d70496dd72da6543d742ed3faf0356ed4bfdd503b3d8b01a4fb2d44",
+      "byte_identical_to_handoff": true
+    }
+  ],
+  "production_changed": false,
+  "authoritative_queue_or_election_verified": false,
+  "retail_client_request_order_verified": false,
+  "real_udp_dispatch_executed": false,
+  "notification_delivery_verified": false,
+  "native_p2p_verified": false,
+  "game_executed": false,
+  "user_report_reproduced": false,
+  "live_issue_fixed": false,
+  "task_status": "needs-triage",
+  "private_logs_uploaded": false
+}

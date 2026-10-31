@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fifth-freedom:ff-easytier-owned-probe-v1",
+  "description": "Public nonsecret owned-development recipe. Production Python parser additionally enforces canonical encodings, RFC1918 numeric addresses, distinct keys/endpoints, same usable /30 overlay and disjoint underlay. This schema is not runtime admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "purpose",
+    "transport",
+    "role",
+    "instance_id",
+    "network_name",
+    "interface_name",
+    "rpc_port",
+    "local",
+    "remote",
+    "candidate"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ff-easytier-owned-probe-v1"
+    },
+    "purpose": {
+      "const": "owned-isolated-development"
+    },
+    "transport": {
+      "enum": [
+        "tcp",
+        "quic",
+        "wss"
+      ]
+    },
+    "role": {
+      "enum": [
+        "initiator",
+        "responder"
+      ]
+    },
+    "instance_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "network_name": {
+      "type": "string",
+      "pattern": "^ffprobe-[0-9a-f]{32}$"
+    },
+    "interface_name": {
+      "type": "string",
+      "pattern": "^ff[a-z0-9]{1,12}$"
+    },
+    "rpc_port": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 65535
+    },
+    "local": {
+      "$ref": "#/$defs/endpoint"
+    },
+    "remote": {
+      "$ref": "#/$defs/endpoint"
+    },
+    "candidate": {
+      "$ref": "#/$defs/candidate"
+    }
+  },
+  "$defs": {
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "underlay_ipv4",
+        "overlay_cidr",
+        "listen_port",
+        "public_key"
+      ],
+      "properties": {
+        "underlay_ipv4": {
+          "type": "string",
+          "format": "ipv4"
+        },
+        "overlay_cidr": {
+          "type": "string",
+          "pattern": "^[0-9.]+/30$"
+        },
+        "listen_port": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535
+        },
+        "public_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{43}=$"
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "upstream_commit",
+        "source_manifest_sha256",
+        "patch_manifest_sha256",
+        "cargo_lock_sha256",
+        "build_profile_sha256",
+        "executable_sha256",
+        "executable_size",
+        "role",
+        "target"
+      ],
+      "properties": {
+        "upstream_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "source_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "patch_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "cargo_lock_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "build_profile_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "executable_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "executable_size": {
+          "type": "integer",
+          "minimum": 64,
+          "maximum": 536870912
+        },
+        "role": {
+          "const": "easytier-core"
+        },
+        "target": {
+          "const": "x86_64-unknown-linux-gnu"
+        }
+      }
+    }
+  }
+}

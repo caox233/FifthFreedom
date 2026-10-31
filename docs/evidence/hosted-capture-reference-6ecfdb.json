@@ -1,0 +1,57 @@
+{
+  "verified_utc": "2026-10-26T17:57:50.689227+00:00",
+  "run_id": 40373151513,
+  "job_id": 121748958885,
+  "head_sha": "6ecfdb474238614a9df5e22abbe91581b99f40e6",
+  "checkout_merge": "b7e833df2a50240f340428635999e700a54c7e40",
+  "merge_parent_and_tree_verified": true,
+  "artifact_id": 12672934145,
+  "artifact_bytes": 328036,
+  "artifact_sha256": "89dea2bbdc230acb19aa2a9a100d11f83112f7176fd4e1501a50a952315b4b6d",
+  "official_digest_matches": true,
+  "internal_sha256sums_verified": true,
+  "rebuilt_reference": {
+    "bytes": 809984,
+    "sha256": "cfef61dc98ed01925a45da8aa56bdce6b39b94eec4c2e4602ec0fa7096de0501",
+    "x86_pe32_executable": true
+  },
+  "independent_binary_rehash": true,
+  "independent_pe32_x86_header_verified": true,
+  "msvc_full_version": 194435229,
+  "historical_msvc_full_version_matched": false,
+  "compilations": {
+    "reference": {
+      "exit_code": 0,
+      "log_sha256": "9b8872b02b0b5cafb022da7c1fe5a997703a30aaaf78d4e1971fa84d7d91673e",
+      "diagnostic_codes": []
+    },
+    "fixture": {
+      "exit_code": 0,
+      "log_sha256": "debb4918fafcb38564e4e6272af8699b8e610ff4e67dd3d845ddf5e3508244c6",
+      "diagnostic_codes": []
+    }
+  },
+  "passed_checks": 19,
+  "skipped_checks": 0,
+  "pure_checks": 17,
+  "no_attach_cli_checks": {
+    "missing_arguments": {
+      "exit_code": 2
+    },
+    "invalid_pipe_prefix": {
+      "exit_code": 2
+    }
+  },
+  "original_source_sha256": "bed779d4302b68e4397a8e3fe9afddfa886c9b96c8667a4a9279def85e11a43b",
+  "original_binary_sha256": "d34d192bb97a379c4b063c24f7cea6789005b9e5a5584404b701dfd4e7533a11",
+  "original_source_bytes_unchanged": true,
+  "original_binary_bytes_unchanged": true,
+  "rebuilt_equals_original": false,
+  "source_binary_equivalence_verified": false,
+  "capture_executed": false,
+  "debugger_attached": false,
+  "game_executed": false,
+  "production_helper_replaced": false,
+  "complete_package_ready": false,
+  "scope": "Exact historical source clean x86 MSVC compile, 17 pure synthetic helper functions and 2 CLI rejections before OpenProcess. No successful debugger attach, dump generation, runtime parity, or reproducibility claim."
+}

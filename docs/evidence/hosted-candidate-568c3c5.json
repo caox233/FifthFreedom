@@ -1,0 +1,150 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T07:25:12.070233+00:00",
+  "source_head_sha": "568c3c5c0de90749636d8ba5acff76e2b8e62f86",
+  "run_id": 39915438707,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39915438707",
+  "status": "completed",
+  "conclusion": "failure",
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no archive download",
+  "jobs": [
+    {
+      "id": 120288376951,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120288377210,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120288377221,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120288377291,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120288377305,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120288377335,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120288427377,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120292926698,
+      "name": "Same-run native owned lifecycle in synthetic namespaces",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120293295356,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12485740164,
+      "name": "windows-fixed-port-preparation-5e5f726728ccd549dccd47e22cd9ce8401fdf1e4",
+      "size_in_bytes": 948,
+      "digest": "sha256:b6ddc7c7d5be648851c8b203e9f138c0381b1561ce497c67f73200ba6749f2c5",
+      "expired": false
+    },
+    {
+      "id": 12485416149,
+      "name": "linux-lan-baseline-5e5f726728ccd549dccd47e22cd9ce8401fdf1e4",
+      "size_in_bytes": 9878826,
+      "digest": "sha256:626aeeb3b29cecbee53a5cd2f781ae72b6c280abf51287644566657887713184",
+      "expired": false
+    },
+    {
+      "id": 12485241527,
+      "name": "linux-public-donor-reference-5e5f726728ccd549dccd47e22cd9ce8401fdf1e4",
+      "size_in_bytes": 4005473,
+      "digest": "sha256:a11709da8fb7c78134ac6728dbbdba51aaf510307e11c7ea8be2e8241108811c",
+      "expired": false
+    },
+    {
+      "id": 12485206930,
+      "name": "windows-compile-only-components-5e5f726728ccd549dccd47e22cd9ce8401fdf1e4",
+      "size_in_bytes": 50621,
+      "digest": "sha256:a72c03ca8fc78d6ffa7264070a187754fa2d0d766ff3ddb26649d15eaf3686a8",
+      "expired": false
+    },
+    {
+      "id": 12484787204,
+      "name": "linux-public-control-5e5f726728ccd549dccd47e22cd9ce8401fdf1e4",
+      "size_in_bytes": 63551,
+      "digest": "sha256:0c16c32dcd6a005b6adf70718d41be20b974690b1a34638b2a8dece8124fde29",
+      "expired": false
+    },
+    {
+      "id": 12484746507,
+      "name": "complete-package-input-gate-5e5f726728ccd549dccd47e22cd9ce8401fdf1e4",
+      "size_in_bytes": 1656,
+      "digest": "sha256:7c7fe1c5aaad02726235debea3c20239ac4dd46f2a61abd1f07fb8a0076c2b41",
+      "expired": false
+    },
+    {
+      "id": 12484347961,
+      "name": "linux-native-socket-isolation-5e5f726728ccd549dccd47e22cd9ce8401fdf1e4",
+      "size_in_bytes": 3680039,
+      "digest": "sha256:0f4940477206d23faa46c76b1f5494b2e6dab58eeb1d27e19f7b80cbfb2e760c",
+      "expired": false
+    }
+  ],
+  "windows_bounded_failure": "step=ci-native-public-return; exception=RuntimeError; compiler_codes=E0425; full diagnostics remain in the run artifacts",
+  "windows_source_checks_passed": true,
+  "windows_managed_suites_passed_this_run": [
+    "PortPlan",
+    "BackgroundTaskRegression",
+    "ObserverSession",
+    "NetworkEnvironment",
+    "PublicDeployment",
+    "PublicSessionControl",
+    "PublicNativeReturn",
+    "FinalLaunchPreparation"
+  ],
+  "windows_core_and_dedicated_selections_passed_this_run": true,
+  "pass_evidence": "The sequential helper completed prior commands before entering ci-native-public-return; logs and artifact contents were not downloaded.",
+  "windows_iis_prepare_and_restore": "Both succeeded; fixed annotations confirm owned loopback bind after stopping only the recorded default site and restoring its Started state.",
+  "windows_native_public_return": "Compilation failed with E0425; native IPC test execution is not proved.",
+  "windows_native_managed_interop_source_transport_and_branding_passed": false,
+  "compile_failure_symbol_or_root_cause_confirmed": false,
+  "earlier_public_native_return_failure_cause_resolved": false,
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false,
+  "complete_package": false,
+  "production_admission": false,
+  "game_executed": false,
+  "release_or_deployment": false,
+  "redundant_candidate": {
+    "run_id": 39916016581,
+    "source_head_sha": "f85c515168c35a7d727b0f936ad2254be144e036",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "cancellation_requested_via_official_api": true,
+    "reason": "568c3c5 to f85c515 did not change Windows/native/component inputs; only candidate concurrency, docs and separately tested nft harness/unit inputs changed. Preserve the completed E0425 failure and run the reviewed fix next. Independent full owned-overlay run39916016529 remains running."
+  }
+}

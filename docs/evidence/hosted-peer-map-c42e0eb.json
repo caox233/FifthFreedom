@@ -1,0 +1,44 @@
+{
+  "verified_utc": "2026-10-26T18:07:42.457966+00:00",
+  "run_id": 40371709759,
+  "job_id": 121743872131,
+  "job_conclusion": "success",
+  "overall_run_last_observed": "in_progress_other_jobs_not_awaited",
+  "source_head": "c42e0ebbc8084e943076aab7effc6abd4e8662c7",
+  "checkout_merge": "64198de3d124a12152076754ec4cf88c6b6892f6",
+  "merge_parent_and_tree_verified": true,
+  "artifact_id": 12674915701,
+  "artifact_sha256": "e84cb4df98132da7e1e46da2d46e254c3b90c406d62b019a499fc66375970d2a",
+  "official_digest_verified": true,
+  "source_files": 701,
+  "ordered_patches": 12,
+  "source_tree_sha256": "4f0a55d01c4a25dcb4bd7c62972b51e42425b99959566fb3046887dfecda2140",
+  "patch_manifest_sha256": "80ced5a4c62459fb105d04dd42d2911559191b955584059c3cf8ad9578d4abb3",
+  "source_recipe_sha256": "a614cf96abfc07e06b6eeecd48087709f653b958e0abe01cca1d2cb66212d954",
+  "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+  "new_contracts_passed": 12,
+  "retained_contracts_passed": 59,
+  "total_contracts_passed": 71,
+  "failed": 0,
+  "ignored": 0,
+  "all_filter_counts_match_exact_recipe": true,
+  "full_release_core_cli_build_exit": 0,
+  "target": "x86_64-unknown-linux-gnu",
+  "rust_toolchain": "1.95.0",
+  "built_executables_from_runner_receipt": {
+    "easytier-cli": {
+      "bytes": 12261752,
+      "sha256": "932f7fca07ed567574293b9f76f2284112697cb6886d80ccf193d0baf3c7afce"
+    },
+    "easytier-core": {
+      "bytes": 28596328,
+      "sha256": "7f87354084598b81a2069034f17ccf49c2c413378917e1ca666fe2adbe7b9f44"
+    }
+  },
+  "binary_bytes_downloaded_or_independently_rehashed": false,
+  "runtime_executed": false,
+  "runtime_binary_uploaded": false,
+  "public_startup_allowed": false,
+  "dependency_source_closure_verified": false,
+  "scope": "Actual hosted 12 new +59 retained linked Rust contracts and full GNU Release core/CLI build. Sampled current PeerMap membership, not atomic revocation, NIC lease, whole-game confinement or ordinary Public admission."
+}

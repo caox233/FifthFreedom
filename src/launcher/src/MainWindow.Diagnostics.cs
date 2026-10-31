@@ -51,6 +51,7 @@ public partial class MainWindow
         try {
             foreach(string mode in new[]{"Official","MOD"}) foreach(double fov in new[]{1.0,1.25,1.3}) {
                 cmbGameplayMode.SelectedValue=mode;fovSlider.Value=fov;
+                SaveGameplayDraft_Click(this, new RoutedEventArgs());
                 string config=ScblLan.GameRuntime.Config(c,"fixture","synthetic-password","fixture-id",GetSelectedGameplayMode(),GetSelectedFovScale());
                 var pipe=new ScblLan.LaunchPipe(config,exe);
                 Environment.SetEnvironmentVariable("SCBL_LAN_TEST_FOV",fov.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -106,7 +107,7 @@ public partial class MainWindow
             result.Add("PASS packaged x86 gameplay DLL loads and rejects null ABI input");
         } finally{System.Runtime.InteropServices.NativeLibrary.Free(module);}
         foreach(string requested in new[]{"Official","MOD"}) {
-            cmbGameplayMode.SelectedValue=requested;string mode=GetSelectedGameplayMode();
+            cmbGameplayMode.SelectedValue=requested;SaveGameplayDraft_Click(this, new RoutedEventArgs());string mode=GetSelectedGameplayMode();
             string config=$"ConfigServer = \"127.0.0.1\"\nApiServer = \"http://127.0.0.1:50051/\"\nGameplayMode = \"{mode}\"\n[User]\nUsername = \"fixture\"\nPassword = \"synthetic-test-password\"\nAccountId = \"fixture-id\"\n";
             var pipe=new ScblLan.LaunchPipe(config,exe);
             try {
@@ -162,7 +163,12 @@ public partial class MainWindow
             if(txtServer.Text!=endpoint) throw new Exception("Host UI lost the selected port");
             using var c=await ScblLan.LanConnection.ConnectAsync(endpoint,ip,CancellationToken.None);
             if(!c.Capabilities.Ready)throw new Exception("Host UI marked ready before services were ready");
-            return $"PASS actual StartHostModeServerFromUiAsync\nHOST_READY {endpoint}\nPASS server textbox retains actual API port\nPASS real capabilities ready\nPASS owned process stopped in finally\n";
+            if (_networkEnvironment?.Snapshot.Selection?.LanRole != LanRole.Host || !_networkEnvironment.Snapshot.IsReady)
+                throw new Exception("Host runtime did not publish the owned environment lease");
+            var change = await ChangeLanRoleAsync(LanRole.Join);
+            if (change.Outcome != NetworkEnvironmentChangeOutcome.Applied || IsDedicatedServerRunning() || change.Snapshot.IsReady)
+                throw new Exception("Join did not close the owned host or falsely claimed readiness");
+            return $"PASS actual StartHostModeServerFromUiAsync\nHOST_READY {endpoint}\nPASS server textbox retains actual API port\nPASS real capabilities ready\nPASS controller owns ready LAN host\nPASS offline Join closes only its owned host\nPASS owned process stopped in finally\n";
         }
         catch (Exception ex) { operationFailure = ex; throw; }
         finally
@@ -173,8 +179,146 @@ public partial class MainWindow
         }
     }
 
+    internal async Task<string> RunAllIsolatedChecksAsync()
+    {
+        string existing = RunIsolatedChecks();
+        var checks = existing.Split('\n').Where(line => line.StartsWith("PASS ", StringComparison.Ordinal)).ToList();
+        void Check(bool condition, string label)
+        {
+            if (!condition) throw new InvalidOperationException(label);
+            checks.Add("PASS " + label);
+        }
+        txtServer.Text = "127.0.0.1:50051";
+        _isGameRunning = false; _isGameStarting = false; _isBusy = false;
+        InitializeNetworkEnvironment();
+        try
+        {
+            // Enter from a worker to exercise the actual production adapter's
+            // Dispatcher boundary; no fake adapter or remote server is involved.
+            var selected = await Task.Run(() => _networkEnvironment!.ChangeAsync(NetworkEnvironmentSelection.ForLan(LanRole.Join)));
+            Check(selected.Outcome == NetworkEnvironmentChangeOutcome.Applied && selected.Snapshot.Selection?.LanRole == LanRole.Join,
+                "production dispatcher adapter activates LAN Join from a worker");
+            Check(txtServer.Text == "127.0.0.1:50051", "initial Join preserves a saved endpoint for an independently owned local server");
+            Check(!selected.Snapshot.IsReady && _activeLanEnvironmentLease is { IsConfigured: true, IsReady: false },
+                "Join selection without a capability observation does not claim readiness");
+            RenderNetworkEnvironment();
+            Check(Equals(cmbNetworkEnvironment.SelectedValue, "Lan") && cmbNetworkEnvironment.Items.OfType<System.Windows.Controls.ListBoxItem>()
+                .Single(x => Equals(x.Tag, "Public")).IsEnabled,
+                "production presentation permits explicit Public selection without claiming readiness");
+            var lease = _activeLanEnvironmentLease;
+            var rejected = await _networkEnvironment!.ChangeAsync(NetworkEnvironmentSelection.ForPublic(PublicTransport.Fast));
+            Check(rejected.Outcome == NetworkEnvironmentChangeOutcome.Applied && !rejected.Snapshot.IsReady
+                && rejected.Snapshot.Selection?.Environment == NetworkEnvironmentKind.Public && _activeLanEnvironmentLease is null && !lease!.IsConfigured,
+                "Public configuration selection drains LAN ownership and cannot fake ready");
+            var backToLan = await _networkEnvironment.ChangeAsync(NetworkEnvironmentSelection.ForLan(LanRole.Join));
+            Check(backToLan.Outcome == NetworkEnvironmentChangeOutcome.Applied && _activeLanEnvironmentLease is not null,
+                "explicit return to LAN creates its own new lease");
+            lease = _activeLanEnvironmentLease;
+            _isGameRunning = true;
+            var blocked = await _networkEnvironment.ChangeAsync(NetworkEnvironmentSelection.ForLan(LanRole.Host));
+            Check(blocked.Outcome == NetworkEnvironmentChangeOutcome.RejectedGameActive && !IsDedicatedServerRunning(),
+                "actual launcher activity blocks host activation before process start");
+            _isGameRunning = false;
+            _ownedGameLaunchActive = true;
+            blocked = await _networkEnvironment.ChangeAsync(NetworkEnvironmentSelection.ForLan(LanRole.Host));
+            Check(blocked.Outcome == NetworkEnvironmentChangeOutcome.RejectedOwnedLaunch && !IsDedicatedServerRunning(),
+                "owned launch blocks production environment switching");
+            _ownedGameLaunchActive = false;
+            Check(!TryPublishLanCapabilities(lease, txtServer.Text, "192.0.2.254", true, 1) && !lease!.IsReady,
+                "stale bind observation cannot publish readiness");
+            Check(!TryPublishLanCapabilities(lease, "192.0.2.254:50051", _settings.BindOverride, true, 1) && !lease!.IsReady,
+                "stale endpoint observation cannot publish readiness");
+            Check(await CloseNetworkEnvironmentAsync(), "production adapter closes on the WPF dispatcher without deadlock");
+            Check(_activeLanEnvironmentLease is null && _networkEnvironment.Snapshot.IsClosed && !lease!.IsConfigured,
+                "closed LAN generation is released and cannot restore readiness");
+            _networkEnvironment = null; _networkEnvironmentClosing = false;
+            var fresh = await ChangeLanRoleAsync(LanRole.Join);
+            Check(fresh.Outcome == NetworkEnvironmentChangeOutcome.Applied && _activeLanEnvironmentLease is not null,
+                "a fresh controller creates a distinct owned LAN generation");
+            Check(!TryPublishLanCapabilities(lease, txtServer.Text, _settings.BindOverride, true, 1) && !_activeLanEnvironmentLease!.IsReady,
+                "late capability observation cannot cross an identical endpoint generation");
+            // Construct a real, owned configuration session without starting its
+            // pump or launching any executable. This follows the actual exit UI
+            // -> asynchronous session drain ordering that previously stuck the
+            // environment selector disabled after normal/early game exit.
+            var sessionField = typeof(GameLaunchService).GetField("session", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+            var sessionType = typeof(GameLaunchService).GetNestedType("LaunchSession", System.Reflection.BindingFlags.NonPublic)!;
+            void InstallSyntheticUnstartedSession()
+            {
+                var pipe = new ScblLan.LaunchPipe("ConfigServer = \"127.0.0.1\"\n", Path.Combine(AppContext.BaseDirectory, "synthetic-never-launched.exe"));
+                object value = Activator.CreateInstance(sessionType, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic,
+                    null, new object?[] { pipe, Path.Combine(AppContext.BaseDirectory, "synthetic-reference-" + Guid.NewGuid().ToString("N")), null, null }, null)!;
+                sessionField.SetValue(_gameLaunchService, value);
+            }
+            try
+            {
+                InstallSyntheticUnstartedSession();
+                Guid first = _gameLaunchService.SessionId!.Value;
+                SetGameRunningState(false);
+                Check(_ownedGameLaunchActive && !cmbConnectionMode.IsEnabled,
+                    "exit UI retains the real configuration-session lock until its drain");
+                await Task.Run(() => StopOwnedLaunchAndRefreshEnvironmentAsync(first));
+                Check(_gameLaunchService.SessionId is null && !_ownedGameLaunchActive && cmbConnectionMode.IsEnabled,
+                    "monitor cleanup re-samples the drained session and restores environment switching");
+                InstallSyntheticUnstartedSession();
+                Guid replacement = _gameLaunchService.SessionId!.Value;
+                SetGameStartingState(true);
+                await Task.Run(() => StopOwnedLaunchAndRefreshEnvironmentAsync(first));
+                Check(_gameLaunchService.SessionId == replacement && _ownedGameLaunchActive && !cmbConnectionMode.IsEnabled,
+                    "older monitor completion cannot unlock or drain a replacement launch session");
+                SetGameStartingState(false);
+                await Task.Run(() => StopOwnedLaunchAndRefreshEnvironmentAsync(replacement));
+                Check(_gameLaunchService.SessionId is null && !_ownedGameLaunchActive && cmbConnectionMode.IsEnabled,
+                    "replacement session unlocks only after its own cleanup completes");
+            }
+            finally { await _gameLaunchService.StopAsync(); }
+            var syntheticPins = new PublicDeploymentRuntimePins("synthetic-not-installed", Enum.GetValues<PublicRuntimeRole>()
+                .Select(role => new PublicRuntimePin(role, 1, new string('a', 64))));
+            CredentialEnvironmentContext PublicContext(string id) => CredentialEnvironmentContext.ForPublic(new PublicDeploymentProfile(
+                id, "https://control.example.invalid", "10.66.0.0/24", "10.66.0.1", PublicTransport.Fast,
+                "quic://relay.example.invalid:11010", syntheticPins));
+            txtServer.Text = "10.66.0.1:50051"; txtUsername.Text = "fixture";
+            txtPassword.Password = "synthetic-manual-password";
+            recoveryCode.Password = "synthetic-recovery-code"; recoveryPassword.Password = "synthetic-recovery-password";
+            _recoveryCredentialIdentity = CurrentCredentialIdentity(txtServer.Text, txtUsername.Text);
+            _recoveryServer = txtServer.Text; _recoveryUser = txtUsername.Text;
+            var capturedLan = _credentialEnvironment;
+            SetCredentialEnvironment(PublicContext("synthetic-a"));
+            Check(txtPassword.Password.Length == 0 && _autoPasswordScope is null && recoveryCode.Password.Length == 0
+                && recoveryPassword.Password.Length == 0 && _recoveryCredentialIdentity is null && _recoveryServer.Length == 0,
+                "credential context change clears manual password and recovery ownership");
+            Check(!CanUseCapturedPassword(null, txtServer.Text, txtUsername.Text, capturedLan),
+                "captured manual LAN password cannot cross into a Public deployment");
+            _restoringPassword = true;
+            try { txtPassword.Password = "synthetic-autofill-password"; _autoPasswordScope = CurrentCredentialIdentity(txtServer.Text, txtUsername.Text).ScopeValue; }
+            finally { _restoringPassword = false; }
+            string publicScope = _autoPasswordScope!;
+            SetCredentialEnvironment(PublicContext("synthetic-b"));
+            Check(txtPassword.Password.Length == 0 && _autoPasswordScope is null && !CanUseCapturedPassword(publicScope, txtServer.Text, txtUsername.Text),
+                "same overlay address in another deployment cannot reuse Public autofill");
+            SetCredentialEnvironment(CredentialEnvironmentContext.Lan);
+            Check(CurrentCredentialIdentity(txtServer.Text, txtUsername.Text).ScopeValue == CredentialStore.Scope(txtServer.Text, txtUsername.Text)
+                && !CanUseCapturedPassword(publicScope, txtServer.Text, txtUsername.Text),
+                "returning to LAN preserves legacy scope and rejects Public credentials");
+            Check(cmbNetworkEnvironment.Items.OfType<System.Windows.Controls.ListBoxItem>().Single(x => Equals(x.Tag, "Public")).IsEnabled
+                && !string.IsNullOrWhiteSpace(GetPublicReadinessMessage()),
+                "Public remains selectable with an explicit prerequisite status");
+
+        }
+        finally
+        {
+            _isGameRunning = false; _ownedGameLaunchActive = false;
+            if (_networkEnvironment is not null) await _networkEnvironment.DisposeAsync();
+        }
+        return string.Join(Environment.NewLine, checks) + $"\nRESULT {checks.Count} isolated UI/protocol checks passed.\n";
+    }
+
     internal string RunIsolatedChecks()
     {
+        // This retained suite explicitly exercises LAN; default-Public policy is checked separately.
+        _settings.NetworkEnvironment = "Lan";
+        cmbNetworkEnvironment.SelectedValue = "Lan";
+        SetCredentialEnvironment(CredentialEnvironmentContext.Lan);
         var results=new List<string>();
         void Check(bool b,string label) {if(!b)throw new Exception(label);results.Add("PASS "+label);}
         Check(txtTopBadge.Text==LauncherVersion.Badge,"visible version badge matches published assembly: "+txtTopBadge.Text);
@@ -200,7 +344,7 @@ public partial class MainWindow
         Check(!IsValidPasswordInput("\0") && !IsValidPasswordInput(new string('x',4097)),"native encoding and capacity guard retained");
         txtPassword.Password="";
         Check(FindName("btnExportDiagnostics")==btnExportDiagnostics && btnExportDiagnostics.IsEnabled,"export diagnostics replaces old Hook slot and is enabled");
-        foreach(string name in new[]{"txtAppSubtitle","txtFooterNotice","txtLaunchModeLabel","cmbGameExecutable","txtHostDiscovery","btnRestoreHook"})Check(FindName(name)==null,"removed obsolete UI "+name);
+        foreach(string name in new[]{"txtAppSubtitle","txtFooterNotice","txtLaunchModeLabel","txtHostDiscovery","btnRestoreHook"})Check(FindName(name)==null,"removed obsolete UI "+name);
         Check(((System.Windows.Controls.ListBoxItem)cmbGameplayMode.Items[0]).Tag?.ToString()=="MOD" && ((System.Windows.Controls.ListBoxItem)cmbGameplayMode.Items[1]).Tag?.ToString()=="Official","MOD above Official; stable semantic tags");
         Check(chkRememberPassword.IsChecked==true,"remember-password choice visible and enabled by default");
         txtUsername.Text="fixture";txtServer.Text="192.0.2.10";
@@ -224,17 +368,42 @@ public partial class MainWindow
         _isEndingGame=false;_isGameStarting=true;Check(!CanCloseAfterGameStop(),"pending startup cannot be treated as a completed stop");
         _isGameStarting=false;Check(CanCloseAfterGameStop(),"completed game stop allows explicit close");
         Check(Math.Abs(GetSelectedFovScale()-1.2)<0.00001,"FOV defaults to SCBL 1.20x");
-        fovSlider.Value=1.25;Check(txtFovValue.Text=="1.25×" && GetSelectedFovScale()==1.25,"FOV slider value and label agree");
+        fovSlider.Value=1.25;
+        Check(txtFovValue.Text=="1.25×" && GetSelectedFovScale()==1.2 && _settings.FovScale==1.2,
+            "direct FOV edit shows draft while launch and persisted values remain committed");
+        Check(gameplayDraftActions.Visibility==Visibility.Visible && btnGameplaySave.IsEnabled && !CanLaunchGame(),
+            "dirty main-screen draft exposes Save/Cancel and blocks launch until resolved");
+        CancelGameplayDraft_Click(this,new RoutedEventArgs());
+        Check(fovSlider.Value==1.2 && gameplayDraftActions.Visibility==Visibility.Hidden,"direct Cancel restores committed FOV without opening settings");
+        fovSlider.Value=1.25;SaveGameplayDraft_Click(this,new RoutedEventArgs());
+        Check(_settings.FovScale==1.25 && GetSelectedFovScale()==1.25,"direct Save commits preview FOV for launch");
         Check(SplinterCellCNLauncher.Services.GameplayRuntime.NormalizeFov(double.NaN)==1.2 && SplinterCellCNLauncher.Services.GameplayRuntime.NormalizeFov(9)==1.3 && SplinterCellCNLauncher.Services.GameplayRuntime.NormalizeFov(-2)==1,"FOV invalid/boundary values normalized");
         var persisted=System.Text.Json.JsonSerializer.Deserialize<SplinterCellCNLauncher.Models.LauncherSettings>(System.Text.Json.JsonSerializer.Serialize(new SplinterCellCNLauncher.Models.LauncherSettings{FovScale=1.25}));
         Check(persisted?.FovScale==1.25,"FOV setting serialization round trip");
-        FovReset_Click(this,new RoutedEventArgs());Check(GetSelectedFovScale()==1.2,"FOV reset restores default");
+        FovReset_Click(this,new RoutedEventArgs());
+        Check(fovSlider.Value==1.2 && GetSelectedFovScale()==1.25,"FOV reset changes draft only");
+        SaveGameplayDraft_Click(this,new RoutedEventArgs());Check(GetSelectedFovScale()==1.2,"saved FOV reset restores default");
         Check(GetSelectedGameplayMode()=="MOD","gameplay mode defaults to MOD");
-        Check(GetSelectedGameExecutable()=="Blacklist_DX11_game.exe","DX11 remains fixed without a renderer selector");
+        Check(GetSelectedGameExecutable()=="Blacklist_DX11_game.exe","DX11 remains the only launch executable");
         cmbGameplayMode.SelectedValue="MOD";
         Check(GetSelectedGameplayMode()=="MOD" && GetSelectedGameExecutable()=="Blacklist_DX11_game.exe","MOD is independent of renderer choice");
-        Check(FindName("cmbGameExecutable")==null && GetSelectedGameExecutable()=="Blacklist_DX11_game.exe" && GetSelectedGameplayMode()=="MOD","renderer selector removed; DX11-only and MOD retained");
+        Check(FindName("cmbGameExecutable") is null && GetSelectedGameExecutable()=="Blacklist_DX11_game.exe" && GetSelectedGameplayMode()=="MOD",
+              "renderer selector is absent and fixed DX11 cannot replace the MOD selection");
         SetBusy(true);Check(!cmbGameplayMode.IsEnabled,"gameplay selection locked while busy");SetBusy(false);
+        fovSlider.Value=1.25;SetBusy(true);
+        Check(!btnGameplaySave.IsEnabled && !btnGameplayCancel.IsEnabled,"direct draft actions lock during an owned busy operation");
+        SaveGameplayDraft_Click(this,new RoutedEventArgs());
+        Check(_settings.FovScale==1.2,"blocked direct Save cannot commit during an owned operation");
+        SetBusy(false);CancelGameplayDraft_Click(this,new RoutedEventArgs());
+        fovSlider.Value=1.25;_networkEnvironmentChanging=true;RenderModePresentation();
+        Check(!cmbGameplayMode.IsEnabled && !fovSlider.IsEnabled && !btnGameplaySave.IsEnabled,
+            "environment transition freezes direct controls and draft Save");
+        fovSlider.Value=1.3;SaveGameplayDraft_Click(this,new RoutedEventArgs());
+        Check(fovSlider.Value==1.25 && _gameplayDraft?.Fov==1.25 && _settings.FovScale==1.2,
+            "rejected input during transition preserves the existing visible draft and committed value");
+        _networkEnvironmentChanging=false;RenderModePresentation();
+        Check(fovSlider.IsEnabled && btnGameplaySave.IsEnabled,"completed transition restores the same editable draft");
+        CancelGameplayDraft_Click(this,new RoutedEventArgs());
         SetGameStartingState(true);Check(!cmbGameplayMode.IsEnabled,"gameplay selection locked while starting");
         Check(!fovSlider.IsEnabled && !btnFovReset.IsEnabled,"FOV controls locked while starting");
         SetGameRunningState(true);Check(!cmbGameplayMode.IsEnabled,"gameplay selection locked while running");
@@ -276,23 +445,48 @@ public partial class MainWindow
         var bytes=Encoding.UTF8.GetBytes(packet);a.Send(bytes,bytes.Length,toB);
         var received=b.Receive(ref remote);Check(ParseHostBroadcastMessage(Encoding.UTF8.GetString(received))!=null,"actual UDP discovery packet decoded");
         b.Send(received,received.Length,remote);a.Receive(ref remote);Check(true,"actual loopback UDP reply received");
+        // Measure the actual presentation surface, so the donor Viewbox's scale
+        // participates in every minimum-window visibility and overlap assertion.
+        var presentationSurface = (FrameworkElement)Content;
         foreach(var size in new[] { new Size(1120,680), new Size(1000,600), new Size(900,580) })
         {
-            rootGrid.Measure(size); rootGrid.Arrange(new Rect(new Point(),size)); rootGrid.UpdateLayout();
-            Rect Bounds(FrameworkElement e) => new(e.TranslatePoint(new Point(), rootGrid), new Size(e.ActualWidth,e.ActualHeight));
+            void ArrangePresentation()
+            {
+                presentationSurface.Measure(size);
+                presentationSurface.Arrange(new Rect(new Point(), size));
+                presentationSurface.UpdateLayout();
+            }
+            ArrangePresentation();
+            Rect Bounds(FrameworkElement e) => e.TransformToAncestor(presentationSurface)
+                .TransformBounds(new Rect(new Point(), new Size(e.ActualWidth, e.ActualHeight)));
             var left=Bounds(heroPanel);var right=Bounds(authPanel);
             Check(left.Right < right.Left && Bounds(btnLaunch).Left < size.Width/2,
                 $"SCBL left launch / right login layout {size.Width}x{size.Height}");
             Check(Bounds(txtUsername).Left > size.Width/2 && Bounds(txtUsername).Top < Bounds(txtPassword).Top &&
                   Bounds(txtPassword).Top < Bounds(txtServer).Top, $"SCBL vertical sign-in fields {size.Width}x{size.Height}");
             Check(Bounds(btnExportDiagnostics).Right<Bounds(btnCheckNetwork).Left,"diagnostic export occupies former Hook slot before network check");
-            foreach(var e in new FrameworkElement[]{btnLaunch,txtUsername,txtPassword,txtServer,cmbBindAdapter,btnExportDiagnostics,btnCheckNetwork,btnWindowClose,cmbGameplayMode,fovSlider,chkRememberPassword})
+            foreach(var e in new FrameworkElement[]{btnLaunch,txtUsername,txtPassword,txtServer,cmbBindAdapter,btnExportDiagnostics,btnCheckNetwork,btnWindowClose,cmbNetworkEnvironment,cmbGameplayMode,fovSlider,btnFovReset,chkRememberPassword})
             {
                 var rect=Bounds(e);
                 Check(rect.Width>10 && rect.Height>10 && rect.Left>=0 && rect.Top>=0 && rect.Right<=size.Width+1 && rect.Bottom<=size.Height+1,
                     $"visible control {e.Name} {size.Width}x{size.Height}");
             }
-            ShowDiagnosticDialog(true);rootGrid.Measure(size);rootGrid.Arrange(new Rect(new Point(),size));rootGrid.UpdateLayout();
+            CancelGameplayDraft();
+            fovSlider.Value = _settings.FovScale < 1.25 ? _settings.FovScale + .05 : _settings.FovScale - .05;
+            ArrangePresentation();
+            Check(toolsOverlay.Visibility != Visibility.Visible && heroPanel.IsAncestorOf(cmbGameplayMode)
+                && heroPanel.IsAncestorOf(fovSlider) && FindName("btnOpenGameOptions") is null,
+                $"MOD and FOV remain directly on the main screen {size.Width}x{size.Height}");
+            foreach (var e in new FrameworkElement[] { cmbGameplayMode, fovSlider, btnGameplaySave, btnGameplayCancel })
+            {
+                var rect = Bounds(e);
+                Check(rect.Width > 10 && rect.Height > 10 && rect.Left >= 0 && rect.Top >= 0
+                    && rect.Right <= size.Width + 1 && rect.Bottom <= size.Height + 1,
+                    $"visible gameplay draft control {e.Name} {size.Width}x{size.Height}");
+            }
+            CancelGameplayDraft_Click(this, new RoutedEventArgs());
+            ArrangePresentation();
+            ShowDiagnosticDialog(true);ArrangePresentation();
             var card=Bounds(dialogCard);
             Check(dialogCard.CornerRadius.TopLeft==0 && card.Left>=0 && card.Right<=size.Width && card.Top>=0 && card.Bottom<=size.Height,$"SCBL square dialog stays within {size.Width}x{size.Height}");
             Check(dialogMessageScroll.ScrollableHeight>0,$"long diagnostic message scrolls {size.Width}x{size.Height}");

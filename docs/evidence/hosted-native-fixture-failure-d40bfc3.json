@@ -1,0 +1,369 @@
+{
+  "source_commit": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+  "checkout_commit": "4778c5044738d34a43586587407f2ad93f315e1b",
+  "run_id": 41193432848,
+  "job_id": 124514693989,
+  "artifact_id": 13040290028,
+  "official_artifact_sha256_verified": "9539d132df807fe070ef9e51cc90522f1af4c63ed51a78e0ce7a70b78c56c1a7",
+  "official_artifact_bytes": 141407,
+  "job_status": "completed",
+  "job_conclusion": "failure",
+  "failed_step": "Compile, test and run isolated no-game UI checks without claiming complete-package admission",
+  "native_replay_stage_started": true,
+  "baseline_compile_exit_code": 0,
+  "baseline_executable": {
+    "file": "scbl_gameplay-94b358bffea7d1c9.exe",
+    "sha256": "d0e132de3673714faa52d827c9a4930ee03415e7f72edb5abd2de57949c0cbe9",
+    "machine": "i386",
+    "bytes": 15459328
+  },
+  "baseline_rust_methods": {
+    "passed": 9,
+    "failed": 1,
+    "ignored": 0
+  },
+  "synthetic_callback_scenarios_executed": 0,
+  "synthetic_callback_checks_executed": 0,
+  "camera_new_regression_established_by_this_run": false,
+  "failure_type": "fixed_address_synthetic_fixture_prerequisite",
+  "actual_failure": "sticky_camera_lifecycle_tests.rs:39 VirtualAlloc(0x3390000, 0x10000, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE) returned NULL; expected exact owned address",
+  "allocation_error_code_or_existing_mapping_captured": false,
+  "unique_reason_for_VirtualAlloc_failure": "unknown; no GetLastError or VirtualQuery diagnostic recorded by this fixture",
+  "strict_refusal": "PRODUCTION_REPLAY_EXPECTED_ASSERTION_MISSING",
+  "expected_callback_failure_marker_absent": true,
+  "remaining_not_executed": [
+    "baseline progression",
+    "modified camera/progression",
+    "rollback camera/progression",
+    "reapplied camera/progression"
+  ],
+  "sha256": {
+    "windows-job-final.log": "713523ed1cc464217f152388283aa03d3572e4df4a6a85117fb9e34e4cd6af7b",
+    "native-production-replay-receipt.json": "d6cf12d1861611ddc13b198515558bba1c9162f098c1bce0a40d21121a5aa836",
+    "baseline-sticky-camera.stdout.txt": "09b04a25c8c05c17ea73fabea500f2e7eb6476360a582cc7469204ef8d2e8a2e",
+    "baseline-sticky-camera.stderr.txt": "3e4975e44a15175fbdeef433e0d6f10dabe6a525af20583ec79d1380829aed90",
+    "baseline-compile.stdout.txt": "adbd2526a6bf47b89fc61b12797f7e4142fd702c3399308297143372d6e8b5f8",
+    "baseline-compile.stderr.txt": "ea7d40480fbf59977fd82e29c39f5b3397a160a11893e81805d14a6cf53abf81"
+  },
+  "no_game_or_downloaded_executable_run": true,
+  "retained_prior_executed_successes": {
+    "custom_address_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "actual DX11-only custom file loader, legacy dual-key and malformed-input refusal; no DX9 UI or game activation"
+    },
+    "native_authentication_checks": [
+      {
+        "filter": "native_bridge_fixture_tests",
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "native_observer_fixture_tests",
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "auth_key_file",
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "public_source",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "lan_source_tests",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "deployment_profile::tests",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "filter": "release_admission_tests",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      }
+    ],
+    "protocol_feedback_checks": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "synthetic production Login/admission and same-sequence PRUDP response-cache/database behavior; not the cause of distinct live requests"
+    },
+    "port_zero_metadata_checks": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "actual sockaddr metadata reader preserves caller port zero; upstream caller and live 10049 origin remain unknown"
+    },
+    "native_public_return_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "owned synthetic Windows processes and production named-pipe contracts"
+    },
+    "native_managed_interop": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "helper_relative_to_cargo_target": "i686-pc-windows-msvc/debug/deps/hooks-6ceb5aec3d25e2c0.exe",
+      "helper_sha256": "936393fc2995a3951dd6c3b0107bccbfc47e05337c4aae0e64d333643cecd040",
+      "helper_bytes": 14708224,
+      "helper_selected_from_same_invocation_cargo_json": true,
+      "game_executed": false,
+      "package_and_loaded_dll_admission_exercised": false
+    },
+    "native_public_source_transport_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "production_admission": false,
+      "scope": "owned Windows loopback sockets, interface/source binding and revocation of retained API transports"
+    }
+  },
+  "retained_success_output_hashes": {
+    "ci-native-custom-addresses": {
+      "artifact_path": "logs/20261031T104147832069Z-ci-native-custom-addresses.stdout.txt",
+      "sha256": "60b2a346fc51ed1d5d4def8d05a7f086696bbb995ea522603f06324ceb09c6ea"
+    },
+    "ci-native-protocol-feedback": {
+      "artifact_path": "logs/20261031T104427034432Z-ci-native-protocol-feedback.stdout.txt",
+      "sha256": "724de3f67f16418fce4d7f5eede8be4111ad5650bd6c8c579e81d81091cf6b56"
+    },
+    "ci-native-port-zero-feedback": {
+      "artifact_path": "logs/20261031T104833693311Z-ci-native-port-zero-feedback.stdout.txt",
+      "sha256": "86f353e8b3b89bb5c0eb47d1601fa5cd4b4deb1f3fc0afc2710bdfe603d5ef49"
+    },
+    "release_admission": {
+      "artifact_path": "logs/20261031T104425694045Z-ci-native-release_admission_tests.stdout.txt",
+      "sha256": "664b078c21c07e9e7e242f6fc3b55e507f6df7df765f57c0d57c901bb7fa73d5"
+    }
+  },
+  "schema": 1,
+  "date": "2026-10-31",
+  "timezone": "Asia/Hong_Kong",
+  "scope": "Official Windows component evidence; synthetic fixture prerequisite failed, not a reproduced game crash.",
+  "job_url": "https://github.com/caox233/FifthFreedom/actions/runs/41193432848/job/124514693989",
+  "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41193432848/artifacts/13040290028",
+  "checkout_tree": "7b626b0caeeddceff9bce19efdbdbe90284a8194",
+  "head_and_merge_trees_equal": true,
+  "synthetic_binary_digest_scope": "The recorded hash was produced by the official runner before execution; this read-only download review did not receive or execute that test PE.",
+  "earlier_failure_retained": {
+    "source_commit": "72e92af58c09bb04e00a6a7466b9f45890c098b3",
+    "run_id": 41191825957,
+    "job_id": 124509994860,
+    "phase": "Python source gate /absolute Windows path parsing",
+    "native_callbacks_executed": 0,
+    "different_from_current_fixed_allocation_prerequisite": true
+  },
+  "next_fixture_correction": {
+    "production_sources_changed": false,
+    "release_code_path_changed": false,
+    "shared_four_role_instrumentation": true,
+    "scope": "Only the private test checkout changes two word imports and four exact native-call literals. Logical class values, vtable comparisons, pins, branches, calling conventions and arguments remain unchanged.",
+    "read_address_translation": [
+      [
+        "0x339e5a0",
+        0
+      ],
+      [
+        "0x02ab095c",
+        "0x7b0"
+      ],
+      [
+        "0x02ab095c",
+        "0x7b4"
+      ]
+    ],
+    "native_leaf_addresses": [
+      "0x544000",
+      "0x6843d0",
+      "0xad3ea0",
+      "0xaa5280"
+    ],
+    "memory": "Rust-owned dynamic heap slots; translated reads retain actual equipment_native::word and Windows VirtualQuery checks. Progression still uses its separate real VirtualAlloc/VirtualProtect fixture.",
+    "owned_memory_must_not_overlap_logical_tokens": true,
+    "ordinary_reads_and_non_test_targets_forward_unchanged": true,
+    "plain_uninstrumented_callback_fixture_refuses_before_native_calls": true,
+    "exact_occurrence_and_reverse_to_original_bytes_required": true,
+    "hashes_reported_separately": [
+      "canonical production source",
+      "baseline module-appended source",
+      "compiled test source with shared address translation"
+    ],
+    "camera_checks_expected_not_yet_executed": 87,
+    "baseline_rollback_failure_counter_expected_not_yet_executed": 35,
+    "skips_or_compile_failures_accepted_as_regression": false,
+    "new_windows_execution_pending": true,
+    "source_sha256": {
+      "scripts/ci_native_production_replay.py": "4428ac3002efa7cb6d2b0e936b5df29a2eb154a005efbb58a50ee369128cf611",
+      "tests/ci/test_native_production_replay.py": "38f9183dd353f4eafaa518a3727c4c6cdb16ee088a1a9886b8e77765ea79efdd",
+      "src/native/client/hooks/gameplay/src/sticky_camera_lifecycle_tests.rs": "a07052224c4021e9379f69978e57f9c5176d69d0d9dc1248c9222def5f6e39f8",
+      "src/native/client/hooks/gameplay/src/sticky_camera_lifecycle_runtime_fixture.rs": "be008e1000612f54b54b849037e0926228e56f0761666e62ca15995ed248b13d"
+    },
+    "python_refusal_controls": {
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Linux parser/source-transform controls, not Windows runtime",
+      "stderr_sha256": "4f9d3e0e5d5204b799705b3274424786ba3e04151d98bba5b5e3910cd8ca591f"
+    },
+    "cross_typecheck": {
+      "host": "Linux",
+      "target": "i686-pc-windows-msvc",
+      "executes_windows_binary": false,
+      "baseline": {
+        "exit_code": 0,
+        "stderr_sha256": "1819db625046777a6a3d2f700a16568c9473cc478997485a979f84d26ad8761a"
+      },
+      "modified": {
+        "exit_code": 0,
+        "stderr_sha256": "96a10aeac5da2fb76d7817599f849559848aef1ad0e1389cc29c562c384806d7"
+      }
+    },
+    "typecheck_source_transforms": {
+      "baseline": {
+        "src/native/client/hooks/gameplay/src/sticky_camera_sound.rs": {
+          "canonical_production_sha256": "2bba36b46a800596c03859c3edb8664cf75790557074b92fca02c07e37a7e2c1",
+          "module_appended_sha256": "9fabbeea1d03aa8c1cc5322651c46773e2f14d898dcecad493a42220fe2d75ae",
+          "compiled_test_source_sha256": "a7aada41fd02e5f7768bae1c902dc3eb46140541d6edcdd8adae677576c9a208",
+          "exact_reverse_to_module_source": true,
+          "exact_reverse_to_canonical_source": true,
+          "shared_address_replacements": [
+            {
+              "from": "use crate::equipment_native::{float, patch, readable, signature, word, writable};",
+              "to": "use crate::equipment_native::{float, patch, readable, signature, writable};\n#[cfg(test)]\nuse crate::sticky_camera_runtime::lifecycle_fixture::read_word as word;\n#[cfg(not(test))]\nuse crate::equipment_native::word;",
+              "occurrences": 1
+            },
+            {
+              "from": "std::mem::transmute(0x544000usize)",
+              "to": "std::mem::transmute(lifecycle_replay_address(0x544000usize))",
+              "occurrences": 1
+            },
+            {
+              "from": "std::mem::transmute(0x6843d0usize)",
+              "to": "std::mem::transmute(lifecycle_replay_address(0x6843d0usize))",
+              "occurrences": 1
+            }
+          ]
+        },
+        "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs": {
+          "canonical_production_sha256": "202748ac41da0803190f166201137116e15b5fe82e976c312d0bb4d580f18e69",
+          "module_appended_sha256": "b2a63dc010192f3b4db7d888311b2af45627d0e1118351f8d71c649ffa9210f8",
+          "compiled_test_source_sha256": "9c705d64d43e1aebf9d8f363538e03e12b1b162e47ed82d82e1683d203b62914",
+          "exact_reverse_to_module_source": true,
+          "exact_reverse_to_canonical_source": true,
+          "shared_address_replacements": [
+            {
+              "from": "use crate::equipment_native::{word, float, readable};",
+              "to": "use crate::equipment_native::{float, readable};\n#[cfg(test)]\nuse crate::sticky_camera_runtime::lifecycle_fixture::read_word as word;\n#[cfg(not(test))]\nuse crate::equipment_native::word;",
+              "occurrences": 1
+            },
+            {
+              "from": "std::mem::transmute(0x00ad3ea0usize)",
+              "to": "std::mem::transmute(lifecycle_replay_address(0x00ad3ea0usize))",
+              "occurrences": 1
+            },
+            {
+              "from": "std::mem::transmute(0x00aa5280usize)",
+              "to": "std::mem::transmute(lifecycle_replay_address(0x00aa5280usize))",
+              "occurrences": 1
+            }
+          ]
+        },
+        "src/native/client/hooks/gameplay/src/progression.rs": {
+          "canonical_production_sha256": "e34c8f1be77477f3066bf9abe7cb8bb61202c8d8276a3325da8e387fa191db33",
+          "module_appended_sha256": "ca0c78dc0452c5b7126c0fa36e073093cb777bbaf706498316078bd71808718d",
+          "compiled_test_source_sha256": "ca0c78dc0452c5b7126c0fa36e073093cb777bbaf706498316078bd71808718d",
+          "exact_reverse_to_module_source": true,
+          "exact_reverse_to_canonical_source": true,
+          "shared_address_replacements": []
+        }
+      },
+      "modified": {
+        "src/native/client/hooks/gameplay/src/sticky_camera_sound.rs": {
+          "canonical_production_sha256": "a1de43396b6fa37e5f799302384541473f50bdf9523711ff672ba2126a556eaf",
+          "module_appended_sha256": "a1de43396b6fa37e5f799302384541473f50bdf9523711ff672ba2126a556eaf",
+          "compiled_test_source_sha256": "ed0b358a66c17ef0af1d866b9793b460a246e5379ef06131c4e69c1601ae08b7",
+          "exact_reverse_to_module_source": true,
+          "exact_reverse_to_canonical_source": true,
+          "shared_address_replacements": [
+            {
+              "from": "use crate::equipment_native::{float, patch, readable, signature, word, writable};",
+              "to": "use crate::equipment_native::{float, patch, readable, signature, writable};\n#[cfg(test)]\nuse crate::sticky_camera_runtime::lifecycle_fixture::read_word as word;\n#[cfg(not(test))]\nuse crate::equipment_native::word;",
+              "occurrences": 1
+            },
+            {
+              "from": "std::mem::transmute(0x544000usize)",
+              "to": "std::mem::transmute(lifecycle_replay_address(0x544000usize))",
+              "occurrences": 1
+            },
+            {
+              "from": "std::mem::transmute(0x6843d0usize)",
+              "to": "std::mem::transmute(lifecycle_replay_address(0x6843d0usize))",
+              "occurrences": 1
+            }
+          ]
+        },
+        "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs": {
+          "canonical_production_sha256": "80e2841654924909e017bc97d3b11d1606d39cc11bfcfb3ca63cbf5653e338ba",
+          "module_appended_sha256": "80e2841654924909e017bc97d3b11d1606d39cc11bfcfb3ca63cbf5653e338ba",
+          "compiled_test_source_sha256": "c9576d264bd3f5479cbc13cee0e17ee56002c9b6d324a875199eaa2722f0a614",
+          "exact_reverse_to_module_source": true,
+          "exact_reverse_to_canonical_source": true,
+          "shared_address_replacements": [
+            {
+              "from": "use crate::equipment_native::{word, float, readable};",
+              "to": "use crate::equipment_native::{float, readable};\n#[cfg(test)]\nuse crate::sticky_camera_runtime::lifecycle_fixture::read_word as word;\n#[cfg(not(test))]\nuse crate::equipment_native::word;",
+              "occurrences": 1
+            },
+            {
+              "from": "std::mem::transmute(0x00ad3ea0usize)",
+              "to": "std::mem::transmute(lifecycle_replay_address(0x00ad3ea0usize))",
+              "occurrences": 1
+            },
+            {
+              "from": "std::mem::transmute(0x00aa5280usize)",
+              "to": "std::mem::transmute(lifecycle_replay_address(0x00aa5280usize))",
+              "occurrences": 1
+            }
+          ]
+        },
+        "src/native/client/hooks/gameplay/src/progression.rs": {
+          "canonical_production_sha256": "d6d421a13f92fc488b1d40965b0f71a698444e7a70bfbbee4584dc126e4a025b",
+          "module_appended_sha256": "d6d421a13f92fc488b1d40965b0f71a698444e7a70bfbbee4584dc126e4a025b",
+          "compiled_test_source_sha256": "d6d421a13f92fc488b1d40965b0f71a698444e7a70bfbbee4584dc126e4a025b",
+          "exact_reverse_to_module_source": true,
+          "exact_reverse_to_canonical_source": true,
+          "shared_address_replacements": []
+        }
+      }
+    },
+    "independent_review": {
+      "sha256": "19546bad10566ef45a168a73f212e8703384017cfbf1b0afb29f6e20396f2f4e",
+      "python_controls_passed": 13,
+      "actual_git_four_role_source_reverse_checks": 12,
+      "source_constants_unchanged": true,
+      "production_files_equal_d40": true,
+      "new_windows_execution_verified": false
+    }
+  }
+}

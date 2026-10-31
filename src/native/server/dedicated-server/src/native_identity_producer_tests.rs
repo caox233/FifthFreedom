@@ -16,7 +16,7 @@ fn plain_producer(kind:&str) {
             let id=storage.find_user_id_by_name(NAME).unwrap().unwrap();
             rt.block_on(approved_run(&storage,id));
         }
-        let service=TicketGrantingProtocolServerImpl {storage:storage.clone()};
+        let service=TicketGrantingProtocolServerImpl {storage:storage.clone(),source_policy:quazal::source_policy::SourcePolicy::lan()};
         let mut ci=quazal::ClientInfo::<()>::new("127.0.0.1:30500".parse().unwrap());
         let result=service.login_core(&logger,&Context::splinter_cell_blacklist(),&mut ci,LoginRequest {str_user_name:NAME.into()});
         if kind=="missing" {assert!(matches!(result,Err(quazal::rmc::Error::AccessDenied)));assert_eq!(ci.user_id,None);}
@@ -33,7 +33,7 @@ fn dpa_identity_native_actual_plain_no_password_producer() { plain_producer("no-
 fn dpa_identity_native_actual_login_ex_missing_producers() {
     let (capture,logger)=Capture::new("native-loginex-missing");
     let (storage,pool)=fixture(logger.clone());
-    let service=TicketGrantingProtocolServerImpl {storage:storage.clone()};
+    let service=TicketGrantingProtocolServerImpl {storage:storage.clone(),source_policy:quazal::source_policy::SourcePolicy::lan()};
     let mut ci=quazal::ClientInfo::<()>::new("127.0.0.1:30500".parse().unwrap());
     let result=service.login_ex_core(&logger,&Context::splinter_cell_blacklist(),&mut ci,login_ex_request());
     assert!(matches!(result,Err(quazal::rmc::Error::AccessDenied)));assert_eq!(ci.user_id,None);
@@ -46,7 +46,7 @@ fn dpa_identity_native_actual_login_ex_success_producers() {
     let (capture,logger)=Capture::new("native-loginex-success");
     let (storage,pool)=fixture(logger.clone());
     let rt=runtime();rt.block_on(seed_plain(&pool));rt.block_on(approved_run(&storage,ID));
-    let service=TicketGrantingProtocolServerImpl {storage:storage.clone()};
+    let service=TicketGrantingProtocolServerImpl {storage:storage.clone(),source_policy:quazal::source_policy::SourcePolicy::lan()};
     let mut ci=quazal::ClientInfo::<()>::new("127.0.0.1:30500".parse().unwrap());
     let result=service.login_ex_core(&logger,&Context::splinter_cell_blacklist(),&mut ci,login_ex_request());
     assert!(result.is_ok());assert_eq!(ci.user_id,Some(ID));
@@ -58,7 +58,7 @@ fn dpa_identity_native_actual_login_ex_success_producers() {
 fn dpa_identity_native_actual_ticket_denial_has_no_principals() {
     let (capture,logger)=Capture::new("native-ticket-denied");
     let (storage,pool)=fixture(logger.clone());
-    let service=TicketGrantingProtocolServerImpl {storage:storage.clone()};
+    let service=TicketGrantingProtocolServerImpl {storage:storage.clone(),source_policy:quazal::source_policy::SourcePolicy::lan()};
     let mut ci=quazal::ClientInfo::<()>::new("127.0.0.1:30500".parse().unwrap());ci.user_id=Some(ID+1);
     let result=service.request_ticket_core(&logger,&Context::splinter_cell_blacklist(),&mut ci,RequestTicketRequest {id_source:ID,id_target:SERVER_PID});
     assert!(matches!(result,Err(quazal::rmc::Error::AccessDenied)));assert_eq!(ci.user_id,Some(ID+1));
@@ -75,7 +75,7 @@ fn invalid_credential_state(both:bool) {
         if both { sqlx::query("UPDATE users SET password_hash='synthetic-unused-hash' WHERE id=?").bind(ID).execute(&pool).await.unwrap(); }
         else { sqlx::query("UPDATE users SET password=NULL WHERE id=?").bind(ID).execute(&pool).await.unwrap(); }
     });
-    let service=TicketGrantingProtocolServerImpl {storage:storage.clone()};
+    let service=TicketGrantingProtocolServerImpl {storage:storage.clone(),source_policy:quazal::source_policy::SourcePolicy::lan()};
     let mut ci=quazal::ClientInfo::<()>::new("127.0.0.1:30500".parse().unwrap());
     let result=service.login_ex_core(&logger,&Context::splinter_cell_blacklist(),&mut ci,login_ex_request());
     assert!(matches!(result,Err(quazal::rmc::Error::InternalError)));assert_eq!(ci.user_id,None);

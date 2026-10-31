@@ -11,7 +11,7 @@ const PFS: &[u8] = b"ADV_Spy_SMG_Scorpion";
 const COLLECT: usize = 0xf216f2;
 const COMPLETE: usize = 0xf1de2e;
 static ENABLED: AtomicBool = AtomicBool::new(false);
-static BANK: Mutex<Bank> = Mutex::new(Bank { requests: Vec::new(), ready: None, shots: Vec::new() });
+static BANK: Mutex<Bank> = Mutex::new(Bank { requests: Vec::new(), ready: None, shots: Vec::new(), next_shot: 0 });
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Object { address: usize, key: u32 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -21,8 +21,8 @@ struct Ready { world: Object, manager: Object, voices: [Voice;4] }
 #[derive(Clone, Copy)]
 struct Voice { start: Object, end: Object, delay: f32 }
 #[derive(Clone, Copy)]
-struct Shot { camera: Object, owner: Object, world: Object, start: Object, end: Object, flags: u32, began: f32, due: f32 }
-struct Bank { requests: Vec<Request>, ready: Option<Ready>, shots: Vec<Shot> }
+struct Shot { camera: Object, owner: Object, world: Object, start: Object, end: Object, flags: u32, began: f32, due: f32, token: u64, accepted: bool }
+struct Bank { requests: Vec<Request>, ready: Option<Ready>, shots: Vec<Shot>, next_shot: u64 }
 unsafe fn object(address: usize) -> Option<Object> {
     let key = word(address, 0x20)?;
     (key != u32::MAX && readable(address, 0x24)).then_some(Object { address, key })
@@ -199,22 +199,57 @@ unsafe fn play(camera:usize,event:usize,flags:u32)->bool {
 }
 /// World emitter, not a fictitious first-person weapon. Native NPC variant and
 /// its paired Start/End events are used; Sam Sweetener alone is not a shot.
-pub(crate) unsafe fn try_whistle(camera:usize)->bool {
-    if !ENABLED.load(Ordering::Acquire){return false;}
-    let Some((camera_id,owner,w,now))=identity(camera)else{return false;};
-    if word(camera,0x858).is_none_or(|f|f&0x800!=0){return false;}
-    let ready=if let Ok(b)=BANK.lock(){b.ready}else{None};let Some(ready)=ready else{return false;};
-    let Some(variant)=word(owner.address,0x704).filter(|v|*v<=3).map(|v|v as usize)else{return false;};
-    let Some(Voice{start,end,delay})=cached_voice(ready,variant)else{return false;};
-    let role=owner.address+0x4d;if !readable(role,1){return false;}
-    let flags=if *(role as*const u8)==2{7}else{0};
+#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+pub(crate) enum WhistleEmission { Unavailable, Accepted, Superseded }
+pub(crate) unsafe fn whistle_emission(camera:usize)->WhistleEmission {
+    if !ENABLED.load(Ordering::Acquire){return WhistleEmission::Unavailable;}
+    let Some((camera_id,owner,w,_now))=identity(camera)else{return WhistleEmission::Unavailable;};
+    if word(camera,0x858).is_none_or(|f|f&0x800!=0){return WhistleEmission::Unavailable;}
+    let ready=if let Ok(b)=BANK.lock(){b.ready}else{None};let Some(ready)=ready else{return WhistleEmission::Unavailable;};
+    let Some(variant)=word(owner.address,0x704).filter(|v|*v<=3).map(|v|v as usize)else{return WhistleEmission::Unavailable;};
+    let Some(Voice{start,end,delay})=cached_voice(ready,variant)else{return WhistleEmission::Unavailable;};
     cancel(camera); // close an earlier pair before the next 70ms pulse, never mix in Whistle.
-    let shot=Shot{camera:camera_id,owner,world:w,start,end,flags,began:now,due:now+delay};
-    {let Ok(mut b)=BANK.lock()else{return false;};if b.shots.len()>=32||b.shots.iter().any(|s|s.camera==camera_id){return false;} b.shots.push(shot);}
+    // End/Stop are native calls, not inert bookkeeping. A nested cleanup,
+    // world change or asset unload must not publish a new Start from the
+    // identities captured before cancel. Re-read only the existing fields.
+    let Some((current_camera,current_owner,current_world,now))=identity(camera)else{return WhistleEmission::Unavailable;};
+    if !ENABLED.load(Ordering::Acquire)||(current_camera,current_owner,current_world)!=(camera_id,owner,w)
+        ||word(camera,0x858).is_none_or(|f|f&0x800!=0)||cached_voice(ready,variant).is_none(){return WhistleEmission::Unavailable;}
+    let role=owner.address+0x4d;if !readable(role,1){return WhistleEmission::Unavailable;}
+    let flags=if *(role as*const u8)==2{7}else{0};
+    let token={
+        let Ok(mut b)=BANK.lock()else{return WhistleEmission::Unavailable;};
+        if let Some(existing)=b.shots.iter().find(|s|s.camera==camera_id) {
+            // End may synchronously run a new Whistle before cancel returns.
+            // That accepted replacement already owns publication as well.
+            return if existing.accepted {WhistleEmission::Superseded}else{WhistleEmission::Unavailable};
+        }
+        if b.shots.len()>=32{return WhistleEmission::Unavailable;}
+        let Some(token)=b.next_shot.checked_add(1)else{return WhistleEmission::Unavailable;};
+        b.next_shot=token;
+        b.shots.push(Shot{camera:camera_id,owner,world:w,start,end,flags,began:now,due:now+delay,token,accepted:false});
+        token
+    };
     // Never hold BANK across native audio publication.
-    if !play(camera,start.address,flags){if let Ok(mut b)=BANK.lock(){b.shots.retain(|s|s.camera!=camera_id);}return false;}
-    true
+    let accepted=play(camera,start.address,flags);
+    let current=identity(camera).is_some_and(|(c,o,w,_)|(c,o,w)==(camera_id,owner,current_world));
+    let nested_accepted=if let Ok(mut b)=BANK.lock(){
+        // An outer failed publication cannot erase a nested replacement's
+        // record, even when the engine reuses the same object identity.
+        if !accepted||!current {b.shots.retain(|s|s.token!=token);}
+        else if let Some(s)=b.shots.iter_mut().find(|s|s.token==token){s.accepted=true;}
+        current&&b.shots.iter().any(|s|s.camera==camera_id&&s.token!=token&&s.accepted)
+    }else{false};
+    // A nested accepted pair already owns this emission. Returning false to
+    // Whistle would mix the original sound into that surviving replacement.
+    if nested_accepted {WhistleEmission::Superseded}
+    else if accepted {WhistleEmission::Accepted}
+    else {WhistleEmission::Unavailable}
 }
+// Compatibility helper for the fixed four-role fixture: its boolean assertions
+// compare the old production entry with the new production outcome projection.
+#[cfg(test)]
+unsafe fn try_whistle(camera:usize)->bool {whistle_emission(camera)!=WhistleEmission::Unavailable}
 /// Parent calls before native camera Tick, and cancel before Disable/Cleanup.
 /// No raw actor/event is used after identity changes or native destruction.
 pub(crate) unsafe fn tick(camera:usize,now:f32){finish(camera,Some(now));}
@@ -225,8 +260,14 @@ unsafe fn finish(camera:usize,now:Option<f32>){
     let valid=identity(camera).is_some_and(|(c,o,w,_)|c==s.camera&&o==s.owner&&w==s.world)&&same(s.end)&&event(s.end.address)==Some(s.end);
     let due=now.is_none_or(|n|!n.is_finite()||n<s.began||n>=s.due);
     if valid&&!due{return;}
-    if let Ok(mut b)=BANK.lock(){b.shots.retain(|x|x.camera!=s.camera);}
-    if valid && !play(camera,s.end.address,s.flags) && same(s.start) && event(s.start.address)==Some(s.start) {
+    let removed=if let Ok(mut b)=BANK.lock(){
+        b.shots.iter().position(|x|x.token==s.token).map(|i|b.shots.remove(i)).is_some()
+    }else{false};
+    if !removed{return;}
+    if valid && !play(camera,s.end.address,s.flags)
+        &&identity(camera).is_some_and(|(c,o,w,_)|(c,o,w)==(s.camera,s.owner,s.world))
+        &&BANK.lock().is_ok_and(|b|!b.shots.iter().any(|new|new.camera==s.camera))
+        &&same(s.start)&&event(s.start.address)==Some(s.start) {
         let stop:unsafe extern "thiscall" fn(usize,usize,f32,u32)=std::mem::transmute(0x6843d0usize);
         stop(camera,s.start.address,0.0,0);
     }
@@ -261,3 +302,7 @@ const PINS:&[(usize,usize,&str)]=&[
 (0x544000,158,"69835d0e1888fe3358b9e523986e8082311bc28c2486909d324610a0f2766682"),
 (0x6843d0,69,"527da20cdf40125b88957e612467965fad929bc45122b210ac1c18bfbb6be1f0"),
 ];
+
+#[cfg(test)]
+#[path="sticky_camera_lifecycle_tests.rs"]
+mod lifecycle_replay;

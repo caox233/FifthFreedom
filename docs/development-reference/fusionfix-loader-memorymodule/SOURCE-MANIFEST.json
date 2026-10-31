@@ -1,0 +1,320 @@
+{
+  "schema": "ff-memorymodule-source-reference-v1",
+  "repository": "fancycode/MemoryModule",
+  "commit": "5f83e41c3a3e7c6e8284a5c1afa5a38790809461",
+  "git_tree": "4cf1cf78190c2bd40fcd88584d3f0be36a1af947",
+  "source_url": "https://github.com/fancycode/MemoryModule/tree/5f83e41c3a3e7c6e8284a5c1afa5a38790809461",
+  "loader_reference": {
+    "repository": "ThirteenAG/Ultimate-ASI-Loader",
+    "tag": "v9.7.0",
+    "commit": "f9f6ccf4723f42be4bf6e051a82d2ec44b29c9fc",
+    "submodule_path": "external/MemoryModule",
+    "build_recipe": "premake5.lua",
+    "build_recipe_git_blob": "3f9cf0d96ec3ad1a65fc346411f7e69b803d9ac4",
+    "compiled_globs": [
+      "external/MemoryModule/*.h",
+      "external/MemoryModule/*.c"
+    ],
+    "frozen_loader_sha256": "ad5d8d449ce305caf62cb17d8698ebf17e94f9120ee993d0dd85211dfe14f8dd",
+    "relationship": "exact submodule reference in tagged source; not independent binary reproduction"
+  },
+  "license": {
+    "id": "MPL-2.0",
+    "path": "upstream/LICENSE.txt",
+    "git_blob": "14e2f777f6c395e7e04ab4aa306bbcc4b0c1120e",
+    "matches_existing_notice": true
+  },
+  "source_files": 38,
+  "source_bytes": 126092,
+  "canonical_tree_verified": true,
+  "upstream_modified": false,
+  "upstream_scripts_executed": false,
+  "binary_executed": false,
+  "loader_rebuilt": false,
+  "exact_frozen_asi_source_identified": false,
+  "all_bundled_material_permission_verified": false,
+  "files": [
+    {
+      "path": ".gitattributes",
+      "mode": "100644",
+      "git_blob": "a725a5ddd81cee7acb7f21c62bbc012ef7b0fccb",
+      "bytes": 140,
+      "sha256": "ba9707535af7fde7fd5c60fb8947a0b8d487a6e7c2409892504cd0b6f3dad395"
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "git_blob": "508c3dc7478d9a7ddca8e305d8dad3a09c0e0b81",
+      "bytes": 87,
+      "sha256": "1aa380980a310bc003db68218bf85d9001100582b2efba687ce413a5346c4616"
+    },
+    {
+      "path": ".travis.yml",
+      "mode": "100644",
+      "git_blob": "0bb4efe07f0143ab5ac755606bacb8316b3e2a78",
+      "bytes": 3079,
+      "sha256": "2aac9d0f35ac618918b66baa9f023614bfd5655879e23b967e11d9445483a761"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "mode": "100644",
+      "git_blob": "cfddbfb15067c73f4b295dcbf4011120910f73f1",
+      "bytes": 1851,
+      "sha256": "2ad322054b74247a6bb18c7334f85d8a79089c57b0787f9fdf420d56bf2cc783"
+    },
+    {
+      "path": "LICENSE.txt",
+      "mode": "100644",
+      "git_blob": "14e2f777f6c395e7e04ab4aa306bbcc4b0c1120e",
+      "bytes": 16726,
+      "sha256": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85"
+    },
+    {
+      "path": "Makefile",
+      "mode": "100644",
+      "git_blob": "590c6e6528eb1658a97498e28976053fc2ca81c5",
+      "bytes": 285,
+      "sha256": "4203b4a76e08848028479e371efe10d11df7c4731f40f6a8df92b9cd393f105c"
+    },
+    {
+      "path": "MemoryModule.c",
+      "mode": "100644",
+      "git_blob": "9f95a70c0133773f189f12ce4b075f5163b7a0b0",
+      "bytes": 39766,
+      "sha256": "38f8c8f449fff52d9df12f00125ab91bf5d75a4e7a9abd0a8c764c9d9d05a7f4"
+    },
+    {
+      "path": "MemoryModule.h",
+      "mode": "100644",
+      "git_blob": "a728f6b1416fbd9c0c4bb7b1efa635ffe4cd722e",
+      "bytes": 4751,
+      "sha256": "10e21151838e6304e92aa28e283a2a39848af159812141b6a773e03fd3060a57"
+    },
+    {
+      "path": "appveyor.yml",
+      "mode": "100644",
+      "git_blob": "5bc1608c7767c306fb51101af576a9322176f31f",
+      "bytes": 876,
+      "sha256": "4481860f4ac2e7b516305d33c2e6ed462aeef261c7d113c0d29d56316dff8b18"
+    },
+    {
+      "path": "doc/readme.rst",
+      "mode": "100644",
+      "git_blob": "ba6513c61aa0a2f4b07ed27daaa137149b47e1cd",
+      "bytes": 18535,
+      "sha256": "6c6ad19d0ce8b1e8fc2e31988d15b8b323551100d69ee8302d7cae97ec52a725"
+    },
+    {
+      "path": "example/CMakeLists.txt",
+      "mode": "100644",
+      "git_blob": "dff006de7b1d22c18270dc951205a04aa4bee2b7",
+      "bytes": 58,
+      "sha256": "48baeb3dad07fa9eeb15bd0e4b40c3793eb293289ed32deb666369ba9c619c4c"
+    },
+    {
+      "path": "example/DllLoader/.gitignore",
+      "mode": "100644",
+      "git_blob": "0393442f3116f9f730b1b0eff320fbadf4cd4108",
+      "bytes": 9,
+      "sha256": "d7d3dd5d67de6776268fdd2e858c777725ddd162b57f6116407ca445f8c2f1cb"
+    },
+    {
+      "path": "example/DllLoader/CMakeLists.txt",
+      "mode": "100644",
+      "git_blob": "c2be9a77ad967b03380f8e242fafe39a366a8956",
+      "bytes": 827,
+      "sha256": "ad44b1e301071682822575dc2f9d657188c7214492ea676683bf7696b2655341"
+    },
+    {
+      "path": "example/DllLoader/DllLoader.cpp",
+      "mode": "100644",
+      "git_blob": "4355ea829125c80307a6c44375da99d3525100c3",
+      "bytes": 9668,
+      "sha256": "8ba5e8e4673d35cdc56253946a94fde2f5ee8999487dfe670d7770f82dbb5a58"
+    },
+    {
+      "path": "example/DllLoader/DllLoader.vcproj",
+      "mode": "100644",
+      "git_blob": "e743a684efa96ddafa7d715edce549fde7c5dc0c",
+      "bytes": 3386,
+      "sha256": "69e2b18191c34e74d603aa8ed4177d7b5a020c874789251690b9b129821237d5"
+    },
+    {
+      "path": "example/DllLoader/DllLoaderLoader.cpp",
+      "mode": "100644",
+      "git_blob": "b7174f59ffe44fef0c2a6c362f1a5d1abfe44832",
+      "bytes": 1267,
+      "sha256": "c93b8067e0a13a2fffb089e22b1d5c535160879b04a8db0cd43d44b508c2618f"
+    },
+    {
+      "path": "example/DllLoader/Makefile",
+      "mode": "100644",
+      "git_blob": "65b538274c99535720b74187d4de191859a41ac4",
+      "bytes": 821,
+      "sha256": "85e03cfa296229888a88a66939ea3a151eaa0765f5c08cfd8b3e1d3051f1ce27"
+    },
+    {
+      "path": "example/DllMemory.sln",
+      "mode": "100644",
+      "git_blob": "812654b024b14d581e8ff4c9247d1acca94723c7",
+      "bytes": 1483,
+      "sha256": "43a454902164e974f2ea951ae89a187f1eaf93dd0dad08487bc0382586dfdfd5"
+    },
+    {
+      "path": "example/Makefile",
+      "mode": "100644",
+      "git_blob": "48b8e0b65dd6ecb260aa1f02951e4ff67c4bcfbc",
+      "bytes": 255,
+      "sha256": "881525cbb71ccbe337c7ee53a902e3964425f6ddbb1b8d2512c40ed40f639906"
+    },
+    {
+      "path": "example/SampleDLL/.gitignore",
+      "mode": "100644",
+      "git_blob": "ecc22854bf00c7acb15309be7ee35e3325862103",
+      "bytes": 16,
+      "sha256": "9f22abfcdb63dd119c4fce27972c1bc93c15ed37792b0cd7997eb16974a76388"
+    },
+    {
+      "path": "example/SampleDLL/CMakeLists.txt",
+      "mode": "100644",
+      "git_blob": "e3a3af39b75efaba91419f4709104da04cad0bc4",
+      "bytes": 290,
+      "sha256": "df0fb2758d40964538b4c1bd168ddd9e08ef1f98a38d32588b6f82c6a1c23831"
+    },
+    {
+      "path": "example/SampleDLL/Makefile",
+      "mode": "100644",
+      "git_blob": "ce3f65bef0fe9bb79d19457d5351efff6ae559a2",
+      "bytes": 629,
+      "sha256": "97109069095ce76ed0447a48633bdd013c53a6716f127d5b8f68aa1064fa8df8"
+    },
+    {
+      "path": "example/SampleDLL/SampleDLL.cpp",
+      "mode": "100644",
+      "git_blob": "7bf03eff8d2ef08cef0729cb21666f18e7335536",
+      "bytes": 106,
+      "sha256": "65132acaa5b3268f4e6ae23cac333ea25eb78eb7daac516c188168934f7534c4"
+    },
+    {
+      "path": "example/SampleDLL/SampleDLL.h",
+      "mode": "100644",
+      "git_blob": "2662c3c930a50dc60b65873d2f08c601aad67b30",
+      "bytes": 188,
+      "sha256": "ec1808d07e31785fba5179f4437abe8c0eb3a88e434bb0ff654ddf3eadebf661"
+    },
+    {
+      "path": "example/SampleDLL/SampleDLL.rc",
+      "mode": "100644",
+      "git_blob": "5a0da6122d8581e11d91afabe32b42210efb9f2c",
+      "bytes": 691,
+      "sha256": "bf252d751842c2f237e8cbc2907a3dddad82b4a808f001c37d3b774321f40079"
+    },
+    {
+      "path": "example/SampleDLL/SampleDLL.vcproj",
+      "mode": "100644",
+      "git_blob": "021321071a8bf593476b93f4c1e38d18fb7d6e82",
+      "bytes": 3458,
+      "sha256": "af028100273936ec40287ebb663193fe482a5dde904358511d8e49c18fffa3eb"
+    },
+    {
+      "path": "readme.md",
+      "mode": "100644",
+      "git_blob": "4e9d82d7739e913e9fd597428f470c9f3e9aa43c",
+      "bytes": 1077,
+      "sha256": "58681d873ce32375eb9e2fe5d865ca1d26e1b969655a5608f45b2a360b2f1587"
+    },
+    {
+      "path": "scripts/run-appveyor.bat",
+      "mode": "100644",
+      "git_blob": "6662d998bbd1cd366da998ea481e95d3d25d0308",
+      "bytes": 1380,
+      "sha256": "da46f5c3faf5e29e9d779cc0f47e7fe09b1a9e6aede9ce11bd726f3a9478c226"
+    },
+    {
+      "path": "tests/CMakeLists.txt",
+      "mode": "100644",
+      "git_blob": "8b1007f0112791d244ce4e5b6e724c19b5786dd6",
+      "bytes": 361,
+      "sha256": "dc3f5c10e5ae41b4df47a3b38bcd1f5c456f11eb5192e68b6c2811fa62b2b824"
+    },
+    {
+      "path": "tests/LoadDll.cpp",
+      "mode": "100644",
+      "git_blob": "8cb215b706fc73e67bc4a8c7390c956fbe00e3c4",
+      "bytes": 9000,
+      "sha256": "f29874f41338d2f513d2653bbe78ea2a97960e77e31e318438d6ed0605661b38"
+    },
+    {
+      "path": "tests/Makefile",
+      "mode": "100644",
+      "git_blob": "028bcad866c9fea3a93b2dbcce59bea3ffc41a8a",
+      "bytes": 2136,
+      "sha256": "e5d44c318ec3223e5f52a9997771b7b4799d7f87d40d283bb97ace2e9881798b"
+    },
+    {
+      "path": "tests/SampleDLL.cpp",
+      "mode": "100644",
+      "git_blob": "7bf03eff8d2ef08cef0729cb21666f18e7335536",
+      "bytes": 106,
+      "sha256": "65132acaa5b3268f4e6ae23cac333ea25eb78eb7daac516c188168934f7534c4"
+    },
+    {
+      "path": "tests/SampleDLL.h",
+      "mode": "100644",
+      "git_blob": "2662c3c930a50dc60b65873d2f08c601aad67b30",
+      "bytes": 188,
+      "sha256": "ec1808d07e31785fba5179f4437abe8c0eb3a88e434bb0ff654ddf3eadebf661"
+    },
+    {
+      "path": "tests/SampleDLL.rc",
+      "mode": "100644",
+      "git_blob": "bbe57745d6c78f62e1eb12b389ed54238589c238",
+      "bytes": 1038,
+      "sha256": "526b1cc9eb3647d9dc41eba1c2628515ada95868fdfe173b94a519695234e388"
+    },
+    {
+      "path": "tests/TestSuite.c",
+      "mode": "100644",
+      "git_blob": "f4bd3251868424cf216f08b545d7dadd4458f279",
+      "bytes": 340,
+      "sha256": "d2ca2977d14470f63b273bac8db942512340c11ff4df1c4c76a404c7d7594835"
+    },
+    {
+      "path": "tests/generate-exports.sh",
+      "mode": "100755",
+      "git_blob": "974b2a6fb750219b48941f154a59d6a3d0ce62e4",
+      "bytes": 631,
+      "sha256": "91c08cfb4368f47196af5dda983a0b2faa57ac198df23c81b3d90213955a6763"
+    },
+    {
+      "path": "tests/runtests.sh",
+      "mode": "100755",
+      "git_blob": "a2c6520dd0e927a784bf48a8ce64e50c3aad15c0",
+      "bytes": 288,
+      "sha256": "861b5d4bae3ed1793814dbbec2729e63521ec0f13e460f9cb5ed82b3cb7cbd16"
+    },
+    {
+      "path": "tests/runwine.sh",
+      "mode": "100755",
+      "git_blob": "826b8c3a5eafb89b0ed04d0477133e394ed229f8",
+      "bytes": 299,
+      "sha256": "b5456e24cdb93686923650e2b1826899ecae7b3e6494d3bc1cc0de42af4be07e"
+    }
+  ],
+  "checkout_representations": [
+    {
+      "path": "scripts/run-appveyor.bat",
+      "reason": "unchanged upstream .gitattributes declares *.bat text eol=crlf",
+      "canonical": {
+        "bytes": 1380,
+        "sha256": "da46f5c3faf5e29e9d779cc0f47e7fe09b1a9e6aede9ce11bd726f3a9478c226"
+      },
+      "crlf_checkout": {
+        "bytes": 1428,
+        "sha256": "2886757f5e8a66b03389913c47bf482dd4e8a1a535c307889af83566680fa445"
+      },
+      "packaged_bytes": "canonical LF only",
+      "other_files": "exact canonical bytes only"
+    }
+  ]
+}

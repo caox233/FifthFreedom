@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "source_commit": "7e9fff371bb4e0654bb73e5878d292378dcf36c7",
+  "pr_merge": "fca8d38c3e10113177b1ffd34858b8a2ee78e4bc",
+  "tree": "7e74449cf13380fe2f92fd719dec0c2517913ce1",
+  "source_run": 40813823762,
+  "source_checks": {
+    "linux": {
+      "executed": 687,
+      "passed": 685,
+      "skipped": 2
+    },
+    "windows": {
+      "executed": 687,
+      "passed": 569,
+      "skipped": 118
+    }
+  },
+  "candidate_run": 40813823792,
+  "complete_windows": {
+    "job": 123250356296,
+    "conclusion": "success",
+    "artifact": 12871738773,
+    "artifact_sha256": "3d7a5068a9993bb2fb9807bb94c1e57111f696069ca43f4b946e2ce29b9f5efa",
+    "program_zip_sha256": "3fd705c24a88980abce026700ed225c3ac7b79ef62c807adaa99d2db35350bcd",
+    "program_zip_bytes": 73317491,
+    "ui_checks_passed": 182,
+    "save_checks_passed": 27,
+    "scope": "Verified intermediate complete-package checkpoint. Superseded by follow-up source fixes before final delivery.",
+    "independent_download_verification": {
+      "files": 65,
+      "manifest_entries": 63,
+      "checksum_rows": 64,
+      "embedded_component_identities": 4,
+      "notice_source_files": 50,
+      "crc_verified": true,
+      "downloaded_payload_executed": false
+    }
+  },
+  "public_control": {
+    "job": 123250124520,
+    "passed": 149,
+    "candidate_builder_passed": 10,
+    "scope": "Read-only control and synthetic owned loopback fixtures; no ordinary Public admission."
+  },
+  "retained_failures": [
+    {
+      "job": 123250124625,
+      "stage": "Pinned Rust setup",
+      "cause": "TCP timeout to static.rust-lang.org before donor compilation; no donor build/test result."
+    },
+    {
+      "gate": "C71",
+      "retained_cases": 13,
+      "executed": 0,
+      "cause": "Reviewed external replay inputs unavailable; independent of complete Windows packaging."
+    }
+  ],
+  "visual": {
+    "run": 40813823778,
+    "pngs_hash_verified": 608,
+    "modified_failed_checks": 8,
+    "reapplied_failed_checks": 8,
+    "cause": "Probe left English public settings at bottom scroll offset before actual header input hit test.",
+    "root_image_review_sha256": "ebd7fcca838cafb236b86272494d56ecbbd06cbc36b42b6e37c49bbf3c3cdb52",
+    "additional_product_findings": [
+      "Local footer could temporarily retain Public-not-ready before first presence refresh.",
+      "Custom dark scrollbar resource was not connected to the ScrollViewer template."
+    ],
+    "followup": "Restore probe viewport, assert actual selector/footer semantics, refresh presence in both modes, bind dark scrollbar template and remove stale LAN ONLY badge. Actual hosted verification pending."
+  },
+  "public_configuration_path_review": {
+    "finding": "Absolute path alone admits UNC/device/ADS/mapped-network paths before target access; leaf-first ancestor checks can traverse a reparse ancestor before rejecting it.",
+    "correction": "Reject nonlocal/ambiguous grammar and network drive metadata; inspect ordinary path ancestors root-to-leaf before configuration open or runtime pin reads. Preserve hash pins and runtime admission gates.",
+    "scope": "Sequential metadata policy and owned-local fixtures. Not a claim of handle-pinned TOCTOU isolation or an SMB exploit demonstration.",
+    "linux_focused_checks_passed": 114,
+    "supplemental_b_m_r_reapply": {
+      "checks_per_phase": 3,
+      "baseline": {
+        "passed": 1,
+        "failed": 2
+      },
+      "modified": {
+        "passed": 3,
+        "failed": 0
+      },
+      "rollback": {
+        "passed": 1,
+        "failed": 2
+      },
+      "reapplied": {
+        "passed": 3,
+        "failed": 0
+      },
+      "receipt_sha256": "1de6c67bbb24138fd25c57bc26bb86ad29e009782231b174e4d7974b7f8edf54",
+      "production_byte_proof_sha256": "0d2a4145b5309c8b00e861d2308270685d15c797d7fbcebd8af192d7d96831d9"
+    }
+  },
+  "game_executed": false,
+  "formal_release": false,
+  "production_deployment": false
+}

@@ -1,0 +1,96 @@
+--- a/easytier/src/instance/instance.rs
++++ b/easytier/src/instance/instance.rs
+@@ -192,6 +192,23 @@
+     }
+ }
+ 
++#[cfg(all(target_os = "windows", feature = "ff-windows-session-observer"))]
++impl super::windows_session_read::CurrentContext for NicCtxContainer {
++    type Context = NicCtx;
++    fn context(&self) -> std::io::Result<&NicCtx> {
++        super::windows_session_read::typed_context(self.nic_ctx.as_deref())
++    }
++}
++
++#[cfg(all(target_os = "windows", feature = "ff-windows-session-observer"))]
++impl super::windows_session_read::SessionRead for NicCtx {
++    type Snapshot = tun::platform::windows::SessionIdentity;
++    async fn read_session(&self, source: Ipv4Addr) -> std::io::Result<Self::Snapshot> {
++        self.observe_windows_session(source).await
++            .map_err(|_| super::windows_session_read::unavailable())
++    }
++}
++
+ #[cfg(feature = "tun")]
+ type ArcNicCtx = Arc<Mutex<Option<NicCtxContainer>>>;
+ 
+@@ -1552,6 +1569,15 @@
+     #[cfg(feature = "tun")]
+     pub fn get_nic_ctx(&self) -> ArcNicCtx {
+         self.nic_ctx.clone()
++    }
++
++    /// Read the actual current retained NIC; never an ownership/peer/Public lease.
++    /// The snapshot may be stale after return. Source must be explicitly supplied;
++    /// it is checked by the backend, not copied from configured interface names.
++    #[cfg(all(target_os = "windows", feature = "ff-windows-session-observer"))]
++    pub async fn observe_windows_session(&self, source: Ipv4Addr)
++        -> std::io::Result<tun::platform::windows::SessionIdentity> {
++        super::windows_session_read::read_current(&self.nic_ctx, source).await
+     }
+ 
+     pub fn get_peer_packet_receiver(&self) -> Arc<Mutex<PacketRecvChanReceiver>> {
+--- a/easytier/src/instance/mod.rs
++++ b/easytier/src/instance/mod.rs
+@@ -13,3 +13,6 @@
+ 
+ #[cfg(any(windows, test))]
+ pub(crate) mod windows_udp_broadcast;
++
++#[cfg(all(target_os = "windows", feature = "ff-windows-session-observer"))]
++mod windows_session_read;
+--- /dev/null
++++ b/easytier/src/instance/windows_session_read.rs
+@@ -0,0 +1,42 @@
++//! One bounded read of the current typed NIC context. Never an admission lease.
++use std::{any::Any, future::Future, io, net::Ipv4Addr, time::Duration};
++use tokio::sync::Mutex;
++
++const READ_WAIT: Duration = Duration::from_secs(2);
++
++pub(super) fn unavailable() -> io::Error {
++    io::Error::new(io::ErrorKind::NotConnected, "FF_WINDOWS_SESSION_UNAVAILABLE")
++}
++
++pub(super) fn typed_context<T: 'static>(
++    value: Option<&(dyn Any + Send)>,
++) -> io::Result<&T> {
++    value.and_then(|value| value.downcast_ref::<T>()).ok_or_else(unavailable)
++}
++
++pub(super) trait SessionRead: Sync {
++    type Snapshot: Send;
++    fn read_session(&self, source: Ipv4Addr)
++        -> impl Future<Output = io::Result<Self::Snapshot>> + Send;
++}
++
++pub(super) trait CurrentContext: Send {
++    type Context: SessionRead;
++    fn context(&self) -> io::Result<&Self::Context>;
++}
++
++/// The outer container guard prevents replacing this context during its inner
++/// awaited read. Timeout/cancellation drops the future and guard; no Session Arc,
++/// observer or owner is cloned. The backend still independently rechecks owner/
++/// worker revocation. This timeout bounds async lock waits, not synchronous OS
++/// query duration. A returned snapshot can become stale immediately afterwards.
++pub(super) async fn read_current<C: CurrentContext>(
++    slot: &Mutex<Option<C>>,
++    source: Ipv4Addr,
++) -> io::Result<<C::Context as SessionRead>::Snapshot> {
++    tokio::time::timeout(READ_WAIT, async {
++        let current = slot.lock().await;
++        let context = current.as_ref().ok_or_else(unavailable)?.context()?;
++        context.read_session(source).await
++    }).await.map_err(|_| io::Error::new(io::ErrorKind::TimedOut, "FF_WINDOWS_SESSION_BUSY"))?
++}

@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "status": "read_only_source_review_complete_deployment_crash_needs_triage",
+  "reviewed_at_utc": "2026-10-31T10:31:13.438398+00:00",
+  "source_commit": "5227af491d385bae7b25f21a3be25bf43f1650be",
+  "reviewer": "independent protocol-feedback agent",
+  "review_scope": "Installed hook registration, first-throw input, replication boundary, equipment/loadout copying and SCIS/VSS resource/scope lifecycle; final camera callback guards.",
+  "source_snapshot": {
+    "files": 31,
+    "all_hashes_rechecked_unchanged": true,
+    "rechecked_at_utc": "2026-10-31T10:33:30.925439+00:00",
+    "sha256": {
+      "src/native/client/hooks/gameplay/src/lib.rs": "b173e1dc1e65c31f933259ce25b82ba195fb2157b7193aa603feda5dbfe17ff0",
+      "src/native/client/hooks/gameplay/src/combat_input.rs": "002ca23827f24c3903653a6b053d45ac0771dfdb6295c1f3f07f2edefc21b807",
+      "src/native/client/hooks/gameplay/src/weapon_probe.rs": "b4ab16e0665074f4a129f75f806675b03cd67d8484b6e6f6083ebc8142c2748a",
+      "src/native/client/hooks/gameplay/src/sticky_camera_input.rs": "0837260fd7b21bb3e2f9ef66739e75eb62974dea90e693ae22a1bbd1dd70e074",
+      "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs": "80e2841654924909e017bc97d3b11d1606d39cc11bfcfb3ca63cbf5653e338ba",
+      "src/native/client/hooks/gameplay/src/sticky_camera_sound.rs": "a1de43396b6fa37e5f799302384541473f50bdf9523711ff672ba2126a556eaf",
+      "src/native/client/hooks/gameplay/src/sticky_camera_lifecycle_tests.rs": "e9ddb3ecedd0aca4335b6509181281f9b580afacf486c777d4dbcfe8e51e94d2",
+      "src/native/client/hooks/gameplay/src/sticky_camera_lifecycle_runtime_fixture.rs": "4a8e514b23b9519e41315a0009364e41f7355556cc95fffd4c083faa3b0db2f2",
+      "src/native/client/hooks/gameplay/src/mac11_catalog.rs": "66fd3aac84d18cf40c55f5ce963451067d7e043dbb37a0b8a31d702d768f4045",
+      "src/native/client/hooks/gameplay/src/scis_catalog.rs": "a6949cf6cf1ebc7c7ad992200f63909179547ed9c4e6a7b3dd1851eda359c870",
+      "src/native/client/hooks/gameplay/src/scis_preload.rs": "79f32956ba6b791f0d61267372e54753b3c571211c680d03125f8b8b8855c971",
+      "src/native/client/hooks/gameplay/src/scis_resource_request.rs": "fae29eafc1809782de4c385c73193e12866feefb339433b43e16897a6b53ac6c",
+      "src/native/client/hooks/gameplay/src/scis_resource_policy.rs": "1ef5de53cb9d4dda29d821fa955d38abd45d6819e339f2847ab3443a8dbf1e44",
+      "src/native/client/hooks/gameplay/src/scis_scope_actor.rs": "968623e3053199e601a7591baacc3dd60fa7cbddc9924c4188c834cb4eeaa43c",
+      "src/native/client/hooks/gameplay/src/vss_catalog.rs": "a13f9a9784f21586fb0169f847d182995975fb21b6770bc7912ceeb5a13cf728",
+      "src/native/client/hooks/gameplay/src/vss_scope_policy.rs": "61f560092002160e124e6f955676bb05a4ce2464aa6748fc3f8ead49251b60c1",
+      "src/native/client/hooks/gameplay/src/vss_attachment.rs": "eda45b7916c1d12a14adee47e58144871aeb4a2e1edc54b6d29ab522918cb5d9",
+      "src/native/client/hooks/gameplay/src/vss_vfx.rs": "edc17018b60003ae657aa99483315f45943d9b993b39417f6b2b9c4fd6dbb7b0",
+      "src/native/client/hooks/gameplay/src/equipment_native.rs": "578258bd8c10fb136dfda60f56d179bc6420b045a8d574f09a2a40c4a3ee118d",
+      "src/native/client/hooks/gameplay/src/extended_loadouts.rs": "8ea55619168af0631fa0610029f4d246ed6c4d11523fa5b6c268d235da900823",
+      "src/native/client/hooks/gameplay/src/extended_loadout_upgrades.rs": "b39f055a3fb64d68d1d43cf30a19e6ae10a8951f804e3602b554b0cf7070afb8",
+      "src/native/client/hooks/gameplay/src/player_capacity.rs": "8137a56a1f478698bc5b1016b5d706504ae3a66bf7ce9ec66acdbe0973bc876a",
+      "src/native/client/hooks/src/hooks.rs": "c03c10382f7f1b991c79750c5ef7162b8dd8a6085a7762c23dcdd9afc4504b1f",
+      "src/native/client/hooks/src/hooks/storm.rs": "84a4450dfefa4e129cf03099a87107b17244076c02a0aef89bc46f142fc2d0af",
+      "src/native/client/hooks/src/hooks/network_replication.rs": "36bd706e7b8ff5f4645bc0ded169c2081ee8c4c386009c031ec1fc9d4d032e6e",
+      "src/native/client/hooks/hooks-config/src/lib.rs": "30f2e198c89f8731d45acbc17edc316eb5c3ed6f9168d6cd1bb3bd7887d428fb",
+      "src/native/client/hooks/hooks-addresses/src/lib.rs": "4569c0570314dc50500572541f7309eadd81d971829c2fb553514ab69c1a13b8",
+      "src/native/client/hooks/gameplay/Cargo.toml": "378e08ce6b3de9ecdd591e9dd4a5555591284af01dc1c9fdf467976d0366497a",
+      "src/native/client/hooks/maphashes.txt": "19c430a20979d5e9cb3befdb65abc0ebb21699ce4bbd4b11119a1487801eb25b",
+      "scripts/ci_candidate.py": "c4ff9a56ccb522eb8712aac1046c2c6c59df096ab909634b398117c3d987e03e",
+      "docs/development-reference/historical-replays/INDEX.json": "9fc3d3f1055f92eba036d5a274741c7afca344eccf7348a2b3a988b2b0c3afc4"
+    }
+  },
+  "conclusions": [
+    "InputDispatch enters sticky-camera input, but a nondeployed camera does not meet the state-2 selection gate and continues through native input dispatch. This does not exclude the plugin: Tick/Cleanup/Disable and shared resource/pawn lifecycle hooks remain actual intersections.",
+    "The camera registry installs Whistle, WhistleSend, Receive, Tick, Cleanup and Disable. Receive calls the native handler under a receive marker. No direct first-throw constructor or generic actor/component-copy replacement was identified in the reviewed registrations.",
+    "SCIS/VSS register_with_copy copies exact XML weapon/attachment catalog records. Extended-loadout cloning and upgrade assignment copy loadout values. Neither is a demonstrated StickyCam actor-replication implementation.",
+    "SCIS/VSS archetype routing and geometry retries are restricted to named weapons and five geometry keys. The generic model builder still intercepts native calls; AScope1stPerson creation and pawn/scope destruction can intersect equipment changes. Source scoping does not prove runtime lifecycle safety or a cause of the reported crash.",
+    "Candidate gameplay enables default extended-player-capacity plus goggle-feedback; its build does not pass --no-default-features. The separately retained network-rate boost is temporarily disabled. Neither observation establishes a cause of the four-peer deployment incident.",
+    "Final Detonate code rechecks READY and the original Owner after both native availability and sound cancellation. The reviewed fixture invokes production execute with one healthy control and four destruction/replacement controls, using synthetic native leaves. This review did not execute it.",
+    "No additional confirmed source defect or causal link to the reported Access=8 / Instruction=0 deployment crash was established. The separate Access=1 / RVA 0x20c25b4 write fault remains separate."
+  ],
+  "open_boundaries": [
+    "A complete admitted retail first-throw, constructor, component-clone or replication body and a credible failing return callsite were not identified in the reviewed references. Small signature bytes and function hashes are not such a fixture.",
+    "Tick/Cleanup/Disable callback lifetime, generic resource building, pawn/scope destruction, actual resource GC and real native execution order remain unverified for the incident.",
+    "Existing +0x20 object index is not a proven allocation generation; same-address/same-index reuse and concurrent cross-thread release remain unproven.",
+    "Synthetic audio, original Whistle, sender, availability and trigger leaves do not execute real deployment, actor replication, ATS effects, audio hardware or network delivery.",
+    "The 13 historical authored listings are not complete native replay inputs; this review does not replace C71 or constitute an exhaustive audit of all plugin code."
+  ],
+  "execution_by_this_review": {
+    "game": false,
+    "windows_fixture": false,
+    "runtime_tests": false,
+    "production_source_changed": false,
+    "raw_player_evidence_read_or_published": false
+  },
+  "review_receipts_sha256": {
+    "first_throw_source_trace": "4daff314af35f641a4f471754e06c15b55644309de0fc514073a8e533e1fc31e",
+    "final_camera_source_review": "4c7afc919506a2ca8e8c67c410e29674d3173283b9370c478ccf76093512b12f"
+  },
+  "related_evidence": "sticky-camera-lifecycle-source-20261031.json"
+}

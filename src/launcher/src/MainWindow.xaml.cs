@@ -39,7 +39,7 @@ public partial class MainWindow : Window
     private LauncherSettings _settings = new();
     private string _gameDir = "";
     private bool _statusRefreshRunning;
-    private bool _isGameRunning;
+    private volatile bool _isGameRunning;
     private string? _runningGameProcessName;
     private Guid? _unconfirmedLaunchSession;
     private bool _isEndingGame;
@@ -52,7 +52,7 @@ public partial class MainWindow : Window
     private Task _networkCheckTask = Task.CompletedTask;
     private bool _windowLoadedStarted;
     private bool _networkCheckRunning;
-    private bool _isGameStarting;
+    private volatile bool _isGameStarting;
     private DateTime _launchStartedUtc=DateTime.MaxValue;
     private bool _isBusy;
     private readonly OwnedBackgroundTask _gameMonitor = new(ex => LogService.Error("gameMonitor task failed: " + ex));
@@ -82,7 +82,6 @@ public partial class MainWindow : Window
     private string _lastNonHostServerAddress = "";
     private string? _lastHostSwitchPromptKey;
     private string? _lastSingleHostAutoFillPromptKey;
-    private bool _multiHostDialogShownThisSession;
     private bool _isHostSelectionDialogOpen;
     private string _networkTarget="";
     private int _guideIndex;
@@ -146,20 +145,21 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        if (App.PreviewMode) { cmbBindAdapter.Items.Add(new ComboBoxItem {Content="自动按服务器路由",Tag=""});cmbBindAdapter.SelectedIndex=0;ApplyLocalization();return; }
+        if (App.PreviewMode) { cmbBindAdapter.Items.Add(new ComboBoxItem {Content="自动按服务器路由",Tag=""});cmbBindAdapter.SelectedIndex=0;ApplyLocalization(); _gameplayControlsReady = true; return; }
 
         ForceEnglishInputForPlainTextBoxes();
         LoadSettingsToUi();
+        InitializeNetworkEnvironment();
+        _networkEnvironmentInitialization = ChangeSelectedNetworkEnvironmentAsync(SelectedNetworkEnvironment, persist: false);
         _networkTarget=txtServer.Text.Trim();
         PopulateAdapters();
-        DetectNetworkSilently();
-        StartLanMonitor();
-        StartHostDiscoveryListener();
+        if (SelectedNetworkEnvironment == NetworkEnvironmentKind.Lan) DetectNetworkSilently();
         StartLanTools();
         UpdateConnectionModeUi();
         ApplyLocalization();
         SetGameRunningState(false);
         PlayStartupMusicIfEnabled();
+        _gameplayControlsReady = true;
     }
 
 
@@ -654,14 +654,20 @@ public partial class MainWindow : Window
             }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             if (_closingBackgroundTasks) return;
 
-            _firewallService.EnsureFirewallRulesBestEffort(GetLauncherBaseDirectory(), _gameDir);
-            await RefreshServerStatusAsync();
+            await _networkEnvironmentInitialization;
+            if (_closingBackgroundTasks) return;
+            if (SelectedNetworkEnvironment == NetworkEnvironmentKind.Lan)
+                await BeginLocalDiscoveryAsync();
+            else
+                RenderNetworkEnvironment();
             if (_closingBackgroundTasks) return;
 
-            if (!_settings.GuideCompleted)
+            if (!_settings.GuideCompleted && localDiscoveryOverlay.Visibility != Visibility.Visible
+                && toolsOverlay.Visibility != Visibility.Visible && dialogOverlay.Visibility != Visibility.Visible)
             {
                 await Task.Delay(450, _windowOneShotCts.Token);
-                if (_closingBackgroundTasks) return;
+                if (_closingBackgroundTasks || localDiscoveryOverlay.Visibility == Visibility.Visible
+                    || toolsOverlay.Visibility == Visibility.Visible || dialogOverlay.Visibility == Visibility.Visible) return;
                 BringLauncherToFront("show guide");
                 ShowGuide(markCompletedOnClose: true);
             }
@@ -683,7 +689,7 @@ public partial class MainWindow : Window
 
         // Launch/host preparation has not yet acquired a cancellable game session.
         // Keep the window alive until that one-shot operation reaches its existing boundary.
-        if (_isBusy && !_isGameStarting && !_isGameRunning) { e.Cancel = true; return; }
+        if ((_isBusy || _networkEnvironmentChanging) && !_isGameStarting && !_isGameRunning) { e.Cancel = true; return; }
 
         if (_isGameStarting)
         {
@@ -754,7 +760,7 @@ public partial class MainWindow : Window
         // Info overlays have no cancellation contract. Keep the window usable until
         // the current overlay is dismissed, then allow a fresh close attempt.
         if (_dialogTcs != null) return;
-        if (!StopDedicatedServer("launcher closing"))
+        if (!await CloseNetworkEnvironmentAsync() || !StopDedicatedServer("launcher closing"))
         {
             await ShowInfoDialogAsync(L("服务端尚未停止", "Server Still Running"),
                 L("本机服务端尚未确认停止。启动器将保持打开，请稍后重试。", "The local server has not confirmed its exit. The launcher will remain open; please retry."));
@@ -799,11 +805,14 @@ public partial class MainWindow : Window
     private void LoadSettingsToUi()
     {
         _settings = _settingsService.Load();
+        _credentialEnvironment = SelectedNetworkEnvironment == NetworkEnvironmentKind.Public
+            ? CredentialEnvironmentContext.UnconfiguredPublic : CredentialEnvironmentContext.Lan;
 
         txtUsername.Text = _settings.Username;
         txtPassword.Password = "";
         chkRememberPassword.IsChecked = _settings.RememberPassword;
-        string savedServer = string.IsNullOrWhiteSpace(_settings.ServerAddress) ? "" : _settings.ServerAddress.Trim();
+        string savedServer = SelectedNetworkEnvironment == NetworkEnvironmentKind.Public ? _settings.PublicEndpoint
+            : string.IsNullOrWhiteSpace(_settings.ServerAddress) ? "" : _settings.ServerAddress.Trim();
         txtServer.Text = IsServerAddressEmptyOrDefault(savedServer) ? "" : savedServer;
         txtDetectedHostName.Text = "";
         RememberNonHostServerAddressIfUseful(_networkTarget);
@@ -851,7 +860,11 @@ public partial class MainWindow : Window
     {
         _settings.Username = txtUsername.Text.Trim();
         _settings.Password = "";
-        if (IsHostMode())
+        if (SelectedNetworkEnvironment == NetworkEnvironmentKind.Public)
+        {
+            // Public endpoint belongs to Server Settings; never overwrite remembered LAN input.
+        }
+        else if (IsHostMode())
         {
             // 房主模式下服务器地址会被临时改成本机 Lan IP，不能把它保存成非房主默认地址。
             _settings.ServerAddress = _lastNonHostServerAddress;
@@ -872,9 +885,9 @@ public partial class MainWindow : Window
         _settingsService.Save(_settings);
     }
 
-    private string GetSelectedGameplayMode() => GameplayRuntime.Normalize(cmbGameplayMode.SelectedValue as string);
+    private string GetSelectedGameplayMode() => GameplayRuntime.Normalize(_gameplayDraftActive ? _settings.GameplayMode : cmbGameplayMode.SelectedValue as string);
 
-    private double GetSelectedFovScale() => GameplayRuntime.NormalizeFov(fovSlider.Value);
+    private double GetSelectedFovScale() => GameplayRuntime.NormalizeFov(_gameplayDraftActive ? _settings.FovScale : fovSlider.Value);
 
     private bool _restoringInteractiveSetting;
     private bool _interactiveSettingFailureShown;
@@ -911,20 +924,16 @@ public partial class MainWindow : Window
     private void FovSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
         if(txtFovValue!=null) txtFovValue.Text=GameplayRuntime.NormalizeFov(e.NewValue).ToString("0.00",System.Globalization.CultureInfo.InvariantCulture)+"×";
-        if(!IsLoaded || App.PreviewMode || _restoringInteractiveSetting) return;
-        double previous = _settings.FovScale;
-        TryPersistInteractiveSetting(() => _settings.FovScale = GetSelectedFovScale(),
-            () => { _settings.FovScale = previous; fovSlider.Value = e.OldValue; });
+        if (_restoringInteractiveSetting) return;
+        HandleGameplayDraftChanged();
     }
 
     private void FovReset_Click(object sender,RoutedEventArgs e) => fovSlider.Value=1.2;
 
     private void GameplayMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if(!IsLoaded || App.PreviewMode || _restoringInteractiveSetting) return;
-        string previous = _settings.GameplayMode;
-        TryPersistInteractiveSetting(() => _settings.GameplayMode = GetSelectedGameplayMode(),
-            () => { _settings.GameplayMode = previous; cmbGameplayMode.SelectedValue = GameplayRuntime.Normalize(previous); });
+        if (_restoringInteractiveSetting) return;
+        HandleGameplayDraftChanged();
     }
 
     private string GetSelectedGameExecutable()
@@ -1205,6 +1214,7 @@ public partial class MainWindow : Window
 
         ClearAutofillForChangedIdentity();
         _networkTarget=txtServer?.Text?.Trim() ?? "";
+        InvalidateLanCapabilities();
         if (_suppressServerTextChanged)
             return;
 
@@ -1233,7 +1243,7 @@ public partial class MainWindow : Window
     private void UpdateServerAddressInputState(bool? lanReadyOverride = null)
     {
         if(txtServer==null || txtServerPlaceholder==null) return;
-        txtServer.IsEnabled=!IsHostMode() && !_isBusy && !_isGameRunning && !_isGameStarting;
+        txtServer.IsEnabled=SelectedNetworkEnvironment == NetworkEnvironmentKind.Lan && !IsHostMode() && !_isBusy && !_isGameRunning && !_isGameStarting;
         txtServerPlaceholder.Text=L(ServerPlaceholderNormal,"Enter server IPv4/domain; discovery is optional");
     }
 
@@ -1257,7 +1267,8 @@ public partial class MainWindow : Window
         if (_isGameRunning)
             return !_isEndingGame;
 
-        if (_isGameStarting || _statusRefreshRunning || _isBusy)
+        if (_gameplayDraft?.IsDirty == true || _isGameStarting || _statusRefreshRunning || _isBusy || _publicSettingsSaving || _networkEnvironmentChanging
+            || SelectedNetworkEnvironment == NetworkEnvironmentKind.Public)
             return false;
 
         // 启动按钮默认保持可点击。
@@ -1299,6 +1310,7 @@ public partial class MainWindow : Window
 
     private void RememberNonHostServerAddressIfUseful(string? server)
     {
+        if (SelectedNetworkEnvironment != NetworkEnvironmentKind.Lan) return;
         string value = server?.Trim() ?? "";
         if (IsServerAddressEmptyOrDefault(value))
             return;
@@ -1324,9 +1336,14 @@ public partial class MainWindow : Window
 
     private async void ConnectionMode_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
-        if (_isChangingConnectionMode || !IsLoaded)
+        if (_isChangingConnectionMode || !IsLoaded || _networkEnvironmentChanging || _networkEnvironmentClosing)
             return;
 
+        if (_isBusy || _isGameRunning || _isGameStarting || _statusRefreshRunning)
+        {
+            RevertConnectionModeSelection(_networkEnvironment?.Snapshot.Selection?.LanRole == LanRole.Host ? 1 : 0);
+            return;
+        }
         _isHostModeCached = cmbConnectionMode.SelectedIndex == 1;
         bool wantsHostMode = _isHostModeCached;
         _observerSession.ChangeRole();
@@ -1362,7 +1379,6 @@ public partial class MainWindow : Window
             bool ok = await StartHostModeServerFromUiAsync();
             if (!ok)
             {
-                RevertConnectionModeSelection(IsDedicatedServerRunning() ? 1 : 0);
                 UpdateConnectionModeUi();
                 await RefreshServerStatusAsync(showFailureDialog: false);
                 return;
@@ -1383,16 +1399,17 @@ public partial class MainWindow : Window
 
             if (result == MessageBoxResult.Yes)
             {
-                if (!StopDedicatedServer("switch to client mode"))
+                var change = await ChangeLanRoleAsync(LanRole.Join);
+                if (change.Outcome != NetworkEnvironmentChangeOutcome.Applied && change.Outcome != NetworkEnvironmentChangeOutcome.Unchanged)
                 {
-                    RevertConnectionModeSelection(1);
                     UpdateConnectionModeUi();
                     await ShowInfoDialogAsync(L("服务端尚未停止", "Server Still Running"),
-                        L("本机服务端尚未确认停止，已保留房主模式。请稍后重试。", "The local server has not confirmed its exit. Host Mode was retained; please retry."));
+                        L("本机服务端尚未确认停止，请稍后重试。", "The owned server has not confirmed its exit; please retry."));
                     return;
                 }
-                StopHostBroadcast();
-                ClearServerAddressIfCurrentLanAddress();
+                UpdateConnectionModeUi();
+                await RefreshServerStatusAsync(showFailureDialog: false);
+                return;
             }
             else
             {
@@ -1402,8 +1419,7 @@ public partial class MainWindow : Window
             }
         }
 
-        StopHostBroadcast();
-        ClearServerAddressIfCurrentLanAddress();
+        await ChangeLanRoleAsync(LanRole.Join);
         UpdateConnectionModeUi();
         await RefreshServerStatusAsync(showFailureDialog: false);
     }
@@ -1427,34 +1443,22 @@ public partial class MainWindow : Window
         try
         {
             SetBusy(true, L("启动服务端...", "Starting server..."));
-
-            var local = GetLanLocalStatus();
-            if (!local.IsOk || local.Bind == null) throw new IOException(string.IsNullOrEmpty(local.Error) ? "未找到可用本机 IPv4，请检查网卡或手动选择。" : local.Error);
-
-            string hostName = txtUsername.Text.Trim();
-            if (string.IsNullOrWhiteSpace(hostName))
-                throw new Exception(L("请先填写账号名。房主广播会使用这个账号名作为房主显示名称。", "Please enter a username first. Host discovery uses it as the displayed host name."));
-
-            if (!IsValidUsernameInput(hostName))
-                throw new Exception(L("账号只能使用英文、数字、下划线、短横线或点，不能包含中文或空格。", "Username can only contain letters, numbers, underscores, hyphens, or dots. Chinese characters and spaces are not allowed."));
-
-            string server = await EnsureHostServerReadyAsync(local.Bind.IpAddress, hostName);
-            SetServerAddressProgrammatically(server, null, resetStatus: false);
-            SaveSettingsFromUi();
-            return true;
+            var result = await ChangeLanRoleAsync(LanRole.Host);
+            bool ready = result.Outcome is NetworkEnvironmentChangeOutcome.Applied or NetworkEnvironmentChangeOutcome.Unchanged
+                && result.Snapshot.IsReady;
+            if (ready) SaveSettingsFromUi();
+            else await ShowInfoDialogAsync(L("房主模式启动失败", "Host Mode Failed"),
+                L("服务端未就绪，请检查本机网卡、账号格式、组件及端口。", "The server is not ready. Check the local adapter, username, components and ports."));
+            return ready;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            LogService.Error($"Failed to start host mode server: {ex}");
-            StopHostBroadcast();
-            StopDedicatedServer("host mode start failed");
-            await ShowInfoDialogAsync(L("房主模式启动失败", "Host Mode Failed"), ex.Message);
+            LogService.Error("Owned host UI command failed; the retained environment state remains authoritative.");
+            await ShowInfoDialogAsync(L("房主模式启动失败", "Host Mode Failed"),
+                L("房主操作未完成，请检查本机配置后重试。", "The host operation did not complete. Check the local configuration and retry."));
             return false;
         }
-        finally
-        {
-            SetBusy(false);
-        }
+        finally { SetBusy(false); }
     }
 
     private void AppendUiLog(string message)
@@ -1470,6 +1474,7 @@ public partial class MainWindow : Window
     private void SetBusy(bool busy, string? buttonText = null)
     {
         _isBusy = busy;
+        _ownedGameLaunchActive = _gameLaunchService.SessionId.HasValue;
         bdDetectedHostName.IsEnabled = !busy;
         cmbBindAdapter.IsEnabled=!busy && !_isGameRunning && !_isGameStarting && !IsDedicatedServerRunning();
         btnCheckNetwork.IsEnabled = !busy && !_statusRefreshRunning && !_isGameRunning && !_isGameStarting;
@@ -1477,6 +1482,8 @@ public partial class MainWindow : Window
         cmbGameplayMode.IsEnabled = !busy && !_isGameRunning && !_isGameStarting;
         fovSlider.IsEnabled = btnFovReset.IsEnabled = !busy && !_isGameRunning && !_isGameStarting;
         cmbConnectionMode.IsEnabled = !busy && !_isGameRunning && !_isGameStarting;
+        RenderNetworkEnvironment();
+        RenderGameplaySummary();
         UpdateServerAddressInputState(_lastLanLocalReady);
         txtUsername.IsEnabled = !busy && !_isGameRunning && !_isGameStarting;
         txtPassword.IsEnabled = !busy && !_isGameRunning && !_isGameStarting;
@@ -1742,6 +1749,12 @@ public partial class MainWindow : Window
     private Task RefreshServerStatusAsync(bool keepButtonDisabled = false, bool showFailureDialog = false)
     {
         if (_closingBackgroundTasks || _statusRefreshRunning) return Task.CompletedTask;
+        if (SelectedNetworkEnvironment == NetworkEnvironmentKind.Public)
+        {
+            _lastServerReachable = false;
+            SetServerStatus(Brushes.Goldenrod, GetPublicReadinessMessage(), ServerStatusKind.ServerFailed);
+            return showFailureDialog ? ShowInfoDialogAsync(L("公网尚未就绪", "Public Not Ready"), GetPublicReadinessMessage()) : Task.CompletedTask;
+        }
         return _statusRefreshTask = RefreshServerStatusCoreAsync(keepButtonDisabled, showFailureDialog);
     }
 
@@ -1750,10 +1763,13 @@ public partial class MainWindow : Window
 
         string server = txtServer.Text.Trim();
         string checkedServer = server;
+        string checkedBind = _settings.BindOverride;
+        var checkedLease = _activeLanEnvironmentLease;
 
         try
         {
             _statusRefreshRunning = true;
+            RenderNetworkEnvironment();
             btnCheckNetwork.IsEnabled = false;
             btnCheckNetwork.Content = L("检测中...", "Checking...");
             SetServerStatus(Brushes.DeepSkyBlue, "检测中...", ServerStatusKind.Checking);
@@ -1805,16 +1821,11 @@ public partial class MainWindow : Window
             }
 
             var broadcastIntent = _hostBroadcastIntent;
-            string checkedBind = _settings.BindOverride;
+            var capabilityWatch = Stopwatch.StartNew();
             bool mainOk = await _authService.CheckServerReachableAsync(server, checkedBind, _windowOneShotCts.Token);
             if (_closingBackgroundTasks) return;
             _windowOneShotCts.Token.ThrowIfCancellationRequested();
-            if (HasServerAddressChangedSinceCheckStarted(checkedServer))
-            {
-                CancelStaleServerCheckIfNeeded(checkedServer);
-                return;
-            }
-
+            if (!TryPublishLanCapabilities(checkedLease, checkedServer, checkedBind, mainOk, capabilityWatch.ElapsedMilliseconds)) return;
             if (!mainOk)
             {
                 _lastServerReachable = false;
@@ -1834,7 +1845,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             LogService.Error($"Network check failed: {ex}");
-            if (_closingBackgroundTasks) return;
+            if (!TryPublishLanCapabilities(checkedLease, checkedServer, checkedBind, false, null)) return;
             _lastServerReachable = false;
             SetServerStatus(Brushes.Goldenrod, "服务器连接失败", ServerStatusKind.ServerFailed);
 
@@ -1844,6 +1855,7 @@ public partial class MainWindow : Window
         finally
         {
             _statusRefreshRunning = false;
+            RenderNetworkEnvironment();
             if (!_closingBackgroundTasks)
             {
                 btnCheckNetwork.Content = L("检测网络", "Check Network");
@@ -1918,6 +1930,7 @@ public partial class MainWindow : Window
 
     private void QueueAutomaticServerCheckAfterLanOnline()
     {
+        if (SelectedNetworkEnvironment != NetworkEnvironmentKind.Lan || _networkEnvironmentChanging) return;
         if (_statusRefreshRunning || _isGameRunning || _isGameStarting)
             return;
 
@@ -1939,6 +1952,7 @@ public partial class MainWindow : Window
 
     private void ApplyLanMonitorStatus()
     {
+        if (SelectedNetworkEnvironment != NetworkEnvironmentKind.Lan || _networkEnvironmentChanging) return;
         if (_statusRefreshRunning || _isGameRunning || _isGameStarting || _isBusy) return;
         var local=GetLanLocalStatus();
         
@@ -1958,6 +1972,8 @@ public partial class MainWindow : Window
     private void SetServerStatus(Brush brush, string text, ServerStatusKind kind)
     {
         _serverStatusKind = kind;
+        if (kind != ServerStatusKind.Normal && kind != ServerStatusKind.Checking) InvalidateLanCapabilities();
+        RenderNetworkEnvironment();
         serverStatusLight.Fill = brush;
         txtServerStatus.Text = LocalizeStatusText(text);
         UpdateLaunchButtonAvailability();
@@ -2303,6 +2319,13 @@ public partial class MainWindow : Window
 
     private async Task RunLaunchFlowAsync()
     {
+        if (SelectedNetworkEnvironment != NetworkEnvironmentKind.Lan
+            || _networkEnvironment?.Snapshot.Selection?.Environment != NetworkEnvironmentKind.Lan
+            || _networkEnvironmentChanging)
+        {
+            await ShowInfoDialogAsync(L("当前模式尚未就绪", "Selected Mode Not Ready"), GetPublicReadinessMessage());
+            return;
+        }
         SetBusy(true, "准备启动...");
 
 
@@ -2314,6 +2337,7 @@ public partial class MainWindow : Window
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Password;
             string? passwordScope = _autoPasswordScope;
+            var passwordEnvironment = _credentialEnvironment;
             string server = txtServer.Text.Trim();
             bool hostMode = IsHostMode();
 
@@ -2369,8 +2393,10 @@ public partial class MainWindow : Window
             if (hostMode)
             {
                 SetBusy(true, L("启动服务端...", "Starting server..."));
-                server = await EnsureHostServerReadyAsync(bind.IpAddress, username);
-                SetServerAddressProgrammatically(server, null, resetStatus: false);
+                var environment = await ChangeLanRoleAsync(LanRole.Host);
+                if (!environment.Snapshot.IsReady || environment.Snapshot.Selection?.LanRole != LanRole.Host)
+                    throw new IOException("The owned LAN host is not ready.");
+                server = txtServer.Text.Trim();
                 LogService.Info($"Host mode server address set to {server}");
             }
 
@@ -2381,7 +2407,7 @@ public partial class MainWindow : Window
             SetBusy(true, "连接服务器...");
             // The host endpoint can change during network readiness. Never reuse another
             // endpoint's auto-filled credential captured before that asynchronous work.
-            if (!CanUseCapturedPassword(passwordScope, server, username))
+            if (!CanUseCapturedPassword(passwordScope, server, username, passwordEnvironment))
                 throw new IOException(L("服务器地址已变化，请确认账号和密码后重新启动。", "The server address changed. Confirm your credentials and start again."));
             var login = await _authService.LoginAsync(server, username, password, _settings.BindOverride);
 
@@ -2415,7 +2441,7 @@ public partial class MainWindow : Window
                 throw new Exception(login.Message);
 
             LogService.Info("Server authentication succeeded.");
-            await RememberSuccessfulLoginAsync(server,username,password);
+            await RememberSuccessfulLoginAsync(server,username,password,passwordEnvironment);
 
             SetBusy(true, "写入配置...");
             string accountId=login.AccountId;
@@ -2626,7 +2652,7 @@ public partial class MainWindow : Window
             }
             finally
             {
-                if(launchSession.HasValue) await _gameLaunchService.StopAsync(launchSession);
+                await StopOwnedLaunchAndRefreshEnvironmentAsync(launchSession);
             }
         });
     }
@@ -2727,18 +2753,20 @@ public partial class MainWindow : Window
 
     private string GetServerExePath() => Path.Combine(RuntimePaths.Root,"FifthFreedom.Server.exe");
 
-    private async Task<string> EnsureHostServerReadyAsync(string localIp,string hostName)
+    private async Task<string> EnsureHostServerReadyAsync(string localIp,string hostName,CancellationToken cancellationToken=default)
     {
         if(!IPAddress.TryParse(localIp,out var ip) || !ScblLan.LanConnection.IsUnicast(ip)) throw new IOException("请选择本机 IPv4。");
         using(var probe=new Socket(AddressFamily.InterNetwork,SocketType.Dgram,ProtocolType.Udp)) probe.Bind(new IPEndPoint(ip,0));
         if(IsDedicatedServerRunning() && _hostBindIp!=localIp) throw new IOException("请先退出房主模式再更换地址。");
         StopHostBroadcast();
         _hostBindIp=localIp;
+        cancellationToken.ThrowIfCancellationRequested();
         await _hostRuntime.InitializeAsync(GetServerExePath(),GetServerDirectory(),localIp);
+        cancellationToken.ThrowIfCancellationRequested();
         _hostRuntime.SetObserverAllowed(_observerSession.HostAllows(true));
         _hostRuntime.Start(GetServerExePath(),GetServerDirectory());
         string endpoint = $"{localIp}:{_hostRuntime.ApiPort}";
-        var ready=await _hostRuntime.WaitReadyAsync(endpoint,localIp,TimeSpan.FromSeconds(25));
+        var ready=await _hostRuntime.WaitReadyAsync(endpoint,localIp,TimeSpan.FromSeconds(25), cancellationToken);
         if(!ready) {StopDedicatedServer("readiness failed");throw new IOException("服务端未就绪。检查端口占用、防火墙及本轮服务端日志；不会终止外部服务端。");}
         // Isolated UI regression starts the real host but must not advertise a synthetic room to players.
         if (!App.HostCheckMode) StartHostBroadcast(hostName,localIp);
@@ -2963,7 +2991,7 @@ public partial class MainWindow : Window
 
     private void StartHostDiscoveryListener()
     {
-        if (_closingBackgroundTasks) return;
+        if (_closingBackgroundTasks || SelectedNetworkEnvironment != NetworkEnvironmentKind.Lan) return;
         _hostDiscovery.Start(async token =>
         {
             try
@@ -2972,7 +3000,6 @@ public partial class MainWindow : Window
                 udp.Client.ReceiveTimeout = 1000;
 
                 LogService.Info($"Host discovery listener started on UDP {HostBroadcastPort}. Outgoing discovery packets bind to Lan IP when available.");
-                DateTime lastQueryUtc = DateTime.MinValue;
 
                 while (!token.IsCancellationRequested)
                 {
@@ -3002,11 +3029,8 @@ public partial class MainWindow : Window
                     }
                     catch (SocketException ex) when (ex.SocketErrorCode == SocketError.TimedOut)
                     {
-                        if ((DateTime.UtcNow - lastQueryUtc).TotalMilliseconds >= HostBroadcastIntervalMs)
-                        {
-                            lastQueryUtc = DateTime.UtcNow;
-                            await SendHostDiscoveryQueryAsync(udp, token);
-                        }
+                        // Bounded LocalHostDiscoveryFlow owns client queries and prompts.
+                        // This listener retains only responder/presence duties.
                     }
                 }
             }
@@ -3135,88 +3159,19 @@ public partial class MainWindow : Window
 
     private bool CanSwitchDiscoveredHost()
     {
-        return !_closingBackgroundTasks && !_isBusy && !IsHostMode()
+        return SelectedNetworkEnvironment == NetworkEnvironmentKind.Lan && !_networkEnvironmentChanging
+            && !_closingBackgroundTasks && !_isBusy && !IsHostMode()
             && !_isGameStarting && !_isGameRunning && toolsOverlay.Visibility != Visibility.Visible;
     }
 
     private void HandleDiscoveredHost(DiscoveredHost host)
     {
-        if (IsHostMode())
-            return;
-
+        // Unsolicited beacons never open dialogs or replace the selected endpoint.
+        // The bounded, bind-owned discovery flow controls explicit selection.
+        if (SelectedNetworkEnvironment != NetworkEnvironmentKind.Lan || IsHostMode()) return;
         RemoveExpiredDiscoveredHosts();
-        if(_discoveredHosts.Count>=64 && !_discoveredHosts.ContainsKey(host.SessionId)) return;
+        if (_discoveredHosts.Count >= 64 && !_discoveredHosts.ContainsKey(host.SessionId)) return;
         _discoveredHosts[host.SessionId] = host;
-
-        var activeHosts = GetActiveDiscoveredHosts();
-        if (activeHosts.Count == 0)
-            return;
-
-        // Retain discovery while an operation owns the current endpoint; prompt on a later idle beacon.
-        if (!CanSwitchDiscoveredHost())
-        {
-            LogService.Info("Host discovery retained without prompting while endpoint switching is unavailable.");
-            return;
-        }
-
-        if (activeHosts.Count > 1)
-        {
-            UpdateDetectedHostLabelForMultipleHosts(activeHosts);
-
-            string currentHostInList = NormalizeServerHost(txtServer.Text.Trim());
-            if (activeHosts.Any(h => h.HostIp.Equals(currentHostInList, StringComparison.OrdinalIgnoreCase))
-                && (_serverStatusKind != ServerStatusKind.Normal || !_lastServerReachable))
-            {
-                QueueAutomaticServerCheckAfterLanOnline();
-            }
-
-            if (!_multiHostDialogShownThisSession && _dialogTcs == null && !_isHostSelectionDialogOpen && toolsOverlay.Visibility != Visibility.Visible)
-            {
-                _multiHostDialogShownThisSession = true;
-                _ = ShowHostSelectionAndApplyAsync(
-                    activeHosts,
-                    title: "发现多个房主",
-                    message: "当前发现多个房主，请选择要连接的房主。");
-            }
-
-            return;
-        }
-
-        DiscoveredHost only = activeHosts[0];
-        string current = txtServer.Text.Trim();
-
-        if (IsServerAddressEmptyOrDefault(current))
-        {
-            string promptKey = "AUTO|" + only.SessionId + "|" + only.Endpoint;
-            if (_lastSingleHostAutoFillPromptKey == promptKey || _dialogTcs != null || _isHostSelectionDialogOpen)
-                return;
-
-            _lastSingleHostAutoFillPromptKey = promptKey;
-            _ = PromptAutoFillSingleHostAsync(only);
-            return;
-        }
-
-        string currentHost = NormalizeServerHost(current);
-        ScblLan.ServerAddress currentAddress;
-        try { currentAddress = ScblLan.ServerAddress.Parse(current); }
-        catch (ArgumentException) { return; } // A beacon must not interrupt a partially edited address.
-        if (currentHost.Equals(only.HostIp, StringComparison.OrdinalIgnoreCase) &&
-            currentAddress.Port == only.ApiPort)
-        {
-            txtDetectedHostName.Text = BuildDetectedHostLabel(only, canSwitch: false);
-            UpdateServerPlaceholderVisibility();
-
-            if (_serverStatusKind != ServerStatusKind.Normal || !_lastServerReachable)
-                QueueAutomaticServerCheckAfterLanOnline();
-
-            return;
-        }
-        string switchPromptKey = "SWITCH|" + only.SessionId + "|" + only.Endpoint;
-        if (_lastHostSwitchPromptKey == switchPromptKey || _dialogTcs != null || _isHostSelectionDialogOpen)
-            return;
-
-        _lastHostSwitchPromptKey = switchPromptKey;
-        _ = PromptSwitchSingleHostAsync(only, current);
     }
 
     private List<DiscoveredHost> GetActiveDiscoveredHosts()
@@ -3286,7 +3241,6 @@ public partial class MainWindow : Window
         var selected = ShowHostSelectionDialog(hosts, title, message);
         if (!CanSwitchDiscoveredHost())
         {
-            _multiHostDialogShownThisSession = false;
             return;
         }
         if (selected == null) return;
@@ -3686,6 +3640,7 @@ public partial class MainWindow : Window
 
     private void DialogBoundary_PreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
     {
+        if (dialogOverlay.Visibility != Visibility.Visible && TryContainAuxiliaryOverlayFocus(e)) return;
         if (dialogOverlay.Visibility != Visibility.Visible)
             return;
         if (e.NewFocus is DependencyObject target &&
@@ -3783,6 +3738,9 @@ public partial class MainWindow : Window
     {
         if(e.Key==System.Windows.Input.Key.Escape && dialogOverlay.Visibility==Visibility.Visible)
         {CompleteDialog(MessageBoxResult.No);e.Handled=true;}
+        else if (e.Key == Key.Escape && _gameplayDraftActive && toolsOverlay.Visibility != Visibility.Visible
+            && localDiscoveryOverlay.Visibility != Visibility.Visible)
+        { CancelGameplayDraft(); cmbGameplayMode.Focus(); e.Handled = true; }
     }
 
     private void DialogNoButton_Click(object sender, RoutedEventArgs e)
@@ -3856,12 +3814,14 @@ public partial class MainWindow : Window
     {
         if(!IsLoaded || App.PreviewMode || _restoringInteractiveSetting || cmbBindAdapter.SelectedItem is not ComboBoxItem item) return;
         if(_isBusy || _isGameRunning || _isGameStarting || IsDedicatedServerRunning()) return;
+        CancelLocalDiscovery();
         string previous = _settings.BindOverride;
         object? previousSelection = e.RemovedItems.Count > 0 ? e.RemovedItems[0] : null;
         if (!TryPersistInteractiveSetting(() => _settings.BindOverride = (string)item.Tag,
             () => { _settings.BindOverride = previous; cmbBindAdapter.SelectedItem = previousSelection; })) return;
         _lastServerReachable=false;_serverAddressEditedAfterLastCheck=true;
-        _=RefreshServerStatusAsync();
+        InvalidateLanCapabilities();
+        if (SelectedNetworkEnvironment == NetworkEnvironmentKind.Lan) _ = BeginLocalDiscoveryAsync();
     }
 
 }

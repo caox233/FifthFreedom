@@ -1,0 +1,406 @@
+"""Synthetic receipt fixtures verify CI admission, not privileged runtime success."""
+import ast
+from contextlib import redirect_stdout
+import copy
+import io
+import json
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+import ci_probe_result as probe
+import ci_easytier_probe as overlay_producer
+import ci_native_lifecycle as native_producer
+import ci_owned_stack as stack_producer
+import easytier_probe_worker as worker_producer
+
+
+def native():
+    return {"schema": 1, "status": "native_owned_lifecycle_verified",
+        "scope": {"synthetic_runtime_bindings": True, "controlled_native_startup_test": True,
+            "encrypted_overlay_verified": False, "production_provider_open": False, "game_executed": False,
+            "complete_windows_client": False, "deployed": False, "published": False},
+        "cases": [{"case": case, "native_reaped": True, **({"no_state_created": True} if case in ("withheld", "denied")
+            else {"actual_listener_count": 5, "protected_http_and_tcp_verified": True, "wrong_interface_rejected": True,
+                "established_connection_closed": True, "all_five_ports_released": True, "native_exit": 92})}
+            for case in native_producer.CASES],
+        "copied_package_native_verified": True, "source_package_unchanged": True, "private_tree_removed": True,
+        "all_owned_children_reaped": True, "no_default_routes": True, "owned_namespaces_removed": 3}
+
+
+def overlay():
+    def phase(name):
+        return {"phase": name, "profile_sha256": "a" * 64, **({"echo_rounds": [dict.fromkeys(overlay_producer.PORT_FIELDS, "timeout")] * 2,
+            "minimum_observation_seconds": 8, "tun_owned": True, "peer_authenticated": False} if name == "wrong-pin"
+            else {"echo": dict.fromkeys(overlay_producer.PORT_FIELDS, "echo")})}
+    return {"schema": overlay_producer.SCHEMA, "status": "isolated_development_matrix_verified", "precondition_failures": [],
+        "private_stage_removed": True, "runtime_binary_uploaded": False, "raw_runtime_output_retained": False,
+        "game_executed": False, "production_admission": False, "native_owner_lease_verified": False,
+        "transports": [{"transport": transport, "status": "owned_overlay_probe_verified", "cleanup_errors": [],
+            "namespaces_created": 2, "namespaces_removed": 2,
+            "phases": [phase(name) for name in ("correct-pin-before", "wrong-pin", "correct-pin-after")],
+            "core_exit": {"core_reaped": True, "tun_absent": True, "new_traffic_denied": True, "production_native_lease_exercised": False},
+            "blocked_packets": {role: dict.fromkeys(("input", "output", "forward"), 0) for role in ("client", "server")}}
+            for transport in overlay_producer.TRANSPORTS]}
+
+
+def owned_stack():
+    return {"schema": stack_producer.SCHEMA, "status": "owned_stack_development_verified",
+        "scope": dict(stack_producer.SCOPE), "precondition_failures": [],
+        "copied_package_native_verified": True, "source_package_unchanged": True, "private_stage_removed": True,
+        "cases": [{"case": case, "status": "owned_stack_case_verified", "cleanup_errors": [],
+            "namespaces_created": 2, "namespaces_removed": 2, "actual_native_ready": True,
+            "owned_listeners": 5, "established_tcp": True, "runtime_profile_sha256": "a" * 64,
+            "containment_after": [dict.fromkeys(("input", "output", "forward"), 0) for _ in range(2)],
+            **({"native_watchdog_exit": 92, "ports_rebound": 5, "held_tcp_eof_or_reset": True,
+                "overlay_alive_during_close": True} if case == "lease-revoke" else
+               {"exact_peer_reaped": True, "monitor_permanently_revoked": True, "native_reaped": True,
+                "native_listeners_remaining": 0, "remote_tcp_eof_claimed": False})}
+            for case in stack_producer.CASES]}
+
+
+class ProbeResultTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(prefix="ff-probe-result-tests-")
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.receipt = self.root / "receipt.json"
+        self.error_log = self.root / "stderr.txt"
+        self.error_log.write_text("PRIVATE_RAW_ERROR\n")
+
+    def inspect(self, kind, value, exit_code=0):
+        self.receipt.write_text(json.dumps(value))
+        output = io.StringIO()
+        with redirect_stdout(output):
+            result = probe.inspect(kind, exit_code, self.receipt, self.error_log)
+        self.assertNotIn("PRIVATE", output.getvalue())
+        return result, output.getvalue()
+
+    def test_matching_success_receipts_need_successful_process(self):
+        for kind, value in (("native", native()), ("easytier", overlay()), ("owned-stack", owned_stack())):
+            self.assertEqual(self.inspect(kind, value), (0, ""))
+            self.assertEqual(self.inspect(kind, value, exit_code=1)[0], 1)
+
+    def test_owned_stack_requires_both_controls_actual_positive_and_cleanup(self):
+        for index in (0, 1):
+            for key, invalid in (("actual_native_ready", False), ("established_tcp", False),
+                    ("owned_listeners", 4), ("owned_listeners", True), ("namespaces_removed", 1),
+                    ("cleanup_errors", ["STACK_WORKER_CLEANUP_FAILED"]), ("runtime_profile_sha256", "PRIVATE"),
+                    ("containment_after", []), ("containment_after", [{"input": -1, "output": 0, "forward": 0}] * 2)):
+                value = owned_stack(); value["cases"][index][key] = invalid
+                with self.subTest(case=index, key=key):
+                    self.assertEqual(self.inspect("owned-stack", value)[0], 1)
+        for cases in ([], list(reversed(owned_stack()["cases"])), owned_stack()["cases"][:1]):
+            value = owned_stack(); value["cases"] = cases
+            self.assertFalse(probe.verified("owned-stack", value))
+
+    def test_owned_stack_requires_real_eof_with_overlay_alive_and_sticky_peer_loss(self):
+        for index, key, invalid in ((0, "native_watchdog_exit", 0), (0, "ports_rebound", 4),
+                (0, "held_tcp_eof_or_reset", False), (0, "overlay_alive_during_close", False),
+                (1, "exact_peer_reaped", False), (1, "monitor_permanently_revoked", False),
+                (1, "native_reaped", False), (1, "native_listeners_remaining", False),
+                (1, "native_listeners_remaining", 1), (1, "remote_tcp_eof_claimed", True)):
+            value = owned_stack(); value["cases"][index][key] = invalid
+            with self.subTest(case=index, key=key):
+                self.assertFalse(probe.verified("owned-stack", value))
+
+    def test_owned_stack_preserves_privacy_admission_and_distinct_scope(self):
+        for key in ("copied_package_native_verified", "source_package_unchanged", "private_stage_removed"):
+            value = owned_stack(); value[key] = False
+            self.assertFalse(probe.verified("owned-stack", value))
+        for key in ("production_admission", "ordinary_public_enabled", "game_executed",
+                    "complete_client_package", "runtime_binary_uploaded", "raw_runtime_output_retained"):
+            for invalid in (True, 0):
+                value = owned_stack(); value["scope"][key] = invalid
+                self.assertFalse(probe.verified("owned-stack", value))
+        for key, invalid in (("transport", "quic"), ("purpose", "PRIVATE")):
+            value = owned_stack(); value["scope"][key] = invalid
+            self.assertFalse(probe.verified("owned-stack", value))
+        value = owned_stack(); value["precondition_failures"] = ["EXISTING_TUN_REQUIRED"]
+        self.assertFalse(probe.verified("owned-stack", value))
+        self.assertFalse(probe.verified("easytier", owned_stack()))
+
+    def test_owned_stack_failure_diagnostics_only_export_fixed_codes_and_nft_shapes(self):
+        value = {"error": "STACK_CASES_INCOMPLETE", "cases": [{"error": "STACK_STATE_TIMEOUT /PRIVATE_PATH",
+            "fixed_diagnostics": ["NFT_I0_RULE_EXPR_COUNT_6_TO_5", "NFT_PRIVATE_VALUE"]}],
+            "private": "STACK_STATE_INVALID_PRIVATE_SUFFIX"}
+        result, output = self.inspect("owned-stack", value, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("STACK_CASES_INCOMPLETE", output)
+        self.assertIn("STACK_STATE_TIMEOUT", output)
+        self.assertIn("NFT_I0_RULE_EXPR_COUNT_6_TO_5", output)
+        self.assertNotIn("STACK_STATE_INVALID", output)
+
+    def test_worker_failure_diagnostics_require_exact_source_enums_and_cleanup_consistency(self):
+        record = {"event": "failed", "schema": worker_producer.FAILURE_SCHEMA,
+            "phase": "core-start", "code": "CHILD_BOOTSTRAP_FAILED", "cleanup_reaped": False,
+            "cleanup_code": "CHILD_START_CLEANUP_UNCONFIRMED"}
+        value = {"error": "WORKER_REPORTED_FAILURE", "transports": [{"worker_failure": record}]}
+        result, output = self.inspect("easytier", value, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("worker_failures=core-start:CHILD_BOOTSTRAP_FAILED:cleanup_reaped=false:CHILD_START_CLEANUP_UNCONFIRMED", output)
+        for key, invalid in (("phase", "PRIVATE"), ("code", "CHILD_BOOTSTRAP_FAILED_PRIVATE"),
+                ("cleanup_reaped", 0), ("cleanup_reaped", True), ("cleanup_code", "PRIVATE"),
+                ("extra", "PRIVATE"), ("schema", "PRIVATE")):
+            bad = {"transports": [{"worker_failure": {**record, key: invalid}}]}
+            self.assertEqual(probe.worker_diagnostics(bad), [])
+            self.assertNotIn("PRIVATE", self.inspect("easytier", bad, 1)[1])
+        for kind, good in (("easytier", overlay()), ("owned-stack", owned_stack())):
+            good["transports" if kind == "easytier" else "cases"][0]["worker_failure"] = record
+            self.assertEqual(self.inspect(kind, good)[0], 1)
+
+    def test_kernel_query_annotation_requires_validated_worker_frame(self):
+        record = dict(event="failed", schema=worker_producer.FAILURE_SCHEMA,
+            phase="observe", code="OVERLAY_ADDRESS_QUERY_UNAVAILABLE", cleanup_reaped=True,
+            cleanup_code=None, kernel_query=dict(role="responder", query_stage="ipv4_address",
+                errno_class="EADDRNOTAVAIL", previously_observed=True, link_up=True))
+        self.assertTrue(worker_producer.valid_failure_record(record))
+        value = {"transports": [{"worker_failure": record}]}
+        result, output = self.inspect("easytier", value, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("kernel_queries=responder:ipv4_address:EADDRNOTAVAIL:previously_observed=true:link_up=true", output)
+        record = {**record, "phase": "echo", "code": "OVERLAY_NAMESPACE_OBSERVATION_UNAVAILABLE",
+            "kernel_query": dict(role="initiator", query_stage="namespace", errno_class="EPERM",
+                previously_observed=False, link_up=None)}
+        value = {"cases": [{"worker_failure": record}]}
+        self.assertTrue(worker_producer.valid_failure_record(record))
+        self.assertIn("kernel_queries=initiator:namespace:EPERM:previously_observed=false:link_up=NONE",
+            self.inspect("owned-stack", value, 1)[1])
+
+    def test_kernel_query_rejects_raw_values_mismatched_code_and_impossible_pending_failure(self):
+        details = dict(role="responder", query_stage="ipv4_address", errno_class="EADDRNOTAVAIL",
+            previously_observed=True, link_up=True)
+        record = dict(event="failed", schema=worker_producer.FAILURE_SCHEMA,
+            phase="observe", code="OVERLAY_ADDRESS_QUERY_UNAVAILABLE", cleanup_reaped=True,
+            cleanup_code=None, kernel_query=details)
+        bad_records = [{**record, "kernel_query": {**details, key: bad}} for key, bad in (
+            ("role", "PRIVATE"), ("query_stage", "PRIVATE"), ("errno_class", "PRIVATE"),
+            ("errno_class", 99), ("errno_class", "EADDRNOTAVAIL_PRIVATE"), ("extra", "PRIVATE"),
+            ("previously_observed", 1), ("previously_observed", False), ("link_up", 1), ("link_up", None))]
+        bad_records += [{**record, key: bad} for key, bad in (("phase", "core-start"),
+            ("code", "OVERLAY_LINK_QUERY_UNAVAILABLE"), ("extra", "PRIVATE"), ("cleanup_code", "PRIVATE"))]
+        for bad in bad_records:
+            with self.subTest(record=bad):
+                value = {"transports": [{"worker_failure": bad}]}
+                self.assertEqual(probe.kernel_query_diagnostics(value), [])
+                output = self.inspect("easytier", value, 1)[1]
+                self.assertNotIn("kernel_queries=", output)
+                self.assertNotIn("PRIVATE", output)
+
+    def test_kernel_failure_details_never_certify_success_and_legacy_frames_still_work(self):
+        record = dict(event="failed", schema=worker_producer.FAILURE_SCHEMA,
+            phase="observe", code="OVERLAY_ADDRESS_QUERY_UNAVAILABLE", cleanup_reaped=True,
+            cleanup_code=None)
+        self.assertTrue(worker_producer.valid_failure_record(record))
+        self.assertEqual(probe.kernel_query_diagnostics({"transports": [{"worker_failure": record}]}), [])
+        record["kernel_query"] = dict(role="initiator", query_stage="ipv4_address",
+            errno_class="EIO", previously_observed=False, link_up=True)
+        for kind, good in (("easytier", overlay()), ("owned-stack", owned_stack())):
+            good["transports" if kind == "easytier" else "cases"][0]["worker_failure"] = record
+            self.assertEqual(self.inspect(kind, good)[0], 1)
+
+    def test_readiness_timeout_annotation_uses_real_producer_fixed_shape(self):
+        last = dict(schema=worker_producer.READINESS_SCHEMA, core_image_matches=True,
+            tun_owned=True, peer_authenticated=False, query_state="query-failed",
+            query_code="PIPE_READ_TIMEOUT", local_bind_kind=None)
+        record = overlay_producer.ReadinessTimeout("initiator", True, 7, last).record
+        value = {"error": "OVERLAY_READY_TIMEOUT", "transports": [{"readiness_timeout": record}]}
+        result, output = self.inspect("easytier", value, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("readiness_timeouts=initiator:expected_auth=true:observations=7:core=true:"
+            "tun=true:peer=false:query=query-failed:reason=PIPE_READ_TIMEOUT:bind=NONE", output)
+        for kind, good in (("easytier", overlay()), ("owned-stack", owned_stack())):
+            good["transports" if kind == "easytier" else "cases"][0]["readiness_timeout"] = record
+            self.assertFalse(probe.verified(kind, good))
+
+    def test_readiness_timeout_rejects_private_values_unknown_fields_and_contradictions(self):
+        last = dict(schema=worker_producer.READINESS_SCHEMA, core_image_matches=True,
+            tun_owned=False, peer_authenticated=False, query_state="tun-pending",
+            query_code=None, local_bind_kind=None)
+        record = overlay_producer.ReadinessTimeout("responder", False, 1, last).record
+        self.assertEqual(len(probe.readiness_diagnostics({"transports": [{"readiness_timeout": record}]})), 1)
+        changes = [(key, invalid) for key, invalid in (("role", "PRIVATE"), ("extra", "PRIVATE"),
+            ("schema", "PRIVATE"), ("expected_authenticated", 0), ("observation_count", True),
+            ("observation_count", 0), ("observation_count", 2049))]
+        bad_records = [{**record, key: invalid} for key, invalid in changes]
+        bad_records.extend({**record, "last_observation": {**last, key: invalid}}
+            for key, invalid in (("schema", "PRIVATE"), ("core_image_matches", False),
+                ("tun_owned", 0), ("peer_authenticated", True), ("query_state", "PRIVATE"),
+                ("query_code", "PIPE_READ_TIMEOUT_PRIVATE"), ("local_bind_kind", "PRIVATE"),
+                ("extra", "PRIVATE")))
+        for bad in bad_records:
+            value = {"transports": [{"readiness_timeout": bad}]}
+            self.assertEqual(probe.readiness_diagnostics(value), [])
+            self.assertNotIn("readiness_timeouts=", self.inspect("easytier", value, 1)[1])
+
+    def test_native_missing_cases_cleanup_or_scope_cannot_pass(self):
+        for changes in ({"cases": []}, {"cases": list(reversed(native()["cases"]))},
+                        {"private_tree_removed": False}, {"all_owned_children_reaped": False},
+                        {"owned_namespaces_removed": 2}, {"schema": True},
+                        {"scope": {**native()["scope"], "production_provider_open": True}}):
+            value = native(); value.update(changes)
+            self.assertEqual(self.inspect("native", value)[0], 1)
+
+    def test_overlay_requires_complete_matrix_containment_and_no_publication_claim(self):
+        for change in ("missing_transport", "cleanup_failed", "preconditions", "publication", "private_cleanup"):
+            value = overlay()
+            if change == "missing_transport": value["transports"].pop()
+            if change == "cleanup_failed": value["transports"][0]["cleanup_errors"].append("OWNED_NAMESPACE_CLEANUP_FAILED")
+            if change == "preconditions": value["precondition_failures"].append("EXISTING_TUN_REQUIRED")
+            if change == "publication": value["production_admission"] = True
+            if change == "private_cleanup": value["private_stage_removed"] = False
+            with self.subTest(change=change):
+                self.assertEqual(self.inspect("easytier", value)[0], 1)
+
+    def test_real_producer_schema_shapes_do_not_allow_case_or_phase_claims_without_observations(self):
+        value = native()
+        value["cases"][0]["no_state_created"] = False
+        self.assertFalse(probe.verified("native", value))
+        value = native(); value["cases"][2]["native_exit"] = 0
+        self.assertFalse(probe.verified("native", value))
+        value = native(); value["cases"][4]["native_exit"] = -9
+        self.assertTrue(probe.verified("native", value))
+        value = native(); value["scope"]["production_provider_open"] = 0
+        self.assertFalse(probe.verified("native", value))
+        for change in ("schema", "namespace_count", "phase", "positive", "negative", "core_exit", "containment"):
+            value = overlay(); row = value["transports"][0]
+            if change == "schema": value["schema"] = 1
+            if change == "namespace_count": row["namespaces_removed"] = 3
+            if change == "phase": row["phases"].pop()
+            if change == "positive": row["phases"][0]["echo"]["tcp_port"] = "timeout"
+            if change == "negative": row["phases"][1]["echo_rounds"][0]["tcp_port"] = "echo"
+            if change == "core_exit": row["core_exit"]["core_reaped"] = False
+            if change == "containment": row["blocked_packets"].pop("client")
+            with self.subTest(change=change):
+                self.assertFalse(probe.verified("easytier", value))
+
+    def test_failure_annotation_uses_fixed_codes_and_no_raw_paths_values_or_unknown_suffix(self):
+        self.error_log.write_text("NATIVE_READY_TIMEOUT /PRIVATE_PATH key=PRIVATE_VALUE\n"
+            "CHECKOUT_VERIFICATION_FAILED /PRIVATE_GIT_PATH\n"
+            "WORKER_EVENT_INVALID_PRIVATE_SUFFIX PRIVATE_UNKNOWN_CODE\n")
+        result, output = self.inspect("native", {"error": "PRIVATE_RECEIPT_VALUE", "status": "failed"}, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("fixed_codes=CHECKOUT_VERIFICATION_FAILED,NATIVE_READY_TIMEOUT", output)
+        self.assertNotIn("WORKER_EVENT_INVALID", output)
+        self.error_log.write_text("CHECKOUT_VERIFICATION_FAILED_PRIVATE_SUFFIX /PRIVATE_GIT_PATH\n")
+        self.assertNotIn("CHECKOUT_VERIFICATION_FAILED", self.inspect("native", {}, 1)[1])
+
+    def test_startup_failure_diagnostics_never_publish_traceback_paths_or_unknown_modules(self):
+        self.error_log.write_text("Traceback (most recent call last):\n  File /PRIVATE_PATH\n"
+            "ModuleNotFoundError: No module named 'ci_socket_isolation'\n")
+        result, output = self.inspect("containment", {}, 1)
+        self.assertEqual(result, 1)
+        self.assertIn("exception_types=ModuleNotFoundError", output)
+        self.assertIn("missing_modules=ci_socket_isolation", output)
+        for text in ("ModuleNotFoundError: No module named 'PRIVATE_MODULE'\n",
+                     "ModuleNotFoundError: No module named 'ci_socket_isolation' /PRIVATE_PATH\n"):
+            self.error_log.write_text(text)
+            self.assertNotIn("missing_modules=", self.inspect("native", {}, 1)[1])
+
+    def test_native_entry_and_namespace_producer_codes_cannot_become_unclassified(self):
+        # Audit the producer/consumer boundary, not arbitrary strings from a log.
+        # Adding a new producer reason requires an explicit consumer review.
+        sources = (native_producer.ROOT / "scripts/ci_native_lifecycle.py",
+                   native_producer.ROOT / "scripts/ci_socket_isolation.py")
+        codes = set()
+        for source in sources:
+            for node in ast.walk(ast.parse(source.read_text(encoding="utf-8"))):
+                if not isinstance(node, ast.Call):
+                    continue
+                name = node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", "")
+                if name in ("require", "ProbeError", "IsolationError"):
+                    codes.update(arg.value for arg in node.args if isinstance(arg, ast.Constant)
+                        and isinstance(arg.value, str) and arg.value.isupper() and "_" in arg.value)
+        self.assertGreater(len(codes), 80)
+        for code in codes | {"INPUT_CHANGED", "COPY_HASH_MISMATCH", "EXECUTABLE_CAPABILITIES_FORBIDDEN",
+                             "WORKER_EXECUTABLE_HASH_MISMATCH", "WORKER_CHILD_EXEC_FAILED",
+                             "WORKER_INPUT_JSON_INVALID", "WORKER_INPUT_CHANGED"}:
+            with self.subTest(code=code):
+                self.error_log.write_text(code + "\n", encoding="utf-8")
+                output_stream = io.StringIO()
+                # Some public constants themselves contain the word PRIVATE;
+                # assert the whole expected line, not that word's absence.
+                with redirect_stdout(output_stream):
+                    result = probe.inspect("native", 1, self.receipt, self.error_log)
+                self.assertEqual(result, 1)
+                output = output_stream.getvalue()
+                self.assertIn("fixed_codes=" + code + "; no raw probe output published", output)
+                self.assertNotIn("PRIVATE_RAW_ERROR", output)
+                self.error_log.write_text(code + "_PRIVATE_SUFFIX\nPRIVATE_UNKNOWN_CODE\n", encoding="utf-8")
+                result, output = self.inspect("native", {}, 1)
+                self.assertEqual(result, 1)
+                self.assertIn("UNCLASSIFIED_PROBE_FAILURE", output)
+                self.assertNotIn(code + ";", output)
+
+    def test_native_worker_wrapping_and_namespace_command_codes_stay_fixed(self):
+        for code in ("WORKER_WITHHELD_ADMISSION_WROTE_STATE", "WORKER_PUBLIC_OWNER_LEASE_INVALID",
+                     "WORKER_CLIENT_CONNECTION_NOT_OPEN", "WORKER_CLIENT_OPEN_CHECK_TIMEOUT", "WORKER_CONNECTION_NOT_OPEN",
+                     "STACK_HELD_CONNECTION_NOT_OPEN",
+                     "COMMAND_FAILED", "COMMAND_START_FAILED", "COMMAND_TIMEOUT", "COMMAND_OUTPUT_TOO_LARGE"):
+            self.error_log.write_text(code + "\n")
+            self.assertIn("fixed_codes=" + code + ";", self.inspect("native", {}, 1)[1])
+        for value in ("WORKER_PRIVATE_UNKNOWN", "WORKER_WITHHELD_ADMISSION_WROTE_STATE_PRIVATE_SUFFIX",
+                      "WORKER_CLIENT_CONNECTION_NOT_OPEN_PRIVATE_SUFFIX", "STACK_HELD_CONNECTION_NOT_OPEN_PRIVATE_SUFFIX",
+                      "COMMAND_FAILED_PRIVATE_SUFFIX"):
+            self.error_log.write_text(value + "\n")
+            output = self.inspect("native", {}, 1)[1]
+            self.assertIn("fixed_codes=UNCLASSIFIED_PROBE_FAILURE;", output)
+
+    def test_containment_preflight_has_distinct_no_runtime_scope_and_complete_cleanup(self):
+        value = {"schema": overlay_producer.CONTAINMENT_SCHEMA, "status": "containment_preflight_verified",
+            "input_identity": "synthetic_profile_only_no_executable", "precondition_failures": [],
+            "runtime_executed": False, "runtime_binary_uploaded": False, "production_admission": False,
+            "raw_runtime_output_retained": False,
+            "transports": [{"transport": transport, "status": "containment_pair_verified",
+                "namespaces_created": 2, "namespaces_removed": 2, "cleanup_errors": []}
+                for transport in overlay_producer.TRANSPORTS]}
+        self.assertEqual(self.inspect("containment", value), (0, ""))
+        self.assertFalse(probe.verified("easytier", value))
+        for change in ("scope", "missing_transport", "cleanup", "count", "schema", "input"):
+            bad = copy.deepcopy(value)
+            if change == "scope": bad["runtime_executed"] = True
+            if change == "missing_transport": bad["transports"].pop()
+            if change == "cleanup": bad["transports"][0]["cleanup_errors"] = ["OWNED_NAMESPACE_CLEANUP_FAILED"]
+            if change == "count": bad["transports"][0]["namespaces_removed"] = True
+            if change == "schema": bad["schema"] = overlay_producer.SCHEMA
+            if change == "input": bad["input_identity"] = "PRIVATE_INPUT"
+            with self.subTest(change=change):
+                self.assertFalse(probe.verified("containment", bad))
+
+    def test_nft_diagnostics_accept_exact_producer_shapes_but_no_keys_values_or_suffixes(self):
+        changes = [([{"rule": {"expr": [{"match": {"right": "tcp"}}]}}],
+                    [{"rule": {"expr": [{"match": {"right": 6}}]}}]),
+                   ([{"chain": {"prio": 0}}], [{"chain": {"prio": "filter"}}]),
+                   ([{"rule": {"expr": [{"match": {"op": "=="}}]}}],
+                    [{"rule": {"expr": [{"match": {"op": "in"}}]}}])]
+        for expected, actual in changes:
+            codes = overlay_producer.nft_difference_codes(expected, actual)
+            value = {"transports": [{"fixed_diagnostics": codes}], "error": "CONTAINMENT_CHANGED"}
+            self.assertEqual(probe.nft_diagnostics(value), sorted(codes))
+            result, output = self.inspect("containment", value, 1)
+            self.assertEqual(result, 1)
+            self.assertIn("nft_shape=", output)
+        for code in ("NFT_I0_RULE_PRIVATE_KEY_MISSING_KEY", "NFT_I64_RULE_MISSING_KEY",
+                     "NFT_I0_RULE_PRIVATE_VALUE_TO_TCP", "NFT_I0_RULE_TYPE_STRING_TO_PRIVATE_TYPE",
+                     "NFT_I0_RULE_TYPE_STRING_TO_INTEGER_PRIVATE_SUFFIX", "NFT_I0_RULE_COUNT_1_TO_9000",
+                     "NFT_PRIVATE_SECRET", "NFT_I0_RULE_MISSING_KEY /PRIVATE_PATH"):
+            value = {"transports": [{"fixed_diagnostics": [code]}]}
+            self.assertEqual(probe.nft_diagnostics(value), [])
+            self.assertNotIn("PRIVATE", self.inspect("containment", value, 1)[1])
+
+    def test_missing_malformed_and_oversized_receipts_do_not_certify_zero_exit(self):
+        for content in (None, b"PRIVATE_NOT_JSON", b"x" * (256 * 1024 + 1),
+                        b'{"status":"PRIVATE_FIRST","status":"PRIVATE_SECOND"}'):
+            if content is not None:
+                self.receipt.write_bytes(content)
+            output = io.StringIO()
+            with redirect_stdout(output):
+                self.assertEqual(probe.inspect("native", 0, self.receipt, self.error_log), 1)
+            self.assertIn("PROBE_SUCCESS_RECEIPT_INVALID", output.getvalue())
+            self.assertNotIn("PRIVATE", output.getvalue())
+
+
+if __name__ == "__main__":
+    unittest.main()

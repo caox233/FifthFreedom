@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-10-26T20:42:55.143935+00:00",
+  "source_head": "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d",
+  "merge_binding": {
+    "sha": "b7ecde2db89ead4a709221814c2bac3817b8d714",
+    "tree": "cab9ead3b3cb1257f20e92b63a5f2c09c3e82ed3",
+    "parents": [
+      "fc8ef510b51be83c31f9f8233997f758b0477acc",
+      "9139c9ed3fe7dd90db6dfbd79666fe28f8474c3d"
+    ]
+  },
+  "merge_tree_equals_head": true,
+  "source_run": 40397583548,
+  "source_run_conclusion": "success",
+  "source_jobs": {
+    "linux": 121834606605,
+    "windows": 121834606156
+  },
+  "source_results": {
+    "source-linux": {
+      "executed": 651,
+      "passed": 649,
+      "skipped": 2,
+      "failures": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "receipt_sha256": "ab16711c3548a707e22fcdc9e2bf46cc09412c6e0c741b99b074a0ae36131d6c"
+    },
+    "source-windows": {
+      "executed": 651,
+      "passed": 536,
+      "skipped": 115,
+      "failures": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "receipt_sha256": "c0ae5303b418c5dedb2101e72ab847ccdae38ffa1b8f60369d2f77284307598d"
+    }
+  },
+  "boundaries": {
+    "complete_unified_package_delivered": false,
+    "public_enabled": false,
+    "game_executed": false,
+    "live_acceptance_claimed": false,
+    "production_deployed": false,
+    "formal_release_published": false,
+    "tracked_files_modified_by_this_review": false
+  },
+  "official_artifacts": [
+    {
+      "id": 12688120247,
+      "name": "portable-source-evidence-ubuntu-24.04-b7ecde2db89ead4a709221814c2bac3817b8d714",
+      "digest": "sha256:83ffb457ce5b9ab78318e625bb2fe461bf1386ae176dd739c30cf482500ee248",
+      "size_in_bytes": 21116,
+      "run_id": 40397583548,
+      "official_digest_verified": true
+    },
+    {
+      "id": 12686603355,
+      "name": "portable-source-evidence-windows-2022-b7ecde2db89ead4a709221814c2bac3817b8d714",
+      "digest": "sha256:58f82107be43b1fb81085f7f023e2db6571183890fa0fc53aeaf42615755019c",
+      "size_in_bytes": 25294,
+      "run_id": 40397583548,
+      "official_digest_verified": true
+    }
+  ],
+  "scope": "Source/unit checks on exact hosted checkout, not component artifact closure or a complete game package. Later missing uploaded source files are recorded separately in hosted-final-9139c9e.json."
+}

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable><TreatWarningsAsErrors>true</TreatWarningsAsErrors><NuGetAudit>false</NuGetAudit>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Google.Protobuf" Version="3.35.1" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.80.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.81.1" PrivateAssets="all" />
+    <Protobuf Include="../../src/launcher/src/users.proto" GrpcServices="Client" Link="users.proto" />
+    <Compile Include="../../src/launcher/src/Services/PreparedGameConfiguration.cs" Link="PreparedGameConfiguration.cs" />
+    <Compile Include="../../src/launcher/src/Services/GameLaunchPreparation.cs" Link="GameLaunchPreparation.cs" />
+    <Compile Include="../../src/launcher/src/Services/HookConfigService.cs" Link="HookConfigService.cs" />
+    <Compile Include="../../src/launcher/src/Services/AuthService.cs" Link="AuthService.cs" />
+    <Compile Include="../../src/launcher/src/Models/AuthResults.cs" Link="AuthResults.cs" />
+    <Compile Include="../../src/launcher/src/Services/LanConnection.cs" Link="LanConnection.cs" />
+    <Compile Include="../../src/launcher/src/Services/ServerAddress.cs" Link="ServerAddress.cs" />
+    <Compile Include="../../src/launcher/src/Services/PasswordPolicy.cs" Link="PasswordPolicy.cs" />
+    <Compile Include="../../src/launcher/src/Services/ReleasePackage.cs" Link="ReleasePackage.cs" />
+    <Compile Include="../../src/launcher/src/Services/ReleaseDeclaration.cs" Link="ReleaseDeclaration.cs" />
+    <Compile Include="../../src/launcher/src/Services/LaunchPipe.cs" Link="LaunchPipe.cs" />
+    <Compile Include="../../src/launcher/src/Services/LoaderCompatibility.cs" Link="LoaderCompatibility.cs" />
+    <Compile Include="../../src/launcher/src/Services/LocalData.cs" Link="LocalData.cs" />
+    <Compile Include="../../src/launcher/src/Services/GameRuntime.cs" Link="GameRuntime.cs" />
+    <Compile Include="../../src/launcher/src/Services/GameplayRuntime.cs" Link="GameplayRuntime.cs" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "recorded_date_hong_kong": "2026-10-31",
+  "source_commit": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+  "source_tree": "541d6fc70a7ee093a1446bde7b87657618dd6aca",
+  "actual_package_checkout": "abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+  "source_and_merge_tree_equal": true,
+  "candidate_run": 41195418269,
+  "candidate_event": "pull_request",
+  "full_windows_job": 124520539460,
+  "full_windows_job_conclusion": "success",
+  "artifact": {
+    "id": 13040842924,
+    "name": "windows-complete-candidate-abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+    "size_in_bytes": 73028170,
+    "digest": "sha256:4b78563ba22328619c64a789cff4a91e9ce91a6a0c875dbecb5ca7be40656770",
+    "created_at": "2026-10-31T11:21:18Z",
+    "expires_at": "2026-11-14T11:21:15Z",
+    "expired": false
+  },
+  "download_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/artifacts/13040842924",
+  "outer_download_digest_matches": true,
+  "complete_program": {
+    "archive": "fifth-freedom-1.1.0-migration1-program.zip",
+    "archive_bytes": 73302238,
+    "archive_sha256": "36228f99ec05938bb20addcb9891987d318991234251214da6c2b8cfda125d6e"
+  },
+  "build_result_sha_matches": true,
+  "official_smoke_receipt": {
+    "schema": 1,
+    "lane": "windows-package-smoke",
+    "commit": "abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+    "tracked_source_dirty": false,
+    "github_actions": true,
+    "run_id": "41195418269",
+    "run_attempt": "1",
+    "complete_package": true,
+    "game_executed": false,
+    "live_acceptance": false,
+    "deployed": false,
+    "published": false,
+    "launcher_probes": [
+      {
+        "flag": "--self-test",
+        "passed": 197,
+        "failed": 0,
+        "exit_code": 0,
+        "game_executed": false
+      },
+      {
+        "flag": "--lan-tools-self-test",
+        "passed": 27,
+        "failed": 0,
+        "exit_code": 0,
+        "game_executed": false
+      }
+    ],
+    "archive_sha256": "36228f99ec05938bb20addcb9891987d318991234251214da6c2b8cfda125d6e",
+    "status": "package_no_game_checks_passed",
+    "exit_code": 0
+  },
+  "independent_verification": "complete-package-download-e4f8990.json",
+  "delivery_status": "complete_package_built_and_download_verified",
+  "separate_windows_components_job": 124520488334,
+  "separate_windows_components_official_status": "success; all eight actual camera/progression role-lane outputs independently revalidated",
+  "separate_c71": "13 reviewed fixture inputs absent;0executed. Not a Windows package input requirement.",
+  "visual_evidence": "hosted-ui-direct-e4f8990.json",
+  "source_evidence": "hosted-feedback-source-e4f8990.json",
+  "linux_evidence": "hosted-feedback-linux-e4f8990.json",
+  "game_executed": false,
+  "formal_release": false,
+  "native_evidence": "hosted-native-production-e4f8990.json"
+}

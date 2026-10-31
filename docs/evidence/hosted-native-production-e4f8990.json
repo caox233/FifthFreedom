@@ -1,0 +1,525 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-31",
+  "timezone": "Asia/Hong_Kong",
+  "status": "passed_bounded_hosted_windows_production_regressions",
+  "source_head": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+  "pr_merge": "abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+  "exact_head_and_merge_tree": "541d6fc70a7ee093a1446bde7b87657618dd6aca",
+  "baseline_commit": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+  "official": {
+    "run_id": 41195418269,
+    "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269",
+    "job_id": 124520488334,
+    "job_name": "Windows WPF, x86 hooks, gameplay and LAN components",
+    "job_conclusion": "success",
+    "started_at_utc": "2026-10-31T11:05:46Z",
+    "completed_at_utc": "2026-10-31T11:24:25Z",
+    "job_log_sha256": "66329915982ed07e3c6f3ccb060aa518c65c47760b35a18e43396140f7ec374e",
+    "artifact_id": 13041390637,
+    "artifact_name": "windows-component-build-evidence-abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+    "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418269/artifacts/13041390637",
+    "artifact_bytes": 261765,
+    "artifact_sha256": "cd23c146fc2f77c9b3942dcf0bc75d557944fc3d97a613042627a19d4aa1de8c",
+    "download_sha256_matches_official_digest": true,
+    "zip_crc_verified": true,
+    "native_receipt_sha256": "45c7302e3975a9b9d6836aaee24c261ca242f0e13e242d16d1a944749d6a908a",
+    "component_receipt_sha256": "9ac9d8af75dbf7c6ea638b04ddf51a00ec09f4718bd7cb2d67655ca0d76f94e6",
+    "source_receipt_sha256": "923ff51375c6b35d1ce77674e0946ed8466cdb6da8e3c322bcf1de2137fc5271"
+  },
+  "validation": {
+    "original_source_and_fixed_fixture_hashes_checked_against_published_git": true,
+    "baseline_module_and_compiled_instrumentation_hashes_independently_checked": true,
+    "instrumentation_reversed_byte_for_byte_to_published_git": true,
+    "all_role_compile_and_test_stdout_stderr_hashes_verified_from_download": true,
+    "all_eight_role_lane_results_revalidated_with_exact_published_strict_parser": true,
+    "strict_expected_counts_unchanged": true,
+    "downloaded_executables_run_by_cloud_reviewer": false,
+    "test_executable_hash_scope": "Hashes and i386 PE selection recorded by official Windows runner; test executables are not in this artifact and were not independently downloaded or rerun. Different role binary hashes do not imply bit-reproducible rebuilds.",
+    "runner_sha256": "4428ac3002efa7cb6d2b0e936b5df29a2eb154a005efbb58a50ee369128cf611"
+  },
+  "production_source_hashes": {
+    "src/native/client/hooks/gameplay/src/sticky_camera_sound.rs": {
+      "baseline": {
+        "canonical_production_sha256": "2bba36b46a800596c03859c3edb8664cf75790557074b92fca02c07e37a7e2c1",
+        "module_appended_sha256": "9fabbeea1d03aa8c1cc5322651c46773e2f14d898dcecad493a42220fe2d75ae",
+        "compiled_test_source_sha256": "a7aada41fd02e5f7768bae1c902dc3eb46140541d6edcdd8adae677576c9a208"
+      },
+      "modified": {
+        "canonical_production_sha256": "a1de43396b6fa37e5f799302384541473f50bdf9523711ff672ba2126a556eaf",
+        "module_appended_sha256": "a1de43396b6fa37e5f799302384541473f50bdf9523711ff672ba2126a556eaf",
+        "compiled_test_source_sha256": "ed0b358a66c17ef0af1d866b9793b460a246e5379ef06131c4e69c1601ae08b7"
+      },
+      "independent_reverse_to_git_byte_exact": true,
+      "baseline_module_append": "\n#[cfg(test)]\n#[path=\"sticky_camera_lifecycle_tests.rs\"]\nmod lifecycle_replay;\n"
+    },
+    "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs": {
+      "baseline": {
+        "canonical_production_sha256": "202748ac41da0803190f166201137116e15b5fe82e976c312d0bb4d580f18e69",
+        "module_appended_sha256": "b2a63dc010192f3b4db7d888311b2af45627d0e1118351f8d71c649ffa9210f8",
+        "compiled_test_source_sha256": "9c705d64d43e1aebf9d8f363538e03e12b1b162e47ed82d82e1683d203b62914"
+      },
+      "modified": {
+        "canonical_production_sha256": "80e2841654924909e017bc97d3b11d1606d39cc11bfcfb3ca63cbf5653e338ba",
+        "module_appended_sha256": "80e2841654924909e017bc97d3b11d1606d39cc11bfcfb3ca63cbf5653e338ba",
+        "compiled_test_source_sha256": "c9576d264bd3f5479cbc13cee0e17ee56002c9b6d324a875199eaa2722f0a614"
+      },
+      "independent_reverse_to_git_byte_exact": true,
+      "baseline_module_append": "\n#[cfg(test)]\n#[path=\"sticky_camera_lifecycle_runtime_fixture.rs\"]\npub(crate) mod lifecycle_fixture;\n"
+    },
+    "src/native/client/hooks/gameplay/src/progression.rs": {
+      "baseline": {
+        "canonical_production_sha256": "e34c8f1be77477f3066bf9abe7cb8bb61202c8d8276a3325da8e387fa191db33",
+        "module_appended_sha256": "ca0c78dc0452c5b7126c0fa36e073093cb777bbaf706498316078bd71808718d",
+        "compiled_test_source_sha256": "ca0c78dc0452c5b7126c0fa36e073093cb777bbaf706498316078bd71808718d"
+      },
+      "modified": {
+        "canonical_production_sha256": "d6d421a13f92fc488b1d40965b0f71a698444e7a70bfbbee4584dc126e4a025b",
+        "module_appended_sha256": "d6d421a13f92fc488b1d40965b0f71a698444e7a70bfbbee4584dc126e4a025b",
+        "compiled_test_source_sha256": "d6d421a13f92fc488b1d40965b0f71a698444e7a70bfbbee4584dc126e4a025b"
+      },
+      "independent_reverse_to_git_byte_exact": true,
+      "baseline_module_append": "\n#[cfg(test)]\n#[path = \"progression_region_tests.rs\"]\nmod region_tests;\n"
+    }
+  },
+  "fixed_fixture_sha256": {
+    "src/native/client/hooks/gameplay/src/sticky_camera_lifecycle_tests.rs": "a07052224c4021e9379f69978e57f9c5176d69d0d9dc1248c9222def5f6e39f8",
+    "src/native/client/hooks/gameplay/src/sticky_camera_lifecycle_runtime_fixture.rs": "be008e1000612f54b54b849037e0926228e56f0761666e62ca15995ed248b13d",
+    "src/native/client/hooks/gameplay/src/progression_region_tests.rs": "9e1060a7c28bdbee2aeccbeb26883da7a35b51cda75b76d5338986317e65755c"
+  },
+  "shared_instrumentation": {
+    "applied_identically_to_baseline_modified_rollback_reapplied": true,
+    "read_translation_tuples": [
+      [
+        "0x339e5a0",
+        "0"
+      ],
+      [
+        "0x02ab095c",
+        "0x7b0"
+      ],
+      [
+        "0x02ab095c",
+        "0x7b4"
+      ]
+    ],
+    "native_leaf_literals": {
+      "src/native/client/hooks/gameplay/src/sticky_camera_sound.rs": [
+        "0x544000usize",
+        "0x6843d0usize"
+      ],
+      "src/native/client/hooks/gameplay/src/sticky_camera_runtime.rs": [
+        "0x00ad3ea0usize",
+        "0x00aa5280usize"
+      ]
+    },
+    "scope": "Private cfg(test) source copies map exact global/vtable slots and four native leaf call addresses to owned synthetic storage/callbacks. Other memory checks and production branches remain unchanged; release sources were not instrumented.",
+    "raw_module_compiled_hashes_separate": true
+  },
+  "roles": [
+    {
+      "role": "baseline",
+      "source_variant": "baseline",
+      "compile": {
+        "exit_code": 0,
+        "stdout_sha256": "d0bfe3992fd76e80c3835edb0f63d1c8d0a6177293906ae654937b198a916960",
+        "stderr_sha256": "f45922765af8e75ae72c49526fc8d8f9e50fd9cdbc7630852d947b4eff6148a2"
+      },
+      "test_executable_as_recorded_by_official_runner": {
+        "file": "scbl_gameplay-94b358bffea7d1c9.exe",
+        "sha256": "365c40c4c24b10f1cf6611db4504c98169fedc8f2e92b54ea946b6305e31f453",
+        "machine": "i386",
+        "bytes": 15465472
+      },
+      "lanes": {
+        "sticky-camera": {
+          "exit_code": 101,
+          "elapsed_seconds": 0.032,
+          "stdout_sha256": "ea3bb613d805b185a71820016529e27b0d2be017541d48afeafd47c734a4c88d",
+          "stderr_sha256": "23e5783bad37872cb90f0d13633eac5617cc195ef32cea9c1e656065ab3cc681",
+          "checks": {
+            "passed": 9,
+            "failed": 1,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 1241,
+            "callback_checks": 87,
+            "callback_failures": 35,
+            "callback_failure_names": [
+              "cancel_asset_reuse_blocks_new_start",
+              "cancel_destroy_blocks_new_start",
+              "cancel_destruction_no_native_whistle_fallback",
+              "cancel_replacement_blocks_new_start",
+              "cancel_shutdown_blocks_new_start",
+              "cancel_world_switch_blocks_new_start",
+              "detonate_result_after_native_lifecycle_callback",
+              "end_failure_does_not_stop_destroyed_or_replaced_actor",
+              "lifecycle_destruction_blocks_native_trigger",
+              "nested_accepted_start_consumes_outer_fallback",
+              "nested_pair_still_has_paired_end",
+              "old_failed_end_does_not_stop_nested_pair",
+              "outer_failure_keeps_nested_pair",
+              "runtime_end_nested_start_never_mixes_or_republishes",
+              "runtime_nested_start_never_mixes_original_whistle",
+              "runtime_nested_start_remains_owned"
+            ]
+          },
+          "strict_result_revalidated_from_downloaded_raw_logs": true,
+          "actual_rust_summaries": [
+            "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1250 filtered out; finished in 0.01s",
+            "test result: FAILED. 9 passed; 1 failed; 0 ignored; 0 measured; 1241 filtered out; finished in 0.01s"
+          ],
+          "actual_callback_failure_multiset": {
+            "cancel_asset_reuse_blocks_new_start": 3,
+            "cancel_destroy_blocks_new_start": 3,
+            "cancel_destruction_no_native_whistle_fallback": 2,
+            "cancel_replacement_blocks_new_start": 3,
+            "cancel_shutdown_blocks_new_start": 3,
+            "cancel_world_switch_blocks_new_start": 3,
+            "detonate_result_after_native_lifecycle_callback": 4,
+            "end_failure_does_not_stop_destroyed_or_replaced_actor": 3,
+            "lifecycle_destruction_blocks_native_trigger": 4,
+            "nested_accepted_start_consumes_outer_fallback": 1,
+            "nested_pair_still_has_paired_end": 1,
+            "old_failed_end_does_not_stop_nested_pair": 1,
+            "outer_failure_keeps_nested_pair": 1,
+            "runtime_end_nested_start_never_mixes_or_republishes": 1,
+            "runtime_nested_start_never_mixes_original_whistle": 1,
+            "runtime_nested_start_remains_owned": 1
+          }
+        },
+        "progression": {
+          "exit_code": 101,
+          "elapsed_seconds": 0.0,
+          "stdout_sha256": "5345818dcfca418757358f6c4117dd699efdb598a9c4c4881b5e4191400bb4ce",
+          "stderr_sha256": "c9b77f3d3c8a8d5a7573c20471a7585c6c0535a8a943cc75006eafec0ba5dce4",
+          "checks": {
+            "passed": 0,
+            "failed": 2,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 1249
+          },
+          "strict_result_revalidated_from_downloaded_raw_logs": true,
+          "actual_rust_summaries": [
+            "test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 1249 filtered out; finished in 0.00s"
+          ],
+          "complete_eight_negative_variants_executed": false,
+          "baseline_expected_negative_failure_variant": 5
+        }
+      }
+    },
+    {
+      "role": "modified",
+      "source_variant": "modified",
+      "compile": {
+        "exit_code": 0,
+        "stdout_sha256": "9412c159ebef1be0297eed13255d9db9bb92ea25dcfaab99bc4b6a575c8df8e6",
+        "stderr_sha256": "531d4b97429a2a126470959bb0aafe27df0dad9a584a16132f534577a0fe094a"
+      },
+      "test_executable_as_recorded_by_official_runner": {
+        "file": "scbl_gameplay-94b358bffea7d1c9.exe",
+        "sha256": "ad07c3cd73db37e6d79f924fa6a2293023ac2911e81b34cb968164e143a380bb",
+        "machine": "i386",
+        "bytes": 15471104
+      },
+      "lanes": {
+        "sticky-camera": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.031,
+          "stdout_sha256": "73429adc99e0b3d7dee05d6bda80a08a86d60ffc602cbd944c7b8fc170d7135b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "checks": {
+            "passed": 10,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 1241,
+            "callback_checks": 87,
+            "callback_failures": 0,
+            "callback_failure_names": []
+          },
+          "strict_result_revalidated_from_downloaded_raw_logs": true,
+          "actual_rust_summaries": [
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1250 filtered out; finished in 0.01s",
+            "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1241 filtered out; finished in 0.02s"
+          ],
+          "actual_callback_failure_multiset": {}
+        },
+        "progression": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.016,
+          "stdout_sha256": "056599472883ca005203508cfe690a4aa1d024cd3de033591e42185ce0af8667",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "checks": {
+            "passed": 2,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 1249
+          },
+          "strict_result_revalidated_from_downloaded_raw_logs": true,
+          "actual_rust_summaries": [
+            "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1249 filtered out; finished in 0.00s"
+          ],
+          "complete_eight_negative_variants_executed": true,
+          "baseline_expected_negative_failure_variant": null
+        }
+      }
+    },
+    {
+      "role": "rollback",
+      "source_variant": "baseline",
+      "compile": {
+        "exit_code": 0,
+        "stdout_sha256": "f98bcdfab14f719784b7c36062d5a507d6440f1b69399955ef809e215bc23458",
+        "stderr_sha256": "551a64dacc468185ba29f70113af3e29a8623cd9d30f62d49b8b2d9a67ea7936"
+      },
+      "test_executable_as_recorded_by_official_runner": {
+        "file": "scbl_gameplay-94b358bffea7d1c9.exe",
+        "sha256": "df30d4d4fdffd3b6c10b6fa279a066a7c02a12f3a1765543e366cac12908f126",
+        "machine": "i386",
+        "bytes": 15465472
+      },
+      "lanes": {
+        "sticky-camera": {
+          "exit_code": 101,
+          "elapsed_seconds": 0.015,
+          "stdout_sha256": "ecf221d954342042e7b612e4c6b4aa02bedd41371a44a85dcee5c23e5a7f3807",
+          "stderr_sha256": "f2cb0d21dce3ab5af43a4a8796b1b391691ff625f7f17a43d98e4425ce6074f8",
+          "checks": {
+            "passed": 9,
+            "failed": 1,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 1241,
+            "callback_checks": 87,
+            "callback_failures": 35,
+            "callback_failure_names": [
+              "cancel_asset_reuse_blocks_new_start",
+              "cancel_destroy_blocks_new_start",
+              "cancel_destruction_no_native_whistle_fallback",
+              "cancel_replacement_blocks_new_start",
+              "cancel_shutdown_blocks_new_start",
+              "cancel_world_switch_blocks_new_start",
+              "detonate_result_after_native_lifecycle_callback",
+              "end_failure_does_not_stop_destroyed_or_replaced_actor",
+              "lifecycle_destruction_blocks_native_trigger",
+              "nested_accepted_start_consumes_outer_fallback",
+              "nested_pair_still_has_paired_end",
+              "old_failed_end_does_not_stop_nested_pair",
+              "outer_failure_keeps_nested_pair",
+              "runtime_end_nested_start_never_mixes_or_republishes",
+              "runtime_nested_start_never_mixes_original_whistle",
+              "runtime_nested_start_remains_owned"
+            ]
+          },
+          "strict_result_revalidated_from_downloaded_raw_logs": true,
+          "actual_rust_summaries": [
+            "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1250 filtered out; finished in 0.01s",
+            "test result: FAILED. 9 passed; 1 failed; 0 ignored; 0 measured; 1241 filtered out; finished in 0.02s"
+          ],
+          "actual_callback_failure_multiset": {
+            "cancel_asset_reuse_blocks_new_start": 3,
+            "cancel_destroy_blocks_new_start": 3,
+            "cancel_destruction_no_native_whistle_fallback": 2,
+            "cancel_replacement_blocks_new_start": 3,
+            "cancel_shutdown_blocks_new_start": 3,
+            "cancel_world_switch_blocks_new_start": 3,
+            "detonate_result_after_native_lifecycle_callback": 4,
+            "end_failure_does_not_stop_destroyed_or_replaced_actor": 3,
+            "lifecycle_destruction_blocks_native_trigger": 4,
+            "nested_accepted_start_consumes_outer_fallback": 1,
+            "nested_pair_still_has_paired_end": 1,
+            "old_failed_end_does_not_stop_nested_pair": 1,
+            "outer_failure_keeps_nested_pair": 1,
+            "runtime_end_nested_start_never_mixes_or_republishes": 1,
+            "runtime_nested_start_never_mixes_original_whistle": 1,
+            "runtime_nested_start_remains_owned": 1
+          }
+        },
+        "progression": {
+          "exit_code": 101,
+          "elapsed_seconds": 0.0,
+          "stdout_sha256": "5345818dcfca418757358f6c4117dd699efdb598a9c4c4881b5e4191400bb4ce",
+          "stderr_sha256": "2f5688f8c24859a6f625d357816f9a5810a23c3849f58876e59293d80367e2d1",
+          "checks": {
+            "passed": 0,
+            "failed": 2,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 1249
+          },
+          "strict_result_revalidated_from_downloaded_raw_logs": true,
+          "actual_rust_summaries": [
+            "test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 1249 filtered out; finished in 0.00s"
+          ],
+          "complete_eight_negative_variants_executed": false,
+          "baseline_expected_negative_failure_variant": 5
+        }
+      }
+    },
+    {
+      "role": "reapplied",
+      "source_variant": "modified",
+      "compile": {
+        "exit_code": 0,
+        "stdout_sha256": "55d849c118ad7c054a6af105a0ac7f5832cb134cbe32df021915cd12ca2030a6",
+        "stderr_sha256": "3705d1206683301b51eea9cf20dbd9d9ec8a688b8f6f41eea133d5e7ddadc19c"
+      },
+      "test_executable_as_recorded_by_official_runner": {
+        "file": "scbl_gameplay-94b358bffea7d1c9.exe",
+        "sha256": "f4814e137a0be285e310e60d1227c2dd86fb4eff6e54b5c832f7aab305705db3",
+        "machine": "i386",
+        "bytes": 15471104
+      },
+      "lanes": {
+        "sticky-camera": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.031,
+          "stdout_sha256": "73429adc99e0b3d7dee05d6bda80a08a86d60ffc602cbd944c7b8fc170d7135b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "checks": {
+            "passed": 10,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 1241,
+            "callback_checks": 87,
+            "callback_failures": 0,
+            "callback_failure_names": []
+          },
+          "strict_result_revalidated_from_downloaded_raw_logs": true,
+          "actual_rust_summaries": [
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1250 filtered out; finished in 0.01s",
+            "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1241 filtered out; finished in 0.02s"
+          ],
+          "actual_callback_failure_multiset": {}
+        },
+        "progression": {
+          "exit_code": 0,
+          "elapsed_seconds": 0.016,
+          "stdout_sha256": "056599472883ca005203508cfe690a4aa1d024cd3de033591e42185ce0af8667",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "checks": {
+            "passed": 2,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 1249
+          },
+          "strict_result_revalidated_from_downloaded_raw_logs": true,
+          "actual_rust_summaries": [
+            "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1249 filtered out; finished in 0.00s"
+          ],
+          "complete_eight_negative_variants_executed": true,
+          "baseline_expected_negative_failure_variant": null
+        }
+      }
+    }
+  ],
+  "same_job_other_results": {
+    "source_gate": {
+      "executed": 716,
+      "passed": 597,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 119
+    },
+    "custom_address_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "actual DX11-only custom file loader, legacy dual-key and malformed-input refusal; no DX9 UI or game activation"
+    },
+    "release_admission_checks": {
+      "filter": "release_admission_tests",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    "protocol_feedback_checks": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "synthetic production Login/admission and same-sequence PRUDP response-cache/database behavior; not the cause of distinct live requests"
+    },
+    "port_zero_metadata_checks": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "actual sockaddr metadata reader preserves caller port zero; upstream caller and live 10049 origin remain unknown"
+    },
+    "native_public_return_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "scope": "owned synthetic Windows processes and production named-pipe contracts"
+    },
+    "native_public_source_transport_checks": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "game_executed": false,
+      "production_admission": false,
+      "scope": "owned Windows loopback sockets, interface/source binding and revocation of retained API transports"
+    },
+    "launcher_self_test": [
+      {
+        "flag": "--self-test",
+        "passed": 197,
+        "failed": 0,
+        "exit_code": 0,
+        "game_executed": false
+      }
+    ],
+    "c71": {
+      "required_feature": "native-replay-fixtures",
+      "held_checks": 13,
+      "executed_checks": 0,
+      "status": "held_missing_external_input",
+      "full_native_replay_verified": false,
+      "source_sha256": "a0942f34386a90b7dfbfa95d634e98b0211e4248fc4c18d87ca98dce8552e679",
+      "scope": "targeted IPC and socket tests do not certify all hooks/native instruction replays"
+    }
+  },
+  "preserved_prior_failures": [
+    {
+      "source_head": "72e92af58c09bb04e00a6a7466b9f45890c098b3",
+      "run_id": 41191825957,
+      "native_callback_checks_executed": 0,
+      "receipt": "docs/evidence/hosted-feedback-runner-path-72e92af.json"
+    },
+    {
+      "source_head": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+      "run_id": 41193432848,
+      "native_callback_checks_executed": 0,
+      "receipt": "docs/evidence/hosted-native-fixture-failure-d40bfc3.json"
+    }
+  ],
+  "scope": {
+    "game_launched": false,
+    "capture_started": false,
+    "private_player_evidence_received_or_published": false,
+    "retail_native_instruction_replay": false,
+    "live_multiplayer_crash_cause_confirmed": false,
+    "live_multiplayer_crash_fixed_claimed": false,
+    "rank_or_saves_changed": false,
+    "c71_inputs_replaced": false,
+    "public_network_enabled_by_this_evidence": false,
+    "complete_package_certified_by_this_component_receipt": false,
+    "camera": "Real production sound/Whistle/Detonate Rust paths with owned fixtures and synthetic external leaves; 87 checks per role and exact expected 35 baseline/rollback failures. Healthy paths and existing retained nine tests remain passed.",
+    "progression": "Actual Windows VirtualAlloc/VirtualProtect/VirtualQuery over owned test memory, synthetic allocator callback and production table admission; 999 rows, levels 55/56/57/999 and eight negative variants in modified/reapplied. Does not establish matchmaking causality or change actual rank/saves.",
+    "remaining": [
+      "Original first-throw and replicated-camera multi-machine crash causality and live acceptance",
+      "Separate Access=1 RVA=0x20c25b4 report",
+      "Tick/Cleanup native return and destruction contracts, cross-thread invalidation, same-address/same-index ABA",
+      "Actual native throw/replication/audio/trigger instructions and remote ATS/network effects",
+      "Real high-level solo/mixed-party empty-lobby matchmaking; C71 remains 13 held inputs"
+    ]
+  }
+}

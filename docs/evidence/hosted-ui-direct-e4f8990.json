@@ -1,0 +1,242 @@
+{
+  "schema": 1,
+  "run_id": 41195418280,
+  "artifact_id": 13040696011,
+  "artifact_name": "actual-wpf-layout-abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+  "outer_bytes": 374665753,
+  "outer_sha256": "5bdca311608c8450d8ba17098237b0cb8b994dc1c4ff5857d4df08ce22538ddc",
+  "outer_matches_official_digest": true,
+  "outer_crc_passed": true,
+  "source_commit": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+  "checkout_merge_commit": "abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+  "source_and_merge_tree": "541d6fc70a7ee093a1446bde7b87657618dd6aca",
+  "baseline": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+  "comparison": {
+    "schema": 1,
+    "fixture_id": "fifth-freedom-visual-fixture-v1",
+    "source_commit": "abdc1c2bb5e913e8e2bfbe6ceb6f4787cee18d9d",
+    "baseline_commit": "d207fc611be3a89351f8517fcbc37aeb18610dd4",
+    "root_dpi_not_os_display_dpi": true,
+    "game_started": false,
+    "network_started": false,
+    "error": null,
+    "baseline_direct_control_failure_reproduced": true,
+    "baseline_layout_failure_reproduced": false,
+    "modified_and_reapplied_passed": true,
+    "rollback_executable_hashes_match": true
+  },
+  "comparison_sha256": "ec5564c6813b264eba2f3de3ba6dce2b25d1d6281e81334fb0c8ba545187bd40",
+  "png_count": 672,
+  "all_png_hashes_and_dimensions_verified": true,
+  "game_started": false,
+  "network_started": false,
+  "physical_display_IME_or_game_acceptance": false,
+  "phases": [
+    {
+      "phase": "baseline",
+      "frames": 128,
+      "pngs": 176,
+      "checks": {
+        "dpi": 128,
+        "geometry-control": 256,
+        "resource-scope": 480,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 736,
+        "geometry": 848,
+        "overlap": 544,
+        "hit-area": 432,
+        "visual-hit-test": 400,
+        "text-clipping": 5024,
+        "input-hit-test": 384,
+        "scroll-restoration": 48,
+        "keyboard": 784,
+        "scroll-accessibility": 64
+      },
+      "check_count": 10512,
+      "failures": 96,
+      "frame_errors": 0,
+      "report_passed": false,
+      "exit_code": 1,
+      "report_sha256": "40786af50ace9ca909e5e9d37a0b1a369b2eee5c0d285abf59c836d311a233fe",
+      "executable_sha256": "84a8331b55885eadb3677902e9bc5081999e910fb042801e2e65637875e64626"
+    },
+    {
+      "phase": "modified",
+      "frames": 128,
+      "pngs": 160,
+      "checks": {
+        "dpi": 128,
+        "geometry-control": 256,
+        "resource-scope": 464,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 784,
+        "geometry": 1152,
+        "overlap": 1712,
+        "hit-area": 656,
+        "visual-hit-test": 624,
+        "text-clipping": 5088,
+        "input-hit-test": 608,
+        "scroll-restoration": 32,
+        "keyboard": 1024,
+        "scroll-accessibility": 32
+      },
+      "check_count": 12944,
+      "failures": 0,
+      "frame_errors": 0,
+      "report_passed": true,
+      "exit_code": 0,
+      "report_sha256": "09e05c24463e525a033bfaee5c64154854e461178e0dc93fc0927c9cf460af41",
+      "executable_sha256": "08969bce46fa54fe853a73d7367be47799df724a0574cdc56fc0b1d49c0f8679"
+    },
+    {
+      "phase": "rollback",
+      "frames": 128,
+      "pngs": 176,
+      "checks": {
+        "dpi": 128,
+        "geometry-control": 256,
+        "resource-scope": 480,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 736,
+        "geometry": 848,
+        "overlap": 544,
+        "hit-area": 432,
+        "visual-hit-test": 400,
+        "text-clipping": 5024,
+        "input-hit-test": 384,
+        "scroll-restoration": 48,
+        "keyboard": 784,
+        "scroll-accessibility": 64
+      },
+      "check_count": 10512,
+      "failures": 96,
+      "frame_errors": 0,
+      "report_passed": false,
+      "exit_code": 1,
+      "report_sha256": "82ed3d252a0c3ccc9ca7670b20193df9d55bf9c19f088538dae6f5afc1404dc6",
+      "executable_sha256": "84a8331b55885eadb3677902e9bc5081999e910fb042801e2e65637875e64626"
+    },
+    {
+      "phase": "reapplied",
+      "frames": 128,
+      "pngs": 160,
+      "checks": {
+        "dpi": 128,
+        "geometry-control": 256,
+        "resource-scope": 464,
+        "privacy": 128,
+        "mode-presentation": 256,
+        "state": 784,
+        "geometry": 1152,
+        "overlap": 1712,
+        "hit-area": 656,
+        "visual-hit-test": 624,
+        "text-clipping": 5088,
+        "input-hit-test": 608,
+        "scroll-restoration": 32,
+        "keyboard": 1024,
+        "scroll-accessibility": 32
+      },
+      "check_count": 12944,
+      "failures": 0,
+      "frame_errors": 0,
+      "report_passed": true,
+      "exit_code": 0,
+      "report_sha256": "13838a9e6302824c9844b0d871c93add70c54d65e75766379f6279e9d89c050b",
+      "executable_sha256": "08969bce46fa54fe853a73d7367be47799df724a0574cdc56fc0b1d49c0f8679"
+    }
+  ],
+  "date_hong_kong": "2026-10-31",
+  "job_id": 124520488169,
+  "conclusion": "success",
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418280",
+  "artifact_url": "https://github.com/caox233/FifthFreedom/actions/runs/41195418280/artifacts/13040696011",
+  "artifact_expires_at": "2026-11-30T11:10:37Z",
+  "previous_equivalence": {
+    "schema": 1,
+    "run_id": 41195418280,
+    "source_commit": "e4f899072c53e2ea1079b8dd1e54616026357b21",
+    "previous_run_id": 41193432884,
+    "previous_source_commit": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+    "all_original_pngs_verified_again": true,
+    "png_pairs_compared": 672,
+    "exact_same_png_pairs": 672,
+    "different_pngs": [],
+    "per_phase_reports": [
+      {
+        "phase": "baseline",
+        "frame_count": 128,
+        "frame_report_differences": []
+      },
+      {
+        "phase": "modified",
+        "frame_count": 128,
+        "frame_report_differences": []
+      },
+      {
+        "phase": "rollback",
+        "frame_count": 128,
+        "frame_report_differences": []
+      },
+      {
+        "phase": "reapplied",
+        "frame_count": 128,
+        "frame_report_differences": []
+      }
+    ],
+    "new_manual_image_review_required_due_to_changes": false,
+    "previous_manual_review_receipt": "docs/evidence/hosted-ui-direct-d40bfc3.json",
+    "no_images_modified": true
+  },
+  "source_equivalence": {
+    "launcher_directory_unchanged_from": "d40bfc36601f25f4d662f9f75af0c7b13aaad688",
+    "visual_runner_unchanged": true,
+    "checked_by": "git diff --name-only d40bfc36601f25f4d662f9f75af0c7b13aaad688 e4f899072c53e2ea1079b8dd1e54616026357b21 -- src/launcher scripts/ci_visual_probe.py",
+    "output_empty": true
+  },
+  "verification_receipt_sha256": "bc703f5a14a84e1f4dcd4f7017e95b59c4115b7a74e03fe0a563c057dd0869fd",
+  "equivalence_receipt_sha256": "2e8d5a481c05674a77510eced72ce7f485da7326600b6cffcde948db37ebf0b8",
+  "manual_review_scope": "New actual hosted execution and independently downloaded official artifact verified. All 672 PNG files are byte-identical to the d40 artifact whose 19 representative original images were already inspected; that manual review applies to the same image bytes. The new run was not replaced by an old CI result, and no new manual inspection of unchanged images is claimed.",
+  "matrix": {
+    "states": [
+      "main",
+      "settings",
+      "settings-public",
+      "settings-gameplay",
+      "discovery",
+      "join",
+      "create",
+      "cancel"
+    ],
+    "languages": [
+      "zh-CN",
+      "en-US"
+    ],
+    "root_dpi": [
+      96,
+      120,
+      144,
+      192
+    ],
+    "window_DIP": [
+      [
+        1120,
+        680
+      ],
+      [
+        900,
+        580
+      ]
+    ],
+    "scenarios_per_phase": 128
+  },
+  "limitations": [
+    "Root-DPI rendering and actual hosted HWND keyboard/focus checks do not establish physical-monitor/IME or game/GPU/network acceptance.",
+    "No player game, capture or network was started; only synthetic preview fixtures were used.",
+    "The visual artifact is not the unified development package; package integrity and component evidence are separate.",
+    "Public launch prerequisites, C71, multiplayer matching/chat, camera crash and performance boundaries remain open as recorded in their own tasks."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "kind": "fifth-freedom-owned-easytier-profile-source-contract",
+  "upstream_commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+  "cargo_lock_sha256": "8251ad8841694cccdeece7e086b7750d66ec93500c7b9c9879e43791fd53dca9",
+  "selected_target": "x86_64-unknown-linux-gnu",
+  "selected_default_backend": "ring AES-256-GCM through wireguard feature",
+  "source_files": [
+    {
+      "path": "src/public/fifth_freedom_control/easytier_profile.py",
+      "sha256": "9ce9696c3a52d19a30290c8fef588de02cf5de8b5471d141043b11d64634a2bd",
+      "bytes": 17282
+    },
+    {
+      "path": "tests/server/test_easytier_profile.py",
+      "sha256": "d533f17f6272e77dc147e4ae60f61cc9c52d8b0cf4d8e6df3acce7d4615173a1",
+      "bytes": 12035
+    },
+    {
+      "path": "scripts/easytier-probe-profile.schema.json",
+      "sha256": "6f42621eac3472c48e7ba52d12964aebdad8e03f374bef5614811b1e41086acb",
+      "bytes": 3562
+    },
+    {
+      "path": "scripts/requirements-profile.txt",
+      "sha256": "5fa1af1acd66194383c95ce51e74ee9d5ad9cf6addbff78a4ddfb069af917243",
+      "bytes": 106
+    },
+    {
+      "path": "docs/dependency-patches/easytier-2.6.4-profile/profile-parser-check.rs",
+      "sha256": "c8739c2c76deb4d586062f5c085aec82f2d325062df62ad05dd8067b31ee70a5",
+      "bytes": 3659
+    }
+  ],
+  "upstream_parser_original_sha256": "ca0ac8596a79e0dc8f5586deefb66d772779b515cbd26ef2861fd3d077b9e50f",
+  "upstream_parser_worktree_sha256": "ca0ac8596a79e0dc8f5586deefb66d772779b515cbd26ef2861fd3d077b9e50f",
+  "checks": [
+    {
+      "command": "python3 -m unittest discover -s tests/server -p test_easytier_profile.py -v",
+      "exit_code": 0,
+      "passed": 9,
+      "skipped": 0,
+      "log": ".local/evidence/cloud/server07-profile/python-contract.log",
+      "log_sha256": "97c230745cce3946648545557c40094ff99533fdc7a256ff7b7f2684f8812f8a",
+      "log_bytes": 1564
+    },
+    {
+      "command": "cargo +1.95.0 run --locked --offline -p easytier --example ff_profile_check -- /workspace/FifthFreedom/.local/evidence/cloud/server07-profile",
+      "exit_code": 0,
+      "passed_profiles": 6,
+      "log": ".local/evidence/cloud/server07-profile/upstream-parser.log",
+      "log_sha256": "67edb2adac05e887e0378fbb0f1c7c2ed535241bccbf11fa664c7040e5724072",
+      "log_bytes": 343
+    }
+  ],
+  "runtime_started": false,
+  "tun_created": false,
+  "rpc_queried": false,
+  "network_tested": false,
+  "production_admission": false,
+  "runtime_publication_approved": false,
+  "synthetic_keys": "RFC 7748 Alice/Bob public vectors; synthetic PSK 00..1f; never deployment credentials",
+  "crypto_provider": "cryptography==50.0.0",
+  "notes": [
+    "Private synthetic configs/expectations remain ignored; no raw config/log publication.",
+    "TCP is development transport; QUIC/WSS emission is not runtime acceptance.",
+    "Parser source unchanged; added verification example only; official binary pins unchanged."
+  ]
+}

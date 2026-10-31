@@ -1,17 +1,45 @@
 # 一键构建（Windows x64）
 
-## GitHub Actions 在线编译与发布
+## GitHub Actions 开发候选构建
 
-1.1 的程序版本为 `1.1.0`，对应标签 `v1.1.0`。本地 `build.cmd` 不上传产物。使用 Actions 时，仅编译应取消 `publish`；启用 `publish` 或推送 `v*` 标签会进入发布流程。
+后续常规构建使用 GitHub 托管的 Windows/Linux runner，用户电脑无需作为自托管 runner
+保持开机。Windows 编译 WPF、x86 DLL 和 LAN 服务端；Linux 编译并测试服务端。
+PR 和手动任务的候选检查只保存构建日志、校验和与 artifact，
+不自动创建正式 Release、部署生产或启动游戏。实际 job 和命令见
+[`tasks/ci-01.md`](tasks/ci-01.md)；配置存在不等于本轮执行成功。
 
-云端使用 GitHub 托管的 Windows 2022、固定 Rust nightly、.NET SDK 和带 SHA256 校验的 protoc，复用下述本地构建入口。只有完整构建、回归、包校验和启动器隔离检查通过后，独立发布任务才获得仓库写权限，并上传本轮生成的程序包、校验文件及构建来源记录。上传后重新下载核对，再公开 Release；不会覆盖同名已发布版本。无需上传个人 token、本机配置或本地编译包。
+**完整 Windows 包的严格输入门禁已通过。** 2026-10-28，八份默认 SAV/META
+原件按所有者“公共默认模板、允许公开”的明确确认获准进入源码，大小及 SHA256
+与原有清单完全一致。20 项输入全部验证、两项严格测试全部通过。审查范围见
+[准入回执](evidence/default-input-admission-20261028.json)：META 全字节确认，SAV
+为有边界明文扫描及来源确认，不声称完整反序列化。四份 donor-only 输入仍保留。
+原哈希、校验代码和默认恢复功能未改；真实完整构建、包冒烟和下载校验独立记录在
+[候选测试说明](DEVELOPMENT-CANDIDATE-TESTING.md)。C71 的十三项输入缺口不阻挡
+Windows 打包作业，但继续作为独立未完成项。
 
-失败时不会发布，原始构建日志保留在对应 Actions 运行的 `build-diagnostics` 产物中。后续版本先更新源码版本／发布身份和 `docs/RELEASE-NOTES.md`，再创建新标签。
+迁移初始 GitHub source-checks 运行
+[`39855999361`](https://github.com/caox233/FifthFreedom/actions/runs/39855999361)
+因这些缺失输入失败。云端在交接提交 `fc8ef510b51be83c31f9f8233997f758b0477acc`
+独立复现了 37 项测试、16 个资源子检查错误、2 项 Windows 跳过；这不是完整构建通过。
+
+源码开发可先在独立 Python 虚拟环境内执行：
+
+```sh
+python -m pip install --only-binary=:all: -r scripts/requirements-profile.txt
+python -B scripts/check_migration.py --require-fifth-freedom
+python -B scripts/ci_checks.py source
+python -B scripts/ci_checks.py package-inputs
+```
+
+配方密钥验证固定使用 `cryptography==50.0.0`，缺少依赖不会被当成测试通过。
+最后一条是独立的完整输入门禁；不能用前面的源码检查或文件存在代替它。
+新增 Windows IPC、真实服务生命周期和隔离加密网络检查的命令及平台要求见
+`tasks/ci-01.md`，完整测试集合与托管结果按提交记录在 `CLOUD-PROGRESS.md`。
 
 ## 最短流程
 
-1. 下载源码 ZIP 后完整解压，或 Git clone。建议使用短路径，例如 `C:\src\SCBL-LAN`。
-2. 首次安装下面的编译工具。所需构建资源已随仓库提供，无需额外资源包；首次代码依赖恢复需要联网。
+1. 下载源码 ZIP 后完整解压，或 Git clone。建议使用短路径，例如 `C:\src\FifthFreedom`。
+2. 首次安装下面的编译工具，执行严格输入门禁确认 20 项原始资源匹配。已准入的默认模板随源码提供；首次代码依赖恢复需要联网。
 3. 双击仓库根目录 **`build.cmd`**。无需管理员，也无需打开 Visual Studio。
 4. 等待 `BUILD_SUCCESS`，按输出路径取得完整 ZIP。运行时文件在 `artifacts/program`；最新结果在 `artifacts/BUILD-RESULT.json`。
 
@@ -32,16 +60,16 @@
 
 ## 随源码提供的资源
 
-`scripts/local-assets.json` 精确列出 20 项输入及大小、SHA256，包括图标、背景、音乐、FusionFix、采集工具、原始加载器、默认存档模板和 DirectX 头文件。这些文件随仓库提供，完整 clone 或源码 ZIP 中应当齐全。
+`scripts/local-assets.json` 精确列出 20 项 LAN 构建输入及大小、SHA256，包括图标、背景、音乐、FusionFix、采集工具、原始加载器、默认存档模板和 DirectX 头文件。其中八份 LAN 默认 SAV/META 已按明确公共模板授权准入；`docs/ASSET-PUBLICATION.json` 保留逐项原哈希与授权依据，以及另外四项未准入 donor 输入。
 
-正常构建不需要 `build-assets.zip`。不要只下载代码文本而遗漏二进制资源；校验失败应先重新取得完整源码。现有第三方声明继续保留，各资源的原有使用条件仍然适用。
+源代码 checkout 应直接通过原有严格输入校验，不再要求维护者补交这八份原件。现有第三方声明继续保留；用户的再分发授权声明不等于独立许可核实。Capture 历史源码已收到，参考构建通过但二进制等价仍未证；FusionFix/MemoryModule notice 与源码已验证随组件上传，但完整独立许可与其他重建缺口仍见 `ASSET-PROVENANCE.md`。
 
 以下仅为资源损坏或手工维护时的可选修复方式，不是普通开发者的前置操作：
 
 - 将匹配的 **`build-assets.zip` 放在源码根目录**，双击 `build.cmd` 时自动校验并导入。ZIP 内使用清单中的相对路径，例如 `src/launcher/src/logo.ico`，不要再套一层顶级目录。
 - 使用已有资源目录或 ZIP：`build.cmd --asset-dir "C:\local-build-assets"`，或 `build.cmd --asset-dir "C:\local-build-assets.zip"`。
 
-导入只处理清单内文件；完整校验通过后才写入，已有不匹配文件会报错而非覆盖，不会提取 ZIP 内的其他内容。用于修复的额外资源目录与 ZIP 仍被 Git 忽略；真正参与构建的 20 个文件按原路径跟踪。
+导入只处理清单内文件；完整校验通过后才写入，已有不匹配文件会报错而非覆盖，不会提取 ZIP 内的其他内容。用于修复的额外资源目录与 ZIP 仍被 Git 忽略；四份未准入 donor 存档路径继续忽略，不得由 CI 打包上传；个人存档始终不是这些获准公共模板的替代品。
 
 默认存档快照日期为 2026-10-15。MOD 模板使用该次用户选择的最新本地配置，包含 `.sav`、`.meta` 和前三套配置所需的 `.scbl-loadouts`，不能只替换 `.sav`。构建会重新生成匹配玩法 DLL 的模板清单。模板不会在正常启动时自动覆盖玩家存档。
 
@@ -81,3 +109,20 @@ python scripts/build.py verify --package "C:\path\to\package"
 版本、发布身份和兼容身份必须同批更新。先运行 `python scripts/release_ci.py check --tag v1.1.0` 检查，再构建；`prepare` 和 `publish` 仅用于以后经确认的 GitHub Actions，不能伪造云端环境来给本地包标注云端来源。
 
 正式构建入口会清理继承的 RUSTFLAGS、CARGO_ENCODED_RUSTFLAGS、CARGO_BUILD_RUSTFLAGS 和 CARGO_TARGET_*_RUSTFLAGS，防止私有诊断配置混入正式包；开发者仍可直接使用 Cargo 显式选择诊断 feature。
+
+## 摄影机与等级表的专用 Windows 四角色回归
+
+在已提交、无源码改动的 Windows checkout 中准备上述 x86 MSVC/Rust 工具链后，
+使用专用入口；若是浅克隆，先获取固定的公开基线：
+
+```powershell
+git fetch --no-tags origin d207fc611be3a89351f8517fcbc37aeb18610dd4
+python -B scripts/ci_native_production_replay.py --output artifacts/ci/native-production-replay-manual
+```
+
+输出必须是新目录，重复运行请另取目录名，保留旧收据。runner 在私有副本中为
+四角色共同应用可逆的测试地址转接，实际执行 synthetic Windows fixture；
+不启动游戏，也不替代 C71 输入。直接运行普通 `cargo test` 不会应用该转接，
+摄影机 callback fixture 会在 native 叶之前明确报
+`STICKY_SHARED_TEST_ADDRESS_TRANSLATION_REQUIRED`，不能把它当成通过或游戏失败。
+详见[摄影机任务与验收边界](tasks/sticky-camera-deploy-crash.md)。

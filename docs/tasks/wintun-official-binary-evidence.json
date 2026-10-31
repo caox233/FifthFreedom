@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T08:42:24.993111+00:00",
+  "scope": "Official archive/license retrieval and static byte-identity comparison only; no PE load or driver execution",
+  "archive": {
+    "source_url": "https://www.wintun.net/builds/wintun-0.14.1.zip",
+    "bytes": 750540,
+    "sha256": "07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51",
+    "official_api_digest": null,
+    "verification_basis": "official_https_download_and_existing_member_pin_match_no_api_digest"
+  },
+  "members": [
+    {
+      "path": "wintun/LICENSE.txt",
+      "bytes": 5431,
+      "sha256": "183adac21e7d96c508c8fd34d394b7b6708bc81564ad1bad61ab66143a008cd2"
+    },
+    {
+      "path": "wintun/README.md",
+      "bytes": 13916,
+      "sha256": "558d828fe4b2d64cc33ab79deaeea883516852af85facbb4e5af5f7672504163"
+    },
+    {
+      "path": "wintun/bin/amd64/wintun.dll",
+      "bytes": 427552,
+      "sha256": "e5da8447dc2c320edc0fc52fa01885c103de8c118481f683643cacc3220dafce"
+    },
+    {
+      "path": "wintun/bin/arm/wintun.dll",
+      "bytes": 364552,
+      "sha256": "daad267411ecdc70a0535e274d2c3e9da3d0084bdac7662cb8424dd4a031b4d9"
+    },
+    {
+      "path": "wintun/bin/arm64/wintun.dll",
+      "bytes": 222488,
+      "sha256": "f7ba89005544be9d85231a9e0d5f23b2d15b3311667e2dad0debd344918a3f80"
+    },
+    {
+      "path": "wintun/bin/x86/wintun.dll",
+      "bytes": 550928,
+      "sha256": "d694fa46ab4cfebcb2632d094c7aa97278eef2f8052438621766d863ae98a931"
+    },
+    {
+      "path": "wintun/include/wintun.h",
+      "bytes": 10362,
+      "sha256": "510a5984fbf73efd21a61ada60edfe05e1a38a77c8c47f6d62e0ab1cdbdd460f"
+    }
+  ],
+  "prior_locked_binary_matches": [
+    {
+      "official_member": "wintun/bin/amd64/wintun.dll",
+      "locked_artifact": "easytier-windows-x86_64",
+      "locked_member": "easytier-windows-x86_64/wintun.dll",
+      "bytes": 427552,
+      "sha256": "e5da8447dc2c320edc0fc52fa01885c103de8c118481f683643cacc3220dafce",
+      "byte_identity_by_sha256_and_size": true
+    },
+    {
+      "official_member": "wintun/bin/x86/wintun.dll",
+      "locked_artifact": "easytier-windows-i686",
+      "locked_member": "easytier-windows-i686/wintun.dll",
+      "bytes": 550928,
+      "sha256": "d694fa46ab4cfebcb2632d094c7aa97278eef2f8052438621766d863ae98a931",
+      "byte_identity_by_sha256_and_size": true
+    }
+  ],
+  "retained_notice": {
+    "path": "docs/third-party/Wintun-0.14.1-Prebuilt-LICENSE.txt",
+    "bytes": 5431,
+    "sha256": "183adac21e7d96c508c8fd34d394b7b6708bc81564ad1bad61ab66143a008cd2",
+    "line_endings": "original CRLF; exact path has -text Git attribute",
+    "git_filter_preserves_exact_bytes": true
+  },
+  "previous_proxy_denial_preserved": true,
+  "license_document_obtained": true,
+  "official_binary_origin_gap_resolved": true,
+  "final_permitted_api_use_verified": false,
+  "final_package_notices_and_redistribution_conditions_verified": false,
+  "binary_source_rebuild_verified": false,
+  "authenticode_runtime_verified": false,
+  "driver_installed": false,
+  "runtime_executed": false,
+  "public_admission_allowed": false,
+  "npcap_hold_unchanged": true,
+  "runner_reference_reads": [
+    {
+      "file": "hosted-runners.md",
+      "url": "https://raw.githubusercontent.com/github/docs/main/content/actions/reference/runners/github-hosted-runners.md",
+      "bytes": 8957,
+      "sha256": "2ba4307f64e55251e63555e97a51381e4eb36334693a464c743522a09546a148",
+      "downloaded": true
+    },
+    {
+      "file": "windows-2025.md",
+      "url": "https://raw.githubusercontent.com/actions/runner-images/main/images/windows/Windows2025-Readme.md",
+      "bytes": 36538,
+      "sha256": "dc996f367d036912a1a8b23d3b62289f69422603e3429152cb3ebfc7b1df76fc",
+      "downloaded": true
+    }
+  ],
+  "runner_claim": "Official docs state hosted Windows VMs run as administrator with UAC disabled; this is not proof that the Wintun driver loaded on a task runner.",
+  "actual_offline_checker": {
+    "command": "public_network_dependencies.verify with exact official artifact subset and all retained notices",
+    "exit_code": 0,
+    "artifact_count": 1,
+    "retained_notices_verified": 3,
+    "publication_approved": false,
+    "runtime_executed": false
+  }
+}

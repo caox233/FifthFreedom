@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "evidence_kind": "Official job metadata, digest-verified complete sanitized native lifecycle receipt and exact checkout harness source; runtime binaries and raw runtime output were not downloaded",
+  "run_id": 39943233020,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39943233020",
+  "source_head": "4322658bd7f3c4489888f62311293da0e73899d9",
+  "checkout_commit": "2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+  "job": {
+    "id": 120389777244,
+    "name": "Same-run native owned lifecycle in synthetic namespaces",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "id": 12498381983,
+    "name": "native-owned-lifecycle-receipt-2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+    "size_in_bytes": 659,
+    "digest": "sha256:7faf3c5815d616f90d3f097ec515830fc160f35ed06a7eb9a8cfdf2559d1835f"
+  },
+  "official_zip_digest_verified": true,
+  "sanitized_receipt": {
+    "schema": 1,
+    "status": "native_owned_lifecycle_verified",
+    "source_commit": "2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+    "run_id": "39943233020",
+    "run_attempt": "1",
+    "scope": {
+      "synthetic_runtime_bindings": true,
+      "controlled_native_startup_test": true,
+      "encrypted_overlay_verified": false,
+      "production_provider_open": false,
+      "game_executed": false,
+      "complete_windows_client": false,
+      "deployed": false,
+      "published": false
+    },
+    "cases": [
+      {
+        "case": "withheld",
+        "no_state_created": true,
+        "native_reaped": true
+      },
+      {
+        "case": "denied",
+        "no_state_created": true,
+        "native_reaped": true
+      },
+      {
+        "case": "eof",
+        "actual_listener_count": 5,
+        "protected_http_and_tcp_verified": true,
+        "wrong_interface_rejected": true,
+        "established_connection_closed": true,
+        "all_five_ports_released": true,
+        "native_exit": 92,
+        "native_reaped": true
+      },
+      {
+        "case": "expiry",
+        "actual_listener_count": 5,
+        "protected_http_and_tcp_verified": true,
+        "wrong_interface_rejected": true,
+        "established_connection_closed": true,
+        "all_five_ports_released": true,
+        "native_exit": 92,
+        "native_reaped": true
+      },
+      {
+        "case": "parent_death",
+        "actual_listener_count": 5,
+        "protected_http_and_tcp_verified": true,
+        "wrong_interface_rejected": true,
+        "established_connection_closed": true,
+        "all_five_ports_released": true,
+        "native_exit": 92,
+        "native_reaped": true
+      }
+    ],
+    "copied_package_native_verified": true,
+    "source_package_unchanged": true,
+    "private_tree_removed": true,
+    "owned_namespaces_removed": 3,
+    "all_owned_children_reaped": true,
+    "no_default_routes": true
+  },
+  "strict_receipt_consumer_exit_code": 0,
+  "checkout_harness_verification": {
+    "checkout": "2c20ac332d0c46a6e1c16f6f7b53e5f446f73d51",
+    "source_head": "4322658bd7f3c4489888f62311293da0e73899d9",
+    "path": "scripts/ci_native_lifecycle.py",
+    "bytes": 32573,
+    "sha256": "8144e773c49d85fc718b01fcc2c1888e990acc220d17c723c3f696f5376f7fcf",
+    "checkout_source_equals_branch": true,
+    "explicit_open_before_control": true
+  },
+  "scope_notes": [
+    "All five cases completed: withheld and denied admission created no state; EOF, expiry and parent death observed five listeners, protected HTTP/TCP, wrong-interface rejection, connection closure, port release and native exit 92. Three owned namespaces and the private tree were removed, with exact children reaped and source package unchanged.",
+    "The exact checkout harness matches the branch source and includes CHECK_OPEN before the EOF/expiry/parent-death command. Its bounded same-connection OPEN acknowledgement is required before each control, followed by the later closure check. The receipt format does not contain a separate OPEN field; this ordering is established by the verified executed source and successful job.",
+    "This finite ordered test does not establish universal closure causation, real game behavior, encrypted overlay composition, production provider readiness or the later Linux observer policy. The source includes OPEN and the reviewed stack diagnostic adapter but predates eba13de observer-policy changes.",
+    "Windows components and same-run identity/static-preflight jobs succeeded. The same-run composition job remained in progress when recorded. Both strict private-input gates failed and the complete-package job skipped.",
+    "Artifact digest verification covers the downloaded sanitized JSON ZIP, not an independently downloaded or executed runtime binary."
+  ]
+}

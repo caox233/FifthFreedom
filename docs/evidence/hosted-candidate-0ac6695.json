@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-23T06:30:39.934383+00:00",
+  "source_head_sha": "0ac6695a112bf15cbb016c1c34a0c011b3f07137",
+  "run_id": 39910723239,
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39910723239",
+  "status": "completed",
+  "conclusion": "failure",
+  "evidence_source": "Official GitHub run/job/check/artifact metadata API; no archive download",
+  "jobs": [
+    {
+      "id": 120272851630,
+      "name": "Linux linux-lan-baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120272851784,
+      "name": "Windows WPF, x86 hooks, gameplay and LAN components",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120272851829,
+      "name": "Linux linux-public-donor-reference",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120272851843,
+      "name": "Strict complete-package input gate",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120272851915,
+      "name": "Linux native socket ingress isolation (synthetic namespaces)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120272851974,
+      "name": "Linux protected public control service",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120272912739,
+      "name": "Complete Windows candidate (requires admitted inputs)",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120275000235,
+      "name": "Linux service/client identities and static deployment preflight",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 120275001092,
+      "name": "Same-run native owned lifecycle in synthetic namespaces",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12483445093,
+      "name": "linux-lan-baseline-a3781907a30f7dd880ef21f6468faa1f5619c3ab",
+      "size_in_bytes": 9878826,
+      "digest": "sha256:f4ce2c6abc3dfc00ec18914a759155f75fb9781fb63df4d3e5d997b046d9149d",
+      "expired": false
+    },
+    {
+      "id": 12483385178,
+      "name": "windows-compile-only-components-a3781907a30f7dd880ef21f6468faa1f5619c3ab",
+      "size_in_bytes": 28616,
+      "digest": "sha256:ce181091c89000a3729797cf039785428b99ba56b218aef5622b0473a3d53646",
+      "expired": false
+    },
+    {
+      "id": 12483140526,
+      "name": "linux-native-socket-isolation-a3781907a30f7dd880ef21f6468faa1f5619c3ab",
+      "size_in_bytes": 3680042,
+      "digest": "sha256:ce2fec8489a78911e252f07441295d587faae7d8863f73d22703b013c64b120b",
+      "expired": false
+    },
+    {
+      "id": 12483065200,
+      "name": "complete-package-input-gate-a3781907a30f7dd880ef21f6468faa1f5619c3ab",
+      "size_in_bytes": 1657,
+      "digest": "sha256:573309eb58af2259da4b535b972c08666a36bdf099bb40528e757a0e29a2d188",
+      "expired": false
+    },
+    {
+      "id": 12482818060,
+      "name": "linux-public-donor-reference-a3781907a30f7dd880ef21f6468faa1f5619c3ab",
+      "size_in_bytes": 4005432,
+      "digest": "sha256:2160d30905584dab442e0e0b05712996a151c963f3ffe362636b8c84eb02f95b",
+      "expired": false
+    },
+    {
+      "id": 12482277974,
+      "name": "linux-public-control-a3781907a30f7dd880ef21f6468faa1f5619c3ab",
+      "size_in_bytes": 57584,
+      "digest": "sha256:d48c7988c1a802034ab1371ae8fee1b657af794c1b85df9826382053d16f7e97",
+      "expired": false
+    }
+  ],
+  "windows_bounded_failure": "step=ci-test-PublicNativeReturn; exception=RuntimeError; full diagnostics remain in the run artifacts",
+  "windows_source_checks_passed": true,
+  "windows_public_session_control_passed": true,
+  "windows_public_session_control_evidence": "The sequential Windows managed runner passed PublicSessionControl before entering and failing PublicNativeReturn. Raw artifact logs were not retrieved.",
+  "windows_public_native_return_passed": false,
+  "windows_failure_case_not_yet_observed": true,
+  "windows_native_ipc_interop_and_branding_reached": false,
+  "source_run": {
+    "id": 39910723340,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "0ac6695a112bf15cbb016c1c34a0c011b3f07137"
+  },
+  "artifact_names_are_opaque_metadata": true,
+  "artifact_contents_verified": false,
+  "complete_package": false,
+  "public_startup_allowed": false
+}

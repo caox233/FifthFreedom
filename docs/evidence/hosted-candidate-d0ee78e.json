@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "implementation_commit": "d0ee78e59b3d6c0691c00a224383d27dc6500ada",
+  "observed_utc": "2026-10-22T22:11:16.125236+00:00",
+  "run_url": "https://github.com/caox233/FifthFreedom/actions/runs/39860535649",
+  "corroborating_pr_run": "https://github.com/caox233/FifthFreedom/actions/runs/39860607037",
+  "overall_conclusion": "failure",
+  "component_jobs": {
+    "windows": "success",
+    "linux_lan_baseline": "success",
+    "linux_public_donor_reference": "success"
+  },
+  "strict_package_gate": "failure",
+  "complete_package": "skipped",
+  "game_executed": false,
+  "production_deployed": false,
+  "artifact_metadata_source": "official GitHub Actions artifacts API; archives not downloaded in this session",
+  "artifacts": [
+    {
+      "name": "windows-compile-only-components",
+      "bytes": 74585435,
+      "archive_sha256": "b9318ffc2cdf9e9a27cd43b41a8607ff6b0468608f3579293a543b18466d46cb"
+    },
+    {
+      "name": "linux-lan-baseline",
+      "bytes": 9335760,
+      "archive_sha256": "1b0c2d5b754d714b07fda466d12531c5f37cfb98aeeaaea01c9b2639d8953761"
+    },
+    {
+      "name": "linux-public-donor-reference",
+      "bytes": 4005472,
+      "archive_sha256": "1d77ebb698955ff44f7ad42456df35f22d9bb8220b39221cc3153d4ee07c7535"
+    },
+    {
+      "name": "complete-package-input-gate",
+      "bytes": 1656,
+      "archive_sha256": "75d84256c903fd5dad6da5828b800bd26b4e17ef15e65422ca41641c591cb09a"
+    }
+  ]
+}
